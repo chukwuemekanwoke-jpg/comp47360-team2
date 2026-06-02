@@ -1,0 +1,459 @@
+***ARCHITECTURE DECISION RECORD ***
+# ADR-001: Tablé — System Architecture Decisions
+
+````md
+# ADR-001: Tablé — System Architecture Decisions
+
+**Status:** Accepted
+**Date:** June 2026 (Revision 2)
+**Deciders:** Product & UX Lead, Integration Lead / SCRUM Master, Backend Developer, Frontend Developer, Mobile Developer, Data / ML Engineer
+**Relates to:** Backend, Frontend, Mobile, Data & ML, Product, Integration, Cloud Infrastructure
+
+---
+
+# Team Structure
+
+| Role | Count |
+|--------|--------|
+| Backend Developer | 1 |
+| Frontend Developer | 1 |
+| Mobile Developer | 1 |
+| Data / ML Engineer | 1 |
+| Integration Lead / SCRUM Master | 1 |
+| Product & UX Lead | 1 |
+
+---
+
+# ADR-001-A: Backend Language & Runtime
+
+**Status:** Accepted
+
+## Context
+
+Following architecture review, the team elected to adopt a hybrid backend architecture that combines enterprise-grade Java services with Node.js services optimized for integration and real-time workloads.
+
+## Decision
+
+Tablé will use a polyglot backend architecture consisting of:
+
+- Spring Boot (Java 21)
+- Node.js (TypeScript)
+- Python FastAPI (ML workloads only)
+
+### Service Allocation
+
+| Service | Technology |
+|----------|------------|
+| API Gateway | Node.js (NestJS) |
+| Reservations | Spring Boot |
+| Marketplace | Spring Boot |
+| Realtime | Node.js |
+| Notifications | Node.js |
+| User Profile | Spring Boot |
+| ML Pipeline | Python FastAPI |
+
+## Consequences
+
+- OpenAPI specifications become the authoritative service contract.
+- GitHub Actions must support Java, Node.js, and Python build pipelines.
+- Integration testing becomes mandatory across language boundaries.
+
+---
+
+# ADR-001-B: Microservices Decomposition Strategy
+
+**Status:** Accepted
+
+## Decision
+
+The platform will maintain seven independently deployable services:
+
+| Service | Domain |
+|----------|----------|
+| api-gateway | Routing, authentication, rate limiting |
+| reservations | Reservation workflows |
+| marketplace | Deal marketplace |
+| realtime | WebSocket communication |
+| notifications | Push notification delivery |
+| user-profile | Preferences and personalization |
+| ml-pipeline | Recommendation and prediction engine |
+
+## Consequences
+
+- Independent deployment capability.
+- Service-level ownership.
+- Distributed tracing required across all services.
+
+---
+
+# ADR-001-C: ML Pipeline Exception
+
+**Status:** Accepted
+
+## Decision
+
+The ML Pipeline remains the only approved Python service.
+
+### Responsibilities
+
+- Restaurant recommendation ranking
+- User-to-deal matching
+- Demand prediction
+- Busyness forecasting
+- Confidence scoring
+
+### Constraints
+
+- No transactional ownership.
+- No authentication handling.
+- No direct business workflow orchestration.
+- Must remain stateless.
+
+---
+
+# ADR-001-D: Cloud Deployment Strategy
+
+**Status:** Accepted
+
+## Context
+
+Cloud deployment architecture is owned by the Integration Lead.
+
+## Decision
+
+The deployment strategy will be:
+
+### Primary Platform
+
+Google Cloud Platform (GCP)
+
+### Secondary Platform
+
+Amazon Web Services (AWS)
+
+AWS remains an approved fallback deployment option.
+
+Infrastructure provisioning, deployment governance, CI/CD pipelines, and environment management are owned by the Integration Lead.
+
+---
+
+## Target GCP Architecture
+
+| Layer | Technology |
+|---------|---------|
+| Containers | Cloud Run |
+| API Gateway | Google API Gateway |
+| Database | Cloud SQL (PostgreSQL) |
+| Cache | Memorystore (Redis) |
+| Storage | Google Cloud Storage |
+| Secrets | Secret Manager |
+| Monitoring | Cloud Operations Suite |
+| Logging | Cloud Logging |
+| CI/CD | GitHub Actions |
+| ML Storage | GCS Buckets |
+
+---
+
+## Environment Strategy
+
+| Environment | Purpose |
+|-------------|---------|
+| Development | Local Docker |
+| Staging | Auto-deploy from develop |
+| Production | Release deployment only |
+
+---
+
+## CI/CD Strategy
+
+GitHub Actions is the standard deployment platform.
+
+### Pipeline
+
+```text
+GitHub Actions
+├── lint
+├── test
+├── build
+├── security-scan
+├── api-contract-validation
+├── container-build
+├── terraform-plan
+├── terraform-apply
+└── deployment
+````
+
+## Consequences
+
+* Terraform remains the preferred IaC framework.
+* Automatic deployment to staging on merge to develop.
+* Production deployments require release approval.
+* Infrastructure reviews require Integration Lead approval.
+
+---
+
+# ADR-001-E: Real-Time Infrastructure
+
+**Status:** Accepted
+
+## Decision
+
+The platform will use WebSockets for real-time communication.
+
+### Technology Stack
+
+* Node.js
+* Socket.IO
+* Redis Pub/Sub
+
+### Supported Use Cases
+
+* Occupancy updates
+* Flash deal notifications
+* Reservation status updates
+* ETA tracking
+* Restaurant demand alerts
+
+## Consequences
+
+* Redis becomes a mandatory infrastructure dependency.
+* Real-time performance becomes an MVP KPI.
+
+---
+
+# ADR-001-F: Frontend & Mobile Platform Strategy
+
+**Status:** Accepted
+
+## Decision
+
+### Web
+
+* React
+* Next.js
+
+### Mobile
+
+* React Native
+* Expo
+
+### Shared Packages
+
+| Package             | Purpose              |
+| ------------------- | -------------------- |
+| packages/ui         | Shared design system |
+| packages/types      | Shared contracts     |
+| packages/api-client | Generated SDKs       |
+
+## Consequences
+
+* OpenAPI remains the source of truth.
+* WCAG 2.1 AA compliance is mandatory.
+* Shared design system governs all user interfaces.
+
+---
+
+# ADR-001-G: Restaurant Data & Reservation Integration Strategy
+
+**Status:** Accepted
+
+## Context
+
+Access to OpenTable Partner APIs was requested and subsequently declined.
+
+As a result, Tablé cannot rely on OpenTable inventory, reservation, onboarding, or slot-locking capabilities.
+
+## Decision
+
+OpenTable integration is removed from MVP scope.
+
+Google Places API becomes the primary source for restaurant discovery and enrichment.
+
+---
+
+## Google Places Responsibilities
+
+The platform will retrieve:
+
+* Restaurant names
+* Addresses
+* Geolocation coordinates
+* Ratings
+* Reviews
+* Photos
+* Opening hours
+* Cuisine categories
+* Contact details
+* Website links
+
+---
+
+## Reservation Strategy
+
+The MVP reservation workflow will support:
+
+1. Direct restaurant contact.
+2. Deep links to external booking providers.
+3. Restaurant-managed availability.
+4. Future integration opportunities with approved reservation partners.
+
+---
+
+## OpenAI Integration Strategy
+
+The platform will leverage official OpenAI SDKs and implementation guides for:
+
+* Restaurant recommendations.
+* Personalized dining suggestions.
+* Search enhancement.
+* Restaurant matching.
+* Natural language dining assistant experiences.
+
+All implementations must follow official OpenAI documentation and best practices.
+
+---
+
+## Consequences
+
+* OpenTable dependencies are removed.
+* OAuth implementation is removed.
+* Slot-locking workflows are removed.
+* Google Places API becomes a critical dependency.
+* Restaurant metadata becomes cacheable within the platform.
+
+---
+
+## Action Items
+
+* Implement Google Places integration.
+* Design restaurant enrichment service.
+* Create caching strategy.
+* Remove OpenTable backlog items.
+* Design OpenAI-powered recommendation workflows.
+
+---
+
+# ADR-001-H: Reachability Guardrail
+
+**Status:** Accepted
+
+## Decision
+
+Reachability validation remains a backend responsibility.
+
+The platform must validate whether a user can reasonably reach a restaurant before confirming a booking or redeeming an offer.
+
+### Data Sources
+
+* Google Maps API
+* Google Routes API
+* Cached travel-time data
+
+## Consequences
+
+* Frontend validation remains advisory.
+* Backend validation remains authoritative.
+
+---
+
+# ADR-001-I: Flash Deal Targeting
+
+**Status:** Accepted
+
+## Decision
+
+Marketplace owns deal orchestration.
+
+ML Pipeline owns recommendation scoring.
+
+Notifications owns delivery and anti-fatigue enforcement.
+
+### Scoring Factors
+
+* Cuisine preference match
+* Travel distance
+* Travel time
+* Historical behavior
+* Conversion likelihood
+* Deal sensitivity
+
+### Anti-Fatigue Rule
+
+Maximum of three deal notifications per user within a rolling seven-day period.
+
+---
+
+# ADR-001-J: Repository Structure & CI/CD
+
+**Status:** Accepted
+
+## Repository Structure
+
+```text
+apps/
+ ├── web
+ ├── operator
+ └── mobile
+
+services/
+ ├── api-gateway
+ ├── reservations
+ ├── marketplace
+ ├── realtime
+ ├── notifications
+ ├── user-profile
+ └── ml-pipeline
+
+packages/
+ ├── ui
+ ├── types
+ └── api-client
+
+infra/
+ └── terraform
+
+docs/
+ └── adr
+```
+
+---
+
+## Ownership
+
+| Area             | Owner              |
+| ---------------- | ------------------ |
+| Infrastructure   | Integration Lead   |
+| API Contracts    | Integration Lead   |
+| Backend Services | Backend Developer  |
+| Frontend         | Frontend Developer |
+| Mobile           | Mobile Developer   |
+| ML Services      | Data / ML Engineer |
+| Product          | Product & UX Lead  |
+
+---
+
+# Summary Decision Registry
+
+| ID        | Decision                                          | Status   |
+| --------- | ------------------------------------------------- | -------- |
+| ADR-001-A | Hybrid Node.js + Spring Boot backend architecture | Accepted |
+| ADR-001-B | Microservices architecture                        | Accepted |
+| ADR-001-C | Python FastAPI exception for ML workloads         | Accepted |
+| ADR-001-D | GCP-first cloud strategy with AWS fallback        | Accepted |
+| ADR-001-E | WebSockets and Redis for real-time communications | Accepted |
+| ADR-001-F | React, Next.js and React Native platform strategy | Accepted |
+| ADR-001-G | Google Places replaces OpenTable integration      | Accepted |
+| ADR-001-H | Server-authoritative reachability validation      | Accepted |
+| ADR-001-I | ML-driven flash deal targeting                    | Accepted |
+| ADR-001-J | Monorepo with GitHub Actions CI/CD                | Accepted |
+
+---
+
+*Document maintained under docs/adr/ADR-001-table-system-architecture.md*
+
+*Revision: June 02, 2026*
+
+*Next ADR: ADR-002 — Data Model, Persistence Strategy & Restaurant Knowledge Graph*
+
+```
+```
