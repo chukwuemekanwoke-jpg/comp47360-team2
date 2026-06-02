@@ -1,0 +1,486 @@
+openapi: 3.0.3
+info:
+  title: Tablé API
+  version: 0.1.0
+  description: MVP contract v0 (BE-3). See docs/api-contract-v0.md for narrative spec.
+
+servers:
+  - url: http://localhost:3001
+    description: Local API gateway
+
+tags:
+  - name: Health
+  - name: Users
+  - name: Restaurants
+  - name: Bookings
+  - name: Offers
+  - name: Campaigns
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /api/v1/users:
+    post:
+      tags: [Users]
+      summary: Create user (dummy onboarding)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                displayName:
+                  type: string
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /api/v1/users/me:
+    get:
+      tags: [Users]
+      summary: Get current user
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /api/v1/users/me/preferences:
+    patch:
+      tags: [Users]
+      summary: Update preferences (Story 1.1)
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserPreferences"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /api/v1/restaurants/nearby:
+    get:
+      tags: [Restaurants]
+      summary: Nearby available restaurants (Story 2.1)
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+        - name: lng
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+        - name: radiusM
+          in: query
+          schema:
+            type: integer
+            default: 1500
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  origin:
+                    $ref: "#/components/schemas/GeoPoint"
+                  radiusM:
+                    type: integer
+                  restaurants:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/RestaurantSummary"
+
+  /api/v1/restaurants/{restaurantId}:
+    get:
+      tags: [Restaurants]
+      summary: Restaurant detail
+      parameters:
+        - $ref: "#/components/parameters/RestaurantId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantDetail"
+
+  /api/v1/restaurants/{restaurantId}/eta:
+    get:
+      tags: [Restaurants]
+      summary: ETA vs hold window (Stories 3.1, 3.2)
+      parameters:
+        - $ref: "#/components/parameters/RestaurantId"
+        - name: lat
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: lng
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: mode
+          in: query
+          schema:
+            $ref: "#/components/schemas/TransportMode"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EtaResult"
+
+  /api/v1/bookings:
+    post:
+      tags: [Bookings]
+      summary: Create booking
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateBookingRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "409":
+          $ref: "#/components/responses/Conflict"
+
+  /api/v1/users/me/offers:
+    get:
+      tags: [Offers]
+      summary: Flash deal inbox (Story 4.1)
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/OfferStatus"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  offers:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/OfferInboxItem"
+
+  /api/v1/offers/{offerId}/accept:
+    post:
+      tags: [Offers]
+      summary: Accept flash deal
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Accepted
+        "409":
+          $ref: "#/components/responses/Conflict"
+
+  /api/v1/restaurants/{restaurantId}/campaigns:
+    post:
+      tags: [Campaigns]
+      summary: Start lull-mitigation campaign (Story 5.2)
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+        - $ref: "#/components/parameters/RestaurantId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCampaignRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+
+components:
+  parameters:
+    UserIdHeader:
+      name: X-User-Id
+      in: header
+      required: true
+      schema:
+        type: string
+        format: uuid
+    RestaurantId:
+      name: restaurantId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    Conflict:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+
+  schemas:
+    ErrorEnvelope:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+
+    GeoPoint:
+      type: object
+      properties:
+        lat:
+          type: number
+        lng:
+          type: number
+
+    BudgetTier:
+      type: string
+      enum: [TIER_1, TIER_2, TIER_3]
+
+    TransportMode:
+      type: string
+      enum: [walking, driving, transit, cycling]
+
+    OfferStatus:
+      type: string
+      enum: [pending, accepted, expired, revoked]
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        displayName:
+          type: string
+        budgetTier:
+          $ref: "#/components/schemas/BudgetTier"
+        dietaryTags:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    UserPreferences:
+      type: object
+      required: [budgetTier, dietaryTags]
+      properties:
+        budgetTier:
+          $ref: "#/components/schemas/BudgetTier"
+        dietaryTags:
+          type: array
+          items:
+            type: string
+        lastLat:
+          type: number
+        lastLng:
+          type: number
+
+    RestaurantSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        neighborhood:
+          type: string
+        availableTableCount:
+          type: integer
+        busynessScore:
+          type: number
+        distanceMeters:
+          type: number
+        isWheelchairAccessible:
+          type: boolean
+        sensoryFriendly:
+          type: boolean
+
+    RestaurantDetail:
+      allOf:
+        - $ref: "#/components/schemas/RestaurantSummary"
+        - type: object
+          properties:
+            addressLine:
+              type: string
+            holdWindowMinutes:
+              type: integer
+
+    EtaResult:
+      type: object
+      properties:
+        restaurantId:
+          type: string
+          format: uuid
+        transportMode:
+          $ref: "#/components/schemas/TransportMode"
+        etaMinutes:
+          type: integer
+        holdWindowMinutes:
+          type: integer
+        canBook:
+          type: boolean
+        message:
+          type: string
+
+    CreateBookingRequest:
+      type: object
+      required: [restaurantId, transportMode, userLat, userLng]
+      properties:
+        restaurantId:
+          type: string
+          format: uuid
+        transportMode:
+          $ref: "#/components/schemas/TransportMode"
+        userLat:
+          type: number
+        userLng:
+          type: number
+        offerId:
+          type: string
+          format: uuid
+          nullable: true
+
+    Booking:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        etaMinutes:
+          type: integer
+        holdExpiresAt:
+          type: string
+          format: date-time
+
+    OfferInboxItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        campaignId:
+          type: string
+          format: uuid
+        restaurantId:
+          type: string
+          format: uuid
+        restaurantName:
+          type: string
+        status:
+          $ref: "#/components/schemas/OfferStatus"
+        discountPercent:
+          type: integer
+        expiresAt:
+          type: string
+          format: date-time
+        secondsRemaining:
+          type: integer
+        canAccept:
+          type: boolean
+
+    CreateCampaignRequest:
+      type: object
+      required: [tableQuota, discountPercent]
+      properties:
+        tableQuota:
+          type: integer
+          minimum: 1
+        discountPercent:
+          type: integer
+          minimum: 10
+          maximum: 50
+
+    Campaign:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        restaurantId:
+          type: string
+          format: uuid
+        status:
+          type: string
+        tableQuota:
+          type: integer
+        tablesClaimed:
+          type: integer
+        discountPercent:
+          type: integer

@@ -39,7 +39,7 @@ This repository follows a Monorepo architecture to ensure high-efficiency collab
 
 ```text
 Table-Workspace/
-├── docs/                # 📄 Core documents (Business Plan, MVP ACs, UI/UX designs)
+├── docs/                # 📄 Core documents (Business Plan, MVP ACs, API contract v0)
 ├── frontend/            # 💻 Frontend Ecosystem
 │   ├── web-app/         # Responsive Web App (React/Next.js)
 │   └── mobile-app/      # Cross-platform Mobile App (React Native/Expo)
