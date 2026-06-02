@@ -13,25 +13,45 @@
 - PostgreSQL **14+** (15+ recommended)
 - Node.js 18+ (for the migration runner)
 
-## Quick start
+## Quick start (Docker — recommended)
+
+Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/) (or Docker Engine + Compose v2).
 
 ```bash
 cd database
 cp .env.example .env
-# Edit DATABASE_URL, then create the database:
-createdb table_dev   # or: psql -c "CREATE DATABASE table_dev;"
-
 npm install
-npm run migrate
+npm run db:up          # starts Postgres via docker-compose.yml
+npm run migrate        # wait until healthy, then apply schema
 ```
 
 Verify:
 
 ```bash
+docker compose ps
 psql "$DATABASE_URL" -c "\dt"
 ```
 
 Expected tables: `users`, `restaurants`, `campaigns`, `offers`, `bookings`, `availability_snapshots`, `schema_migrations`.
+
+| Command | Action |
+|---------|--------|
+| `npm run db:up` | Start database container in background |
+| `npm run db:down` | Stop container (keeps data volume) |
+| `npm run db:reset` | Stop and **delete** all data, start fresh |
+| `npm run db:logs` | Follow Postgres logs |
+
+## Quick start (native Postgres — optional)
+
+If you already have PostgreSQL installed locally:
+
+```bash
+cd database
+cp .env.example .env
+createdb table_dev
+npm install
+npm run migrate
+```
 
 ## Environment
 
@@ -85,17 +105,26 @@ Optional PostGIS: `migrations/002_postgis_optional.sql` (not applied by default)
 |--------|--------|
 | BE-1 | API gateway bootstrap |
 | **BE-2** | **This schema** |
-| BE-3 | API contract v0 |
+| BE-3 | API contract v0 — [docs/api-contract-v0.md](../docs/api-contract-v0.md) |
 | BE-9 | Seed data (Sprint 2) |
 
-## Docker (optional)
+## Docker Compose
+
+Configuration: [`docker-compose.yml`](./docker-compose.yml)
+
+| Setting | Default |
+|---------|---------|
+| Container name | `table-postgres` |
+| Image | `postgres:16-alpine` |
+| Database | `table_dev` |
+| User / password | `postgres` / `postgres` |
+| Host port | `5432` (override with `POSTGRES_PORT` in `.env` for compose) |
+
+If port **5432** is already in use, create `.env` with:
 
 ```bash
-docker run --name table-postgres \
-  -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=table_dev \
-  -p 5432:5432 \
-  -d postgres:16-alpine
+POSTGRES_PORT=5433
+DATABASE_URL=postgresql://postgres:postgres@localhost:5433/table_dev
 ```
 
-Then set `DATABASE_URL=postgresql://postgres:postgres@localhost:5432/table_dev`.
+Then run `npm run db:up` again.
