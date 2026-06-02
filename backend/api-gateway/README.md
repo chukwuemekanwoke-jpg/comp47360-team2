@@ -58,7 +58,15 @@ backend/api-gateway/
 └── README.md
 ```
 
+## API contract
+
+- **BE-3:** [docs/api-contract-v0.md](../../docs/api-contract-v0.md) (human-readable)
+- OpenAPI machine-readable: [docs/openapi-v0.yaml](../../docs/openapi-v0.yaml)
+
+Implement routes under `/api/v1` per contract in Sprint 2–3.
+
 ## Related tickets
 
 - **BE-1:** Bootstrap + health endpoint (this service)
 - **BE-2:** PostgreSQL schema + migrations (`database/`) — see `database/README.md` and `database/schema.md`
+- **BE-3:** API contract v0 (`docs/api-contract-v0.md`)
