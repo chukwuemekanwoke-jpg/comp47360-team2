@@ -61,4 +61,4 @@ backend/api-gateway/
 ## Related tickets
 
 - **BE-1:** Bootstrap + health endpoint (this service)
-- **BE-2:** PostgreSQL schema + migrations (`database/`)
+- **BE-2:** PostgreSQL schema + migrations (`database/`) — see `database/README.md` and `database/schema.md`
