@@ -2,6 +2,7 @@
 
 **Status:** Draft for Sprint 1 sign-off · **Implements in:** Sprint 2–3 (`backend/api-gateway`)  
 **Database:** [database/schema.md](../database/schema.md) (BE-2)  
+**Architecture:** [docs/adr/ADR-001.md](./adr/ADR-001.md) (BE-4)  
 **Base URL (local):** `http://localhost:3001`
 
 ---

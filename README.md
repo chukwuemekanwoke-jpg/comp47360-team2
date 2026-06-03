@@ -39,7 +39,8 @@ This repository follows a Monorepo architecture to ensure high-efficiency collab
 
 ```text
 Table-Workspace/
-├── docs/                # 📄 Core documents (Business Plan, MVP ACs, API contract v0)
+├── docs/                # 📄 Core documents (Business Plan, MVP ACs, API contract, ADR)
+│   └── adr/             # Architecture Decision Records (ADR-001.md)
 ├── frontend/            # 💻 Frontend Ecosystem
 │   ├── web-app/         # Responsive Web App (React/Next.js)
 │   └── mobile-app/      # Cross-platform Mobile App (React Native/Expo)
