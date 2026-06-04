@@ -112,7 +112,7 @@ Standard or deal-backed reservations.
 
 ### `availability_snapshots`
 
-Append-only history for simulated OpenTable / NYC data feeds (Sprint 2+ ETL).
+Append-only history for simulated availability (see [docs/data-strategy.md](../docs/data-strategy.md); Sprint 2+ ETL).
 
 ## Geospatial approach
 
