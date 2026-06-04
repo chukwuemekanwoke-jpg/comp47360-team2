@@ -89,7 +89,7 @@ Based on the central shared page flow application mockups for both Mobile and We
 
 ---
 
-## 4. Tech Stack
+## 4. Tech Stack & File Organisation
 
 ### Mobile Stack
 <img src="./assets/mobile-stack.png" alt="Mobile Stack" width="50%">    
@@ -97,7 +97,27 @@ Based on the central shared page flow application mockups for both Mobile and We
     
 *   **Mobile Engine:** **React Native** managed through **Expo** for clean multi-platform compilation.
 *   **Styling Consistency:** **NativeWind** (Tailwind CSS for React Native), ensuring that layouts, components, and search modules look identical and share styling code across both map and list layouts.
-*   **Network Layer:** Core data lifecycle queries call standard **REST APIs**, while push notifications and changing room availability update via **WebSockets** [ADDR-001-G].
+*   **Network Layer:** Core data lifecycle queries call standard **REST APIs**, while push notifications and changing room availability update via **WebSockets** [ADDR-001-G]  
+
+### Project organisation
+```text
+.\frontend/mobile/Table/
+├── src/
+│   ├── app/
+│   │   ├── _layout.tsx (shared route views - nav bar)
+│   │   ├── index.tsx (dashboard hub)
+│   │   ├── map-view.tsx (map view)
+│   │   ├── card-list-view.tsx (card list view)
+│   │   └── business-dashboard.tsx (business dashboard)
+│   ├── screens/ (backup versions)
+│   │   ├── map-view.tsx
+│   │   ├── card-list-view.tsx
+│   │   ├── business-dashboard.tsx
+│   │   └── login.tsx
+│   └── components/
+│       └── preference-filters.tsx (shared preference filter elements)
+└── UI.md (documentation for all elements of the frontend)
+```
 
 ### Web Stack
 
