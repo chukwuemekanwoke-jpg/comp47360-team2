@@ -63,6 +63,7 @@ backend/api-gateway/
 - **BE-3:** [docs/api-contract-v0.md](../../docs/api-contract-v0.md) (human-readable)
 - OpenAPI: [docs/openapi-v0.yaml](../../docs/openapi-v0.yaml)
 - **BE-4 / ADR-001:** [docs/adr/ADR-001.md](../../docs/adr/ADR-001.md)
+- **BE-5:** [docs/data-strategy.md](../../docs/data-strategy.md)
 
 Implement routes under `/api/v1` per contract in Sprint 2–3.
 
