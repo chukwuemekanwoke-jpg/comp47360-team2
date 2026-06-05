@@ -29,6 +29,8 @@ To support both mobile and web deployment, the application uses shared page flow
 
 ### 2.1 Authentication Gate
 *   **Login/Registration View:** The absolute point of entry where users must either sign in or complete the account creation workflow to initialize a valid session token. Unauthenticated incoming traffic is blocked from accessing application assets.
+> **Authentication Strategy:** Authentication is implemented using O-AUTH 2.0 framework and JSON Web Tokens, which are stateless and supported by both iOS, Android, and Web Clients. For biometric authentication (Mobile specific) Android and iOS this is a proposed addition but would require a platform dependent approach (Sprint 2 consideration).
+
 
 ### 2.2 Index / Landing Dashboard 
 
@@ -54,6 +56,7 @@ To support both mobile and web deployment, the application uses shared page flow
 *   **Spatial Visualisation:** The resulting restaurants based on availability and preference criteria are displayed.
 *   **Spatial Discovery:** Once authenticated, users land directly on a primary map view displaying available Manhattan restaurants in real-time.
 > **[User Story 2](./user-stories/02-discovery.md):** To satisfy the acceptance criteria: User is prompted to and manually allowed to input a location if location services are disabled.
+> **Location Services Updates:** are handled by the client side application polling the user device and sending an updated location to server side when a users given location changes by more than a given threshold (client side responsibility, minimizing post requests to server). For Mobile both platform (iOS & Android) updates are handled by expo-location package.
 
 #### Card List View
 *   **Card Visualisation:** Card view provides a more detailed overview of the available restaraunts, including images of food (if available).
@@ -126,7 +129,7 @@ Based on the central shared page flow application mockups for both Mobile and We
 ## 5. Network Sync & State Management
 
 | Protocol | Use Case | Details |
-|----------|----------|---------|
+|----------|----------|---------| 
 | **REST Requests** | User modifications, authentication handshakes, structural search parameters | When a user filters by cuisine or travel type, a clean REST query pulls the prioritized data batch. |
 | **WebSocket Infrastructure** | Real-time updates to restaurant density and flash deals | Handles ongoing changes to local restaurant density values (busyness_score) and incoming flash deal distributions. If an operational simulation tick updates table data while a user is looking at a map, the UI alters the marker colors in real-time without requiring a page pull. |
 
@@ -140,3 +143,8 @@ The Frontend Lead and Mobile Lead operate on **independent development cycles** 
 - **Purpose:** Review incremental progress, discuss technical blockers, and synchronize styling across platforms
 - **Key Outcome:** Styling homogenization, alld color palettes, and layout patterns are validated and standardized during these sessions to ensure design consistency across mobile and web implementations.
 
+## 7. Other:
+
+### Push Notification Strategy
+Push notifications (for Mobile) are managed platform independtly - with the exception of a few bespoke considerations - the client generates a push token using 'expo-notifications' which it sends to the server side to be used in any post requests to the expo client. 
+> Handling these notifications is done by wiring a listener to the main page of the application.
