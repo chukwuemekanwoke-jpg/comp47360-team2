@@ -123,7 +123,7 @@ Based on the central shared page flow application mockups for both Mobile and We
 ```
 
 ### Web Stack
-
+<img src="./assets/web-stack.png" alt="Web Stack" width="50%">   
 ---
 
 ## 5. Network Sync & State Management
