@@ -236,6 +236,7 @@ flowchart LR
 - [x] Quality risks + mitigations listed
 - [x] Join path to `restaurants` and ML features
 - [ ] Data & ML sign-off (comment in Jira / PR)
+- [x] Demo seed for development — `database/seeds/` (BE-9)
 - [ ] Optional: 1-page EDA notebook link in `ml-pipeline/notebooks/` (Sprint 2)
 
 ---
@@ -245,7 +246,7 @@ flowchart LR
 | Owner | Task |
 |-------|------|
 | Data & ML | Sample download + EDA notebook; taxi zone aggregation |
-| Backend | BE-9 seed SQL from Manhattan inspections subset |
+| Backend | BE-9 demo seed (`database/seeds/`); later expand from inspections CSV |
 | Backend | Simulator script updating `available_table_count` |
 | Backend | Wire `busyness_score` into `GET /restaurants/nearby` response |
 | Product | Paper wording: “simulated availability from open data” |

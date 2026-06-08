@@ -23,6 +23,7 @@ cp .env.example .env
 npm install
 npm run db:up          # starts Postgres via docker-compose.yml
 npm run migrate        # wait until healthy, then apply schema
+npm run seed           # BE-9: demo Manhattan restaurants + test users
 ```
 
 Verify:
@@ -67,6 +68,7 @@ Copy from [`.env.example`](./.env.example). Never commit `.env`.
 |---------|--------|
 | `npm run migrate` | Apply pending SQL in `migrations/` |
 | `npm run migrate:down` | Run `001_initial_schema.down.sql` (drops all v1 tables) |
+| `npm run seed` | Load demo data — [seeds/README.md](./seeds/README.md) |
 
 Migration tracking uses the `schema_migrations` table.
 
@@ -107,7 +109,7 @@ Optional PostGIS: `migrations/002_postgis_optional.sql` (not applied by default)
 | **BE-2** | **This schema** |
 | BE-3 | API contract v0 — [docs/api-contract-v0.md](../docs/api-contract-v0.md) |
 | BE-5 | Data strategy — [docs/data-strategy.md](../docs/data-strategy.md) |
-| BE-9 | Seed data (Sprint 2) |
+| BE-9 | Seed data — [seeds/README.md](./seeds/README.md) |
 
 ## Docker Compose
 
