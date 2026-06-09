@@ -2,11 +2,11 @@
 
 **BE-2:** Schema design v1 — migrations, ERD, and local setup for the Tablé MVP.
 
-| Doc | Purpose |
-|-----|---------|
-| [schema.md](./schema.md) | ER diagram, P0 story mapping, table reference |
-| [migrations/001_initial_schema.sql](./migrations/001_initial_schema.sql) | DDL v1 |
-| [migrations/001_initial_schema.down.sql](./migrations/001_initial_schema.down.sql) | Roll back v1 (dev only) |
+| Doc                                                                                | Purpose                                       |
+| ---------------------------------------------------------------------------------- | --------------------------------------------- |
+| [schema.md](./schema.md)                                                           | ER diagram, P0 story mapping, table reference |
+| [migrations/001_initial_schema.sql](./migrations/001_initial_schema.sql)           | DDL v1                                        |
+| [migrations/001_initial_schema.down.sql](./migrations/001_initial_schema.down.sql) | Roll back v1 (dev only)                       |
 
 ## Prerequisites
 
@@ -35,12 +35,12 @@ psql "$DATABASE_URL" -c "\dt"
 
 Expected tables: `users`, `restaurants`, `campaigns`, `offers`, `bookings`, `availability_snapshots`, `schema_migrations`.
 
-| Command | Action |
-|---------|--------|
-| `npm run db:up` | Start database container in background |
-| `npm run db:down` | Stop container (keeps data volume) |
+| Command            | Action                                    |
+| ------------------ | ----------------------------------------- |
+| `npm run db:up`    | Start database container in background    |
+| `npm run db:down`  | Stop container (keeps data volume)        |
 | `npm run db:reset` | Stop and **delete** all data, start fresh |
-| `npm run db:logs` | Follow Postgres logs |
+| `npm run db:logs`  | Follow Postgres logs                      |
 
 ## Quick start (native Postgres — optional)
 
@@ -56,19 +56,19 @@ npm run migrate
 
 ## Environment
 
-| Variable | Example |
-|----------|---------|
+| Variable       | Example                                                   |
+| -------------- | --------------------------------------------------------- |
 | `DATABASE_URL` | `postgresql://postgres:postgres@localhost:5432/table_dev` |
 
 Copy from [`.env.example`](./.env.example). Never commit `.env`.
 
 ## Migrations
 
-| Command | Action |
-|---------|--------|
-| `npm run migrate` | Apply pending SQL in `migrations/` |
+| Command                | Action                                                  |
+| ---------------------- | ------------------------------------------------------- |
+| `npm run migrate`      | Apply pending SQL in `migrations/`                      |
 | `npm run migrate:down` | Run `001_initial_schema.down.sql` (drops all v1 tables) |
-| `npm run seed` | Load demo data — [seeds/README.md](./seeds/README.md) |
+| `npm run seed`         | Load demo data — [seeds/README.md](./seeds/README.md)   |
 
 Migration tracking uses the `schema_migrations` table.
 
@@ -103,25 +103,25 @@ Optional PostGIS: `migrations/002_postgis_optional.sql` (not applied by default)
 
 ## Related backend tickets
 
-| Ticket | Status |
-|--------|--------|
-| BE-1 | API gateway bootstrap |
-| **BE-2** | **This schema** |
-| BE-3 | API contract v0 — [docs/api-contract-v0.md](../docs/api-contract-v0.md) |
-| BE-5 | Data strategy — [docs/data-strategy.md](../docs/data-strategy.md) |
-| BE-9 | Seed data — [seeds/README.md](./seeds/README.md) |
+| Ticket   | Status                                                                  |
+| -------- | ----------------------------------------------------------------------- |
+| BE-1     | API gateway bootstrap                                                   |
+| **BE-2** | **This schema**                                                         |
+| BE-3     | API contract v0 — [docs/api-contract-v0.md](../docs/api-contract-v0.md) |
+| BE-5     | Data strategy — [docs/data-strategy.md](../docs/data-strategy.md)       |
+| BE-9     | Seed data — [seeds/README.md](./seeds/README.md)                        |
 
 ## Docker Compose
 
 Configuration: [`docker-compose.yml`](./docker-compose.yml)
 
-| Setting | Default |
-|---------|---------|
-| Container name | `table-postgres` |
-| Image | `postgres:16-alpine` |
-| Database | `table_dev` |
-| User / password | `postgres` / `postgres` |
-| Host port | `5432` (override with `POSTGRES_PORT` in `.env` for compose) |
+| Setting         | Default                                                      |
+| --------------- | ------------------------------------------------------------ |
+| Container name  | `table-postgres`                                             |
+| Image           | `postgres:16-alpine`                                         |
+| Database        | `table_dev`                                                  |
+| User / password | `postgres` / `postgres`                                      |
+| Host port       | `5432` (override with `POSTGRES_PORT` in `.env` for compose) |
 
 If port **5432** is already in use, create `.env` with:
 
