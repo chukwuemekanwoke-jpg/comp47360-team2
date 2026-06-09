@@ -1,11 +1,12 @@
 # Tablé API Gateway
 
-Node.js + Express service for Tablé MVP backend (Sprint 1: BE-1 bootstrap).
+Node.js + Express service for Tablé MVP backend.
 
 ## Prerequisites
 
 - Node.js 18+ (20+ recommended)
 - npm
+- PostgreSQL running locally ([database/README.md](../../database/README.md))
 
 ## Setup
 
@@ -15,60 +16,77 @@ npm install
 cp .env.example .env
 ```
 
-Edit `.env` if you need a port other than `3001`. Do not commit `.env` (it is gitignored).
-
-> **Note:** The app uses `process.env.PORT` with default `3001`. Loading `.env` automatically (via `dotenv`) can be added in a later ticket; until then you can run `PORT=4000 npm run dev` or export `PORT` in your shell.
+Set `DATABASE_URL` to match `database/.env` (Docker Postgres default shown in `.env.example`).
 
 ## Run
-
-Development (auto-restart on file changes):
 
 ```bash
 npm run dev
 ```
 
-Production-style (no auto-restart):
+Server: `http://localhost:3001`
 
-```bash
-npm start
-```
+## Endpoints (BE-8)
 
-Server default: `http://localhost:3001`
+| Method | Path | Auth | Purpose |
+|--------|------|------|---------|
+| GET | `/health` | none | Liveness (BE-1) |
+| GET | `/api/v1/status` | none | Readiness + DB ping |
 
-## Health check
+### Examples
 
 ```bash
 curl http://localhost:3001/health
+curl http://localhost:3001/api/v1/status
 ```
 
-Expected response:
+`/api/v1/status` response when DB is connected:
 
 ```json
-{ "status": "ok" }
+{
+  "status": "ok",
+  "apiVersion": "v1",
+  "database": "connected"
+}
 ```
 
-## Project layout
+## Project layout (BE-8)
 
 ```text
 backend/api-gateway/
 ├── src/
-│   └── index.js      # App entry + routes
-├── .env.example      # Environment template (safe to commit)
+│   ├── index.js              # Start server, log DB status
+│   ├── app.js                # Express app wiring
+│   ├── config.js             # env (PORT, DATABASE_URL, CORS)
+│   ├── errors.js             # AppError + UUID helper
+│   ├── db/
+│   │   └── pool.js           # pg Pool + checkConnection
+│   ├── middleware/
+│   │   ├── asyncHandler.js   # async route wrapper
+│   │   ├── errorHandler.js   # JSON errors (BE-3 shape)
+│   │   ├── notFound.js
+│   │   └── requireUser.js    # X-User-Id stub (for Sprint 2 routes)
+│   └── routes/
+│       ├── health.js
+│       └── apiV1/
+│           └── index.js      # /api/v1/* routers mount here
+├── .env.example
 ├── package.json
 └── README.md
 ```
 
 ## API contract & architecture
 
-- **BE-3:** [docs/api-contract-v0.md](../../docs/api-contract-v0.md) (human-readable)
-- OpenAPI: [docs/openapi-v0.yaml](../../docs/openapi-v0.yaml)
-- **BE-4 / ADR-001:** [docs/adr/ADR-001.md](../../docs/adr/ADR-001.md)
+- **BE-3:** [docs/api-contract-v0.md](../../docs/api-contract-v0.md)
+- **BE-4:** [docs/adr/ADR-001.md](../../docs/adr/ADR-001.md)
 - **BE-5:** [docs/data-strategy.md](../../docs/data-strategy.md)
 
-Implement routes under `/api/v1` per contract in Sprint 2–3.
+Sprint 2+ business routes (`/restaurants`, `/bookings`, …) mount under `src/routes/apiV1/`.
 
 ## Related tickets
 
-- **BE-1:** Bootstrap + health endpoint (this service)
-- **BE-2:** PostgreSQL schema + migrations (`database/`) — see `database/README.md` and `database/schema.md`
-- **BE-3:** API contract v0 (`docs/api-contract-v0.md`)
+| Ticket | Status |
+|--------|--------|
+| BE-1 | Bootstrap + `/health` |
+| **BE-8** | **This foundation** |
+| BE-11+ | P0 REST implementation |
