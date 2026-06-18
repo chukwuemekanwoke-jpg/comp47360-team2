@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
+import { Provider } from "react-redux";
 
 import LocationComponent from "../components/location-poc"
 

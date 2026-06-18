@@ -1,4 +1,4 @@
-# Table Mobile Application Development Guide
+# Table Frontend Application Development Guide
 
 This guide will help you get your local development environment set up. 
 
@@ -6,7 +6,9 @@ This guide will help you get your local development environment set up.
 
 ##  Prerequisites
 
-To begin development ensure you have the following installed on your machine:
+To begin development ensure you have the following installed on your machine    
+
+For Mobile Development:
 
 * **Node.js**: LTS version (v18 or v20+ recommended).
 * **NPM**: `npm`.
@@ -22,7 +24,7 @@ To run the application locally:
 ### 1. Install the required NPM packages
 ```bash
 # From the repo root
-cd ./frontend/mobile/Table
+cd ./frontend
 npm install
 ```
 
@@ -30,7 +32,7 @@ npm install
 Launch the Metro bundler by running:
 
 ```bash
-npx expo start
+npm start mobile
 ```
 
 ### Viewing the development view
@@ -45,10 +47,14 @@ Android Emulator: Press a in the terminal (requires Android Studio).
 Browser View: Press w in the terminal.
 
 ### Quick Tips
-Installing New Packages: Always use npx expo install <package-name> instead of npm install <package-name>. This ensures the library version you install is fully compatible with the project's current Expo SDK version.
+Installing New Packages: Always use npm exec -w mobile -- expo install <package-name> instead of npm install <package-name>. This ensures the library version you install is fully compatible with the project's current Expo SDK version. Using a shared workspace, this means dependencies are hoisted to the root (./frontend).
 
 Clearing Cache: If you experience unexpected layout or bundling issues, restart the server and clear the cache using:
 
 ```bash
-npx expo start -c
+npm run mobile:clean
+```
+
+```bash
+npm run web:dev
 ```

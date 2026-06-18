@@ -1,0 +1,14 @@
+{
+    "name": "table-frontend-monorepo",
+    "private": true,
+    "workspaces": [
+        "mobile",
+        "web",
+        "packages/*"
+    ],
+    "scripts": {
+        "mobile": "npm exec -w mobile -- expo start",
+        "mobile:clean": "npm exec -w mobile -- expo start -c",
+        "web:dev": "npm exec -w web -- npm run dev"
+    }
+}
