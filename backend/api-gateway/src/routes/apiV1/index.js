@@ -1,8 +1,13 @@
 const { Router } = require("express");
 const asyncHandler = require("../../middleware/asyncHandler");
 const { checkConnection } = require("../../db/pool");
+const usersRouter = require("./users");
+const restaurantsRouter = require("./restaurants");
 
 const router = Router();
+
+router.use("/users", usersRouter);
+router.use("/restaurants", restaurantsRouter);
 
 router.get(
   "/status",

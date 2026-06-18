@@ -26,18 +26,55 @@ npm run dev
 
 Server: `http://localhost:3001`
 
-## Endpoints (BE-8)
+## Endpoints
+
+### Infrastructure (BE-8)
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
 | GET | `/health` | none | Liveness (BE-1) |
 | GET | `/api/v1/status` | none | Readiness + DB ping |
 
+### Users & onboarding (BE-11)
+
+| Method | Path | Auth | Purpose |
+|--------|------|------|---------|
+| POST | `/api/v1/users` | none | Create user after dummy login |
+| GET | `/api/v1/users/me` | `X-User-Id` | Current user profile |
+| PATCH | `/api/v1/users/me/preferences` | `X-User-Id` | Update budget, dietary tags, location |
+
+### Discovery (BE-11)
+
+| Method | Path | Auth | Purpose |
+|--------|------|------|---------|
+| GET | `/api/v1/restaurants/nearby` | optional `X-User-Id` | Restaurants within radius (`availableTableCount > 0`) |
+| GET | `/api/v1/restaurants/:restaurantId` | none | Restaurant detail for booking screen |
+
 ### Examples
 
 ```bash
 curl http://localhost:3001/health
 curl http://localhost:3001/api/v1/status
+
+# Create user
+curl -X POST http://localhost:3001/api/v1/users \
+  -H 'Content-Type: application/json' \
+  -d '{"displayName":"Alex"}'
+
+# Demo consumer (after npm run seed in database/)
+curl http://localhost:3001/api/v1/users/me \
+  -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001'
+
+curl -X PATCH http://localhost:3001/api/v1/users/me/preferences \
+  -H 'Content-Type: application/json' \
+  -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001' \
+  -d '{"budgetTier":"TIER_2","dietaryTags":["vegan"],"lastLat":40.7589,"lastLng":-73.9851}'
+
+# Nearby discovery (Times Square demo origin)
+curl 'http://localhost:3001/api/v1/restaurants/nearby?lat=40.7589&lng=-73.9851'
+
+# Restaurant detail (replace with id from nearby response)
+curl http://localhost:3001/api/v1/restaurants/550e8400-e29b-41d4-a716-446655441001
 ```
 
 `/api/v1/status` response when DB is connected:
@@ -88,5 +125,6 @@ Sprint 2+ business routes (`/restaurants`, `/bookings`, …) mount under `src/ro
 | Ticket | Status |
 |--------|--------|
 | BE-1 | Bootstrap + `/health` |
-| **BE-8** | **This foundation** |
-| BE-11+ | P0 REST implementation |
+| **BE-8** | Gateway foundation |
+| **BE-11** | Users + discovery (`/users`, `/restaurants/nearby`, `/restaurants/:id`) |
+| BE-12+ | ETA, bookings, offers, campaigns |
