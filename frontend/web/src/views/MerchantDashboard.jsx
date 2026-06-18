@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import DashboardHeader from '../components/DashboardHeader';
 import ActivityLog from '../components/ActivityLog';
-import RoomConfigPanel from '../components/RoomConfigPanel';
 import TableGrid from '../components/TableGrid';
 import AnalyticsView from '../components/AnalyticsView';
 import SettingsPanel from '../components/SettingsPanel';
 import TableControl from '../components/TableControl';
+import OccupancyMeter from '../components/OccupancyMeter';
 
 const ALLERGEN_META = [
   { key: 'nuts', label: 'Tree Nuts & Peanuts', icon: '🥜', desc: 'Food may contain nuts' },
@@ -21,27 +21,28 @@ export default function MerchantDashboard() {
   const [restaurantName] = useState("Restaurant Control Panel");
 
   const [reservations] = useState([
-    { id: 1, guest: 'Marcus Aurelius', time: '19:30', covers: 4, status: 'Checked In', notes: 'Anniversary celebration. Prefer window node.' },
+    { id: 1, guest: 'Marcus Aurelius', time: '19:30', covers: 4, status: 'Checked In', notes: 'Anniversary celebration. Prefer window table.' },
     { id: 2, guest: 'Senecca Elder', time: '20:00', covers: 2, status: 'Seated', notes: 'Severe tree nut allergy registry alert.' },
     { id: 3, guest: 'Hypatia Alexandria', time: '20:45', covers: 6, status: 'Confirmed', notes: null }
   ]);
 
   const [roomConfig, setRoomConfig] = useState([
-    { id: 1, defaultLabel: 'Zone Alpha', customLabel: 'Main Dining Floor', tableCount: 5, isActive: true },
-    { id: 2, defaultLabel: 'Zone Beta', customLabel: 'Outer Patio Cover', tableCount: 3, isActive: true },
-    { id: 3, defaultLabel: 'Zone Gamma', customLabel: 'Speakeasy Mezzanine', tableCount: 4, isActive: false }
+    { id: 1, defaultLabel: 'Room 1', customLabel: '', tableCount: 5 },
+    { id: 2, defaultLabel: 'Room 2', customLabel: '', tableCount: 3 },
+    { id: 3, defaultLabel: 'Room 3', customLabel: '', tableCount: 4 }
   ]);
 
-  const [activeZone, setActiveZone] = useState('Main Dining Floor');
+  const [activeZone, setActiveZone] = useState('Room 1');
 
   const [tables, setTables] = useState([
-    { id: 1, label: 'T-1', type: 'Square', capacity: 2, status: 'Available', room: 'Main Dining Floor' },
-    { id: 2, label: 'T-2', type: 'Round', capacity: 4, status: 'Reserved', room: 'Main Dining Floor' },
-    { id: 3, label: 'T-3', type: 'Rectangular', capacity: 6, status: 'Unavailable', room: 'Main Dining Floor' },
-    { id: 4, label: 'P-1', type: 'Square', capacity: 2, status: 'Available', room: 'Outer Patio Cover' },
-    { id: 5, label: 'P-2', type: 'Booth', capacity: 4, status: 'Reserved', room: 'Outer Patio Cover' }
+    { id: 1, label: 'Table-1', type: 'Square', capacity: 2, status: 'Available', room: 'Room 1' },
+    { id: 2, label: 'Table-2', type: 'Round', capacity: 4, status: 'Reserved', room: 'Room 1', reservedTime: '20:00' },
+    { id: 3, label: 'Table-3', type: 'Rectangular', capacity: 6, status: 'Unavailable', room: 'Room 1' },
+    { id: 4, label: 'Table-1', type: 'Square', capacity: 2, status: 'Available', room: 'Room 2' },
+    { id: 5, label: 'Table-2', type: 'Booth', capacity: 4, status: 'Reserved', room: 'Room 2', reservedTime: '19:30' }
   ]);
 
+  const [activeFlashDeals, setActiveFlashDeals] = useState({});
   const [analyticsTimeframe, setAnalyticsTimeframe] = useState('Today');
   
   const [timeframeMetrics] = useState({
@@ -86,29 +87,33 @@ export default function MerchantDashboard() {
   ]);
 
   const activeZones = useMemo(() => {
-    return roomConfig.filter(room => room.isActive).map(room => room.customLabel || room.defaultLabel);
+    return roomConfig.map(room => room.customLabel || room.defaultLabel);
   }, [roomConfig]);
 
   const filteredTables = useMemo(() => {
     return tables.filter(table => table.room === activeZone);
   }, [tables, activeZone]);
 
-  const handleUpdateRoomStatus = (id) => {
-    setRoomConfig(roomConfig.map(room => room.id === id ? { ...room, isActive: !room.isActive } : room));
-  };
+  const occupancyData = useMemo(() => {
+    const data = {};
+    activeZones.forEach(zone => {
+      data[zone] = { available: 0, total: 0 };
+    });
+
+    tables.forEach(table => {
+      const roomName = table.room;
+      if (data[roomName]) {
+        data[roomName].total += 1;
+        if (table.status === 'Available') {
+          data[roomName].available += 1;
+        }
+      }
+    });
+    return data;
+  }, [tables, activeZones]);
 
   const handleUpdateRoomName = (id, newName) => {
     setRoomConfig(roomConfig.map(room => room.id === id ? { ...room, customLabel: newName } : room));
-  };
-
-  const handleUpdateRoomTableCount = (id, change) => {
-    setRoomConfig(roomConfig.map(room => {
-      if (room.id === id) {
-        const newCount = Math.max(1, Math.min(10, room.tableCount + change));
-        return { ...room, tableCount: newCount };
-      }
-      return room;
-    }));
   };
 
   const handleRemoveRoom = (id) => {
@@ -121,27 +126,36 @@ export default function MerchantDashboard() {
 
   const handleAddRoom = () => {
     const nextId = roomConfig.length > 0 ? Math.max(...roomConfig.map(r => r.id)) + 1 : 1;
-    const newRoomName = `Zone ${String.fromCharCode(65 + (roomConfig.length % 26))}`;
+    const newRoomName = `Room ${nextId}`;
     setRoomConfig([
       ...roomConfig, 
-      { id: nextId, defaultLabel: newRoomName, customLabel: '', tableCount: 2, isActive: true }
+      { id: nextId, defaultLabel: newRoomName, customLabel: '', tableCount: 0 }
     ]);
     setActiveZone(newRoomName);
   };
 
   const handleAllotNewTable = (roomName) => {
     const nextId = tables.length > 0 ? Math.max(...tables.map(t => t.id)) + 1 : 1;
-    const prefix = roomName.toLowerCase().includes('patio') ? 'P' : 'T';
     const tableIndex = tables.filter(t => t.room === roomName).length + 1;
     setTables([
       ...tables, 
-      { id: nextId, label: `${prefix}-${tableIndex}`, type: 'Square', capacity: 4, status: 'Available', room: roomName }
+      { id: nextId, label: `Table-${tableIndex}`, type: 'Square', capacity: 4, status: 'Available', room: roomName }
     ]);
   };
 
+  const handleRemoveTable = (tableId) => {
+    setTables(prevTables => prevTables.filter(t => t.id !== tableId));
+  };
+
   const handleAdjustTableCapacity = (tableId, change) => {
-    setTables(tables.map(t => 
+    setTables(prevTables => prevTables.map(t => 
       t.id === tableId ? { ...t, capacity: Math.max(1, t.capacity + change) } : t
+    ));
+  };
+
+  const handleUpdateTableLabel = (tableId, newLabel) => {
+    setTables(tables.map(t =>
+      t.id === tableId ? { ...t, label: newLabel } : t
     ));
   };
 
@@ -154,7 +168,12 @@ export default function MerchantDashboard() {
   };
 
   const handleBroadcastFlashDiscount = () => {
-    alert(`⚡ SUCCESS: Broadcasted an active ${discountPercent}% flash voucher for Table ${selectedTable.label} across mobile feeds valid for ${timeWindow} minutes.`);
+    const expiry = new Date(Date.now() + timeWindow * 60000);
+    setActiveFlashDeals(prev => ({
+      ...prev,
+      [selectedTable.id]: expiry
+    }));
+    alert(`⚡ SUCCESS: Broadcasted an active ${discountPercent}% flash voucher valid for ${timeWindow} minutes.`);
     setSelectedTable(null);
   };
 
@@ -171,27 +190,25 @@ export default function MerchantDashboard() {
   };
 
   return (
-    <div className="h-screen w-full bg-[#0A0A0A] text-zinc-100 font-sans selection:bg-amber-400 selection:text-black antialiased flex flex-col overflow-hidden">
-      
-      {/* FROZEN HEADER AREA */}
+    <div className="h-screen w-full bg-[#0B0F14] text-slate-100 font-sans antialiased flex flex-col overflow-hidden">
       <div className="flex-none p-4 sm:p-8 space-y-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-zinc-900/30 border border-zinc-850 p-2 rounded-2xl backdrop-blur-xl">
-          <div className="flex gap-1 bg-zinc-950 p-1.5 rounded-xl border border-zinc-850 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex gap-1 bg-[#12171E] p-1 rounded-xl border border-[#1F2936]">
             <button 
               onClick={() => setActiveTab('floor')} 
-              className={`flex-1 sm:flex-none px-6 py-3 rounded-lg text-sm font-mono font-bold uppercase tracking-wider transition-all ${activeTab === 'floor' ? 'bg-zinc-900 text-amber-400 border border-zinc-800 shadow-lg' : 'text-zinc-500 hover:text-zinc-300'}`}
+              className={`px-6 py-2.5 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-all ${activeTab === 'floor' ? 'bg-[#e29c36] text-slate-950 font-black' : 'text-slate-400 hover:text-slate-200'}`}
             >
               🗺️ Floor
             </button>
             <button 
               onClick={() => setActiveTab('analytics')} 
-              className={`flex-1 sm:flex-none px-6 py-3 rounded-lg text-sm font-mono font-bold uppercase tracking-wider transition-all ${activeTab === 'analytics' ? 'bg-zinc-900 text-[#00f2fe] border border-zinc-800 shadow-lg' : 'text-zinc-500 hover:text-zinc-300'}`}
+              className={`px-6 py-2.5 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-all ${activeTab === 'analytics' ? 'bg-[#171E26] text-[#33e1cc]' : 'text-slate-400 hover:text-slate-200'}`}
             >
               📊 Analytics
             </button>
             <button 
               onClick={() => setActiveTab('settings')} 
-              className={`flex-1 sm:flex-none px-6 py-3 rounded-lg text-sm font-mono font-bold uppercase tracking-wider transition-all ${activeTab === 'settings' ? 'bg-zinc-900 text-purple-400 border border-zinc-800 shadow-lg' : 'text-zinc-500 hover:text-zinc-300'}`}
+              className={`px-6 py-2.5 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-all ${activeTab === 'settings' ? 'bg-[#171E26] text-purple-400' : 'text-slate-400 hover:text-slate-200'}`}
             >
               ⚙️ Settings
             </button>
@@ -199,15 +216,18 @@ export default function MerchantDashboard() {
         </div>
         <DashboardHeader name={restaurantName} isLive={isLive} onToggleLive={() => setIsLive(!isLive)} />
       </div>
-
-      {/* INDEPENDENT SCROLLING CONTENT PORTAL */}
-      <div className="flex-1 w-full overflow-y-auto px-4 sm:px-8 pb-12">
+      
+      <div className="flex-1 w-full overflow-y-auto px-4 sm:px-8 pb-32">
         <div className="w-full">
           {activeTab === 'floor' && (
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start animate-fadeIn">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+              {/* Left Column: Activity Log & Occupancy Meter */}
               <div className="space-y-6 lg:col-span-1">
                 <ActivityLog reservations={reservations} />
+                <OccupancyMeter occupancyData={occupancyData} />
               </div>
+              
+              {/* Right Column: Table Grid Area */}
               <div className="lg:col-span-3 space-y-6">
                 <TableGrid 
                   tables={filteredTables} 
@@ -218,20 +238,20 @@ export default function MerchantDashboard() {
                   isConfigOpen={isConfigOpen}
                   setIsConfigOpen={setIsConfigOpen}
                   roomConfig={roomConfig}
-                  onUpdateStatus={handleUpdateRoomStatus}
                   onUpdateName={handleUpdateRoomName}
-                  onUpdateTableCount={handleUpdateRoomTableCount}
                   onRemoveRoom={handleRemoveRoom}
                   onAddRoom={handleAddRoom}
                   onAddTable={handleAllotNewTable}
+                  onRemoveTable={handleRemoveTable}
                   onAdjustCapacity={handleAdjustTableCapacity}
+                  onUpdateTableLabel={handleUpdateTableLabel}
+                  activeFlashDeals={activeFlashDeals}
                 />
               </div>
             </div>
           )}
-
           {activeTab === 'analytics' && (
-            <div className="w-full max-w-7xl mx-auto animate-fadeIn">
+            <div className="w-full max-w-7xl mx-auto">
               <AnalyticsView 
                 analyticsTimeframe={analyticsTimeframe} 
                 setAnalyticsTimeframe={setAnalyticsTimeframe} 
@@ -239,9 +259,8 @@ export default function MerchantDashboard() {
               />
             </div>
           )}
-
           {activeTab === 'settings' && (
-            <div className="w-full max-w-7xl mx-auto animate-fadeIn">
+            <div className="w-full max-w-7xl mx-auto">
               <SettingsPanel 
                 uploadedMenu={uploadedMenu} 
                 setUploadedMenu={setUploadedMenu} 
@@ -255,8 +274,6 @@ export default function MerchantDashboard() {
           )}
         </div>
       </div>
-
-      {/* OVERLAY CONTROL MODALS */}
       {selectedTable && (
         <TableControl 
           selectedTable={selectedTable}
