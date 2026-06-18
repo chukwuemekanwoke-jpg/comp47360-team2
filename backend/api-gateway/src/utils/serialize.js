@@ -1,0 +1,48 @@
+function toUserJson(row) {
+  const user = {
+    id: row.id,
+    displayName: row.display_name,
+    budgetTier: row.budget_tier,
+    dietaryTags: row.dietary_tags ?? [],
+    createdAt: row.created_at.toISOString(),
+  };
+
+  if (row.last_lat != null) {
+    user.lastLat = Number(row.last_lat);
+  }
+  if (row.last_lng != null) {
+    user.lastLng = Number(row.last_lng);
+  }
+
+  return user;
+}
+
+function toRestaurantSummary(row) {
+  const summary = {
+    id: row.id,
+    name: row.name,
+    latitude: Number(row.latitude),
+    longitude: Number(row.longitude),
+    neighborhood: row.neighborhood,
+    availableTableCount: row.available_table_count,
+    busynessScore: row.busyness_score != null ? Number(row.busyness_score) : 0,
+    isWheelchairAccessible: row.is_wheelchair_accessible,
+    sensoryFriendly: row.sensory_friendly,
+  };
+
+  if (row.distance_meters != null) {
+    summary.distanceMeters = Math.round(Number(row.distance_meters));
+  }
+
+  return summary;
+}
+
+function toRestaurantDetail(row) {
+  return {
+    ...toRestaurantSummary(row),
+    addressLine: row.address_line,
+    holdWindowMinutes: row.hold_window_minutes,
+  };
+}
+
+module.exports = { toUserJson, toRestaurantSummary, toRestaurantDetail };
