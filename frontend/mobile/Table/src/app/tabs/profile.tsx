@@ -22,7 +22,7 @@ export default function ProfileScreen() {
         <View className="items-center mb-8">
           <View
             className="w-20 h-20 rounded-full items-center justify-center mb-4 border border-table-border"
-            style={{ backgroundColor: "#09090b" }}
+            style={{ backgroundColor: "#90b7a8" }}
           >
             <Text style={{ fontSize: 32 }}>
               {profile.name.charAt(0).toUpperCase()}
