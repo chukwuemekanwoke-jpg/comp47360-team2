@@ -1,14 +1,26 @@
 {
-    "name": "table-frontend-monorepo",
-    "private": true,
-    "workspaces": [
-        "mobile",
-        "web",
-        "packages/*"
-    ],
-    "scripts": {
-        "mobile": "npm exec -w mobile -- expo start",
-        "mobile:clean": "npm exec -w mobile -- expo start -c",
-        "web:dev": "npm exec -w web -- npm run dev"
-    }
+  "name": "table-frontend-monorepo",
+  "private": true,
+  "workspaces": [
+    "mobile/Table",
+    "web",
+    "packages/*"
+  ],
+  "scripts": {
+    "mobile": "npm exec -w mobile -- expo start --tunnel",
+    "mobile:clean": "npm exec -w mobile -- expo start -c",
+    "web:dev": "npm exec -w web -- npm run dev"
+  },
+  "dependencies": {
+    "expo": "^56.0.12",
+    "nativewind": "^4.2.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native-web": "^0.21.2",
+    "tailwindcss": "^3.4.17"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.15"
+  }
 }
