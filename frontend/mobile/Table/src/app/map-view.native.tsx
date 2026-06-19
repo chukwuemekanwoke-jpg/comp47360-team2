@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, SafeAreaView, ScrollView } from "react-native";
+import MapView, { Marker, Callout } from "react-native-maps";
 import { useRouter } from "expo-router";
 import PreferenceFilters from "../components/preference-filters";
 
@@ -101,11 +102,33 @@ export default function MapScreen() {
 
       {/* ── Map ── */}
       <View className="mx-4 mt-3 rounded-2xl overflow-hidden border border-table-border" style={{ height: 240 }}>
-        <View>
-            <Text className="text-table-cream text-[10px] font-bold uppercase tracking-widest">
-                Map placeholder
-            </Text>
-        </View>
+        <MapView
+          style={{ flex: 1 }}
+          initialRegion={{
+            latitude: 53.2707,
+            longitude: -9.0568,
+            latitudeDelta: 0.02,
+            longitudeDelta: 0.02,
+          }}
+          customMapStyle={darkMapStyle}
+        >
+          {RESTAURANTS.map((r) => (
+            <Marker
+              key={r.id}
+              coordinate={{ latitude: r.latitude, longitude: r.longitude }}
+              pinColor={busynessColor(r.busynessScore)}
+            >
+              <Callout>
+                <View style={{ width: 140, padding: 8 }}>
+                  <Text style={{ fontWeight: "700", fontSize: 13 }}>{r.name}</Text>
+                  <Text style={{ fontSize: 11, color: "#71717a", marginTop: 2 }}>{r.cuisine}</Text>
+                  <Text style={{ fontSize: 11, marginTop: 4 }}>⏱ {r.waitTime}</Text>
+                  <Text style={{ fontSize: 11 }}>🪑 {r.availability} tables free</Text>
+                </View>
+              </Callout>
+            </Marker>
+          ))}
+        </MapView>
 
         {/* List toggle overlay */}
         <TouchableOpacity

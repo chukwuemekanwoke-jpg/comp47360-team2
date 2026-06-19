@@ -102,9 +102,7 @@ export default function MapScreen() {
       {/* ── Map ── */}
       <View className="mx-4 mt-3 rounded-2xl overflow-hidden border border-table-border" style={{ height: 240 }}>
         <View>
-            <Text className="text-table-cream text-[10px] font-bold uppercase tracking-widest">
-                Map placeholder
-            </Text>
+            <Text>Map placeholder</Text>
         </View>
 
         {/* List toggle overlay */}
