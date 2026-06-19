@@ -1,339 +1,156 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-  FlatList,
-} from 'react-native';
-import { useRouter } from 'expo-router';
+import React, { useState, useMemo } from "react";
+import { View, Text, TouchableOpacity, SafeAreaView, FlatList } from "react-native";
 
-interface RestaurantCard {
+interface Restaurant {
   id: string;
   name: string;
   cuisine: string;
+  cuisineEmoji: string;
   distance: string;
+  distanceKm: number;
   price: string;
+  priceLevel: number;
   rating: number;
   availability: number;
-  image?: string;
   hasFlashDeal?: boolean;
   dealLabel?: string;
 }
 
-type SortOption = 'relevance' | 'distance' | 'price';
+const RESTAURANTS: Restaurant[] = [
+  { id: "1", name: "Mario's Pizzeria", cuisine: "Italian",   cuisineEmoji: "🍕", distance: "0.5 km", distanceKm: 0.5, price: "$$",  priceLevel: 2, rating: 4.5, availability: 8,  hasFlashDeal: true, dealLabel: "20% off today" },
+  { id: "2", name: "Taj Mahal",        cuisine: "Indian",    cuisineEmoji: "🍛", distance: "1.2 km", distanceKm: 1.2, price: "$$",  priceLevel: 2, rating: 4.3, availability: 5 },
+  { id: "3", name: "Sakura Ramen",     cuisine: "Japanese",  cuisineEmoji: "🍱", distance: "0.8 km", distanceKm: 0.8, price: "$$$", priceLevel: 3, rating: 4.7, availability: 12, hasFlashDeal: true, dealLabel: "Happy Hour 3–6 pm" },
+  { id: "4", name: "El Mariachi",      cuisine: "Mexican",   cuisineEmoji: "🌮", distance: "1.5 km", distanceKm: 1.5, price: "$$",  priceLevel: 2, rating: 4.4, availability: 3 },
+  { id: "5", name: "Thai Street",      cuisine: "Thai",      cuisineEmoji: "🥢", distance: "0.3 km", distanceKm: 0.3, price: "$",   priceLevel: 1, rating: 4.2, availability: 10 },
+];
+
+type SortOption = "relevance" | "distance" | "price";
+
+const SORT_OPTIONS: { label: string; value: SortOption }[] = [
+  { label: "Relevance", value: "relevance" },
+  { label: "Distance",  value: "distance"  },
+  { label: "Price",     value: "price"     },
+];
 
 export default function CardListView() {
-  const router = useRouter();
-  const [sortBy, setSortBy] = useState<SortOption>('relevance');
-  const [restaurants] = useState<RestaurantCard[]>([
-    {
-      id: '1',
-      name: 'Mario\'s Pizzeria',
-      cuisine: 'Italian',
-      distance: '0.5 km',
-      price: '$$',
-      rating: 4.5,
-      availability: 8,
-      hasFlashDeal: true,
-      dealLabel: '20% off today',
-    },
-    {
-      id: '2',
-      name: 'Taj Mahal',
-      cuisine: 'Indian',
-      distance: '1.2 km',
-      price: '$$',
-      rating: 4.3,
-      availability: 5,
-    },
-    {
-      id: '3',
-      name: 'Sakura Ramen',
-      cuisine: 'Japanese',
-      distance: '0.8 km',
-      price: '$$$',
-      rating: 4.7,
-      availability: 12,
-      hasFlashDeal: true,
-      dealLabel: 'Happy Hour - 3pm to 6pm',
-    },
-    {
-      id: '4',
-      name: 'El Mariachi',
-      cuisine: 'Mexican',
-      distance: '1.5 km',
-      price: '$$',
-      rating: 4.4,
-      availability: 3,
-    },
-    {
-      id: '5',
-      name: 'Thai Street',
-      cuisine: 'Thai',
-      distance: '0.3 km',
-      price: '$',
-      rating: 4.2,
-      availability: 10,
-    },
-  ]);
+  const [sortBy, setSortBy] = useState<SortOption>("relevance");
 
-  const renderSortOption = (label: string, value: SortOption) => (
-    <TouchableOpacity
-      style={[styles.sortOption, sortBy === value && styles.sortOptionActive]}
-      onPress={() => setSortBy(value)}
-    >
-      <Text
-        style={[
-          styles.sortOptionText,
-          sortBy === value && styles.sortOptionTextActive,
-        ]}
-      >
-        {label}
-      </Text>
-    </TouchableOpacity>
-  );
+  const sorted = useMemo(() => {
+    const list = [...RESTAURANTS];
+    if (sortBy === "distance")  list.sort((a, b) => a.distanceKm - b.distanceKm);
+    if (sortBy === "price")     list.sort((a, b) => a.priceLevel - b.priceLevel);
+    if (sortBy === "relevance") list.sort((a) => (a.hasFlashDeal ? -1 : 1));
+    return list;
+  }, [sortBy]);
 
-  const renderRestaurantCard = (restaurant: RestaurantCard) => (
-    <View key={restaurant.id} style={styles.card}>
-      <View style={styles.cardImagePlaceholder}>
-        <Text style={styles.cardImageText}>[IMAGE]</Text>
-        {restaurant.hasFlashDeal && (
-          <View style={styles.flashDealBadge}>
-            <Text style={styles.flashDealText}>{restaurant.dealLabel}</Text>
+  const renderCard = ({ item: r }: { item: Restaurant }) => (
+    <View className="bg-table-surface border border-table-border rounded-2xl overflow-hidden mb-3">
+      {/* Emoji header */}
+      <View className="h-36 bg-table-surface items-center justify-center relative border-b border-table-border">
+        <Text style={{ fontSize: 52 }}>{r.cuisineEmoji}</Text>
+
+        {r.hasFlashDeal && (
+          <View className="absolute bottom-0 left-0 right-0 px-4 py-2"
+            style={{ backgroundColor: "#f59e0b18", borderTopWidth: 1, borderTopColor: "#f59e0b40" }}>
+            <Text className="text-table-offer text-xs font-bold">⚡ {r.dealLabel}</Text>
           </View>
         )}
+
+        <View className="absolute top-3 right-3 bg-table-canvas/80 border border-table-border rounded-lg px-2 py-1 flex-row items-center gap-1">
+          <Text style={{ fontSize: 10 }}>⭐</Text>
+          <Text className="text-[11px] font-bold text-table-cream">{r.rating}</Text>
+        </View>
       </View>
 
-      <View style={styles.cardContent}>
-        <View style={styles.cardHeader}>
-          <View style={styles.cardTitleSection}>
-            <Text style={styles.cardTitle}>{restaurant.name}</Text>
-            <Text style={styles.cardCuisine}>{restaurant.cuisine}</Text>
+      {/* Body */}
+      <View className="p-4">
+        <View className="flex-row items-start justify-between mb-3">
+          <View className="flex-1 mr-2">
+            <Text className="text-sm font-bold text-table-cream">{r.name}</Text>
+            <Text className="text-xs text-table-gold mt-0.5">{r.cuisine}</Text>
           </View>
-          <View style={styles.ratingBadge}>
-            <Text style={styles.ratingText}>★ {restaurant.rating}</Text>
+          <Text className="text-sm font-bold text-table-cream">{r.price}</Text>
+        </View>
+
+        {/* Stats row */}
+        <View className="flex-row border-t border-table-border pt-3 mb-4">
+          <View className="flex-1 items-center">
+            <Text className="text-[9px] font-bold uppercase tracking-widest text-table-gold mb-1">Dist</Text>
+            <Text className="text-xs font-bold text-table-cream">{r.distance}</Text>
+          </View>
+          <View className="w-px bg-table-border" />
+          <View className="flex-1 items-center">
+            <Text className="text-[9px] font-bold uppercase tracking-widest text-table-gold mb-1">Price</Text>
+            <Text className="text-xs font-bold text-table-cream">{r.price}</Text>
+          </View>
+          <View className="w-px bg-table-border" />
+          <View className="flex-1 items-center">
+            <Text className="text-[9px] font-bold uppercase tracking-widest text-table-gold mb-1">Free</Text>
+            <Text
+              className="text-xs font-bold"
+              style={{ color: r.availability <= 3 ? "#f59e0b" : "#10b981" }}
+            >
+              {r.availability}{r.availability <= 3 ? " !" : ""}
+            </Text>
           </View>
         </View>
 
-        <View style={styles.detailsRow}>
-          <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Distance</Text>
-            <Text style={styles.detailValue}>{restaurant.distance}</Text>
-          </View>
-          <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Price</Text>
-            <Text style={styles.detailValue}>{restaurant.price}</Text>
-          </View>
-          <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Available</Text>
-            <Text style={styles.detailValue}>{restaurant.availability}</Text>
-          </View>
-        </View>
-
-        <TouchableOpacity style={styles.bookButton}>
-          <Text style={styles.bookButtonText}>Book Table</Text>
+        <TouchableOpacity
+          className="bg-table-teal rounded-xl py-3 items-center"
+          activeOpacity={0.8}
+        >
+          <Text className="text-table-canvas text-xs font-bold uppercase tracking-widest">
+            Book Table
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backButton}>Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Restaurants Near You</Text>
-      </View>
-
-      <View style={styles.sortContainer}>
-        <Text style={styles.sortLabel}>Sort by:</Text>
-        <View style={styles.sortOptions}>
-          {renderSortOption('Relevance', 'relevance')}
-          {renderSortOption('Distance', 'distance')}
-          {renderSortOption('Price', 'price')}
+    <SafeAreaView className="flex-1 bg-table-canvas">
+      {/* Sort bar */}
+      <View className="px-4 py-3 bg-table-surface border-b border-table-border">
+        <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold mb-2">
+          Sort by
+        </Text>
+        <View className="flex-row gap-2">
+          {SORT_OPTIONS.map(({ label, value }) => (
+            <TouchableOpacity
+              key={value}
+              onPress={() => setSortBy(value)}
+              activeOpacity={0.7}
+              className={`px-4 py-2 rounded-xl border ${
+                sortBy === value
+                  ? "border-table-teal"
+                  : "border-table-border bg-table-interactive"
+              }`}
+              style={sortBy === value ? { backgroundColor: "#00f2fe18" } : undefined}
+            >
+              <Text
+                className={`text-xs font-bold uppercase tracking-widest ${
+                  sortBy === value ? "text-table-teal" : "text-table-gold"
+                }`}
+              >
+                {label}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </View>
 
       <FlatList
-        data={restaurants}
-        renderItem={({ item }) => renderRestaurantCard(item)}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.listContent}
+        data={sorted}
+        renderItem={renderCard}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <Text className="text-[9px] font-bold uppercase tracking-widest text-table-gold mb-3">
+            {sorted.length} restaurants found
+          </Text>
+        }
       />
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-    gap: 12,
-  },
-  backButton: {
-    fontSize: 16,
-    color: '#007AFF',
-    fontWeight: '600',
-  },
-  headerTitle: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000',
-  },
-  sortContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#f9f9f9',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  sortLabel: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 8,
-    fontWeight: '500',
-  },
-  sortOptions: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  sortOption: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    backgroundColor: '#fff',
-  },
-  sortOptionActive: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
-  },
-  sortOptionText: {
-    fontSize: 12,
-    color: '#666',
-    fontWeight: '500',
-  },
-  sortOptionTextActive: {
-    color: '#fff',
-  },
-  listContent: {
-    padding: 16,
-    gap: 12,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  cardImagePlaceholder: {
-    height: 180,
-    backgroundColor: '#f0f0f0',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-  },
-  cardImageText: {
-    fontSize: 48,
-  },
-  flashDealBadge: {
-    position: 'absolute',
-    bottom: 12,
-    left: 12,
-    right: 12,
-    backgroundColor: '#FF6B6B',
-    borderRadius: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  flashDealText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  cardContent: {
-    padding: 12,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 12,
-  },
-  cardTitleSection: {
-    flex: 1,
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000',
-    marginBottom: 4,
-  },
-  cardCuisine: {
-    fontSize: 13,
-    color: '#666',
-  },
-  ratingBadge: {
-    backgroundColor: '#FFC107',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-  },
-  ratingText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#fff',
-  },
-  detailsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 12,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  detailItem: {
-    alignItems: 'center',
-  },
-  detailLabel: {
-    fontSize: 11,
-    color: '#999',
-    marginBottom: 4,
-  },
-  detailValue: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#000',
-  },
-  bookButton: {
-    backgroundColor: '#007AFF',
-    borderRadius: 6,
-    paddingVertical: 10,
-  },
-  bookButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-});

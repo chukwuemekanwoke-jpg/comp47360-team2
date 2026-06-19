@@ -1,168 +1,119 @@
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, ScrollView } from "react-native";
+import { Text, View, TouchableOpacity, SafeAreaView, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
-import { Provider } from "react-redux";
+import LocationComponent from "../components/location-poc";
 
-import LocationComponent from "../components/location-poc"
+interface NavItem {
+  route: string;
+  label: string;
+  sublabel: string;
+  tag?: string;
+  tagColor?: string;
+}
+
+const NAV_ITEMS: NavItem[] = [
+  {
+    route: "/map-view",
+    label: "Live Map",
+    sublabel: "Real-time busyness & availability",
+    tag: "LIVE",
+    tagColor: "text-table-teal",
+  },
+  {
+    route: "/card-list-view",
+    label: "Restaurants",
+    sublabel: "Sortable list with flash deals",
+  },
+  {
+    route: "/profile",
+    label: "Profile",
+    sublabel: "Sign in to save preferences",
+  },
+];
+
+const STATS = [
+  { value: "142", label: "Active Tables" },
+  { value: "38", label: "Flash Deals" },
+  { value: "4.6★", label: "Avg Rating" },
+];
 
 export default function Index() {
   const router = useRouter();
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
-
-        <View style={styles.header}>
-          <Text style={styles.title}>Tablé</Text>
-          <Text style={styles.subtitle}>Customer & Business Views Mockup</Text>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Location Service</Text>
-          <LocationComponent/>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Customer Views</Text>
-          
-          <TouchableOpacity
-            style={styles.navButton}
-            onPress={() => router.push("/map-view")}
+    <SafeAreaView className="flex-1 bg-table-canvas">
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 24 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* ── Wordmark ── */}
+        <View className="mb-8">
+          <Text
+            className="text-4xl font-black text-table-cream tracking-tight"
+            style={{ letterSpacing: -1 }}
           >
-            <Text style={styles.navButtonEmoji}>[MAP]</Text>
-            <View style={styles.navButtonContent}>
-              <Text style={styles.navButtonTitle}>Map View</Text>
-              <Text style={styles.navButtonDesc}>Browse restaurants on map with real-time availability</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.navButton}
-            onPress={() => router.push("/card-list-view")}
-          >
-            <Text style={styles.navButtonEmoji}>[LIST]</Text>
-            <View style={styles.navButtonContent}>
-              <Text style={styles.navButtonTitle}>Card List View</Text>
-              <Text style={styles.navButtonDesc}>Sortable list with restaurant details and flash deals</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Business Views</Text>
-          
-          <TouchableOpacity
-            style={styles.navButton}
-            onPress={() => router.push("/business-dashboard")}
-          >
-            <Text style={styles.navButtonEmoji}>[DASH]</Text>
-            <View style={styles.navButtonContent}>
-              <Text style={styles.navButtonTitle}>Business Dashboard</Text>
-              <Text style={styles.navButtonDesc}>Manage flash deals and table availability</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.infoBox}>
-          <Text style={styles.infoTitle}>Architecture Overview</Text>
-          <Text style={styles.infoText}>
-            These views demonstrate the shared page flow from the frontend strategy:
+            Tablé
           </Text>
-          <View style={styles.bulletList}>
-            <Text style={styles.bullet}>• Preference filters for travel & cuisine</Text>
-            <Text style={styles.bullet}>• Real-time map visualization with busyness scores</Text>
-            <Text style={styles.bullet}>• Sortable card-based list view</Text>
-            <Text style={styles.bullet}>• Flash deal management for businesses</Text>
-            <Text style={styles.bullet}>• REST + WebSocket ready architecture</Text>
-          </View>
+          <Text className="text-[10px] font-bold uppercase tracking-[0.25em] text-table-gold mt-1">
+            Manhattan · Real-Time Dining
+          </Text>
+        </View>
+
+        {/* ── Live stats strip (mirrors AnalyticsView metric row) ── */}
+        <View className="flex-row gap-3 mb-6">
+          {STATS.map(({ value, label }) => (
+            <View
+              key={label}
+              className="flex-1 bg-table-surface border border-table-border rounded-2xl px-3 py-4"
+            >
+              <Text className="text-xl font-black text-table-teal">{value}</Text>
+              <Text className="text-[9px] font-bold uppercase tracking-widest text-table-gold mt-0.5">
+                {label}
+              </Text>
+            </View>
+          ))}
+        </View>
+
+        {/* ── Location ── */}
+        <View className="bg-table-surface border border-table-border rounded-2xl p-4 mb-6">
+          <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold mb-3">
+            Your Location
+          </Text>
+          <LocationComponent />
+        </View>
+
+        {/* ── Navigation ── */}
+        <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold mb-3">
+          Navigate
+        </Text>
+        <View className="gap-3">
+          {NAV_ITEMS.map((item) => (
+            <TouchableOpacity
+              key={item.route}
+              onPress={() => router.push(item.route as any)}
+              activeOpacity={0.7}
+              className="bg-table-surface border border-table-border rounded-2xl p-4 flex-row items-center"
+            >
+              <View className="flex-1">
+                <View className="flex-row items-center gap-2 mb-0.5">
+                  <Text className="text-sm font-bold text-table-cream">
+                    {item.label}
+                  </Text>
+                  {item.tag && (
+                    <View className="bg-table-teal/10 border border-table-teal/20 rounded px-1.5 py-0.5">
+                      <Text className={`text-[9px] font-bold tracking-widest ${item.tagColor}`}>
+                        {item.tag}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+                <Text className="text-xs text-table-gold">{item.sublabel}</Text>
+              </View>
+              <Text className="text-table-interactive text-lg">›</Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  content: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  header: {
-    marginBottom: 24,
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: "bold",
-    color: "#000",
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "#666",
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#000",
-    marginBottom: 12,
-  },
-  navButton: {
-    flexDirection: "row",
-    backgroundColor: "#f9f9f9",
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 12,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-  },
-  navButtonEmoji: {
-    fontSize: 32,
-    marginRight: 12,
-  },
-  navButtonContent: {
-    flex: 1,
-  },
-  navButtonTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#000",
-    marginBottom: 4,
-  },
-  navButtonDesc: {
-    fontSize: 12,
-    color: "#666",
-  },
-  infoBox: {
-    backgroundColor: "#e3f2fd",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 24,
-    borderLeftWidth: 4,
-    borderLeftColor: "#007AFF",
-  },
-  infoTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#0d47a1",
-    marginBottom: 8,
-  },
-  infoText: {
-    fontSize: 13,
-    color: "#1565c0",
-    marginBottom: 12,
-  },
-  bulletList: {
-    gap: 6,
-  },
-  bullet: {
-    fontSize: 12,
-    color: "#1565c0",
-  },
-});
