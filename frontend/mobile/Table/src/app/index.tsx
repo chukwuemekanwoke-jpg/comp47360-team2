@@ -1,119 +1,280 @@
-import { Text, View, TouchableOpacity, SafeAreaView, ScrollView } from "react-native";
-import { useRouter } from "expo-router";
-import LocationComponent from "../components/location-poc";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  SafeAreaView,
+} from "react-native";
+import { router } from "expo-router";
+import { useProfile } from "@/context/ProfileContext";
 
-interface NavItem {
-  route: string;
-  label: string;
-  sublabel: string;
-  tag?: string;
-  tagColor?: string;
-}
+type DiningStyle =
+  | "casual"
+  | "family"
+  | "date-night"
+  | "business";
 
-const NAV_ITEMS: NavItem[] = [
-  {
-    route: "/map-view",
-    label: "Live Map",
-    sublabel: "Real-time busyness & availability",
-    tag: "LIVE",
-    tagColor: "text-table-teal",
-  },
-  {
-    route: "/card-list-view",
-    label: "Restaurants",
-    sublabel: "Sortable list with flash deals",
-  },
-  {
-    route: "/profile",
-    label: "Profile",
-    sublabel: "Sign in to save preferences",
-  },
+const CUISINES = [
+  "Italian",
+  "Indian",
+  "Japanese",
+  "Mexican",
+  "Thai",
 ];
 
-const STATS = [
-  { value: "142", label: "Active Tables" },
-  { value: "38", label: "Flash Deals" },
-  { value: "4.6★", label: "Avg Rating" },
-];
+export default function OnboardingScreen() {
+  const { setProfile } = useProfile();
 
-export default function Index() {
-  const router = useRouter();
+  const [step, setStep] = useState(0);
+
+  const [name, setName] = useState("");
+
+  const [favoriteCuisines, setFavoriteCuisines] = useState<string[]>([]);
+
+  const [maxPriceLevel, setMaxPriceLevel] = useState(2);
+
+  const [diningStyle, setDiningStyle] =
+    useState<DiningStyle>("casual");
+
+  const [radiusKm, setRadiusKm] = useState(10);
+
+  const toggleCuisine = (cuisine: string) => {
+    setFavoriteCuisines((current) =>
+      current.includes(cuisine)
+        ? current.filter((c) => c !== cuisine)
+        : [...current, cuisine]
+    );
+  };
+
+  const finishOnboarding = () => {
+    setProfile({
+      name,
+      favoriteCuisines,
+      maxPriceLevel,
+      diningStyle,
+      radiusKm,
+    });
+
+    router.replace("/tabs/map-view");
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-table-canvas">
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 24 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* ── Wordmark ── */}
-        <View className="mb-8">
-          <Text
-            className="text-4xl font-black text-table-cream tracking-tight"
-            style={{ letterSpacing: -1 }}
-          >
-            Tablé
+      <View className="flex-1 px-6 py-8 justify-between">
+        <View>
+          <Text className="text-table-gold text-xs font-bold uppercase tracking-[0.25em] mb-2">
+            Step {step + 1} / 5
           </Text>
-          <Text className="text-[10px] font-bold uppercase tracking-[0.25em] text-table-gold mt-1">
-            Manhattan · Real-Time Dining
-          </Text>
-        </View>
 
-        {/* ── Live stats strip (mirrors AnalyticsView metric row) ── */}
-        <View className="flex-row gap-3 mb-6">
-          {STATS.map(({ value, label }) => (
-            <View
-              key={label}
-              className="flex-1 bg-table-surface border border-table-border rounded-2xl px-3 py-4"
-            >
-              <Text className="text-xl font-black text-table-teal">{value}</Text>
-              <Text className="text-[9px] font-bold uppercase tracking-widest text-table-gold mt-0.5">
-                {label}
+          <Text className="text-3xl font-bold text-table-cream mb-8">
+            Welcome to Tablé
+          </Text>
+          {/* NOTE: Eventually Step 1 should be some sign-in, during MVP there is no backend auth */}
+          {/* Onboarding - STEP 1 */}
+          {step === 0 && (
+            <>
+              <Text className="text-lg font-bold text-table-cream mb-3">
+                What's your name?
               </Text>
-            </View>
-          ))}
-        </View>
 
-        {/* ── Location ── */}
-        <View className="bg-table-surface border border-table-border rounded-2xl p-4 mb-6">
-          <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold mb-3">
-            Your Location
-          </Text>
-          <LocationComponent />
-        </View>
+              <TextInput
+                value={name}
+                onChangeText={setName}
+                placeholder="Enter your name"
+                placeholderTextColor="#888"
+                className="border border-table-border bg-table-surface rounded-xl px-4 py-3 text-table-cream"
+              />
+            </>
+          )}
 
-        {/* ── Navigation ── */}
-        <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold mb-3">
-          Navigate
-        </Text>
-        <View className="gap-3">
-          {NAV_ITEMS.map((item) => (
-            <TouchableOpacity
-              key={item.route}
-              onPress={() => router.push(item.route as any)}
-              activeOpacity={0.7}
-              className="bg-table-surface border border-table-border rounded-2xl p-4 flex-row items-center"
-            >
-              <View className="flex-1">
-                <View className="flex-row items-center gap-2 mb-0.5">
-                  <Text className="text-sm font-bold text-table-cream">
-                    {item.label}
-                  </Text>
-                  {item.tag && (
-                    <View className="bg-table-teal/10 border border-table-teal/20 rounded px-1.5 py-0.5">
-                      <Text className={`text-[9px] font-bold tracking-widest ${item.tagColor}`}>
-                        {item.tag}
+          {/* STEP 2 */}
+          {step === 1 && (
+            <>
+              <Text className="text-lg font-bold text-table-cream mb-4">
+                Favourite cuisines
+              </Text>
+
+              <View className="flex-row flex-wrap gap-2">
+                {CUISINES.map((cuisine) => {
+                  const selected =
+                    favoriteCuisines.includes(cuisine);
+
+                  return (
+                    <TouchableOpacity
+                      key={cuisine}
+                      onPress={() => toggleCuisine(cuisine)}
+                      className={`px-4 py-3 rounded-xl border ${
+                        selected
+                          ? "border-table-teal"
+                          : "border-table-border"
+                      }`}
+                      style={
+                        selected
+                          ? { backgroundColor: "#00f2fe18" }
+                          : undefined
+                      }
+                    >
+                      <Text
+                        className={
+                          selected
+                            ? "text-table-teal font-bold"
+                            : "text-table-cream"
+                        }
+                      >
+                        {cuisine}
                       </Text>
-                    </View>
-                  )}
-                </View>
-                <Text className="text-xs text-table-gold">{item.sublabel}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
-              <Text className="text-table-interactive text-lg">›</Text>
-            </TouchableOpacity>
-          ))}
+            </>
+          )}
+
+          {/* STEP 3 */}
+          {step === 2 && (
+            <>
+              <Text className="text-lg font-bold text-table-cream mb-4">
+                Preferred price range
+              </Text>
+
+              <View className="flex-row gap-3">
+                {[1, 2, 3, 4].map((level) => (
+                  <TouchableOpacity
+                    key={level}
+                    onPress={() => setMaxPriceLevel(level)}
+                    className={`px-5 py-4 rounded-xl border ${
+                      maxPriceLevel === level
+                        ? "border-table-teal"
+                        : "border-table-border"
+                    }`}
+                  >
+                    <Text
+                      className={
+                        maxPriceLevel === level
+                          ? "text-table-teal font-bold"
+                          : "text-table-cream"
+                      }
+                    >
+                      {"$".repeat(level)}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </>
+          )}
+
+          {/* STEP 4 */}
+          {step === 3 && (
+            <>
+              <Text className="text-lg font-bold text-table-cream mb-4">
+                Dining style
+              </Text>
+
+              {[
+                "casual",
+                "family",
+                "date-night",
+                "business",
+              ].map((style) => (
+                <TouchableOpacity
+                  key={style}
+                  onPress={() =>
+                    setDiningStyle(style as DiningStyle)
+                  }
+                  className={`p-4 rounded-xl border mb-3 ${
+                    diningStyle === style
+                      ? "border-table-teal"
+                      : "border-table-border"
+                  }`}
+                >
+                  <Text
+                    className={
+                      diningStyle === style
+                        ? "text-table-teal font-bold"
+                        : "text-table-cream"
+                    }
+                  >
+                    {style
+                      .replace("-", " ")
+                      .replace(/\b\w/g, (c) =>
+                        c.toUpperCase()
+                      )}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </>
+          )}
+
+          {/* STEP 5 */}
+          {step === 4 && (
+            <>
+              <Text className="text-lg font-bold text-table-cream mb-4">
+                Search radius
+              </Text>
+
+              {[5, 10, 20, 50].map((radius) => (
+                <TouchableOpacity
+                  key={radius}
+                  onPress={() => setRadiusKm(radius)}
+                  className={`p-4 rounded-xl border mb-3 ${
+                    radiusKm === radius
+                      ? "border-table-teal"
+                      : "border-table-border"
+                  }`}
+                >
+                  <Text
+                    className={
+                      radiusKm === radius
+                        ? "text-table-teal font-bold"
+                        : "text-table-cream"
+                    }
+                  >
+                    {radius} km
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </>
+          )}
         </View>
-      </ScrollView>
+
+        {/* Navigation */}
+        <View className="flex-row justify-between">
+          <TouchableOpacity
+            disabled={step === 0}
+            onPress={() => setStep((s) => s - 1)}
+            className={`px-5 py-3 rounded-xl ${
+              step === 0
+                ? "bg-table-surface"
+                : "bg-table-interactive"
+            }`}
+          >
+            <Text className="text-table-cream font-bold">
+              Back
+            </Text>
+          </TouchableOpacity>
+
+          {step < 4 ? (
+            <TouchableOpacity
+              onPress={() => setStep((s) => s + 1)}
+              className="px-5 py-3 rounded-xl bg-table-teal"
+            >
+              <Text className="text-table-canvas font-bold">
+                Next
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={finishOnboarding}
+              className="px-5 py-3 rounded-xl bg-table-teal"
+            >
+              <Text className="text-table-canvas font-bold">
+                Continue
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
     </SafeAreaView>
   );
 }

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, SafeAreaView, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
-import PreferenceFilters from "../components/preference-filters";
+import PreferenceFilters from "../../components/preference-filters";
 
 interface Restaurant {
   id: string;
@@ -53,7 +53,7 @@ export default function MapScreen() {
   const [showFilters, setShowFilters] = useState(false);
 
   return (
-    <SafeAreaView className="flex-1 bg-table-canvas">
+    <View className="flex-1 bg-table-canvas">
 
       {/* ── Header card ── */}
       <View className="mx-4 mt-4 bg-table-surface border border-table-border rounded-2xl px-4 py-3 flex-row items-center justify-between">
@@ -102,7 +102,9 @@ export default function MapScreen() {
       {/* ── Map ── */}
       <View className="mx-4 mt-3 rounded-2xl overflow-hidden border border-table-border" style={{ height: 240 }}>
         <View>
-            <Text>Map placeholder</Text>
+            <Text className="text-table-cream text-[10px] font-bold uppercase tracking-widest">
+                Map placeholder
+            </Text>
         </View>
 
         {/* List toggle overlay */}
@@ -161,7 +163,7 @@ export default function MapScreen() {
           </View>
         ))}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

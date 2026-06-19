@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TouchableOpacity, SafeAreaView, ScrollView } from "react-native";
 import MapView, { Marker, Callout } from "react-native-maps";
 import { useRouter } from "expo-router";
-import PreferenceFilters from "../components/preference-filters";
+import PreferenceFilters from "../../components/preference-filters";
 
 interface Restaurant {
   id: string;
@@ -54,7 +54,7 @@ export default function MapScreen() {
   const [showFilters, setShowFilters] = useState(false);
 
   return (
-    <SafeAreaView className="flex-1 bg-table-canvas">
+    <View className="flex-1 bg-table-canvas">
 
       {/* ── Header card ── */}
       <View className="mx-4 mt-4 bg-table-surface border border-table-border rounded-2xl px-4 py-3 flex-row items-center justify-between">
@@ -186,7 +186,7 @@ export default function MapScreen() {
           </View>
         ))}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
