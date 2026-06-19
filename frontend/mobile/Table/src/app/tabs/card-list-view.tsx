@@ -6,11 +6,11 @@ import { FlatList, SafeAreaView, Text, TouchableOpacity, View } from "react-nati
 
 
 const RESTAURANTS: Restaurant[] = [
-  { id: "1", name: "Mario's Pizzeria", cuisine: "Italian",   cuisineEmoji: "🍕", distance: "0.5 km", distanceKm: 0.5, price: "$$",  priceLevel: 2, rating: 4.5, availability: 8,  hasFlashDeal: true, dealLabel: "20% off today" },
-  { id: "2", name: "Taj Mahal",        cuisine: "Indian",    cuisineEmoji: "🍛", distance: "1.2 km", distanceKm: 1.2, price: "$$",  priceLevel: 2, rating: 4.3, availability: 5 },
-  { id: "3", name: "Sakura Ramen",     cuisine: "Japanese",  cuisineEmoji: "🍱", distance: "0.8 km", distanceKm: 0.8, price: "$$$", priceLevel: 3, rating: 4.7, availability: 12, hasFlashDeal: true, dealLabel: "Happy Hour 3–6 pm" },
-  { id: "4", name: "El Mariachi",      cuisine: "Mexican",   cuisineEmoji: "🌮", distance: "1.5 km", distanceKm: 1.5, price: "$$",  priceLevel: 2, rating: 4.4, availability: 3 },
-  { id: "5", name: "Thai Street",      cuisine: "Thai",      cuisineEmoji: "🥢", distance: "0.3 km", distanceKm: 0.3, price: "$",   priceLevel: 1, rating: 4.2, availability: 10 },
+  { id: "1", name: "Mario's Pizzeria", cuisine: "Italian",   cuisineEmoji: "🍕", distance: "0.5 km", distanceKm: 0.5, price: "$$",  priceLevel: 2, rating: 4.5, availability: 8,  hasFlashDeal: true, dealLabel: "20% off today", uri: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80" },
+  { id: "2", name: "Taj Mahal",        cuisine: "Indian",    cuisineEmoji: "🍛", distance: "1.2 km", distanceKm: 1.2, price: "$$",  priceLevel: 2, rating: 4.3, availability: 5, uri: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=800&q=80" },
+  { id: "3", name: "Sakura Ramen",     cuisine: "Japanese",  cuisineEmoji: "🍱", distance: "0.8 km", distanceKm: 0.8, price: "$$$", priceLevel: 3, rating: 4.7, availability: 12, hasFlashDeal: true, dealLabel: "Happy Hour 3–6 pm", uri: "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=800&q=80" },
+  { id: "4", name: "El Mariachi",      cuisine: "Mexican",   cuisineEmoji: "🌮", distance: "1.5 km", distanceKm: 1.5, price: "$$",  priceLevel: 2, rating: 4.4, availability: 3 , uri: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80"},
+  { id: "5", name: "Thai Street",      cuisine: "Thai",      cuisineEmoji: "🥢", distance: "0.3 km", distanceKm: 0.3, price: "$",   priceLevel: 1, rating: 4.2, availability: 10, uri: "https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=800&q=80"},
 ];
 
 type SortOption = "relevance" | "distance" | "price";

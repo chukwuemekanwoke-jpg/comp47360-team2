@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View, Image } from "react-native";
 
 export interface Restaurant {
   id: string;
@@ -13,6 +13,7 @@ export interface Restaurant {
   availability: number;
   hasFlashDeal?: boolean;
   dealLabel?: string;
+  uri: string;
 }
 
 interface RestaurantCardProps {
@@ -28,15 +29,20 @@ export default function RestaurantCard({
     <View className="bg-table-surface border border-table-border rounded-2xl overflow-hidden mb-3">
       {/* Emoji header */}
       <View className="h-36 bg-table-surface items-center justify-center relative border-b border-table-border">
-        <Text style={{ fontSize: 52 }}>{r.cuisineEmoji}</Text>
+        
+        <Image 
+            source={{ uri: r.uri }}
+            className="absolute inset-0 w-full h-full"
+            resizeMode="cover"
+        />
 
         {r.hasFlashDeal && (
           <View
             className="absolute bottom-0 left-0 right-0 px-4 py-2"
             style={{
-              backgroundColor: "#f59e0b18",
+              backgroundColor: "#3c290848",
               borderTopWidth: 1,
-              borderTopColor: "#f59e0b40",
+              borderTopColor: "#38270977",
             }}
           >
             <Text className="text-table-offer text-xs font-bold">

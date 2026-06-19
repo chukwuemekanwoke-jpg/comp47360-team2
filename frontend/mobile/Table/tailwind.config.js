@@ -8,6 +8,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Mirrors the web tailwind.config.js exactly
         table: {
           canvas:      '#000000',  // page background
           surface:     '#09090b',  // card background (zinc-950)
