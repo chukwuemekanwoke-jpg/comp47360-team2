@@ -104,7 +104,7 @@ Based on the central shared page flow application mockups for both Mobile and We
 
 ### Project organisation
 ```text
-.\frontend/mobile/Table/
+.\frontend/mobile-app/
 ├── src/
 │   ├── app/
 │   │   ├── _layout.tsx (shared route views - nav bar)

@@ -22,7 +22,7 @@ To run the application locally:
 ### 1. Install the required NPM packages
 ```bash
 # From the repo root
-cd ./frontend/mobile/Table
+cd ./frontend/mobile-app
 npm install
 ```
 
