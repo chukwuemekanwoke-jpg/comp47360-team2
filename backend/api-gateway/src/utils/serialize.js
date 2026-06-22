@@ -45,4 +45,29 @@ function toRestaurantDetail(row) {
   };
 }
 
-module.exports = { toUserJson, toRestaurantSummary, toRestaurantDetail };
+function toBookingJson(row) {
+  const booking = {
+    id: row.id,
+    userId: row.user_id,
+    restaurantId: row.restaurant_id,
+    offerId: row.offer_id,
+    campaignId: row.campaign_id,
+    status: row.status,
+    transportMode: row.transport_mode,
+    etaMinutes: row.eta_minutes,
+    holdExpiresAt: row.hold_expires_at.toISOString(),
+  };
+
+  if (row.confirmed_at) {
+    booking.confirmedAt = row.confirmed_at.toISOString();
+  }
+
+  return booking;
+}
+
+module.exports = {
+  toUserJson,
+  toRestaurantSummary,
+  toRestaurantDetail,
+  toBookingJson,
+};

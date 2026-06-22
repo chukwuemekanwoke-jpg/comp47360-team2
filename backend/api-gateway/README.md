@@ -49,6 +49,13 @@ Server: `http://localhost:3001`
 |--------|------|------|---------|
 | GET | `/api/v1/restaurants/nearby` | optional `X-User-Id` | Restaurants within radius (`availableTableCount > 0`) |
 | GET | `/api/v1/restaurants/:restaurantId` | none | Restaurant detail for booking screen |
+| GET | `/api/v1/restaurants/:restaurantId/eta` | none | Travel time + `canBook` vs hold window |
+
+### Bookings (BE-12)
+
+| Method | Path | Auth | Purpose |
+|--------|------|------|---------|
+| POST | `/api/v1/bookings` | `X-User-Id` | Confirm reservation; decrements table count |
 
 ### Examples
 
@@ -75,6 +82,15 @@ curl 'http://localhost:3001/api/v1/restaurants/nearby?lat=40.7589&lng=-73.9851'
 
 # Restaurant detail (replace with id from nearby response)
 curl http://localhost:3001/api/v1/restaurants/550e8400-e29b-41d4-a716-446655441001
+
+# ETA (walking default)
+curl 'http://localhost:3001/api/v1/restaurants/550e8400-e29b-41d4-a716-446655441001/eta?lat=40.7589&lng=-73.9851'
+
+# Create booking
+curl -X POST http://localhost:3001/api/v1/bookings \
+  -H 'Content-Type: application/json' \
+  -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001' \
+  -d '{"restaurantId":"550e8400-e29b-41d4-a716-446655441001","transportMode":"walking","userLat":40.7589,"userLng":-73.9851}'
 ```
 
 `/api/v1/status` response when DB is connected:
@@ -127,4 +143,5 @@ Sprint 2+ business routes (`/restaurants`, `/bookings`, …) mount under `src/ro
 | BE-1 | Bootstrap + `/health` |
 | **BE-8** | Gateway foundation |
 | **BE-11** | Users + discovery (`/users`, `/restaurants/nearby`, `/restaurants/:id`) |
-| BE-12+ | ETA, bookings, offers, campaigns |
+| **BE-12** | ETA + bookings (`/restaurants/:id/eta`, `POST /bookings`) |
+| BE-13+ | Offers, campaigns, ML match |
