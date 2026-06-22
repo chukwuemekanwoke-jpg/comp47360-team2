@@ -3,7 +3,9 @@ const asyncHandler = require("../../middleware/asyncHandler");
 const { AppError, isUuid } = require("../../errors");
 const { getPool } = require("../../db/pool");
 const { toRestaurantSummary, toRestaurantDetail } = require("../../utils/serialize");
-const { parseLatLng, parseRadiusM } = require("../../utils/validate");
+const { parseLatLng, parseRadiusM, parseTransportMode } = require("../../utils/validate");
+const { buildEtaResult } = require("../../utils/geo");
+const { getCachedEta, setCachedEta } = require("../../utils/etaCache");
 
 const router = Router();
 
@@ -80,6 +82,51 @@ router.get(
       radiusM,
       restaurants: rows.map(toRestaurantSummary),
     });
+  })
+);
+
+router.get(
+  "/:restaurantId/eta",
+  asyncHandler(async (req, res) => {
+    const pool = getPool();
+    if (!pool) {
+      throw new AppError(500, "INTERNAL_ERROR", "Database is not configured (DATABASE_URL)");
+    }
+
+    const { restaurantId } = req.params;
+    if (!isUuid(restaurantId)) {
+      throw new AppError(400, "VALIDATION_ERROR", "Invalid restaurantId format");
+    }
+
+    const { lat, lng } = parseLatLng(req.query.lat, req.query.lng);
+    const transportMode = parseTransportMode(req.query.mode);
+
+    const cached = getCachedEta(restaurantId, lat, lng, transportMode);
+    if (cached) {
+      return res.status(200).json(cached);
+    }
+
+    const { rows } = await pool.query(
+      `SELECT id, latitude, longitude, hold_window_minutes
+       FROM restaurants
+       WHERE id = $1`,
+      [restaurantId]
+    );
+
+    if (rows.length === 0) {
+      throw new AppError(404, "NOT_FOUND", "Restaurant not found");
+    }
+
+    const etaResult = buildEtaResult({
+      restaurantId,
+      transportMode,
+      userLat: lat,
+      userLng: lng,
+      restaurant: rows[0],
+    });
+
+    setCachedEta(restaurantId, lat, lng, transportMode, etaResult);
+    res.status(200).json(etaResult);
   })
 );
 
