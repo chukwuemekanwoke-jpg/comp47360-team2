@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main, integrate]
+    branches: [main, develop, integrate]
   pull_request:
-    branches: [main, integrate]
+    branches: [main, develop, integrate]
 
 jobs:
   openapi-lint:
