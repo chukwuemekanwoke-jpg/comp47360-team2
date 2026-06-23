@@ -114,4 +114,12 @@ router.patch(
   })
 );
 
+router.get(
+  "/me/offers",
+  requireUser,
+  asyncHandler(async (_req, _res) => {
+    throw new AppError(501, "NOT_IMPLEMENTED", "The flash deal inbox is not implemented yet");
+  })
+);
+
 module.exports = router;

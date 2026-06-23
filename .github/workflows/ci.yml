@@ -65,6 +65,9 @@ jobs:
       - name: Install
         working-directory: backend/api-gateway
         run: npm ci
+      - name: Check API matches OpenAPI contract
+        working-directory: backend/api-gateway
+        run: npm run check:openapi-drift
       - name: Test
         working-directory: backend/api-gateway
         run: npm test

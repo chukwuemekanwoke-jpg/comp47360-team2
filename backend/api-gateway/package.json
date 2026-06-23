@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "jest"
+    "test": "jest",
+    "check:openapi-drift": "node scripts/check-openapi-drift.js"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,7 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
+    "js-yaml": "^4.1.0",
     "nodemon": "^3.1.14",
     "supertest": "^7.0.0"
   }

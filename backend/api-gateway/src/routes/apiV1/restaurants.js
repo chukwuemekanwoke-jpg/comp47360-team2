@@ -158,4 +158,11 @@ router.get(
   })
 );
 
+router.post(
+  "/:restaurantId/campaigns",
+  asyncHandler(async (_req, _res) => {
+    throw new AppError(501, "NOT_IMPLEMENTED", "Lull-mitigation campaigns are not implemented yet");
+  })
+);
+
 module.exports = router;

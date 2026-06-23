@@ -33,6 +33,30 @@ paths:
                     type: string
                     example: ok
 
+  /api/v1/status:
+    get:
+      tags: [Health]
+      summary: API gateway status
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  apiVersion:
+                    type: string
+                    example: v1
+                  database:
+                    type: string
+                    enum: [connected, error, not_configured]
+                  databaseMessage:
+                    type: string
+
   /api/v1/users:
     post:
       tags: [Users]
