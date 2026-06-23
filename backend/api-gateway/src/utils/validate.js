@@ -87,6 +87,24 @@ function parseBodyLatLng(userLat, userLng) {
   return parseLatLng(userLat, userLng);
 }
 
+function validateCampaignBody(body) {
+  const { tableQuota, discountPercent } = body ?? {};
+
+  if (!Number.isInteger(tableQuota) || tableQuota <= 0) {
+    throw new AppError(400, "VALIDATION_ERROR", "tableQuota must be a positive integer");
+  }
+
+  if (!Number.isInteger(discountPercent) || discountPercent < 10 || discountPercent > 50) {
+    throw new AppError(
+      400,
+      "VALIDATION_ERROR",
+      "discountPercent must be an integer between 10 and 50"
+    );
+  }
+
+  return { tableQuota, discountPercent };
+}
+
 module.exports = {
   BUDGET_TIERS,
   TRANSPORT_MODES,
@@ -96,6 +114,7 @@ module.exports = {
   parseRadiusM,
   parseTransportMode,
   parseBodyLatLng,
+  validateCampaignBody,
   validateBudgetTier,
   validateDietaryTags,
   requireNonEmptyString,

@@ -257,6 +257,24 @@ paths:
           $ref: "#/components/responses/Conflict"
 
   /api/v1/restaurants/{restaurantId}/campaigns:
+    get:
+      tags: [Campaigns]
+      summary: List campaigns for a restaurant (manager only)
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+        - $ref: "#/components/parameters/RestaurantId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  campaigns:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Campaign"
     post:
       tags: [Campaigns]
       summary: Start lull-mitigation campaign (Story 5.2)
@@ -276,6 +294,25 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Campaign"
+
+  /api/v1/restaurants/{restaurantId}/campaigns/active:
+    get:
+      tags: [Campaigns]
+      summary: Get the active campaign for a restaurant (manager only)
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+        - $ref: "#/components/parameters/RestaurantId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  campaign:
+                    nullable: true
+                    $ref: "#/components/schemas/Campaign"
 
 components:
   parameters:

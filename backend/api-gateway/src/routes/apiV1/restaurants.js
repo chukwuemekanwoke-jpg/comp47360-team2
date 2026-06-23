@@ -6,6 +6,7 @@ const { toRestaurantSummary, toRestaurantDetail } = require("../../utils/seriali
 const { parseLatLng, parseRadiusM, parseTransportMode } = require("../../utils/validate");
 const { buildEtaResult } = require("../../utils/geo");
 const { getCachedEta, setCachedEta } = require("../../utils/etaCache");
+const campaignsRouter = require("./campaigns");
 
 const router = Router();
 
@@ -48,6 +49,8 @@ async function maybeUpdateUserLocation(pool, req, lat, lng) {
     [lat, lng, userId]
   );
 }
+
+router.use("/:restaurantId/campaigns", campaignsRouter);
 
 router.get(
   "/nearby",
@@ -155,13 +158,6 @@ router.get(
     }
 
     res.status(200).json(toRestaurantDetail(rows[0]));
-  })
-);
-
-router.post(
-  "/:restaurantId/campaigns",
-  asyncHandler(async (_req, _res) => {
-    throw new AppError(501, "NOT_IMPLEMENTED", "Lull-mitigation campaigns are not implemented yet");
   })
 );
 

@@ -27,6 +27,7 @@ function collectCodeRoutes() {
   const restaurantsRouter = require("../src/routes/apiV1/restaurants");
   const bookingsRouter = require("../src/routes/apiV1/bookings");
   const offersRouter = require("../src/routes/apiV1/offers");
+  const campaignsRouter = require("../src/routes/apiV1/campaigns");
 
   const mounts = [
     { prefix: "/health", router: healthRouter },
@@ -35,6 +36,7 @@ function collectCodeRoutes() {
     { prefix: "/api/v1/restaurants", router: restaurantsRouter },
     { prefix: "/api/v1/bookings", router: bookingsRouter },
     { prefix: "/api/v1/offers", router: offersRouter },
+    { prefix: "/api/v1/restaurants/{restaurantId}/campaigns", router: campaignsRouter },
   ];
 
   const routes = new Set();
