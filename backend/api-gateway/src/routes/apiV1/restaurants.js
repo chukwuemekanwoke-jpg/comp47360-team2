@@ -29,6 +29,8 @@ const RESTAURANT_COLUMNS = `
   r.longitude,
   r.neighborhood,
   r.available_table_count,
+  r.capacity,
+  r.cuisine,
   r.busyness_score,
   r.is_wheelchair_accessible,
   r.sensory_friendly,

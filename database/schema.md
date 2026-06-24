@@ -27,6 +27,8 @@ erDiagram
     float latitude
     float longitude
     int available_table_count
+    int capacity
+    text cuisine
     int hold_window_minutes
   }
 
@@ -85,6 +87,8 @@ Consumer profiles. Dummy auth can use fixed UUIDs in seed data.
 Venue master data for Manhattan prototype.
 
 - `available_table_count`: denormalized “live” count for map queries (updated by seeds or simulation scripts)
+- `capacity`: total table capacity (upper bound; `available_table_count <= capacity`)
+- `cuisine`: primary cuisine slug (e.g. `italian`, `thai`) for UI filters and ML features
 - `hold_window_minutes`: default **15** (Story 3.x)
 - `busyness_score`: optional 0–1 signal from ML pipeline
 - `manager_user_id`: links B-side dashboard to a user row

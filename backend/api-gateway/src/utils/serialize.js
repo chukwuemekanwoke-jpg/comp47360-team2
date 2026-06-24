@@ -25,6 +25,8 @@ function toRestaurantSummary(row) {
     longitude: Number(row.longitude),
     neighborhood: row.neighborhood,
     availableTableCount: row.available_table_count,
+    capacity: row.capacity,
+    cuisine: row.cuisine,
     busynessScore: row.busyness_score != null ? Number(row.busyness_score) : 0,
     isWheelchairAccessible: row.is_wheelchair_accessible,
     sensoryFriendly: row.sensory_friendly,
