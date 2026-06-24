@@ -4,12 +4,47 @@ How code moves from a developer's machine to staging and (eventually) production
 
 ## Branch strategy
 
-| Branch | Purpose | Triggers |
+Code flows one direction only: **`feature/*` → `integrate` → `develop` → `main`**. Each branch only ever receives merges from the branch immediately below it in this chain — never skip a step (e.g. don't merge a feature branch straight into `develop`, and don't merge `integrate` straight into `main`).
+
+| Branch | Purpose | Receives merges from | Triggers |
+|---|---|---|---|
+| `feature/*` | Individual work | — | `ci.yml` on PR into `integrate` |
+| `integrate` | Where features land first and get integration-tested together, before anything touches a deploy-triggering branch | `feature/*` | `ci.yml` on push/PR |
+| `develop` | Staging — only ever receives already-integrated, already-green code | `integrate` | `ci.yml` on push/PR; `deploy-staging.yml` on push |
+| `main` | Production-ready | `develop` | `ci.yml` on push/PR; **no automated production deploy yet** (see [Production deploy](#production-deploy-tagged-release-not-yet-implemented)) |
+
+**Why this order and not `develop` → `integrate` → `main`:** `develop` triggers a staging deploy on push. If individual features merged into `develop` before being integration-tested together on `integrate`, every feature merge would kick off a staging deploy of code that hasn't been checked against the rest of the in-flight work — defeating the purpose of having an integration branch at all. Promoting `integrate` → `develop` should be a deliberate, intentional step once a batch of features is confirmed to work together, not an automatic side effect of merging one feature.
+
+One naming wrinkle worth knowing: "develop" conventionally implies "where active development happens," but in this flow it sits *downstream* of `integrate` as a staging gate. Renaming it (e.g. to `staging`) would be clearer, but is a separate decision — not done as part of this guide.
+
+## Branch protection
+
+Set up via GitHub → Settings → Rules → Rulesets → New ruleset → New branch ruleset. Create one ruleset per protected branch.
+
+| Branch | Protect? | Rules |
 |---|---|---|
-| feature/* | Individual work | `ci.yml` on PR into `develop`/`integrate`/`main` |
-| `integrate` | Cross-feature integration before promoting to `develop`/`main` | `ci.yml` on push/PR |
-| `develop` | Staging branch | `ci.yml` on push; `deploy-staging.yml` on push |
-| `main` | Production-ready | `ci.yml` on push/PR; **no automated production deploy yet** (see [Production deploy](#production-deploy-tagged-release-not-yet-implemented)) |
+| `main` | Yes | Require PR before merging; require all 5 `ci.yml` status checks; block force pushes; restrict deletions |
+| `develop` | Yes | Same as `main` |
+| `integrate` | No (for now) | Active feature-merge target — protecting it would fight the workflow it's meant to support. Revisit once the team grows beyond one merger |
+
+For each ruleset on `main`/`develop`:
+- **Target branches:** include by pattern, the exact branch name (`main` or `develop`)
+- **Restrict deletions:** on
+- **Block force pushes:** on
+- **Require a pull request before merging:** on, with 0 required approvals for now (raise to 1+ once there's more than one regular reviewer)
+- **Require status checks to pass:** on, add all five:
+  - `Lint OpenAPI contract`
+  - `Web app (lint + build)`
+  - `Mobile app (lint)`
+  - `API gateway (install + test)`
+  - `ML pipeline (FastAPI install + import check)`
+  - Leave "Require branches to be up to date before merging" **off** initially — it forces a rebase/merge from base before every merge, which adds friction not worth paying yet at this team size
+- **Bypass list:** leave empty, including for yourself as admin — the only way to actually verify the rules hold is to not exempt anyone
+
+**Gotcha:** a status check only appears in that picker once GitHub has seen it reported at least once on the repo. If `ci.yml` has only ever run on `integrate`, the picker will show the checks fine (GitHub lists checks seen anywhere in the repo), but you still want the workflow file itself present on `main`/`develop` — otherwise pushes to those branches won't trigger `ci.yml` at all, regardless of what's in the picker. Confirm with:
+```bash
+git show origin/main:.github/workflows/ci.yml > /dev/null && echo "present" || echo "missing"
+```
 
 ## 1. Local development
 
@@ -77,7 +112,7 @@ It fails (`exitCode = 1`) and lists two categories whenever they're non-empty:
 
 ```
 git checkout develop
-git merge integrate   # or fast-forward, per your merge policy
+git merge integrate   # promote a confirmed-good integration batch, not an individual feature
 git push origin develop
 ```
 
@@ -127,4 +162,7 @@ with the deploy job running under a `production` Environment (ideally with requi
 - Added `scripts/check-openapi-drift.js` and wired it into the `backend` CI job as a blocking step.
 - Resolved real drift the checker found: documented `GET /api/v1/status` in the spec, and (temporarily) stubbed out offers/campaigns endpoints that were in the spec but not in code.
 - Merged `main`'s real offers/campaigns implementation (PR #15, BE-13) into `integrate`, discarding the now-redundant stubs, and extended the OpenAPI spec to cover two campaign-manager routes (`GET .../campaigns`, `GET .../campaigns/active`) that existed in code but weren't documented.
-- Opened [PR #16](https://github.com/chukwuemekanwoke-jpg/comp47360-team2/pull/16): `integrate` → `main`.
+- Opened and merged [PR #16](https://github.com/chukwuemekanwoke-jpg/comp47360-team2/pull/16): `integrate` → `main`, landing `ci.yml`/`deploy-staging.yml` on `main` for the first time and triggering a real (passing) push-event run there.
+- Fixed three real CI bugs surfaced once the workflows actually ran end to end: an over-strict Redocly ruleset, and missing `eslint`/`eslint-config-expo` dependencies in both frontend apps (plus the real lint findings they then surfaced).
+- Settled on the branch flow `feature/* → integrate → develop → main` (not `develop → integrate → main`), since `develop` triggers staging deploys and shouldn't receive unintegrated feature work directly. Documented branch protection rules accordingly (see [Branch protection](#branch-protection)).
+- `develop` was still missing `ci.yml`/`deploy-staging.yml` as of this update — promote `integrate` → `develop` to pick them up before setting up its ruleset.
