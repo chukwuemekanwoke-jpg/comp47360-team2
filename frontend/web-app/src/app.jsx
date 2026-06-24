@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink, Link, useLocation } from 'react-router-dom';
 import ExploreView from './views/ExploreView';
 import MerchantDashboard from './views/MerchantDashboard';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import MapCanvasWrapper, { MapMarker } from "../components/MapCanvasComponent";
 
@@ -13,7 +13,7 @@ export default function ExploreView() {
   const [dealDuration, setDealDuration] = useState(30);
 
   // Synchronize initial coordinates safely if redirected from external dispatch routes
-  const [currentCenter, setCurrentCenter] = useState(() => {
+  const [currentCenter] = useState(() => {
     if (location.state?.targetLocation?.lat && location.state?.targetLocation?.lng) {
       return {
         lat: Number(location.state.targetLocation.lat),

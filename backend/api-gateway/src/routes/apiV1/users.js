@@ -3,12 +3,13 @@ const asyncHandler = require("../../middleware/asyncHandler");
 const requireUser = require("../../middleware/requireUser");
 const { AppError } = require("../../errors");
 const { getPool } = require("../../db/pool");
-const { toUserJson } = require("../../utils/serialize");
+const { toUserJson, toOfferInboxItem } = require("../../utils/serialize");
 const {
   validateBudgetTier,
   validateDietaryTags,
   requireNonEmptyString,
 } = require("../../utils/validate");
+const { expirePendingOffers } = require("../../services/offers");
 
 const router = Router();
 
@@ -47,6 +48,51 @@ router.get(
     );
 
     res.status(200).json(toUserJson(rows[0]));
+  })
+);
+
+router.get(
+  "/me/offers",
+  requireUser,
+  asyncHandler(async (req, res) => {
+    const pool = getPool();
+    const statusFilter = req.query.status;
+
+    if (statusFilter != null && statusFilter !== "pending") {
+      throw new AppError(400, "VALIDATION_ERROR", "status filter must be pending when provided");
+    }
+
+    await expirePendingOffers(pool, req.userId);
+
+    const params = [req.userId];
+    let statusClause = "";
+
+    if (statusFilter === "pending") {
+      statusClause = "AND o.status = 'pending'";
+    }
+
+    const { rows } = await pool.query(
+      `SELECT
+         o.id,
+         o.campaign_id,
+         o.status,
+         o.expires_at,
+         c.discount_percent,
+         c.restaurant_id,
+         r.name AS restaurant_name
+       FROM offers o
+       JOIN campaigns c ON c.id = o.campaign_id
+       JOIN restaurants r ON r.id = c.restaurant_id
+       WHERE o.user_id = $1
+       ${statusClause}
+       ORDER BY o.created_at DESC`,
+      params
+    );
+
+    const now = new Date();
+    res.status(200).json({
+      offers: rows.map((row) => toOfferInboxItem(row, now)),
+    });
   })
 );
 

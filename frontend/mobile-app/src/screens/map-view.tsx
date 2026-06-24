@@ -6,7 +6,6 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
-  Image,
 } from 'react-native';
 import PreferenceFilters from '../components/preference-filters';
 

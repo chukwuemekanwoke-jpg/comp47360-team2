@@ -57,6 +57,16 @@ Server: `http://localhost:3001`
 |--------|------|------|---------|
 | POST | `/api/v1/bookings` | `X-User-Id` | Confirm reservation; decrements table count |
 
+### Offers & campaigns (BE-13)
+
+| Method | Path | Auth | Purpose |
+|--------|------|------|---------|
+| POST | `/api/v1/restaurants/:restaurantId/campaigns` | manager `X-User-Id` | Create flash-deal campaign + heuristic offers |
+| GET | `/api/v1/restaurants/:restaurantId/campaigns` | manager | List campaigns |
+| GET | `/api/v1/restaurants/:restaurantId/campaigns/active` | manager | Active campaign or `null` |
+| GET | `/api/v1/users/me/offers` | `X-User-Id` | Offer inbox (`?status=pending` optional) |
+| POST | `/api/v1/offers/:offerId/accept` | `X-User-Id` | Accept offer → confirmed booking |
+
 ### Examples
 
 ```bash
@@ -91,6 +101,20 @@ curl -X POST http://localhost:3001/api/v1/bookings \
   -H 'Content-Type: application/json' \
   -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001' \
   -d '{"restaurantId":"550e8400-e29b-41d4-a716-446655441001","transportMode":"walking","userLat":40.7589,"userLng":-73.9851}'
+
+# B-side: create campaign (Demo Manager on The Maple Room)
+curl -X POST http://localhost:3001/api/v1/restaurants/550e8400-e29b-41d4-a716-446655441001/campaigns \
+  -H 'Content-Type: application/json' \
+  -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440002' \
+  -d '{"tableQuota":2,"discountPercent":20}'
+
+# C-side: offer inbox (Demo Diner)
+curl http://localhost:3001/api/v1/users/me/offers \
+  -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001'
+
+# Accept offer (replace OFFER_ID from inbox response)
+curl -X POST http://localhost:3001/api/v1/offers/OFFER_ID/accept \
+  -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001'
 ```
 
 `/api/v1/status` response when DB is connected:
@@ -144,4 +168,5 @@ Sprint 2+ business routes (`/restaurants`, `/bookings`, …) mount under `src/ro
 | **BE-8** | Gateway foundation |
 | **BE-11** | Users + discovery (`/users`, `/restaurants/nearby`, `/restaurants/:id`) |
 | **BE-12** | ETA + bookings (`/restaurants/:id/eta`, `POST /bookings`) |
-| BE-13+ | Offers, campaigns, ML match |
+| **BE-13** | Offers + campaigns (inbox, accept, manager campaigns) |
+| BE-14+ | ML match integration, P1 routes |

@@ -1,4 +1,3 @@
-import React from 'react';
 import RoomConfigPanel from './RoomConfigPanel';
 
 export default function TableGrid({ 

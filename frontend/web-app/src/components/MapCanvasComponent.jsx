@@ -43,6 +43,7 @@ export default function MapCanvasWrapper({ children, center, zoom, onMarkerSelec
         mapInstanceRef.current = null;
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- map must only be created once on mount
   }, []);
 
   useEffect(() => {

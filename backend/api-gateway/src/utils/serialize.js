@@ -45,6 +45,36 @@ function toRestaurantDetail(row) {
   };
 }
 
+function toCampaignJson(row) {
+  return {
+    id: row.id,
+    restaurantId: row.restaurant_id,
+    status: row.status,
+    tableQuota: row.table_quota,
+    tablesClaimed: row.tables_claimed,
+    discountPercent: row.discount_percent,
+    createdAt: row.created_at.toISOString(),
+  };
+}
+
+function toOfferInboxItem(row, now = new Date()) {
+  const expiresAt = new Date(row.expires_at);
+  const secondsRemaining = Math.max(0, Math.floor((expiresAt.getTime() - now.getTime()) / 1000));
+  const canAccept = row.status === "pending" && secondsRemaining > 0;
+
+  return {
+    id: row.id,
+    campaignId: row.campaign_id,
+    restaurantId: row.restaurant_id,
+    restaurantName: row.restaurant_name,
+    status: row.status,
+    discountPercent: row.discount_percent,
+    expiresAt: expiresAt.toISOString(),
+    secondsRemaining,
+    canAccept,
+  };
+}
+
 function toBookingJson(row) {
   const booking = {
     id: row.id,
@@ -69,5 +99,7 @@ module.exports = {
   toUserJson,
   toRestaurantSummary,
   toRestaurantDetail,
+  toCampaignJson,
+  toOfferInboxItem,
   toBookingJson,
 };

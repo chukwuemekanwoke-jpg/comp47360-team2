@@ -1,4 +1,3 @@
-import React from 'react';
 
 export default function RoomConfigPanel({ roomConfig, onUpdateStatus, onUpdateName, onUpdateTableCount, onRemoveRoom, onClose }) {
   return (
