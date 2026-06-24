@@ -1,4 +1,3 @@
-import React from 'react';
 
 export default function ActivityLog({ reservations }) {
   return (
@@ -17,7 +16,7 @@ export default function ActivityLog({ reservations }) {
               </div>
               <span className="px-2 py-0.5 rounded text-[10px] font-mono border uppercase bg-zinc-900 text-zinc-400 border-zinc-800">{res.status}</span>
             </div>
-            {res.notes && <p className="text-zinc-500 bg-zinc-900/40 p-2 rounded italic text-[10px]">"{res.notes}"</p>}
+            {res.notes && <p className="text-zinc-500 bg-zinc-900/40 p-2 rounded italic text-[10px]">&quot;{res.notes}&quot;</p>}
           </div>
         ))}
       </div>

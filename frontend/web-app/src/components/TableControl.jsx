@@ -1,4 +1,3 @@
-import React from 'react';
 
 export default function TableControl({ 
   selectedTable, setSelectedTable, overlayActiveTab, setOverlayActiveTab, discountPercent, setDiscountPercent, 

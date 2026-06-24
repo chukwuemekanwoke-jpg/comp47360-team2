@@ -1,7 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import DashboardHeader from '../components/DashboardHeader';
 import ActivityLog from '../components/ActivityLog';
-import RoomConfigPanel from '../components/RoomConfigPanel';
 import TableGrid from '../components/TableGrid';
 import AnalyticsView from '../components/AnalyticsView';
 import SettingsPanel from '../components/SettingsPanel';

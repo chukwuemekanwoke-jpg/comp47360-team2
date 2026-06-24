@@ -1,4 +1,3 @@
-import React from 'react';
 
 export default function AnalyticsView({ analyticsTimeframe, setAnalyticsTimeframe, timeframeMetrics }) {
   const metrics = timeframeMetrics || {
