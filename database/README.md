@@ -7,6 +7,7 @@
 | [schema.md](./schema.md)                                                           | ER diagram, P0 story mapping, table reference |
 | [migrations/001_initial_schema.sql](./migrations/001_initial_schema.sql)           | DDL v1                                        |
 | [migrations/001_initial_schema.down.sql](./migrations/001_initial_schema.down.sql) | Roll back v1 (dev only)                       |
+| [migrations/003_add_restaurant_capacity_cuisine.sql](./migrations/003_add_restaurant_capacity_cuisine.sql) | `restaurants.capacity`, `restaurants.cuisine` |
 
 ## Prerequisites
 
