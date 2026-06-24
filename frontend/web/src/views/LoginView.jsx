@@ -1,12 +1,24 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function LoginView() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleLogin = (e) => {
     e.preventDefault();
+    setError('');
+
     console.log('Login attempt with:', { email, password });
+
+    // Staging gateway check for sprint evaluation and internal navigation testing
+    if (email === 'merchant@table.com' && password === 'password') {
+      navigate('/merchant');
+    } else {
+      setError('Invalid authentication pairing. Use administrative credentials or register your node.');
+    }
   };
 
   return (
@@ -26,9 +38,16 @@ export default function LoginView() {
           <p className="text-table-cream/70 font-sans text-sm tracking-wide">Secure User Access</p>
         </div>
 
+        {/* Informative Error Banner Alert UI */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-950/45 border border-red-500/30 text-red-400 rounded-xl text-xs font-mono leading-relaxed text-left">
+            ⚠️ {error}
+          </div>
+        )}
+
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">
-            <label htmlFor="email" className="block text-xs font-mono text-table-cream/80 uppercase tracking-widest">
+            <label htmlFor="email" className="block text-xs font-mono text-table-cream/80 uppercase tracking-widest text-left">
               Email Address
             </label>
             <input
@@ -44,7 +63,7 @@ export default function LoginView() {
 
           <div className="space-y-2">
             <div className="flex justify-between items-baseline">
-              <label htmlFor="password" className="block text-xs font-mono text-table-cream/80 uppercase tracking-widest">
+              <label htmlFor="password" className="block text-xs font-mono text-table-cream/80 uppercase tracking-widest text-left">
                 Password
               </label>
             </div>
@@ -68,6 +87,17 @@ export default function LoginView() {
             </button>
           </div>
         </form>
+
+        {/* Dynamic Navigation Entry to Onboarding Interface */}
+        <div className="mt-8 pt-6 border-t border-table-border text-center">
+          <button
+            type="button"
+            onClick={() => navigate('/register')}
+            className="text-xs font-mono font-bold text-table-gold hover:text-white transition-colors uppercase tracking-wider bg-transparent border-none p-0 cursor-pointer"
+          >
+            Create an account
+          </button>
+        </div>
       </div>
     </div>
   );

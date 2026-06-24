@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route, NavLink, Link, useLocation } fr
 import ExploreView from './views/ExploreView';
 import MerchantDashboard from './views/MerchantDashboard';
 import LoginView from './views/LoginView';
+import RegisterView from './views/RegisterView';
+import ProfileSetupView from './views/ProfileSetupView'; // <-- 1. Import Setup View Node
 
 // Helper component to dynamically toggle layout classes based on the current active view route
 function AppLayout({ children }) {
@@ -40,8 +42,6 @@ function App() {
                 Explore
               </NavLink>
 
-              {/* Old Live Map NavLink has been safely removed from this position */}
-
               <NavLink 
                 to="/merchant" 
                 className={({ isActive }) => 
@@ -68,8 +68,9 @@ function App() {
           <Routes>
             <Route path="/" element={<LoginView />} />
             <Route path="/explore" element={<ExploreView />} />
-            {/* MapView Route node has been deleted */}
             <Route path="/merchant" element={<MerchantDashboard />} />
+            <Route path="/register" element={<RegisterView />} />
+            <Route path="/setup-profile" element={<ProfileSetupView />} /> {/* <-- 2. Register Active Target Route */}
           </Routes>
         </main>
 
