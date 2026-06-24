@@ -28,6 +28,7 @@ export default function LocationComponent() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- async permission/location request on mount
     requestLocationPermission();
   }, []);
 
