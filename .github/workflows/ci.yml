@@ -24,16 +24,13 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: frontend/web-app/package-lock.json
-      - name: Install
-        working-directory: frontend/web-app
-        run: npm ci
+          cache-dependency-path: package-lock.json 
+      - name: Install dependencies
+        run: npm ci 
       - name: Lint
-        working-directory: frontend/web-app
-        run: npm run lint
+        run: npm run lint --workspace=frontend/web-app
       - name: Build
-        working-directory: frontend/web-app
-        run: npm run build
+        run: npm run build --workspace=frontend/web-app
 
   mobile:
     name: Mobile app (lint)
@@ -44,13 +41,11 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: frontend/mobile-app/package-lock.json
-      - name: Install
-        working-directory: frontend/mobile-app
+          cache-dependency-path: package-lock.json # Points to root lockfile
+      - name: Install dependencies
         run: npm ci
       - name: Lint
-        working-directory: frontend/mobile-app
-        run: npm run lint
+        run: npm run lint --workspace=frontend/mobile-app
 
   backend:
     name: API gateway (install + test)
