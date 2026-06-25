@@ -23,7 +23,7 @@ export default function LoginView() {
 
   return (
     <div 
-      className="h-[calc(100svh-73px)] w-full flex items-center justify-center bg-table-canvas relative overflow-hidden"
+      className="h-[calc(100svh-73px)] w-full flex items-center justify-center bg-[#0A0A0A] relative overflow-hidden"
       style={{
         backgroundImage: `url('https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=2000&auto=format&fit=crop')`,
         backgroundSize: 'cover',
@@ -32,10 +32,10 @@ export default function LoginView() {
     >
       <div className="absolute inset-0 bg-black/70 backdrop-blur-[2px]"></div>
 
-      <div className="relative z-10 w-full max-w-md p-10 bg-table-surface/80 border border-table-border rounded-2xl shadow-2xl backdrop-blur-md">
+      <div className="relative z-10 w-full max-w-md p-10 bg-table-surface/80 border border-zinc-800/80 rounded-2xl shadow-2xl backdrop-blur-md">
         <div className="text-center mb-10 space-y-2">
-          <h1 className="text-5xl font-serif font-bold text-table-gold tracking-tighter">Tablé</h1>
-          <p className="text-table-cream/70 font-sans text-sm tracking-wide">Secure User Access</p>
+          <h1 className="text-5xl font-serif font-bold text-table-primary tracking-tighter">Tablé</h1>
+          <p className="text-table-textMuted font-sans text-sm tracking-wide">Secure User Access</p>
         </div>
 
         {/* Informative Error Banner Alert UI */}
@@ -47,7 +47,7 @@ export default function LoginView() {
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">
-            <label htmlFor="email" className="block text-xs font-mono text-table-cream/80 uppercase tracking-widest text-left">
+            <label htmlFor="email" className="block text-xs font-mono text-table-textMuted uppercase tracking-widest text-left">
               Email Address
             </label>
             <input
@@ -57,13 +57,13 @@ export default function LoginView() {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="your.name@provider.com"
-              className="w-full px-4 py-3 bg-table-canvas/50 border border-table-border rounded-xl text-table-cream font-sans placeholder:text-zinc-600 focus:ring-2 focus:ring-table-gold/50 focus:border-table-gold transition-all outline-none"
+              className="w-full px-4 py-3 bg-black/40 border border-zinc-800 rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:ring-2 focus:ring-table-primary/50 focus:border-table-primary transition-all outline-none"
             />
           </div>
 
           <div className="space-y-2">
             <div className="flex justify-between items-baseline">
-              <label htmlFor="password" className="block text-xs font-mono text-table-cream/80 uppercase tracking-widest text-left">
+              <label htmlFor="password" className="block text-xs font-mono text-table-textMuted uppercase tracking-widest text-left">
                 Password
               </label>
             </div>
@@ -74,14 +74,14 @@ export default function LoginView() {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="••••••••"
-              className="w-full px-4 py-3 bg-table-canvas/50 border border-table-border rounded-xl text-table-cream font-sans placeholder:text-zinc-600 focus:ring-2 focus:ring-table-gold/50 focus:border-table-gold transition-all outline-none"
+              className="w-full px-4 py-3 bg-black/40 border border-zinc-800 rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:ring-2 focus:ring-table-primary/50 focus:border-table-primary transition-all outline-none"
             />
           </div>
 
           <div className="pt-4">
             <button
               type="submit"
-              className="w-full py-3.5 bg-table-gold text-table-canvas font-sans font-bold rounded-xl hover:bg-white transition-all duration-300 shadow-lg"
+              className="w-full py-3.5 bg-table-primary text-[#0A0A0A] font-sans font-bold rounded-xl hover:bg-table-primaryHover transition-all duration-300 shadow-lg shadow-table-primary/10"
             >
               Sign In to Tablé
             </button>
@@ -89,11 +89,11 @@ export default function LoginView() {
         </form>
 
         {/* Dynamic Navigation Entry to Onboarding Interface */}
-        <div className="mt-8 pt-6 border-t border-table-border text-center">
+        <div className="mt-8 pt-6 border-t border-zinc-800/80 text-center">
           <button
             type="button"
             onClick={() => navigate('/register')}
-            className="text-xs font-mono font-bold text-table-gold hover:text-white transition-colors uppercase tracking-wider bg-transparent border-none p-0 cursor-pointer"
+            className="text-xs font-mono font-bold text-table-primary hover:text-table-primaryHover transition-colors uppercase tracking-wider bg-transparent border-none p-0 cursor-pointer"
           >
             Create an account
           </button>
