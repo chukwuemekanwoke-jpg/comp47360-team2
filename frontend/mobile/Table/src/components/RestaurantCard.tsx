@@ -27,7 +27,7 @@ export default function RestaurantCard({
 }: RestaurantCardProps) {
   return (
     <View className="bg-table-surface border border-table-border rounded-2xl overflow-hidden mb-3">
-      {/* Emoji header */}
+      {/* Image Header */}
       <View className="h-36 bg-table-surface items-center justify-center relative border-b border-table-border">
         
         <Image 
