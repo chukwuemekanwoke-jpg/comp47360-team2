@@ -33,6 +33,30 @@ paths:
                     type: string
                     example: ok
 
+  /api/v1/status:
+    get:
+      tags: [Health]
+      summary: API gateway status
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  apiVersion:
+                    type: string
+                    example: v1
+                  database:
+                    type: string
+                    enum: [connected, error, not_configured]
+                  databaseMessage:
+                    type: string
+
   /api/v1/users:
     post:
       tags: [Users]
@@ -233,6 +257,24 @@ paths:
           $ref: "#/components/responses/Conflict"
 
   /api/v1/restaurants/{restaurantId}/campaigns:
+    get:
+      tags: [Campaigns]
+      summary: List campaigns for a restaurant (manager only)
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+        - $ref: "#/components/parameters/RestaurantId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  campaigns:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Campaign"
     post:
       tags: [Campaigns]
       summary: Start lull-mitigation campaign (Story 5.2)
@@ -252,6 +294,25 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Campaign"
+
+  /api/v1/restaurants/{restaurantId}/campaigns/active:
+    get:
+      tags: [Campaigns]
+      summary: Get the active campaign for a restaurant (manager only)
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+        - $ref: "#/components/parameters/RestaurantId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  campaign:
+                    nullable: true
+                    $ref: "#/components/schemas/Campaign"
 
 components:
   parameters:
