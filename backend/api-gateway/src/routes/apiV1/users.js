@@ -3,7 +3,7 @@ const asyncHandler = require("../../middleware/asyncHandler");
 const requireUser = require("../../middleware/requireUser");
 const { AppError } = require("../../errors");
 const { getPool } = require("../../db/pool");
-const { toUserJson, toOfferInboxItem } = require("../../utils/serialize");
+const { toUserJson, toOfferInboxItem, toBookingJson } = require("../../utils/serialize");
 const {
   validateBudgetTier,
   validateDietaryTags,
@@ -15,6 +15,9 @@ const router = Router();
 
 const USER_COLUMNS =
   "id, display_name, budget_tier, dietary_tags, last_lat, last_lng, created_at";
+
+const BOOKING_COLUMNS =
+  "id, user_id, restaurant_id, offer_id, campaign_id, status, transport_mode, eta_minutes, hold_expires_at, confirmed_at";
 
 router.post(
   "/",
@@ -92,6 +95,25 @@ router.get(
     const now = new Date();
     res.status(200).json({
       offers: rows.map((row) => toOfferInboxItem(row, now)),
+    });
+  })
+);
+
+router.get(
+  "/me/bookings",
+  requireUser,
+  asyncHandler(async (req, res) => {
+    const pool = getPool();
+    const { rows } = await pool.query(
+      `SELECT ${BOOKING_COLUMNS}
+       FROM bookings
+       WHERE user_id = $1
+       ORDER BY created_at DESC`,
+      [req.userId]
+    );
+
+    res.status(200).json({
+      bookings: rows.map(toBookingJson),
     });
   })
 );

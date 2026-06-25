@@ -215,6 +215,25 @@ paths:
         "409":
           $ref: "#/components/responses/Conflict"
 
+  /api/v1/users/me/bookings:
+    get:
+      tags: [Bookings]
+      summary: List the current user's bookings
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bookings:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Booking"
+
   /api/v1/users/me/offers:
     get:
       tags: [Offers]
