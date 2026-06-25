@@ -2,14 +2,14 @@
   "name": "table-frontend-monorepo",
   "private": true,
   "workspaces": [
-    "mobile/Table",
-    "web",
+    "mobile-app",
+    "web-app",
     "packages/*"
   ],
   "scripts": {
-    "mobile": "npm exec -w mobile -- expo start --tunnel",
-    "mobile:clean": "npm exec -w mobile -- expo start -c",
-    "web:dev": "npm exec -w web -- npm run dev"
+    "mobile": "npm exec -w mobile-app -- expo start --tunnel",
+    "mobile:clean": "npm exec -w mobile-app -- expo start -c",
+    "web:dev": "npm exec -w web-app -- npm run dev"
   },
   "dependencies": {
     "expo": "^56.0.12",

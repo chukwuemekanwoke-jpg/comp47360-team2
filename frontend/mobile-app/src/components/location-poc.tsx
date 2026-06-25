@@ -27,14 +27,7 @@ export default function LocationComponent() {
     }
   };
 
-<<<<<<< HEAD:frontend/mobile/Table/src/components/location-poc.tsx
   useEffect(() => { requestLocation(); }, []);
-=======
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- async permission/location request on mount
-    requestLocationPermission();
-  }, []);
->>>>>>> fbaabb14956aa2e7f62602c5a2c7892e7b85ab53:frontend/mobile-app/src/components/location-poc.tsx
 
   return (
     <View className="gap-3">

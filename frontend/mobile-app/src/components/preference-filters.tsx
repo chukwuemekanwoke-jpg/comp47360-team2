@@ -1,14 +1,5 @@
-<<<<<<< HEAD:frontend/mobile/Table/src/components/preference-filters.tsx
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-=======
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-
-interface PreferenceFiltersProps {
-  onFiltersChange?: (filters: FilterState) => void;
-}
->>>>>>> fbaabb14956aa2e7f62602c5a2c7892e7b85ab53:frontend/mobile-app/src/components/preference-filters.tsx
 
 export interface FilterState {
   travelMethods: string[];
