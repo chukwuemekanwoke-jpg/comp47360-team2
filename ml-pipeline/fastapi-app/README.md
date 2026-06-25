@@ -74,3 +74,34 @@ Predicts the hourly busyness score and available tables for a restaurant.
   "confidence": 0.95
 }
 ```
+
+### `POST /api/v1/match` (BE-14)
+
+Ranks pre-filtered diner candidates for a flash-deal campaign. Called by the API gateway (not mobile/web).
+
+**Request Schema:**
+```json
+{
+  "campaignId": "550e8400-e29b-41d4-a716-446655440100",
+  "restaurantId": "550e8400-e29b-41d4-a716-446655441001",
+  "candidateLimit": 2,
+  "candidates": [
+    {
+      "userId": "550e8400-e29b-41d4-a716-446655440001",
+      "budgetTier": "TIER_2",
+      "dietaryTags": ["vegan"],
+      "distanceMeters": 320
+    }
+  ]
+}
+```
+
+**Response Schema:**
+```json
+{
+  "matchedUserIds": ["550e8400-e29b-41d4-a716-446655440001"],
+  "scores": [0.87]
+}
+```
+
+The gateway supplies `candidates` after a spatial SQL query; this service scores and returns the top `candidateLimit` users. Replace `score_candidate()` with a trained model in later sprints.

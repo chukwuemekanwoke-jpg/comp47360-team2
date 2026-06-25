@@ -169,4 +169,28 @@ Sprint 2+ business routes (`/restaurants`, `/bookings`, …) mount under `src/ro
 | **BE-11** | Users + discovery (`/users`, `/restaurants/nearby`, `/restaurants/:id`) |
 | **BE-12** | ETA + bookings (`/restaurants/:id/eta`, `POST /bookings`) |
 | **BE-13** | Offers + campaigns (inbox, accept, manager campaigns) |
-| BE-14+ | ML match integration, P1 routes |
+| **BE-14** | ML match integration (`POST /api/v1/match` via FastAPI on campaign create) |
+| BE-15+ | Availability simulator, P1 routes |
+
+## ML match (BE-14)
+
+When a manager creates a campaign, the gateway:
+
+1. Queries nearby diners in Postgres (1.5 km radius)
+2. Calls FastAPI `POST {ML_SERVICE_URL}/api/v1/match` with `campaignId`, `restaurantId`, `candidateLimit`, and `candidates[]`
+3. Inserts `offers` for returned `matchedUserIds` (900s TTL)
+4. Falls back to nearest-distance matching if ML is unreachable
+
+Start the ML service before testing campaigns:
+
+```bash
+cd ml-pipeline/fastapi-app
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+```
+
+Set in `backend/api-gateway/.env`:
+
+```text
+ML_SERVICE_URL=http://localhost:8000
+```
