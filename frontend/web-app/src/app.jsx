@@ -1,17 +1,11 @@
-import { BrowserRouter as Router, Routes, Route, NavLink, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, NavLink, Link } from 'react-router-dom';
 import ExploreView from './views/ExploreView';
 import MerchantDashboard from './views/MerchantDashboard';
 import LoginView from './views/LoginView';
 
-// Helper component to dynamically toggle layout classes based on the current active view route
 function AppLayout({ children }) {
-  const location = useLocation();
-  const isExplorePage = location.pathname === '/explore';
-
   return (
-    <div className={`min-h-screen text-table-cream font-sans transition-colors duration-350 ${
-      isExplorePage ? 'bg-transparent' : 'bg-table-canvas'
-    }`}>
+    <div className="min-h-screen bg-table-canvas text-table-text font-sans transition-colors duration-350">
       {children}
     </div>
   );
@@ -23,9 +17,9 @@ function App() {
       <AppLayout>
         
         {/* --- STICKY NAVIGATION HEADER --- */}
-        <header className="sticky top-0 z-50 flex items-center justify-between px-8 py-4 border-b border-zinc-800/80 bg-[#0A0A0A]/95 backdrop-blur-md">
+        <header className="sticky top-0 z-50 flex items-center justify-between px-8 py-4 border-b border-table-border bg-table-canvas/95 backdrop-blur-md">
           <div className="flex items-center space-x-8">
-            <Link to="/" className="text-2xl font-serif font-bold text-table-gold tracking-tight">
+            <Link to="/" className="text-2xl font-display font-bold text-table-primary tracking-tight">
               Tablé
             </Link>
             
@@ -33,7 +27,7 @@ function App() {
               <NavLink 
                 to="/explore" 
                 className={({ isActive }) => 
-                  `transition-colors duration-200 ${isActive ? 'text-table-gold' : 'text-zinc-400 hover:text-zinc-200'}`
+                  `transition-colors duration-200 ${isActive ? 'text-table-primary' : 'text-table-textMuted hover:text-table-text'}`
                 }
               >
                 Explore
@@ -44,7 +38,7 @@ function App() {
               <NavLink 
                 to="/merchant" 
                 className={({ isActive }) => 
-                  `transition-colors duration-200 ${isActive ? 'text-table-gold' : 'text-zinc-400 hover:text-zinc-200'}`
+                  `transition-colors duration-200 ${isActive ? 'text-table-primary' : 'text-table-textMuted hover:text-table-text'}`
                 }
               >
                 Merchant Dashboard
@@ -55,7 +49,7 @@ function App() {
           <div className="flex items-center space-x-4">
             <Link 
               to="/" 
-              className="px-4 py-1.5 border border-table-border rounded-lg text-xs font-medium text-table-cream hover:bg-zinc-900 transition"
+              className="px-4 py-1.5 border border-table-border rounded-lg text-xs font-medium text-table-text hover:bg-table-interactive transition"
             >
               Sign In
             </Link>
