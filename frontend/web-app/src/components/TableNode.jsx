@@ -1,4 +1,4 @@
-// eslint-disable-next-line no-use-before-define
+// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from 'react';
 
 export default function TableNode({ 

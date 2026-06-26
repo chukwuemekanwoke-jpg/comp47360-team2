@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import MapCanvasWrapper, { MapMarker } from "./MapCanvasComponent";
@@ -13,7 +14,8 @@ export default function MerchantRadar() {
   const [isDealModalOpen, setIsDealModalOpen] = useState(false);
   const [dealDiscount, setDealDiscount] = useState(15);
   const [dealDuration, setDealDuration] = useState(30);
-
+  
+// eslint-disable-next-line no-unused-vars
   const [currentCenter, setCurrentCenter] = useState(() => {
     if (location.state?.targetLocation?.lat && location.state?.targetLocation?.lng) {
       return {

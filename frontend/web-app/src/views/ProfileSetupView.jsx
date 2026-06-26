@@ -1,4 +1,4 @@
-// eslint-disable-next-line no-use-before-define
+// eslint-disable-next-line no-unused-vars
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { OnboardingService } from '../services/OnboardingService';
