@@ -1,167 +1,280 @@
-import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView, ScrollView } from "react-native";
-import { useRouter } from "expo-router";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  SafeAreaView,
+} from "react-native";
+import { router } from "expo-router";
+import { useProfile } from "@/context/ProfileContext";
 
-import LocationComponent from "../components/location-poc"
+type DiningStyle =
+  | "casual"
+  | "family"
+  | "date-night"
+  | "business";
 
-export default function Index() {
-  const router = useRouter();
+const CUISINES = [
+  "Italian",
+  "Indian",
+  "Japanese",
+  "Mexican",
+  "Thai",
+];
+
+export default function OnboardingScreen() {
+  const { setProfile } = useProfile();
+
+  const [step, setStep] = useState(0);
+
+  const [name, setName] = useState("");
+
+  const [favoriteCuisines, setFavoriteCuisines] = useState<string[]>([]);
+
+  const [maxPriceLevel, setMaxPriceLevel] = useState(2);
+
+  const [diningStyle, setDiningStyle] =
+    useState<DiningStyle>("casual");
+
+  const [radiusKm, setRadiusKm] = useState(10);
+
+  const toggleCuisine = (cuisine: string) => {
+    setFavoriteCuisines((current) =>
+      current.includes(cuisine)
+        ? current.filter((c) => c !== cuisine)
+        : [...current, cuisine]
+    );
+  };
+
+  const finishOnboarding = () => {
+    setProfile({
+      name,
+      favoriteCuisines,
+      maxPriceLevel,
+      diningStyle,
+      radiusKm,
+    });
+
+    router.replace("/tabs/map-view");
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.content}>
-
-        <View style={styles.header}>
-          <Text style={styles.title}>Tablé</Text>
-          <Text style={styles.subtitle}>Customer & Business Views Mockup</Text>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Location Service</Text>
-          <LocationComponent/>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Customer Views</Text>
-          
-          <TouchableOpacity
-            style={styles.navButton}
-            onPress={() => router.push("/map-view")}
-          >
-            <Text style={styles.navButtonEmoji}>[MAP]</Text>
-            <View style={styles.navButtonContent}>
-              <Text style={styles.navButtonTitle}>Map View</Text>
-              <Text style={styles.navButtonDesc}>Browse restaurants on map with real-time availability</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.navButton}
-            onPress={() => router.push("/card-list-view")}
-          >
-            <Text style={styles.navButtonEmoji}>[LIST]</Text>
-            <View style={styles.navButtonContent}>
-              <Text style={styles.navButtonTitle}>Card List View</Text>
-              <Text style={styles.navButtonDesc}>Sortable list with restaurant details and flash deals</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Business Views</Text>
-          
-          <TouchableOpacity
-            style={styles.navButton}
-            onPress={() => router.push("/business-dashboard")}
-          >
-            <Text style={styles.navButtonEmoji}>[DASH]</Text>
-            <View style={styles.navButtonContent}>
-              <Text style={styles.navButtonTitle}>Business Dashboard</Text>
-              <Text style={styles.navButtonDesc}>Manage flash deals and table availability</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.infoBox}>
-          <Text style={styles.infoTitle}>Architecture Overview</Text>
-          <Text style={styles.infoText}>
-            These views demonstrate the shared page flow from the frontend strategy:
+    <SafeAreaView className="flex-1 bg-table-canvas">
+      <View className="flex-1 px-6 py-8 justify-between">
+        <View>
+          <Text className="text-table-gold text-xs font-bold uppercase tracking-[0.25em] mb-2">
+            Step {step + 1} / 5
           </Text>
-          <View style={styles.bulletList}>
-            <Text style={styles.bullet}>• Preference filters for travel & cuisine</Text>
-            <Text style={styles.bullet}>• Real-time map visualization with busyness scores</Text>
-            <Text style={styles.bullet}>• Sortable card-based list view</Text>
-            <Text style={styles.bullet}>• Flash deal management for businesses</Text>
-            <Text style={styles.bullet}>• REST + WebSocket ready architecture</Text>
-          </View>
+
+          <Text className="text-3xl font-bold text-table-cream mb-8">
+            Welcome to Tablé
+          </Text>
+          {/* NOTE: Eventually Step 1 should be some sign-in, during MVP there is no backend auth */}
+          {/* Onboarding - STEP 1 */}
+          {step === 0 && (
+            <>
+              <Text className="text-lg font-bold text-table-cream mb-3">
+                {"What's your name?"}
+              </Text>
+
+              <TextInput
+                value={name}
+                onChangeText={setName}
+                placeholder="Enter your name"
+                placeholderTextColor="#888"
+                className="border border-table-border bg-table-surface rounded-xl px-4 py-3 text-table-cream"
+              />
+            </>
+          )}
+
+          {/* STEP 2 */}
+          {step === 1 && (
+            <>
+              <Text className="text-lg font-bold text-table-cream mb-4">
+                Favourite cuisines
+              </Text>
+
+              <View className="flex-row flex-wrap gap-2">
+                {CUISINES.map((cuisine) => {
+                  const selected =
+                    favoriteCuisines.includes(cuisine);
+
+                  return (
+                    <TouchableOpacity
+                      key={cuisine}
+                      onPress={() => toggleCuisine(cuisine)}
+                      className={`px-4 py-3 rounded-xl border ${
+                        selected
+                          ? "border-table-teal"
+                          : "border-table-border"
+                      }`}
+                      style={
+                        selected
+                          ? { backgroundColor: "#00f2fe18" }
+                          : undefined
+                      }
+                    >
+                      <Text
+                        className={
+                          selected
+                            ? "text-table-teal font-bold"
+                            : "text-table-cream"
+                        }
+                      >
+                        {cuisine}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </>
+          )}
+
+          {/* STEP 3 */}
+          {step === 2 && (
+            <>
+              <Text className="text-lg font-bold text-table-cream mb-4">
+                Preferred price range
+              </Text>
+
+              <View className="flex-row gap-3">
+                {[1, 2, 3, 4].map((level) => (
+                  <TouchableOpacity
+                    key={level}
+                    onPress={() => setMaxPriceLevel(level)}
+                    className={`px-5 py-4 rounded-xl border ${
+                      maxPriceLevel === level
+                        ? "border-table-teal"
+                        : "border-table-border"
+                    }`}
+                  >
+                    <Text
+                      className={
+                        maxPriceLevel === level
+                          ? "text-table-teal font-bold"
+                          : "text-table-cream"
+                      }
+                    >
+                      {"$".repeat(level)}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </>
+          )}
+
+          {/* STEP 4 */}
+          {step === 3 && (
+            <>
+              <Text className="text-lg font-bold text-table-cream mb-4">
+                Dining style
+              </Text>
+
+              {[
+                "casual",
+                "family",
+                "date-night",
+                "business",
+              ].map((style) => (
+                <TouchableOpacity
+                  key={style}
+                  onPress={() =>
+                    setDiningStyle(style as DiningStyle)
+                  }
+                  className={`p-4 rounded-xl border mb-3 ${
+                    diningStyle === style
+                      ? "border-table-teal"
+                      : "border-table-border"
+                  }`}
+                >
+                  <Text
+                    className={
+                      diningStyle === style
+                        ? "text-table-teal font-bold"
+                        : "text-table-cream"
+                    }
+                  >
+                    {style
+                      .replace("-", " ")
+                      .replace(/\b\w/g, (c) =>
+                        c.toUpperCase()
+                      )}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </>
+          )}
+
+          {/* STEP 5 */}
+          {step === 4 && (
+            <>
+              <Text className="text-lg font-bold text-table-cream mb-4">
+                Search radius
+              </Text>
+
+              {[5, 10, 20, 50].map((radius) => (
+                <TouchableOpacity
+                  key={radius}
+                  onPress={() => setRadiusKm(radius)}
+                  className={`p-4 rounded-xl border mb-3 ${
+                    radiusKm === radius
+                      ? "border-table-teal"
+                      : "border-table-border"
+                  }`}
+                >
+                  <Text
+                    className={
+                      radiusKm === radius
+                        ? "text-table-teal font-bold"
+                        : "text-table-cream"
+                    }
+                  >
+                    {radius} km
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </>
+          )}
         </View>
-      </ScrollView>
+
+        {/* Navigation */}
+        <View className="flex-row justify-between">
+          <TouchableOpacity
+            disabled={step === 0}
+            onPress={() => setStep((s) => s - 1)}
+            className={`px-5 py-3 rounded-xl ${
+              step === 0
+                ? "bg-table-surface"
+                : "bg-table-interactive"
+            }`}
+          >
+            <Text className="text-table-cream font-bold">
+              Back
+            </Text>
+          </TouchableOpacity>
+
+          {step < 4 ? (
+            <TouchableOpacity
+              onPress={() => setStep((s) => s + 1)}
+              className="px-5 py-3 rounded-xl bg-table-teal"
+            >
+              <Text className="text-table-canvas font-bold">
+                Next
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={finishOnboarding}
+              className="px-5 py-3 rounded-xl bg-table-teal"
+            >
+              <Text className="text-table-canvas font-bold">
+                Continue
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  content: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  header: {
-    marginBottom: 24,
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: "bold",
-    color: "#000",
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: "#666",
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#000",
-    marginBottom: 12,
-  },
-  navButton: {
-    flexDirection: "row",
-    backgroundColor: "#f9f9f9",
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 12,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-  },
-  navButtonEmoji: {
-    fontSize: 32,
-    marginRight: 12,
-  },
-  navButtonContent: {
-    flex: 1,
-  },
-  navButtonTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#000",
-    marginBottom: 4,
-  },
-  navButtonDesc: {
-    fontSize: 12,
-    color: "#666",
-  },
-  infoBox: {
-    backgroundColor: "#e3f2fd",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 24,
-    borderLeftWidth: 4,
-    borderLeftColor: "#007AFF",
-  },
-  infoTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#0d47a1",
-    marginBottom: 8,
-  },
-  infoText: {
-    fontSize: 13,
-    color: "#1565c0",
-    marginBottom: 12,
-  },
-  bulletList: {
-    gap: 6,
-  },
-  bullet: {
-    fontSize: 12,
-    color: "#1565c0",
-  },
-});

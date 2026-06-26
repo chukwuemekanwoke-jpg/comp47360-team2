@@ -1,0 +1,89 @@
+// --- ENUMS --- // Types made up a small number of literal/categorical values
+export type BudgetTier = 'TIER_1' | 'TIER_2' | 'TIER_3';
+export type TransportMode = 'walking' | 'driving' | 'transit' | 'cycling';
+export type OfferStatus = 'pending' | 'accepted' | 'expired' | 'revoked';
+export type CampaignStatus = 'active' | 'completed' | 'cancelled';
+export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show';
+
+// --- SHARED DOMAIN TYPES ---
+export interface ApiError {
+  error: {
+    code: 'VALIDATION_ERROR' | 'UNAUTHORIZED' | 'NOT_FOUND' | 'CONFLICT' | 'INTERNAL_ERROR';
+    message: string;
+    details: Record<string, any>;
+  };
+}
+
+export interface UserProfile {
+  id: string;
+  displayName: string;
+  budgetTier: BudgetTier | null;
+  dietaryTags: string[];
+  createdAt: string;
+  lastLat?: number;
+  lastLng?: number;
+}
+
+export interface RestaurantSummary {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  neighborhood: string;
+  availableTableCount: number;
+  busynessScore: number;
+  distanceMeters: number;
+  isWheelchairAccessible: boolean;
+  sensoryFriendly: boolean;
+}
+
+export interface RestaurantDetail extends RestaurantSummary {
+  addressLine: string;
+  holdWindowMinutes: number;
+}
+
+export interface EtaResult {
+  restaurantId: string;
+  transportMode: TransportMode;
+  etaMinutes: number;
+  holdWindowMinutes: number;
+  canBook: boolean;
+  message: string;
+}
+
+export interface OfferInboxItem {
+  id: string;
+  campaignId: string;
+  restaurantId: string;
+  restaurantName: string;
+  status: OfferStatus;
+  discountPercent: number;
+  expiresAt: string;
+  secondsRemaining: number;
+  canAccept: boolean;
+}
+
+export interface Booking {
+  id: string;
+  userId: string;
+  restaurantId: string;
+  offerId: string | null;
+  campaignId: string | null;
+  status: BookingStatus;
+  transportMode: TransportMode;
+  etaMinutes: number;
+  holdExpiresAt: string;
+  confirmedAt: string;
+}
+
+export interface Campaign {
+  id: string;
+  restaurantId: string;
+  status: CampaignStatus;
+  tableQuota: number;
+  tablesClaimed: number;
+  discountPercent: number;
+  createdAt: string;
+}
+
+// -- mobile specific state -- //
