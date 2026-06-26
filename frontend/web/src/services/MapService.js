@@ -5,6 +5,7 @@ export const MapService = {
    * FUTURE: Will call Google Places API mixed with our internal DB 
    * to get restaurant data and accessibility metrics.
    */
+  // eslint-disable-next-line no-use-before-define
   getPlaces: async (searchQuery, location) => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -20,6 +21,7 @@ export const MapService = {
    * FUTURE: Will poll our backend WebSockets or Redis cache 
    * for live, opted-in user GPS coordinates.
    */
+  // eslint-disable-next-line no-use-before-define
   getNearbyDiners: async (centerCoords, radiusInMiles) => {
     return new Promise((resolve) => {
       setTimeout(() => {

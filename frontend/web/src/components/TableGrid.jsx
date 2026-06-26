@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-use-before-define
 import React, { useState } from 'react';
 import RoomConfigPanel from './RoomConfigPanel';
 import TableNode from './TableNode';
