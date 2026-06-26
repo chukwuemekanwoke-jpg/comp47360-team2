@@ -1,7 +1,4 @@
-<<<<<<< HEAD:frontend/web/src/components/TableGrid.jsx
 import React, { useState } from 'react';
-=======
->>>>>>> 00a820b358e60eea0b0a20b87720b9a595d4019e:frontend/web-app/src/components/TableGrid.jsx
 import RoomConfigPanel from './RoomConfigPanel';
 import TableNode from './TableNode';
 

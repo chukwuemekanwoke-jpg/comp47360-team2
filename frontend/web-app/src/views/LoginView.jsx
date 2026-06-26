@@ -1,9 +1,5 @@
-<<<<<<< HEAD:frontend/web/src/views/LoginView.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-=======
-import { useState } from 'react';
->>>>>>> 00a820b358e60eea0b0a20b87720b9a595d4019e:frontend/web-app/src/views/LoginView.jsx
 
 export default function LoginView() {
   const navigate = useNavigate();
