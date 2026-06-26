@@ -1,12 +1,55 @@
+/* Tailwind Framework Directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-html, body, #root {
-  background-color: #0A0A0A !important;
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
+@layer base {
+  body {
+    background-color: #0F172A !important;
+    color: #F8FAFC !important;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Custom styling for inputs to remove default borders and background flashes */
+  input[type="text"], input[type="password"], input[type="email"] {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Smooth scrollbars for operational panels */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #0F172A;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #243044;
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 116, 139, 0.5);
+  }
+}
+
+/* App-wide Layout Overrides to enforce manager branding alignments */
+@layer components {
+  /* Forces the navigation header layout to render using the deep navy canvas blueprint */
+  header, nav, [role="navigation"] {
+    background-color: #0F172A !important;
+    border-color: #243044 !important;
+  }
+
+  /* Forces the main sign-in button to be high-visibility prominent cyan instead of grayed-out */
+  button[type="submit"], .bg-table-primary, button.bg-cyan-500 {
+    background-color: #31D5D5 !important;
+    color: #0F172A !important;
+    opacity: 1 !important;
+  }
 }
