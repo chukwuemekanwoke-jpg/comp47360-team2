@@ -5,10 +5,9 @@ import * as Location from "expo-location";
 export default function LocationComponent() {
   const [location, setLocation] = useState<Location.LocationObjectCoords | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Starts as true on mount
 
-  const requestLocation = async () => {
-    setLoading(true);
+  const fetchLocationData = async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -27,7 +26,15 @@ export default function LocationComponent() {
     }
   };
 
-  useEffect(() => { requestLocation(); }, []);
+  const requestLocation = () => {
+    setLoading(true);
+    fetchLocationData();
+  };
+
+  useEffect(() => { 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchLocationData(); 
+  }, []);
 
   return (
     <View className="gap-3">

@@ -2,7 +2,7 @@ import RestaurantCard, {
   Restaurant,
 } from "@/components/RestaurantCard";
 import { useMemo, useState } from "react";
-import { FlatList, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
 
 
 const RESTAURANTS: Restaurant[] = [

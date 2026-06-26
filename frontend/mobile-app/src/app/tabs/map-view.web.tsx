@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, SafeAreaView, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import PreferenceFilters from "../../components/preference-filters";
 
@@ -164,14 +164,3 @@ export default function MapScreen() {
     </View>
   );
 }
-
-// Minimal dark map style (subset of Google Maps dark style)
-const darkMapStyle = [
-  { elementType: "geometry", stylers: [{ color: "#09090b" }] },
-  { elementType: "labels.text.fill", stylers: [{ color: "#a1a1aa" }] },
-  { elementType: "labels.text.stroke", stylers: [{ color: "#09090b" }] },
-  { featureType: "road", elementType: "geometry", stylers: [{ color: "#27272a" }] },
-  { featureType: "water", elementType: "geometry", stylers: [{ color: "#000000" }] },
-  { featureType: "poi", stylers: [{ visibility: "off" }] },
-  { featureType: "transit", stylers: [{ visibility: "off" }] },
-];

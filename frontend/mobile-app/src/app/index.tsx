@@ -75,7 +75,7 @@ export default function OnboardingScreen() {
           {step === 0 && (
             <>
               <Text className="text-lg font-bold text-table-cream mb-3">
-                What's your name?
+                {"What's your name?"}
               </Text>
 
               <TextInput
