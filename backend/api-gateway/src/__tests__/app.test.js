@@ -26,3 +26,19 @@ describe("unknown route", () => {
     expect(res.status).toBe(404);
   });
 });
+
+describe("GET /api/v1/users/me/bookings", () => {
+  it("returns 401 when X-User-Id header is missing", async () => {
+    const res = await request(app).get("/api/v1/users/me/bookings");
+    expect(res.status).toBe(401);
+    expect(res.body.error.code).toBe("UNAUTHORIZED");
+  });
+
+  it("returns 400 when X-User-Id is not a UUID", async () => {
+    const res = await request(app)
+      .get("/api/v1/users/me/bookings")
+      .set("X-User-Id", "not-a-uuid");
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe("VALIDATION_ERROR");
+  });
+});

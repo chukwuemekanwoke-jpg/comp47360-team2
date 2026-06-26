@@ -51,11 +51,12 @@ Server: `http://localhost:3001`
 | GET | `/api/v1/restaurants/:restaurantId` | none | Restaurant detail for booking screen |
 | GET | `/api/v1/restaurants/:restaurantId/eta` | none | Travel time + `canBook` vs hold window |
 
-### Bookings (BE-12)
+### Bookings (BE-12, BE-16)
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
 | POST | `/api/v1/bookings` | `X-User-Id` | Confirm reservation; decrements table count |
+| GET | `/api/v1/users/me/bookings` | `X-User-Id` | List the current user's bookings (newest first) |
 
 ### Offers & campaigns (BE-13)
 
@@ -101,6 +102,10 @@ curl -X POST http://localhost:3001/api/v1/bookings \
   -H 'Content-Type: application/json' \
   -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001' \
   -d '{"restaurantId":"550e8400-e29b-41d4-a716-446655441001","transportMode":"walking","userLat":40.7589,"userLng":-73.9851}'
+
+# List my bookings (Demo Diner)
+curl http://localhost:3001/api/v1/users/me/bookings \
+  -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001'
 
 # B-side: create campaign (Demo Manager on The Maple Room)
 curl -X POST http://localhost:3001/api/v1/restaurants/550e8400-e29b-41d4-a716-446655441001/campaigns \
@@ -169,4 +174,29 @@ Sprint 2+ business routes (`/restaurants`, `/bookings`, …) mount under `src/ro
 | **BE-11** | Users + discovery (`/users`, `/restaurants/nearby`, `/restaurants/:id`) |
 | **BE-12** | ETA + bookings (`/restaurants/:id/eta`, `POST /bookings`) |
 | **BE-13** | Offers + campaigns (inbox, accept, manager campaigns) |
-| BE-14+ | ML match integration, P1 routes |
+| **BE-14** | ML match integration (`POST /api/v1/match` via FastAPI on campaign create) |
+| **BE-16** | List my bookings (`GET /api/v1/users/me/bookings`) |
+| BE-15, BE-17+ | Availability simulator, remaining P1 routes |
+
+## ML match (BE-14)
+
+When a manager creates a campaign, the gateway:
+
+1. Queries nearby diners in Postgres (1.5 km radius)
+2. Calls FastAPI `POST {ML_SERVICE_URL}/api/v1/match` with `campaignId`, `restaurantId`, `candidateLimit`, and `candidates[]`
+3. Inserts `offers` for returned `matchedUserIds` (900s TTL)
+4. Falls back to nearest-distance matching if ML is unreachable
+
+Start the ML service before testing campaigns:
+
+```bash
+cd ml-pipeline/fastapi-app
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+```
+
+Set in `backend/api-gateway/.env`:
+
+```text
+ML_SERVICE_URL=http://localhost:8000
+```
