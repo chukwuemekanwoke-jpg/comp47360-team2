@@ -55,7 +55,7 @@ To support both mobile and web deployment, the application uses shared page flow
 #### Map View
 *   **Spatial Visualisation:** The resulting restaurants based on availability and preference criteria are displayed.
 *   **Spatial Discovery:** Once authenticated, users land directly on a primary map view displaying available Manhattan restaurants in real-time.
-> **[User Story 2](./user-stories/02-discovery.md):** To satisfy the acceptance criteria: User is prompted to and manually allowed to input a location if location services are disabled.
+> **[User Story 2](./user-stories/02-discovery.md):** To satisfy the acceptance criteria: User is prompted to and manually allowed to input a location if location services are disabled.       
 > **Location Services Updates:** are handled by the client side application polling the user device and sending an updated location to server side when a users given location changes by more than a given threshold (client side responsibility, minimizing post requests to server). For Mobile both platform (iOS & Android) updates are handled by expo-location package.
 
 #### Card List View
@@ -90,6 +90,7 @@ Based on the central shared page flow application mockups for both Mobile and We
 ![Map View](./assets/map-view.png)
 </details>
 
+> **Full Mockups:** can be f
 ---
 
 ## 4. Tech Stack & File Organisation
@@ -100,11 +101,12 @@ Based on the central shared page flow application mockups for both Mobile and We
     
 *   **Mobile Engine:** **React Native** managed through **Expo** for clean multi-platform compilation.
 *   **Styling Consistency:** **NativeWind** (Tailwind CSS for React Native), ensuring that layouts, components, and search modules look identical and share styling code across both map and list layouts.
-*   **Network Layer:** Core data lifecycle queries call standard **REST APIs**, while push notifications and changing room availability update via **WebSockets** [ADDR-001-G]  
+*   **Network Layer:** Core data lifecycle queries call standard **REST APIs**, while push notifications and changing room availability update via **WebSockets** [ADDR-001-G] 
+
 
 ### Project organisation
 ```text
-.\frontend/mobile/Table/
+.\frontend/mobile-app/
 ├── src/
 │   ├── app/
 │   │   ├── _layout.tsx (shared route views - nav bar)
