@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { MerchantRadar } from "../components/MerchantRadar";
+import MerchantRadar from "../components/MerchantRadar";
 import MapCanvasWrapper, { MapMarker } from "../components/MapCanvasComponent";
 
 const DEFAULT_CENTER = { lat: 40.7580, lng: -73.9855 };
