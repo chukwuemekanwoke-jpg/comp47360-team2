@@ -1,4 +1,8 @@
+<<<<<<< HEAD:frontend/web-app/src/components/DashboardHeader.jsx
 <<<<<<< HEAD:frontend/web/src/components/DashboardHeader.jsx
+=======
+// eslint-disable-next-line no-use-before-define
+>>>>>>> 0d32a151a330d1362596aca319d3145745bd85c3:frontend/web/src/components/DashboardHeader.jsx
 import React, { useState } from 'react';
 =======
 >>>>>>> 00a820b358e60eea0b0a20b87720b9a595d4019e:frontend/web-app/src/components/DashboardHeader.jsx
