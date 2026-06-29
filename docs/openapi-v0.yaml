@@ -388,6 +388,14 @@ components:
       type: string
       enum: [walking, driving, transit, cycling]
 
+    EtaSource:
+      type: string
+      description: >
+        How etaMinutes was derived. "google" = live Google Routes API
+        (computeRouteMatrix); "estimate" = local haversine + fixed-speed
+        fallback when no API key is configured or the call fails/times out.
+      enum: [google, estimate]
+
     OfferStatus:
       type: string
       enum: [pending, accepted, expired, revoked]
@@ -476,6 +484,8 @@ components:
           type: boolean
         message:
           type: string
+        source:
+          $ref: "#/components/schemas/EtaSource"
 
     CreateBookingRequest:
       type: object
@@ -508,6 +518,14 @@ components:
         holdExpiresAt:
           type: string
           format: date-time
+        source:
+          allOf:
+            - $ref: "#/components/schemas/EtaSource"
+          nullable: true
+          description: >
+            ETA source resolved at booking-confirmation time. Present on
+            POST /bookings; omitted from historical bookings in
+            GET /users/me/bookings (not persisted).
 
     OfferInboxItem:
       type: object

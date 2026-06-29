@@ -49,7 +49,7 @@ Server: `http://localhost:3001`
 |--------|------|------|---------|
 | GET | `/api/v1/restaurants/nearby` | optional `X-User-Id` | Restaurants within radius (`availableTableCount > 0`) |
 | GET | `/api/v1/restaurants/:restaurantId` | none | Restaurant detail for booking screen |
-| GET | `/api/v1/restaurants/:restaurantId/eta` | none | Travel time + `canBook` vs hold window |
+| GET | `/api/v1/restaurants/:restaurantId/eta` | none | Travel time (Google Routes API, BE-12) + `canBook` vs hold window |
 
 ### Bookings (BE-12, BE-16)
 
@@ -172,11 +172,29 @@ Sprint 2+ business routes (`/restaurants`, `/bookings`, …) mount under `src/ro
 | BE-1 | Bootstrap + `/health` |
 | **BE-8** | Gateway foundation |
 | **BE-11** | Users + discovery (`/users`, `/restaurants/nearby`, `/restaurants/:id`) |
-| **BE-12** | ETA + bookings (`/restaurants/:id/eta`, `POST /bookings`) |
+| **BE-12** | ETA (Google Routes API + haversine fallback) + bookings (`/restaurants/:id/eta`, `POST /bookings`) |
 | **BE-13** | Offers + campaigns (inbox, accept, manager campaigns) |
 | **BE-14** | ML match integration (`POST /api/v1/match` via FastAPI on campaign create) |
 | **BE-16** | List my bookings (`GET /api/v1/users/me/bookings`) |
 | BE-15, BE-17+ | Availability simulator, remaining P1 routes |
+
+## ETA — Google Routes API (BE-12)
+
+`GET /restaurants/:id/eta` and `POST /bookings` resolve travel time via the
+Google **Routes API** (`computeRouteMatrix`) when `GOOGLE_MAPS_API_KEY` is set,
+mapping transport modes (`walking→WALK`, `driving→DRIVE`, `cycling→BICYCLE`,
+`transit→TRANSIT`). The response includes a `source` field:
+
+- `"google"` — live Routes API duration
+- `"estimate"` — local haversine + fixed-speed fallback (no key, timeout, or API error)
+
+This graceful degradation means bookings keep working offline. Enable the
+**Routes API** on the GCP project, then configure in `backend/api-gateway/.env`:
+
+```text
+GOOGLE_MAPS_API_KEY=your_key_here
+ETA_TIMEOUT_MS=3000
+```
 
 ## ML match (BE-14)
 

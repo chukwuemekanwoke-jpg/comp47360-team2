@@ -4,7 +4,7 @@ const { AppError, isUuid } = require("../../errors");
 const { getPool } = require("../../db/pool");
 const { toRestaurantSummary, toRestaurantDetail } = require("../../utils/serialize");
 const { parseLatLng, parseRadiusM, parseTransportMode } = require("../../utils/validate");
-const { buildEtaResult } = require("../../utils/geo");
+const { resolveEtaResult } = require("../../services/etaResolver");
 const { getCachedEta, setCachedEta } = require("../../utils/etaCache");
 const campaignsRouter = require("./campaigns");
 
@@ -122,7 +122,7 @@ router.get(
       throw new AppError(404, "NOT_FOUND", "Restaurant not found");
     }
 
-    const etaResult = buildEtaResult({
+    const etaResult = await resolveEtaResult({
       restaurantId,
       transportMode,
       userLat: lat,
