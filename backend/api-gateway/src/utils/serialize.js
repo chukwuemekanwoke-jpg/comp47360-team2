@@ -94,6 +94,10 @@ function toBookingJson(row) {
     booking.confirmedAt = row.confirmed_at.toISOString();
   }
 
+  if (row.eta_source != null) {
+    booking.source = row.eta_source;
+  }
+
   return booking;
 }
 

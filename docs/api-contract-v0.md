@@ -139,7 +139,8 @@ Extends summary with:
   "etaMinutes": 12,
   "holdWindowMinutes": 15,
   "canBook": true,
-  "message": "ETA: 12 mins (Within 15 min hold window)"
+  "message": "ETA: 12 mins (Within 15 min hold window)",
+  "source": "google"
 }
 ```
 
@@ -150,9 +151,19 @@ When `etaMinutes > holdWindowMinutes`:
   "etaMinutes": 25,
   "holdWindowMinutes": 15,
   "canBook": false,
-  "message": "You are too far to guarantee this table."
+  "message": "You are too far to guarantee this table.",
+  "source": "estimate"
 }
 ```
+
+`source` records how `etaMinutes` was derived (BE-12):
+
+| Value | Meaning |
+|-------|---------|
+| `google` | Live Google Routes API (`computeRouteMatrix`) duration |
+| `estimate` | Local haversine + fixed-speed fallback (no API key, timeout, or API error) |
+
+This graceful degradation keeps booking working offline; `canBook` is always computed the same way (`etaMinutes <= holdWindowMinutes`).
 
 ### `OfferInboxItem` (Story 4.1)
 
@@ -302,7 +313,7 @@ Compute travel time once when opening restaurant page (per user story).
 
 **Implementation notes:**
 
-- Backend may call Google Distance Matrix or OSRM (see architecture ADR).
+- Backend calls the Google **Routes API** (`computeRouteMatrix`) when `GOOGLE_MAPS_API_KEY` is set, mapping `walking→WALK`, `driving→DRIVE`, `cycling→BICYCLE`, `transit→TRANSIT`; falls back to a local haversine estimate otherwise (BE-12). The chosen path is reported via `EtaResult.source`.
 - Cache per `(restaurantId, lat, lng, mode)` for **5 minutes** to limit API cost.
 - `canBook` is computed server-side: `etaMinutes <= holdWindowMinutes`.
 
@@ -341,9 +352,12 @@ Include `offerId` when confirming from flash deal flow.
   "transportMode": "walking",
   "etaMinutes": 12,
   "holdExpiresAt": "2026-06-02T10:15:00.000Z",
-  "confirmedAt": "2026-06-02T10:00:00.000Z"
+  "confirmedAt": "2026-06-02T10:00:00.000Z",
+  "source": "google"
 }
 ```
+
+`source` (`google` | `estimate`) reports how the booking ETA was resolved at confirmation time. It is **only** returned on `POST /bookings`; it is not persisted, so historical bookings from `GET /users/me/bookings` omit it.
 
 **Errors:**
 
@@ -467,11 +481,13 @@ Single active campaign or `null`.
 
 ---
 
-## 5. ML service (BE-7 preview)
+## 5. ML service (BE-7 / BE-14)
 
-Internal or service-to-service — not exposed to mobile/web directly in v0.
+Internal or service-to-service — not exposed to mobile/web directly in v0. The gateway calls this when a manager creates a campaign.
 
 #### `POST http://localhost:8000/api/v1/match` (FastAPI)
+
+The gateway runs a spatial SQL query for nearby diners first, then sends the pre-filtered `candidates[]` for the ML service to rank and return the top `candidateLimit` user ids.
 
 **Request:**
 
@@ -479,7 +495,15 @@ Internal or service-to-service — not exposed to mobile/web directly in v0.
 {
   "campaignId": "uuid",
   "restaurantId": "uuid",
-  "candidateLimit": 10
+  "candidateLimit": 2,
+  "candidates": [
+    {
+      "userId": "uuid",
+      "budgetTier": "TIER_2",
+      "dietaryTags": ["vegan"],
+      "distanceMeters": 320
+    }
+  ]
 }
 ```
 
@@ -492,7 +516,7 @@ Internal or service-to-service — not exposed to mobile/web directly in v0.
 }
 ```
 
-Gateway then inserts `offers` with `expiresAt = now() + 900s`.
+Gateway then inserts `offers` with `expiresAt = now() + 900s`. If the ML service is unreachable, the gateway falls back to nearest-distance matching (BE-14).
 
 ---
 
@@ -545,3 +569,4 @@ Current mock types (`frontend/web-app/app/types.ts` on prototype branch) map to 
 | Version | Date | Notes |
 |---------|------|-------|
 | v0 | 2026-06-02 | Initial BE-3 contract aligned with schema v1 |
+| v0.1 | 2026-06-29 | Sync narrative with implementation: add `EtaResult`/`Booking` `source` field (BE-12 Google Routes API + estimate fallback); update ML match request to include `candidates[]` (BE-14) |
