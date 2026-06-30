@@ -7,7 +7,7 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
-import PreferenceFilters from '../components/preference-filters';
+import PreferenceFilters from '../components/PreferenceFilters';
 
 interface RestaurantMarker {
   id: string;

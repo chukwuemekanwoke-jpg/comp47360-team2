@@ -1,5 +1,6 @@
 import { Text, View} from "react-native";
 import { useProfile } from "@/context/ProfileContext";
+import  BookingsProfile  from "@/components/BookingProfile";
 
 export default function ProfileScreen() {
   const { profile } = useProfile();
@@ -136,6 +137,7 @@ export default function ProfileScreen() {
             </View>
           </View>
         </View>
+        <BookingsProfile/>
 
       </View>
     </View>

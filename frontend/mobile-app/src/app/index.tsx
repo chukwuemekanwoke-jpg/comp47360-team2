@@ -5,15 +5,20 @@ import {
   TouchableOpacity,
   TextInput,
   SafeAreaView,
+  Alert
 } from "react-native";
 import { router } from "expo-router";
 import { useProfile } from "@/context/ProfileContext";
+import { DUMMYID, DUMMYNAME } from "@/context/UserContext";
+import { useCreateUserMutation, useUpdatePreferencesMutation } from "@shared/apiSlice";
 
 type DiningStyle =
   | "casual"
   | "family"
   | "date-night"
   | "business";
+
+type BudgetTier = "TIER_1" | "TIER_2" | "TIER_3";
 
 const CUISINES = [
   "Italian",
@@ -25,15 +30,10 @@ const CUISINES = [
 
 export default function OnboardingScreen() {
   const { setProfile } = useProfile();
-
   const [step, setStep] = useState(0);
-
   const [name, setName] = useState("");
-
   const [favoriteCuisines, setFavoriteCuisines] = useState<string[]>([]);
-
   const [maxPriceLevel, setMaxPriceLevel] = useState(2);
-
   const [diningStyle, setDiningStyle] =
     useState<DiningStyle>("casual");
 
@@ -47,16 +47,55 @@ export default function OnboardingScreen() {
     );
   };
 
-  const finishOnboarding = () => {
-    setProfile({
-      name,
-      favoriteCuisines,
-      maxPriceLevel,
-      diningStyle,
-      radiusKm,
-    });
+  function mapPriceToBudgetTier(level: number): BudgetTier {
+    if (level <= 1) return "TIER_1";
+    if (level === 2) return "TIER_2";
+    return "TIER_3";
+  }
 
-    router.replace("/tabs/map-view");
+// RTK Query Mutation hooks
+  const [triggerCreateUser, { isLoading: isCreatingUser }] = useCreateUserMutation();
+  const [triggerUpdatePreferences, { isLoading: isUpdatingPreferences }] = useUpdatePreferencesMutation();
+
+  const finishOnboarding = async () => {
+    if (!name.trim()) {
+      Alert.alert("Validation Error", "Please enter a display name.");
+      return;
+    }
+
+    try {
+      // 1. Fire user creation with your existing dummyId mapped to the required header input
+      const userResponse = await triggerCreateUser({  
+        displayName: name,   // Payload body
+      }).unwrap();
+
+      // Provide some pause
+      const realUserId = userResponse.id;
+      // 2. Fire preference mutations using the exact same dummyId context
+      await triggerUpdatePreferences({
+        userId: realUserId,
+        budgetTier: mapPriceToBudgetTier(maxPriceLevel),
+        dietaryTags: [...favoriteCuisines, diningStyle],
+        lastLat: 53.3498, // Fallback location context
+        lastLng: -6.2603,
+      }).unwrap();
+
+      // 3. Update your local client-side profile state provider
+      setProfile({
+        id: realUserId,
+        name,
+        favoriteCuisines,
+        maxPriceLevel,
+        diningStyle,
+        radiusKm,
+      });
+
+      Alert.alert("Welcome!", `Your profile has been created.`);
+    } catch (error) {
+      console.error("Onboarding server error:", error);
+      Alert.alert("Error", "Could not complete registration. Please try again.");
+    }
+    router.replace("/tabs/MapTab");
   };
 
   return (
