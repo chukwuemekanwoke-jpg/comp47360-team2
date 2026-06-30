@@ -1,19 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
+import { useAppDispatch, useAppSelector } from "@shared/hooks";
+import { toggleTravelMethod, toggleCuisine } from "@shared/userSlice";
+import { TransportMode } from "@shared/types";
 
-export interface FilterState {
-  travelMethods: string[];
-  cuisines: string[];
-}
-
-interface PreferenceFiltersProps {
-  onFiltersChange?: (filters: FilterState) => void;
-}
-
-const TRAVEL_METHODS = [
-  { label: "Walking", icon: "🚶" },
-  { label: "Driving", icon: "🚗" },
-  { label: "Transit", icon: "🚇" },
+const TRAVEL_METHODS: { label: string; icon: string; mode: TransportMode }[] = [
+  { label: "Walking", icon: "🚶", mode: "walking" },
+  { label: "Driving", icon: "🚗", mode: "driving" },
+  { label: "Transit", icon: "🚇", mode: "transit" },
 ];
 
 const CUISINES = [
@@ -25,24 +19,17 @@ const CUISINES = [
   { label: "Thai",       icon: "🥢" },
 ];
 
-export default function PreferenceFilters({ onFiltersChange }: PreferenceFiltersProps) {
-  const [selectedTravel,   setSelectedTravel]   = useState<string[]>(["Walking"]);
-  const [selectedCuisines, setSelectedCuisines] = useState<string[]>(["Italian"]);
+export default function PreferenceFilters() {
+  const dispatch = useAppDispatch();
+  const selectedTravel = useAppSelector((state) => state.user.filters.travelMethods);
+  const selectedCuisines = useAppSelector((state) => state.user.filters.cuisines);
 
-  const toggleTravel = (method: string) => {
-    const updated = selectedTravel.includes(method)
-      ? selectedTravel.filter((t) => t !== method)
-      : [...selectedTravel, method];
-    setSelectedTravel(updated);
-    onFiltersChange?.({ travelMethods: updated, cuisines: selectedCuisines });
+  const toggleTravel = (mode: TransportMode) => {
+    dispatch(toggleTravelMethod(mode));
   };
 
-  const toggleCuisine = (cuisine: string) => {
-    const updated = selectedCuisines.includes(cuisine)
-      ? selectedCuisines.filter((c) => c !== cuisine)
-      : [...selectedCuisines, cuisine];
-    setSelectedCuisines(updated);
-    onFiltersChange?.({ travelMethods: selectedTravel, cuisines: updated });
+  const toggleCuisineSelection = (cuisine: string) => {
+    dispatch(toggleCuisine(cuisine));
   };
 
   const Chip = ({
@@ -73,13 +60,13 @@ export default function PreferenceFilters({ onFiltersChange }: PreferenceFilters
         Travel Method
       </Text>
       <View className="flex-row flex-wrap gap-2 mb-4">
-        {TRAVEL_METHODS.map(({ label, icon }) => (
+        {TRAVEL_METHODS.map(({ label, icon, mode }) => (
           <Chip
             key={label}
             label={label}
             icon={icon}
-            active={selectedTravel.includes(label)}
-            onPress={() => toggleTravel(label)}
+            active={selectedTravel.includes(mode)}
+            onPress={() => toggleTravel(mode)}
             accentColor="#00f2fe"
           />
         ))}
@@ -94,8 +81,8 @@ export default function PreferenceFilters({ onFiltersChange }: PreferenceFilters
             key={label}
             label={label}
             icon={icon}
-            active={selectedCuisines.includes(label)}
-            onPress={() => toggleCuisine(label)}
+            active={selectedCuisines.includes(label.toLowerCase())}
+            onPress={() => toggleCuisineSelection(label.toLowerCase())}
             accentColor="#f59e0b"
           />
         ))}

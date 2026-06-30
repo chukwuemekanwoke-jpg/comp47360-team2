@@ -5,13 +5,15 @@ import PreferenceFilters from "../../components/PreferenceFilters";
 import BackendHealthCard from "@/components/BackendHealth";
 import { useGetNearbyRestaurantsQuery } from "@shared/apiSlice";
 import { RestaurantSummary } from "@shared/types";
+import { useAppSelector } from "@shared/hooks";
 import LocationComponent from "@/components/LocationComponent";
 
 // Lazy load map component
 const LazyLeafletMap = lazy(() => import("@/components/WebMap"));
 
-const LATITUDE = 40.7589;
-const LONGITUDE = -73.9851;
+// Fallback used until a real GPS fix lands in the user slice.
+const DEFAULT_LATITUDE = 40.7589;
+const DEFAULT_LONGITUDE = -73.9851;
 
 function busynessColor(score: number) {
   const scaled = score * 100;
@@ -31,13 +33,20 @@ export default function MapScreen() {
   const router = useRouter();
   const [showFilters, setShowFilters] = useState(false);
 
+  const userLocation = useAppSelector((state) => state.user.location);
+  const selectedCuisines = useAppSelector((state) => state.user.filters.cuisines);
+  const latitude = userLocation?.lat ?? DEFAULT_LATITUDE;
+  const longitude = userLocation?.lng ?? DEFAULT_LONGITUDE;
+
   const { data } = useGetNearbyRestaurantsQuery({
-    lat: LATITUDE, 
-    lng: LONGITUDE,
+    lat: latitude,
+    lng: longitude,
     radiusM: 150000
   });
-  
-  const restaurantsList = data?.restaurants ?? [];
+
+  const restaurantsList = (data?.restaurants ?? []).filter(
+    (r: RestaurantSummary) => selectedCuisines.length === 0 || selectedCuisines.includes(r.cuisine.toLowerCase())
+  );
 
   return (
     <View className="flex-1 bg-table-canvas">
@@ -88,9 +97,9 @@ export default function MapScreen() {
             <ActivityIndicator size="small" />
           </View>
         }>
-          <LazyLeafletMap 
-            latitude={LATITUDE}
-            longitude={LONGITUDE}
+          <LazyLeafletMap
+            latitude={latitude}
+            longitude={longitude}
             restaurantsList={restaurantsList}
             busynessLabel={busynessLabel}
             onViewDetails={(id) => router.push({ pathname: "/card-list-view", params: { focusId: id } })}
