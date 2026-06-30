@@ -18,4 +18,18 @@ module.exports = {
       { allowConstantExport: true },
     ],
   },
+  overrides: [
+    {
+      files: ["src/**/*.test.jsx", "src/**/*.test.js", "src/test/**/*.js"],
+      env: { browser: true, es2020: true },
+      globals: {
+        describe: "readonly",
+        it: "readonly",
+        expect: "readonly",
+        beforeEach: "readonly",
+        afterEach: "readonly",
+        vi: "readonly",
+      },
+    },
+  ],
 };
