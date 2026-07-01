@@ -1,24 +1,10 @@
 import { Text, TouchableOpacity, View, Image } from "react-native";
+import { RestaurantSummary } from "@shared/types";
 
-export interface Restaurant {
-  id: string;
-  name: string;
-  cuisine: string;
-  cuisineEmoji: string;
-  distance: string;
-  distanceKm: number;
-  price: string;
-  priceLevel: number;
-  rating: number;
-  availability: number;
-  hasFlashDeal?: boolean;
-  dealLabel?: string;
-  uri: string;
-}
 
 interface RestaurantCardProps {
-  restaurant: Restaurant;
-  onBook?: (restaurant: Restaurant) => void;
+  restaurant: RestaurantSummary;
+  onBook?: (restaurant: RestaurantSummary) => void;
 }
 
 export default function RestaurantCard({
@@ -36,25 +22,10 @@ export default function RestaurantCard({
             resizeMode="cover"
         />
 
-        {r.hasFlashDeal && (
-          <View
-            className="absolute bottom-0 left-0 right-0 px-4 py-2"
-            style={{
-              backgroundColor: "#3c290848",
-              borderTopWidth: 1,
-              borderTopColor: "#38270977",
-            }}
-          >
-            <Text className="text-table-offer text-xs font-bold">
-              ⚡ {r.dealLabel}
-            </Text>
-          </View>
-        )}
-
         <View className="absolute top-3 right-3 bg-table-canvas/80 border border-table-border rounded-lg px-2 py-1 flex-row items-center gap-1">
-          <Text style={{ fontSize: 10 }}>⭐</Text>
+          <Text style={{ fontSize: 10 }}>Busyness</Text>
           <Text className="text-[11px] font-bold text-table-cream">
-            {r.rating}
+            {r.busynessScore}
           </Text>
         </View>
       </View>
@@ -70,10 +41,6 @@ export default function RestaurantCard({
               {r.cuisine}
             </Text>
           </View>
-
-          <Text className="text-sm font-bold text-table-cream">
-            {r.price}
-          </Text>
         </View>
 
         {/* Stats */}
@@ -83,7 +50,7 @@ export default function RestaurantCard({
               Dist
             </Text>
             <Text className="text-xs font-bold text-table-cream">
-              {r.distance}
+              {}
             </Text>
           </View>
 
@@ -91,10 +58,10 @@ export default function RestaurantCard({
 
           <View className="flex-1 items-center">
             <Text className="text-[9px] font-bold uppercase tracking-widest text-table-gold mb-1">
-              Price
+              Accessibility
             </Text>
             <Text className="text-xs font-bold text-table-cream">
-              {r.price}
+              {r.isWheelchairAccessible ? "Wheelchair Accessible" : "No Wheelchair Accessibility"}
             </Text>
           </View>
 
@@ -107,11 +74,11 @@ export default function RestaurantCard({
             <Text
               className="text-xs font-bold"
               style={{
-                color: r.availability <= 3 ? "#f59e0b" : "#10b981",
+                color: r.availableTableCount <= 3 ? "#f59e0b" : "#10b981",
               }}
             >
-              {r.availability}
-              {r.availability <= 3 ? " !" : ""}
+              {r.availableTableCount}
+              {r.availableTableCount <= 3 ? " !" : ""}
             </Text>
           </View>
         </View>

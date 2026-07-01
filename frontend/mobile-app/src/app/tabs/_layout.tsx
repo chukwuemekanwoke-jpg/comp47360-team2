@@ -19,16 +19,20 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen
-        name="map-view"
+        name="MapTab"
         options={{ title: "Map" }}
       />
       <Tabs.Screen
-        name="card-list-view"
+        name="CardTab"
         options={{ title: "Restaurants" }}
       />
       <Tabs.Screen
-        name="profile"
+        name="ProfileTab"
         options={{ title: "Profile" }}
+      />
+      <Tabs.Screen
+        name="InboxTab"
+        options={{title: "Inbox"}}
       />
     </Tabs>
   );

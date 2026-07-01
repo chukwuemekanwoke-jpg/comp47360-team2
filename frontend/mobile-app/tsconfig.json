@@ -8,7 +8,9 @@
       ],
       "@/assets/*": [
         "./assets/*"
-      ]
+      ],
+      "@shared/*": ["../packages/shared/src/*"],
+      "@shared": ["../packages/shared/src/index.ts"]
     }
   },
   "include": [

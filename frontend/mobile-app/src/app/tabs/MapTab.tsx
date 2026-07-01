@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
-import PreferenceFilters from "../../components/preference-filters";
+import PreferenceFilters from "../../components/PreferenceFilters";
 
 interface Restaurant {
   id: string;

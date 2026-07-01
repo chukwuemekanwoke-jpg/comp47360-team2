@@ -6,6 +6,7 @@ import {
 } from "react";
 
 export interface UserProfile {
+  id: string;
   name: string;
   favoriteCuisines: string[];
   maxPriceLevel: number;

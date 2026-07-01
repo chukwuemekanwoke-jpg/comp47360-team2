@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import MapView, { Marker, Callout } from "react-native-maps";
 import { useRouter } from "expo-router";
-import PreferenceFilters from "../../components/preference-filters";
+import PreferenceFilters from "../../components/PreferenceFilters";
 
 interface Restaurant {
   id: string;
@@ -101,9 +102,33 @@ export default function MapScreen() {
 
       {/* ── Map ── */}
       <View className="mx-4 mt-3 rounded-2xl overflow-hidden border border-table-border" style={{ height: 240 }}>
-        <View>
-            <Text>Map placeholder</Text>
-        </View>
+        <MapView
+          style={{ flex: 1 }}
+          initialRegion={{
+            latitude: 53.2707,
+            longitude: -9.0568,
+            latitudeDelta: 0.02,
+            longitudeDelta: 0.02,
+          }}
+          customMapStyle={darkMapStyle}
+        >
+          {RESTAURANTS.map((r) => (
+            <Marker
+              key={r.id}
+              coordinate={{ latitude: r.latitude, longitude: r.longitude }}
+              pinColor={busynessColor(r.busynessScore)}
+            >
+              <Callout>
+                <View style={{ width: 140, padding: 8 }}>
+                  <Text style={{ fontWeight: "700", fontSize: 13 }}>{r.name}</Text>
+                  <Text style={{ fontSize: 11, color: "#71717a", marginTop: 2 }}>{r.cuisine}</Text>
+                  <Text style={{ fontSize: 11, marginTop: 4 }}>⏱ {r.waitTime}</Text>
+                  <Text style={{ fontSize: 11 }}>🪑 {r.availability} tables free</Text>
+                </View>
+              </Callout>
+            </Marker>
+          ))}
+        </MapView>
 
         {/* List toggle overlay */}
         <TouchableOpacity
@@ -164,3 +189,14 @@ export default function MapScreen() {
     </View>
   );
 }
+
+// Minimal dark map style (subset of Google Maps dark style)
+const darkMapStyle = [
+  { elementType: "geometry", stylers: [{ color: "#09090b" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#a1a1aa" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#09090b" }] },
+  { featureType: "road", elementType: "geometry", stylers: [{ color: "#27272a" }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ color: "#000000" }] },
+  { featureType: "poi", stylers: [{ visibility: "off" }] },
+  { featureType: "transit", stylers: [{ visibility: "off" }] },
+];
