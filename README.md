@@ -4,7 +4,7 @@
 
 **Manhattan Busyness Analytics Platform** *UCD COMP47360 Research Practicum (Team 2) Core Academic Deliverable*
 
-![Next.js](https://img.shields.io/badge/Frontend-Next.js-black?style=flat-square&logo=next.js)
+![React + Vite](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-646CFF?style=flat-square&logo=vite)
 ![React Native](https://img.shields.io/badge/Mobile-Expo-02569B?style=flat-square&logo=react)
 ![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?style=flat-square&logo=nodedotjs)
 ![FastAPI](https://img.shields.io/badge/ML_Pipeline-FastAPI-009688?style=flat-square&logo=fastapi)
@@ -42,7 +42,7 @@ Table-Workspace/
 ├── docs/                # 📄 Core documents (Business Plan, MVP ACs, API contract, ADR)
 │   └── adr/             # Architecture Decision Records (ADR-001.md)
 ├── frontend/            # 💻 Frontend Ecosystem
-│   ├── web-app/         # Responsive Web App (React/Next.js)
+│   ├── web-app/         # Responsive Web App (React + Vite)
 │   └── mobile-app/      # Cross-platform Mobile App (React Native/Expo)
 ├── backend/             # ⚙️ Backend Microservices
 │   ├── api-gateway/     # Core API Gateway & Business Logic (Node.js/Express)
