@@ -9,8 +9,9 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { useProfile } from "@/context/ProfileContext";
-import { DUMMYID, DUMMYNAME } from "@/context/UserContext";
 import { useCreateUserMutation, useUpdatePreferencesMutation } from "@shared/apiSlice";
+import { setUserId } from "@shared/authSlice";
+import { useAppDispatch } from "@shared/hooks";
 
 type DiningStyle =
   | "casual"
@@ -30,6 +31,7 @@ const CUISINES = [
 
 export default function OnboardingScreen() {
   const { setProfile } = useProfile();
+  const dispatch = useAppDispatch();
   const [step, setStep] = useState(0);
   const [name, setName] = useState("");
   const [favoriteCuisines, setFavoriteCuisines] = useState<string[]>([]);
@@ -54,8 +56,8 @@ export default function OnboardingScreen() {
   }
 
 // RTK Query Mutation hooks
-  const [triggerCreateUser, { isLoading: isCreatingUser }] = useCreateUserMutation();
-  const [triggerUpdatePreferences, { isLoading: isUpdatingPreferences }] = useUpdatePreferencesMutation();
+  const [triggerCreateUser] = useCreateUserMutation();
+  const [triggerUpdatePreferences] = useUpdatePreferencesMutation();
 
   const finishOnboarding = async () => {
     if (!name.trim()) {
@@ -71,7 +73,9 @@ export default function OnboardingScreen() {
 
       // Provide some pause
       const realUserId = userResponse.id;
-      // 2. Fire preference mutations using the exact same dummyId context
+      dispatch(setUserId(realUserId));
+
+      // 2. Fire preference mutations using the real userId
       await triggerUpdatePreferences({
         userId: realUserId,
         budgetTier: mapPriceToBudgetTier(maxPriceLevel),
