@@ -1,22 +1,21 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Modal, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
 import { RestaurantSummary, TransportMode } from "@shared/types";
-import { useCreateBookingMutation } from "@shared/apiSlice"; // Adjust path
+import { useCreateBookingMutation, useGetRestaurantEtaQuery } from "@shared/apiSlice";
 import { DUMMYID } from "@/context/UserContext";
 
 interface BookingModalProps {
   isVisible: boolean;
   restaurant: RestaurantSummary | null;
   onClose: () => void;
-  // Supplied by your view/parent state (e.g., current device GPS)
-  userCoordinates: { lat: number; lng: number }; 
+  userCoordinates: { lat: number; lng: number };
 }
 
 const TRANSPORT_OPTIONS: { label: string; value: TransportMode; icon: string }[] = [
-  { label: "Walking", value: "walking", icon: "🚶" },
-  { label: "Driving", value: "driving", icon: "🚗" },
-  { label: "Transit", value: "transit", icon: "🚇" },
-  { label: "Bicycling", value: "cycling", icon: "🚴" },
+  { label: "Walking",   value: "walking",  icon: "🚶" },
+  { label: "Driving",   value: "driving",  icon: "🚗" },
+  { label: "Transit",   value: "transit",  icon: "🚇" },
+  { label: "Bicycling", value: "cycling",  icon: "🚴" },
 ];
 
 export default function BookingModal({
@@ -28,7 +27,19 @@ export default function BookingModal({
   const [transportMode, setTransportMode] = useState<TransportMode>("walking");
   const [createBooking, { isLoading }] = useCreateBookingMutation();
 
+  const { data: etaResult, isFetching: etaFetching } = useGetRestaurantEtaQuery(
+    {
+      restaurantId: restaurant?.id ?? "",
+      lat: userCoordinates.lat,
+      lng: userCoordinates.lng,
+      mode: transportMode,
+    },
+    { skip: !restaurant || !isVisible }
+  );
+
   if (!restaurant) return null;
+
+  const canBook = etaResult ? etaResult.canBook : true;
 
   const handleConfirmBooking = async () => {
     try {
@@ -54,11 +65,8 @@ export default function BookingModal({
       <View className="flex-1 justify-end bg-black/60">
         <TouchableOpacity className="flex-1" onPress={onClose} activeOpacity={1} />
 
-        {/* Modal content body container */}
         <View className="bg-table-canvas border-t border-table-border rounded-t-3xl p-6 pb-8">
-          
-          {/* Header indicator bar */}
-          <View className="w-12 h-1 bg-table-border rounded-full align-self-center mx-auto mb-4" />
+          <View className="w-12 h-1 bg-table-border rounded-full mx-auto mb-4" />
 
           <View className="mb-5">
             <Text className="text-lg font-bold text-table-cream">Confirm Booking</Text>
@@ -70,7 +78,7 @@ export default function BookingModal({
             How are you getting there?
           </Text>
 
-          <View className="flex-row flex-wrap gap-2 mb-6">
+          <View className="flex-row flex-wrap gap-2 mb-4">
             {TRANSPORT_OPTIONS.map((option) => {
               const isSelected = transportMode === option.value;
               return (
@@ -92,16 +100,43 @@ export default function BookingModal({
             })}
           </View>
 
-          {/* Quick Notice */}
-          <View className="bg-table-surface border border-table-border rounded-xl p-3 mb-6">
-            <Text className="text-[11px] text-table-cream/70 leading-relaxed">
-              ⚠️ By continuing, you will hold one of the remaining{" "}
-              <Text className="font-bold text-table-teal">{restaurant.availableTableCount} tables</Text>. 
-              Please arrive promptly relative to your chosen transit mode.
-            </Text>
+          {/* ETA result */}
+          <View
+            className="rounded-xl p-3 mb-4 border"
+            style={{
+              backgroundColor: etaFetching
+                ? "#27272a"
+                : canBook
+                ? "#10b98118"
+                : "#ef444418",
+              borderColor: etaFetching
+                ? "#27272a"
+                : canBook
+                ? "#10b98130"
+                : "#ef444430",
+            }}
+          >
+            {etaFetching ? (
+              <View className="flex-row items-center gap-2">
+                <ActivityIndicator size="small" color="#a1a1aa" />
+                <Text className="text-[11px] text-table-gold">Calculating travel time…</Text>
+              </View>
+            ) : etaResult ? (
+              <Text
+                className="text-[11px] leading-relaxed"
+                style={{ color: canBook ? "#10b981" : "#ef4444" }}
+              >
+                {canBook ? "✓ " : "⚠ "}{etaResult.message}
+              </Text>
+            ) : (
+              <Text className="text-[11px] text-table-cream/70 leading-relaxed">
+                ⚠️ You hold one of{" "}
+                <Text className="font-bold text-table-teal">{restaurant.availableTableCount} tables</Text>
+                . Please arrive promptly.
+              </Text>
+            )}
           </View>
 
-          {/* Bottom Call to Actions */}
           <View className="flex-row gap-3">
             <TouchableOpacity
               onPress={onClose}
@@ -113,18 +148,23 @@ export default function BookingModal({
             </TouchableOpacity>
 
             <TouchableOpacity
-              disabled={isLoading}
+              disabled={isLoading || !canBook || etaFetching}
               onPress={handleConfirmBooking}
-              className="flex-1 bg-table-teal rounded-xl py-3.5 items-center justify-center flex-row gap-2"
+              className="flex-1 rounded-xl py-3.5 items-center justify-center flex-row gap-2"
+              style={{
+                backgroundColor: canBook && !etaFetching ? "#00f2fe" : "#27272a",
+              }}
               activeOpacity={0.8}
             >
               {isLoading && <ActivityIndicator color="#0f172a" size="small" />}
-              <Text className="text-table-canvas text-xs font-bold uppercase tracking-widest">
-                {isLoading ? "Securing..." : "Confirm Table"}
+              <Text
+                className="text-xs font-bold uppercase tracking-widest"
+                style={{ color: canBook && !etaFetching ? "#09090b" : "#71717a" }}
+              >
+                {isLoading ? "Securing…" : !canBook ? "Too Far" : "Confirm Table"}
               </Text>
             </TouchableOpacity>
           </View>
-
         </View>
       </View>
     </Modal>
