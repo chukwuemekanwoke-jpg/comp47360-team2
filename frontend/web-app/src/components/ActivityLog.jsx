@@ -1,87 +1,77 @@
 import React from 'react';
 
-const TRANSPORT_GLYPHS = {
-  walking: '🚶‍♂️',
-  driving: '🚗',
-  transit: '🚇',
-  cycling: '🚴‍♂️'
-};
+/**
+ * Cleanly displays database-synced reservations in a live feed view
+ */
+export default function ActivityLog({ reservations = [] }) {
+  
+  const getTransportIcon = (mode) => {
+    switch (String(mode).toLowerCase()) {
+      case 'driving': return '🚗';
+      case 'transit': return '🚊';
+      case 'walking': 
+      default: return '🚶';
+    }
+  };
 
-const STATUS_STYLING = {
-  pending: 'border-amber-500/30 bg-amber-500/10 text-amber-400',
-  confirmed: 'border-[#33e1cc]/30 bg-[#33e1cc]/10 text-[#33e1cc]',
-  cancelled: 'border-red-500/30 bg-red-500/10 text-red-400',
-  completed: 'border-slate-500/30 bg-slate-500/10 text-slate-400',
-  no_show: 'border-purple-500/30 bg-purple-500/10 text-purple-400'
-};
+  const getStatusStyle = (status) => {
+    if (String(status).toLowerCase() === 'pending') {
+      return 'bg-amber-500/10 text-amber-400 border border-amber-500/20';
+    }
+    return 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+  };
 
-export default function ActivityLog({ reservations }) {
   return (
-    <div className="w-full bg-[#11161D] border border-[#1F2936] rounded-xl p-5 shadow-xl flex flex-col h-[340px]">
-      <div className="flex items-center justify-between border-b border-[#1F2936] pb-3 mb-4">
-        <div className="flex items-center gap-2">
-          <span className="text-sm">⚡</span>
-          <h2 className="text-xs font-mono font-black uppercase tracking-wider text-slate-200">
-            Live Intake Stream
-          </h2>
-        </div>
-        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#171E26] text-[#33e1cc] border border-[#33e1cc]/20 animate-pulse">
-          Live Feed
+    <div className="bg-[#11161D] border border-[#1F2936] rounded-2xl p-5 flex flex-col h-[340px] shadow-xl overflow-hidden">
+      {/* Title renamed cleanly from 'Live Intake Stream' to match request criteria */}
+      <div className="flex justify-between items-center pb-3 border-b border-[#1F2936] mb-3">
+        <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-200 flex items-center gap-2">
+          <span>📅</span> Active Bookings
+        </h3>
+        <span className="text-[10px] bg-[#171E26] border border-[#2D3748] px-2 py-0.5 rounded-full font-mono text-slate-400">
+          {reservations.length} total
         </span>
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-3 pr-1 custom-scrollbar">
-        {reservations && reservations.length > 0 ? (
-          reservations.map((booking) => {
-            const transportIcon = TRANSPORT_GLYPHS[booking.transport_mode] || '⏱️';
-            const statusClass = STATUS_STYLING[booking.status] || 'border-zinc-700 bg-zinc-800 text-zinc-300';
-            
-            // Format fallback times cleanly if absolute timestamps are sent down the pipe
-            const displayTime = booking.time || (booking.created_at ? new Date(booking.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : '--:--');
-
-            return (
-              <div 
-                key={booking.id} 
-                className="bg-[#0B0F14] border border-[#1F2936] hover:border-zinc-700 rounded-xl p-3.5 transition-all flex flex-col gap-2"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-xs font-mono font-bold text-slate-200 truncate">
-                      {booking.guest || booking.display_name || "Anonymous Guest"}
-                    </span>
-                  </div>
-                  <span className={`text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${statusClass} shrink-0`}>
-                    {booking.status}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
-                  <div className="flex items-center gap-1.5">
-                    <span>{transportIcon}</span>
-                    <span>
-                      {booking.eta_minutes !== undefined && booking.eta_minutes !== null
-                        ? `ETA: ${booking.eta_minutes} mins`
-                        : `Hold Checked`}
-                    </span>
-                  </div>
-                  <span className="text-slate-500 font-bold">{displayTime}</span>
-                </div>
-
-                {booking.notes && (
-                  <p className="text-[10px] font-mono text-amber-500/90 bg-amber-500/5 border border-amber-500/10 rounded px-2 py-1 mt-1 leading-relaxed">
-                    💬 {booking.notes}
-                  </p>
-                )}
-              </div>
-            );
-          })
-        ) : (
-          <div className="h-full flex flex-col items-center justify-center text-center p-6 border border-dashed border-[#1F2936] rounded-xl bg-[#0B0F14]/50">
+      {/* Main Reservation Data Node Grid Matrix List Container */}
+      <div className="flex-1 overflow-y-auto space-y-2 pr-1 scrollbar-thin scrollbar-thumb-slate-800">
+        {reservations.length === 0 ? (
+          <div className="h-full w-full flex flex-col items-center justify-center text-center font-mono opacity-40 py-12">
             <span className="text-xl mb-1">📥</span>
-            <p className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">
-              No active bookings found
-            </p>
+            <p className="text-[10px] uppercase tracking-widest text-slate-400">No active covers recorded</p>
           </div>
+        ) : (
+          reservations.map((booking) => (
+            <div 
+              key={booking.id || Math.random()} 
+              className="p-3 bg-[#171E26] border border-[#222D3D] rounded-xl hover:border-slate-700 transition-all space-y-2 group"
+            >
+              <div className="flex justify-between items-start gap-2">
+                <div className="truncate">
+                  <h4 className="text-xs font-bold text-slate-100 truncate group-hover:text-[#e29c36] transition-colors">
+                    {booking.guest}
+                  </h4>
+                  <div className="flex items-center gap-2 mt-0.5 text-[10px] font-mono text-slate-400">
+                    <span className="text-[#3b82f6] font-bold">{booking.time}</span>
+                    <span>•</span>
+                    <span className="flex items-center gap-0.5">
+                      {getTransportIcon(booking.transport_mode)} ETA {booking.eta_minutes}m
+                    </span>
+                  </div>
+                </div>
+
+                <span className={`text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md font-bold shrink-0 ${getStatusStyle(booking.status)}`}>
+                  {booking.status}
+                </span>
+              </div>
+
+              {booking.notes && (
+                <div className="text-[10px] bg-[#0E1319] text-slate-400 px-2.5 py-1.5 rounded-lg border border-[#1B232E] italic leading-relaxed">
+                  📢 {booking.notes}
+                </div>
+              )}
+            </div>
+          ))
         )}
       </div>
     </div>

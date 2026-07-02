@@ -1,7 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink, Link, useLocation } from 'react-router-dom';
-
-// 1. IMPORT YOUR AUTH PROVIDER (Check this path to make sure it points correctly to AuthContext.jsx)
 import { AuthProvider } from './context/AuthContext'; 
 
 import ExploreView from './views/ExploreView';
@@ -27,7 +25,6 @@ function AppLayout({ children }) {
 
 function App() {
   return (
-    // 2. WRAP YOUR APP IN THE PROVIDER HERE
     <AuthProvider>
       <Router>
         <AppLayout>

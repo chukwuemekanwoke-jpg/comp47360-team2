@@ -2,27 +2,39 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
 
+// --- DEVELOPMENT BYPASS FORCE INJECTION ---
+// ⚡ Real Postgres database credentials synchronized from your pgAdmin4 tables
+const DEV_USER_ID = '550e8400-e29b-41d4-a716-446655440002'; 
+const DEV_RESTAURANT_ID = '550e8400-e29b-41d4-a716-446655441001'; 
+
 export function AuthProvider({ children }) {
-  // --- DEVELOPMENT BYPASS FORCE INJECTION ---
-  // If we are running in local development mode and don't have active keys, populate them instantly.
+  // Initialize state instantly from local storage or drop into the Postgres defaults.
+  // This approach ensures layout hooks fetch clean data profiles on mount without relying on window reloads.
+  const [userId, setUserId] = useState(() => {
+    return localStorage.getItem('table_user_id') || DEV_USER_ID;
+  });
+  
+  const [restaurantId, setRestaurantId] = useState(() => {
+    return localStorage.getItem('table_restaurant_id') || DEV_RESTAURANT_ID;
+  });
+  
+  const [authToken, setAuthToken] = useState(() => {
+    return localStorage.getItem('table_merchant_token') || 'future-jwt-placeholder';
+  });
+  
+  const [isAuthenticated, setIsAuthenticated] = useState(true); // Default to true for local testing speed
+
+  // Keep LocalStorage structure updated on initial render cycle if clean
   useEffect(() => {
     if (!localStorage.getItem('table_restaurant_id')) {
-      console.log("🛠️ Dev Mode: Injecting mock merchant workspace session credentials...");
-      localStorage.setItem('table_merchant_token', 'mock-dev-jwt-token-string');
-      localStorage.setItem('table_restaurant_id', 'rest-mock-101-alpha');
-      
-      // Force reload once to sync structural layout hooks gracefully
-      window.location.reload();
+      localStorage.setItem('table_user_id', DEV_USER_ID);
+      localStorage.setItem('table_restaurant_id', DEV_RESTAURANT_ID);
+      localStorage.setItem('table_merchant_token', 'future-jwt-placeholder');
     }
   }, []);
 
-  const [authToken, setAuthToken] = useState(localStorage.getItem('table_merchant_token') || 'mock-dev-jwt-token-string');
-  const [restaurantId, setRestaurantId] = useState(localStorage.getItem('table_restaurant_id') || 'rest-mock-101-alpha');
-  const [isAuthenticated, setIsAuthenticated] = useState(true); // Default to true for dev speed
-
   const login = async (email, password) => {
     try {
-      // Keep your production endpoint intact for future wire-ups
       const response = await fetch('/api/v1/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -33,35 +45,42 @@ export function AuthProvider({ children }) {
       
       const data = await response.json();
       
-      localStorage.setItem('table_merchant_token', data.token);
+      localStorage.setItem('table_user_id', data.userId);
       localStorage.setItem('table_restaurant_id', data.restaurantId);
+      localStorage.setItem('table_merchant_token', data.token);
       
-      setAuthToken(data.token);
+      setUserId(data.userId);
       setRestaurantId(data.restaurantId);
+      setAuthToken(data.token);
       setIsAuthenticated(true);
       
     } catch (error) {
-      console.warn("Login endpoint unavailable. Falling back to local developer simulation profile.");
+      console.warn("Login endpoint unavailable. Falling back to local Postgres UUID simulation.");
       
-      // Fallback fallback so clicking "Sign In" with blank inputs still logs you in locally
-      localStorage.setItem('table_merchant_token', 'mock-dev-jwt-token-string');
-      localStorage.setItem('table_restaurant_id', 'rest-mock-101-alpha');
-      setAuthToken('mock-dev-jwt-token-string');
-      setRestaurantId('rest-mock-101-alpha');
+      localStorage.setItem('table_user_id', DEV_USER_ID);
+      localStorage.setItem('table_restaurant_id', DEV_RESTAURANT_ID);
+      localStorage.setItem('table_merchant_token', 'future-jwt-placeholder');
+      
+      setUserId(DEV_USER_ID);
+      setRestaurantId(DEV_RESTAURANT_ID);
+      setAuthToken('future-jwt-placeholder');
       setIsAuthenticated(true);
     }
   };
 
   const logout = () => {
-    localStorage.removeItem('table_merchant_token');
+    localStorage.removeItem('table_user_id');
     localStorage.removeItem('table_restaurant_id');
-    setAuthToken(null);
+    localStorage.removeItem('table_merchant_token');
+    
+    setUserId(null);
     setRestaurantId(null);
+    setAuthToken(null);
     setIsAuthenticated(false);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, authToken, restaurantId, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, userId, restaurantId, authToken, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

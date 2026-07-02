@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom'; // Added for protective routing
+import { useNavigate } from 'react-router-dom';
 import DashboardHeader from '../components/DashboardHeader';
 import ActivityLog from '../components/ActivityLog';
 import TableGrid from '../components/TableGrid';
@@ -8,9 +8,25 @@ import SettingsPanel from '../components/SettingsPanel';
 import TableControl from '../components/TableControl';
 import OccupancyMeter from '../components/OccupancyMeter';
 import BookingsView from '../components/BookingsView';
-import { MerchantService } from '../services/MerchantService';
 import { useMerchantSocket } from '../hooks/useMerchantSocket';
-import { useAuth } from '../context/AuthContext'; // Global secure identity context
+import { useAuth } from '../context/AuthContext';
+
+// --- RTK Query Imports (Corrected to 3-level relative path with explicit extension) ---
+import { 
+  useGetRestaurantDetailQuery,
+  useGetFloorPlanQuery,
+  useGetRestaurantCampaignsQuery,
+  useGetLiveBookingsQuery,
+  useGetAnalyticsQuery,
+  useUpdateRestaurantSettingsMutation,
+  useCreateRoomMutation,
+  useUpdateRoomMutation,
+  useDeleteRoomMutation,
+  useCreateTableMutation,
+  useUpdateTableMutation,
+  useDeleteTableMutation,
+  useCreateCampaignMutation
+} from '../../../packages/shared/src/apiSlice.ts';
 
 const ALLERGEN_META = [
   { key: 'nuts', label: 'Tree Nuts & Peanuts', icon: '🥜', desc: 'Food may contain nuts' },
@@ -21,29 +37,13 @@ const ALLERGEN_META = [
 
 export default function MerchantDashboard() {
   const navigate = useNavigate();
+  const { isAuthenticated, restaurantId, userId, logout } = useAuth() || {};
 
-  // Sourcing identity metrics safely with a fallback to prevent destructure crashes
-  const { isAuthenticated, restaurantId, logout } = useAuth() || {};
-
-  // -------------------------------------------------------------------------
-  // 🚧 DEVELOPMENT-ONLY AUTOMATIC BYPASS LOOP
-  // -------------------------------------------------------------------------
-  // This hook ensures that if you end up on this page during local development
-  // without logging in, it won't force-redirect you back out. It provides a
-  // visual warning in your console while letting you inspect your layout work.
   useEffect(() => {
     if (!isAuthenticated || !restaurantId) {
-      console.warn(
-        "⚠️ [DEV NOTICE]: No active production session token discovered. " +
-        "If you are using the AuthContext.jsx Dev Bypass, make sure you hard-refresh (Ctrl+F5) " +
-        "so the fake keys register in LocalStorage!"
-      );
-      
-      // UNCOMMENT the line below when you want to enforce strict production login redirection:
-      // navigate('/');
+      console.warn("⚠️ [DEV NOTICE]: No active production session token discovered.");
     }
   }, [isAuthenticated, restaurantId, navigate]);
-  // -------------------------------------------------------------------------
 
   const [activeTab, setActiveTab] = useState('floor');
   const [isLive, setIsLive] = useState(true);
@@ -51,58 +51,42 @@ export default function MerchantDashboard() {
   const [restaurantName, setRestaurantName] = useState("Restaurant Control Panel");
   const [activeCampaign, setActiveCampaign] = useState(null);
 
-  const [reservations, setReservations] = useState([
-    { id: 1, guest: 'Marcus Aurelius', time: '19:30', eta_minutes: 12, transport_mode: 'walking', status: 'confirmed', notes: 'Anniversary celebration. Prefer window table.' },
-    { id: 2, guest: 'Senecca Elder', time: '20:00', eta_minutes: 4, transport_mode: 'driving', status: 'pending', notes: 'Severe tree nut allergy registry alert.' },
-    { id: 3, guest: 'Hypatia Alexandria', time: '20:45', eta_minutes: 25, transport_mode: 'transit', status: 'confirmed', notes: null }
-  ]);
-
-  const [roomConfig, setRoomConfig] = useState([
-    { id: 1, defaultLabel: 'Room 1', customLabel: '', tableCount: 5 },
-    { id: 2, defaultLabel: 'Room 2', customLabel: '', tableCount: 3 },
-    { id: 3, defaultLabel: 'Room 3', customLabel: '', tableCount: 4 }
-  ]);
-
-  const [activeZone, setActiveZone] = useState('Room 1');
-
-  const [tables, setTables] = useState([
-    { id: 1, label: 'Table-1', type: 'Square', capacity: 2, status: 'Available', room: 'Room 1' },
-    { id: 2, label: 'Table-2', type: 'Round', capacity: 4, status: 'Reserved', room: 'Room 1', reservedTime: '20:00' },
-    { id: 3, label: 'Table-3', type: 'Rectangular', capacity: 6, status: 'Unavailable', room: 'Room 1' },
-    { id: 4, label: 'Table-1', type: 'Square', capacity: 2, status: 'Available', room: 'Room 2' },
-    { id: 5, label: 'Table-2', type: 'Booth', capacity: 4, status: 'Reserved', room: 'Room 2', reservedTime: '19:30' }
-  ]);
+  // 100% Clean state initializations — No local fallback values
+  const [reservations, setReservations] = useState([]);
+  const [roomConfig, setRoomConfig] = useState([]);
+  const [activeZone, setActiveZone] = useState('');
+  const [tables, setTables] = useState([]);
+  const [activeTableSchedule, setActiveTableSchedule] = useState([]);
 
   const [activeFlashDeals, setActiveFlashDeals] = useState({});
   const [analyticsTimeframe, setAnalyticsTimeframe] = useState('Today');
-  const [isAnalyticsLoading, setIsAnalyticsLoading] = useState(false);
   
   const [timeframeMetrics, setTimeframeMetrics] = useState({
-    covers: "0",
-    growth: "—",
-    revenue: "$0.00",
-    newDiners: "0%",
+    covers: "0", 
+    growth: "—", 
+    revenue: "$0.00", 
+    newDiners: "0%", 
     returnDiners: "0%"
   });
 
   const [uploadedMenu, setUploadedMenu] = useState(null);
   
   const [accessibility, setAccessibility] = useState({
-    wheelchairEntrance: true,
-    accessibleParking: false,
+    wheelchairEntrance: true, 
+    accessibleParking: false, 
     wheelchairBathrooms: true,
-    brailleMenu: false,
-    stepFreeEntry: true,
+    brailleMenu: false, 
+    stepFreeEntry: true, 
     largePrintMenu: true,
-    hearingLoop: false,
-    assistanceDogs: true,
+    hearingLoop: false, 
+    assistanceDogs: true, 
     sensoryFriendly: false
   });
 
   const [allergens, setAllergens] = useState({
-    nuts: true,
-    gluten: true,
-    dairy: true,
+    nuts: true, 
+    gluten: true, 
+    dairy: true, 
     shellfish: false
   });
 
@@ -113,13 +97,29 @@ export default function MerchantDashboard() {
   const [editLabel, setEditLabel] = useState('');
   const [editType, setEditType] = useState('Square');
   const [editCapacity, setEditCapacity] = useState(4);
-  const [activeTableSchedule, setActiveTableSchedule] = useState([
-    { time: '5:00 PM - 7:00 PM', status: 'Available' },
-    { time: '7:00 PM - 9:00 PM', status: 'Available' },
-    { time: '9:00 PM - 11:00 PM', status: 'Available' }
-  ]);
 
-  // WebSocket Live Updates Stream Mutators
+  // --- RTK Query Hooks ---
+  const { data: detailsData } = useGetRestaurantDetailQuery(restaurantId, { skip: !restaurantId });
+  const { data: floorPlanData } = useGetFloorPlanQuery(restaurantId, { skip: !restaurantId });
+  const { data: campaignsData } = useGetRestaurantCampaignsQuery(restaurantId, { skip: !restaurantId });
+  const { data: liveBookingsData } = useGetLiveBookingsQuery(restaurantId, { skip: !restaurantId });
+  
+  // Extracted refetch allows us to trigger pipeline updates when timeframe UI switch occurs
+  const { data: analyticsData, isFetching: isAnalyticsLoading, refetch: refetchAnalytics } = useGetAnalyticsQuery(restaurantId, { 
+    skip: !restaurantId || activeTab !== 'analytics' 
+  });
+
+  // --- RTK Mutation Hooks ---
+  const [updateSettings] = useUpdateRestaurantSettingsMutation();
+  const [createRoom] = useCreateRoomMutation();
+  const [updateRoom] = useUpdateRoomMutation();
+  const [deleteRoom] = useDeleteRoomMutation();
+  const [createTable] = useCreateTableMutation();
+  const [updateTable] = useUpdateTableMutation();
+  const [deleteTable] = useDeleteTableMutation();
+  const [createCampaign] = useCreateCampaignMutation();
+
+  // Real-Time Socket Streams
   const handleIncomingBookingStream = useCallback((updatedBooking) => {
     setReservations(prev => {
       const exists = prev.some(b => b.id === updatedBooking.id);
@@ -134,86 +134,75 @@ export default function MerchantDashboard() {
     setTables(prev => prev.map(t => t.id === updatedTable.id ? { ...t, ...updatedTable } : t));
   }, []);
 
-  // Initialize Real-Time Synchronization Link with dynamic context ID
   const { isConnected } = useMerchantSocket(restaurantId, {
     onBookingUpdate: handleIncomingBookingStream,
     onTableStateUpdate: handleIncomingTableStream
   });
 
-  // Base Initialization Hook - Synchronizes structural business configurations from DB context
+  // --- Data Seeding Effects ---
   useEffect(() => {
-    if (!restaurantId) return;
+    if (detailsData?.name) {
+      setRestaurantName(detailsData.name);
+      setAccessibility(prev => ({
+        ...prev,
+        wheelchairEntrance: detailsData.is_wheelchair_accessible ?? prev.wheelchairEntrance,
+        sensoryFriendly: detailsData.sensory_friendly ?? prev.sensoryFriendly
+      }));
+    }
+  }, [detailsData]);
 
-    async function fetchDatabaseState() {
-      try {
-        const details = await MerchantService.getRestaurantDetails(restaurantId);
-        if (details && details.name) {
-          setRestaurantName(details.name);
-          setAccessibility(prev => ({
-            ...prev,
-            wheelchairEntrance: details.is_wheelchair_accessible ?? prev.wheelchairEntrance,
-            sensoryFriendly: details.sensory_friendly ?? prev.sensoryFriendly
-          }));
-        }
-        
-        const layoutData = await MerchantService.getFloorPlan(restaurantId);
-        if (layoutData) {
-          if (layoutData.rooms && layoutData.rooms.length > 0) setRoomConfig(layoutData.rooms);
-          if (layoutData.tables && layoutData.tables.length > 0) setTables(layoutData.tables);
-          if (layoutData.rooms && layoutData.rooms.length > 0) {
-            const primaryZone = layoutData.rooms[0].customLabel || layoutData.rooms[0].defaultLabel;
-            setActiveZone(primaryZone);
-          }
-        }
-
-        const campaign = await MerchantService.getActiveCampaign(restaurantId);
-        if (campaign) setActiveCampaign(campaign);
-
-        const freshBookings = await MerchantService.getLiveBookings(restaurantId);
-        if (freshBookings && freshBookings.length > 0) setReservations(freshBookings);
-
-      } catch (err) {
-        console.warn("Backend API gateway offline. Serving baseline local test mockups.", err.message);
+  useEffect(() => {
+    if (floorPlanData) {
+      if (floorPlanData.rooms) setRoomConfig(floorPlanData.rooms);
+      if (floorPlanData.tables) setTables(floorPlanData.tables);
+      if (floorPlanData.rooms?.length > 0 && !activeZone) {
+        setActiveZone(floorPlanData.rooms[0].customLabel || floorPlanData.rooms[0].defaultLabel);
       }
     }
-    fetchDatabaseState();
-  }, [restaurantId]);
+  }, [floorPlanData, activeZone]);
 
-  // Aggregated Analytics Selector Fetch Sync Handler
   useEffect(() => {
-    if (!restaurantId || activeTab !== 'analytics') return;
-
-    async function fetchAnalytics() {
-      setIsAnalyticsLoading(true);
-      try {
-        const data = await MerchantService.getAnalytics(restaurantId, analyticsTimeframe);
-        if (data) setTimeframeMetrics(data);
-      } catch (err) {
-        console.warn(`Analytics aggregation for ${analyticsTimeframe} offline. Serving localized mock fallbacks.`, err.message);
-        const fallbackMocks = {
-          'Today': { covers: "142", growth: "▲ +12.4%", revenue: "$4,850.00", newDiners: "38%", returnDiners: "62%" },
-          'Week': { covers: "1,105", growth: "▲ +5.2%", revenue: "$38,400.00", newDiners: "42%", returnDiners: "58%" },
-          'Month': { covers: "4,892", growth: "▼ -1.1%", revenue: "$165,200.00", newDiners: "35%", returnDiners: "65%" }
-        };
-        setTimeframeMetrics(fallbackMocks[analyticsTimeframe] || fallbackMocks['Today']);
-      } finally {
-        setIsAnalyticsLoading(false);
-      }
+    if (campaignsData?.campaigns?.length > 0) {
+      setActiveCampaign(campaignsData.campaigns[0]);
     }
-    
-    fetchAnalytics();
-  }, [analyticsTimeframe, activeTab, restaurantId]);
+  }, [campaignsData]);
 
+  useEffect(() => {
+    if (liveBookingsData?.bookings) {
+      setReservations(liveBookingsData.bookings);
+    } else if (Array.isArray(liveBookingsData)) {
+      setReservations(liveBookingsData);
+    }
+  }, [liveBookingsData]);
+
+  useEffect(() => {
+    if (analyticsData) {
+      setTimeframeMetrics(analyticsData);
+    }
+  }, [analyticsData]);
+
+  // Forces database load matching original dependency sequence when user toggles timeframe options
+  useEffect(() => {
+    if (restaurantId && activeTab === 'analytics') {
+      refetchAnalytics();
+    }
+  }, [analyticsTimeframe, activeTab, restaurantId, refetchAnalytics]);
+
+
+  // Operational Action Handlers 
   const handleSaveVenueSettings = async () => {
     try {
-      await MerchantService.updateRestaurantSettings(restaurantId, {
-        is_wheelchair_accessible: accessibility.wheelchairEntrance,
-        sensory_friendly: accessibility.sensoryFriendly
-      });
-      alert("⚡ SUCCESS: Operational criteria successfully synchronized across application servers.");
+      await updateSettings({
+        restaurantId,
+        settings: {
+          is_wheelchair_accessible: accessibility.wheelchairEntrance,
+          sensory_friendly: accessibility.sensoryFriendly
+        }
+      }).unwrap();
+      alert("⚡ Operational parameters committed to Postgres.");
     } catch (err) {
       console.error("Configuration persistence fault:", err);
-      alert(`⚠️ API Connection issue. Profile fallback updated locally only: ${err.message}`);
+      alert(`⚠️ Database save error: ${err.message || 'Unknown Error'}`);
     }
   };
 
@@ -227,17 +216,13 @@ export default function MerchantDashboard() {
 
   const occupancyData = useMemo(() => {
     const data = {};
-    activeZones.forEach(zone => {
-      data[zone] = { available: 0, total: 0 };
-    });
+    activeZones.forEach(zone => { data[zone] = { available: 0, total: 0 }; });
 
     tables.forEach(table => {
       const roomName = table.room;
       if (data[roomName]) {
         data[roomName].total += 1;
-        if (table.status === 'Available') {
-          data[roomName].available += 1;
-        }
+        if (table.status === 'Available') data[roomName].available += 1;
       }
     });
     return data;
@@ -245,105 +230,82 @@ export default function MerchantDashboard() {
 
   const handleUpdateRoomName = async (id, newName) => {
     try {
-      await MerchantService.updateRoom(id, { customLabel: newName });
+      await updateRoom({ roomId: id, roomData: { customLabel: newName } }).unwrap();
+      setRoomConfig(roomConfig.map(room => room.id === id ? { ...room, customLabel: newName } : room));
     } catch (err) {
-      console.warn("Granular endpoint skipped. Syncing locally.", err.message);
+      console.error("DB room update failed:", err);
+      alert("Could not synchronize new room name with database.");
     }
-    setRoomConfig(roomConfig.map(room => room.id === id ? { ...room, customLabel: newName } : room));
   };
 
   const handleRemoveRoom = async (id) => {
     try {
-      await MerchantService.deleteRoom(id);
+      await deleteRoom(id).unwrap();
+      const targets = roomConfig.filter(room => room.id !== id);
+      setRoomConfig(targets);
+      if (targets.length > 0) setActiveZone(targets[0].customLabel || targets[0].defaultLabel);
     } catch (err) {
-      console.warn("Granular endpoint skipped. Dropping locally.", err.message);
-    }
-    const targets = roomConfig.filter(room => room.id !== id);
-    setRoomConfig(targets);
-    if (targets.length > 0) {
-      setActiveZone(targets[0].customLabel || targets[0].defaultLabel);
+      console.error("DB room elimination failed:", err);
+      alert("Could not delete room record from the database.");
     }
   };
 
   const handleAddRoom = async () => {
-    const nextId = roomConfig.length > 0 ? Math.max(...roomConfig.map(r => r.id)) + 1 : 1;
-    const newRoomName = `Room ${nextId}`;
-    const payload = { id: nextId, defaultLabel: newRoomName, customLabel: '', tableCount: 0 };
-
+    const payload = { defaultLabel: `Room ${roomConfig.length + 1}`, customLabel: '', tableCount: 0 };
     try {
-      const committedRoom = await MerchantService.createRoom(restaurantId, payload);
-      if (committedRoom && committedRoom.id) {
-        setRoomConfig([...roomConfig, committedRoom]);
-        setActiveZone(committedRoom.customLabel || committedRoom.defaultLabel);
-        return;
-      }
+      const committedRoom = await createRoom({ restaurantId, roomData: payload }).unwrap();
+      setRoomConfig([...roomConfig, committedRoom]);
+      setActiveZone(committedRoom.customLabel || committedRoom.defaultLabel);
     } catch (err) {
-      console.warn("Database createRoom endpoint offline. Forking mock local index.", err.message);
+      console.error("DB room allocation failed:", err);
+      alert("Failed to insert new room record into your database.");
     }
-
-    setRoomConfig([...roomConfig, payload]);
-    setActiveZone(newRoomName);
   };
 
   const handleAllotNewTable = async (roomName) => {
-    const nextId = tables.length > 0 ? Math.max(...tables.map(t => t.id)) + 1 : 1;
     const tableIndex = tables.filter(t => t.room === roomName).length + 1;
-    const payload = { 
-      id: nextId, 
-      label: `Table-${tableIndex}`, 
-      type: 'Square', 
-      capacity: 4, 
-      status: 'Available', 
-      room: roomName 
-    };
-
+    const payload = { label: `Table-${tableIndex}`, type: 'Square', capacity: 4, status: 'Available', room: roomName };
     try {
-      const committedTable = await MerchantService.createTable(restaurantId, payload);
-      if (committedTable && committedTable.id) {
-        setTables([...tables, committedTable]);
-        return;
-      }
+      const committedTable = await createTable({ restaurantId, tableData: payload }).unwrap();
+      setTables([...tables, committedTable]);
     } catch (err) {
-      console.warn("Database createTable endpoint offline. Defaulting locally.", err.message);
+      console.error("DB table creation failed:", err);
+      alert("Failed to allocate new table record within database.");
     }
-
-    setTables([...tables, payload]);
   };
 
   const handleRemoveTable = async (tableId) => {
     try {
-      await MerchantService.deleteTable(tableId);
+      await deleteTable(tableId).unwrap();
+      setTables(prevTables => prevTables.filter(t => t.id !== tableId));
     } catch (err) {
-      console.warn("Database deleteTable endpoint unreachable.", err.message);
+      console.error("DB table dropping error:", err);
+      alert("Failed to drop table row from database context.");
     }
-    setTables(prevTables => prevTables.filter(t => t.id !== tableId));
   };
 
   const handleAdjustTableCapacity = async (tableId, change) => {
     const targetTable = tables.find(t => t.id === tableId);
     if (!targetTable) return;
     const targetCapacity = Math.max(1, targetTable.capacity + change);
-
     try {
-      await MerchantService.updateTable(tableId, { ...targetTable, capacity: targetCapacity });
+      await updateTable({ tableId, tableData: { ...targetTable, capacity: targetCapacity } }).unwrap();
+      setTables(prevTables => prevTables.map(t => t.id === tableId ? { ...t, capacity: targetCapacity } : t));
     } catch (err) {
-      console.warn("Database updateTable capacity sync failure.", err.message);
+      console.error("DB table capacity alignment error:", err);
+      alert("Capacity modification failed on the database server.");
     }
-
-    setTables(prevTables => prevTables.map(t => 
-      t.id === tableId ? { ...t, capacity: targetCapacity } : t
-    ));
   };
 
   const handleUpdateTableLabel = async (tableId, newLabel) => {
     const targetTable = tables.find(t => t.id === tableId);
     try {
-      await MerchantService.updateTable(tableId, { ...targetTable, label: newLabel });
+      await updateTable({ tableId, tableData: { ...targetTable, label: newLabel } }).unwrap();
+      setTables(tables.map(t => t.id === tableId ? { ...t, label: newLabel } : t));
     } catch (err) {
-      console.warn("Database updateTable label sync failure.", err.message);
+      console.error("DB label mutation error:", err);
+      alert("Failed to record structural layout rename in database.");
     }
-
-    setTables(tables.map(t => t.id === tableId ? { ...t, label: newLabel } : t));
   };
 
   const handleOpenOverlay = (table) => {
@@ -356,24 +318,20 @@ export default function MerchantDashboard() {
 
   const handleBroadcastFlashDiscount = async () => {
     try {
-      const databaseCampaign = await MerchantService.broadcastFlashCampaign(
+      const databaseCampaign = await createCampaign({ 
         restaurantId, 
-        1, 
-        discountPercent
-      );
+        tableQuota: 1, 
+        discountPercent 
+      }).unwrap();
       
       setActiveCampaign(databaseCampaign);
       const expiry = new Date(Date.now() + timeWindow * 60000);
       setActiveFlashDeals(prev => ({ ...prev, [selectedTable.id]: expiry }));
-      
-      alert(`⚡ SUCCESS: Campaign broadcasted live to user inboxes. ID: ${databaseCampaign.id}`);
+      alert(`⚡ SUCCESS: Marketing entity mapped to database! ID: ${databaseCampaign.id || 'N/A'}`);
       setSelectedTable(null);
     } catch (err) {
-      console.error("Campaign broadcast failed:", err);
-      const expiry = new Date(Date.now() + timeWindow * 60000);
-      setActiveFlashDeals(prev => ({ ...prev, [selectedTable.id]: expiry }));
-      alert(`⚠️ API Gateway offline. Simulated local voucher fallback activated for ${discountPercent}%.`);
-      setSelectedTable(null);
+      console.error("Campaign integration workflow rejected:", err);
+      alert(`⚠️ Campaign initialization blocked: ${err.message || 'Unknown Error'}`);
     }
   };
 
@@ -386,18 +344,20 @@ export default function MerchantDashboard() {
   const handleSaveTableDetails = async (e) => {
     e.preventDefault();
     const updatedProperties = { label: editLabel, type: editType, capacity: editCapacity };
-    
     try {
-      await MerchantService.updateTable(selectedTable.id, { ...selectedTable, ...updatedProperties });
+      await updateTable({ 
+        tableId: selectedTable.id, 
+        tableData: { ...selectedTable, ...updatedProperties } 
+      }).unwrap();
+      
+      setTables(tables.map(t => t.id === selectedTable.id ? { ...t, ...updatedProperties } : t));
+      setSelectedTable(null);
     } catch (err) {
-      console.error("Failed to commit advanced table specs to DB context:", err);
+      console.error("Advanced configurations upload halted:", err);
+      alert("Failed to commit physical dimensions adjustments to database grid.");
     }
-
-    setTables(tables.map(t => t.id === selectedTable.id ? { ...t, ...updatedProperties } : t));
-    setSelectedTable(null);
   };
 
-  // Secure validation gate if session criteria resolves falsy
   if (!restaurantId) {
     return (
       <div className="h-screen w-full bg-[#0B0F14] flex items-center justify-center font-mono">
@@ -411,7 +371,7 @@ export default function MerchantDashboard() {
 
   return (
     <div className="h-screen w-full bg-[#0B0F14] text-slate-100 font-sans antialiased flex flex-col overflow-hidden">
-      {/* Upper Global Command Module */}
+      {/* Upper Navigation Row */}
       <div className="flex-none p-4 sm:p-8 space-y-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex gap-1 bg-[#12171E] p-1 rounded-xl border border-[#1F2936]">
@@ -440,32 +400,24 @@ export default function MerchantDashboard() {
               ⚙️ Settings
             </button>
           </div>
-          
           <div className="flex items-center gap-4">
-            {/* WebSocket Network Status Connection Beacon */}
             <div className="flex items-center gap-2 bg-[#11161D] border border-[#1F2936] px-4 py-2 rounded-xl">
               <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-[#33e1cc] animate-pulse' : 'bg-red-500'}`} />
               <span className="text-[10px] font-mono tracking-wider uppercase text-slate-400">
                 {isConnected ? 'Live WebSockets Active' : 'Connecting Data Pipeline...'}
               </span>
             </div>
-            
-            {/* Sign-out Interactive Control Trigger */}
-            <button 
-              onClick={logout}
-              className="px-4 py-2 bg-[#171e26] border border-red-900/40 text-red-400 hover:bg-red-950/20 rounded-xl font-mono text-[10px] uppercase tracking-wider transition-colors"
-            >
+            <button onClick={logout} className="px-4 py-2 bg-[#171e26] border border-red-900/40 text-red-400 hover:bg-red-950/20 rounded-xl font-mono text-[10px] uppercase tracking-wider transition-colors">
               Logout 🚪
             </button>
           </div>
         </div>
-
         <div className="flex flex-col space-y-1">
           <DashboardHeader name={restaurantName} isLive={isLive} onToggleLive={() => setIsLive(!isLive)} />
         </div>
       </div>
       
-      {/* Core Adaptive Main View Content Grid */}
+      {/* Component Core Dynamic Grid Content Panels */}
       <div className="flex-1 w-full overflow-y-auto px-4 sm:px-8 pb-32">
         <div className="w-full">
           {activeTab === 'floor' && (
@@ -474,7 +426,6 @@ export default function MerchantDashboard() {
                 <ActivityLog reservations={reservations} />
                 <OccupancyMeter occupancyData={occupancyData} />
               </div>
-              
               <div className="lg:col-span-3 space-y-6">
                 <TableGrid 
                   tables={filteredTables} 
@@ -531,7 +482,7 @@ export default function MerchantDashboard() {
         </div>
       </div>
 
-      {/* Advanced Drawer Grid Overlay Management Control Panel */}
+      {/* Slide-out Table Management Drawer Component overlay */}
       {selectedTable && (
         <TableControl 
           selectedTable={selectedTable}
