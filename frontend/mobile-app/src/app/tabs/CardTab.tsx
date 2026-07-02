@@ -3,41 +3,50 @@ import { RestaurantSummary } from "@shared/types";
 import { useMemo, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
 import { useGetNearbyRestaurantsQuery } from "@shared/apiSlice";
+import { useAppSelector } from "@shared/hooks";
 import BookingModal from "@/components/BookingCheckout";
+import LocationComponent from "@/components/LocationComponent";
 
 type SortOption = "relevance" | "distance" | "price";
 
-// Hardcoded coordinates for testing
-// Example coords (Manhattan)
-const LATITUDE = 40.7589;
-const LONGITUDE = -73.9851;
-const USERCOORDS = {'lat': LATITUDE, 'lng': LONGITUDE};
+// Fallback coords used when device location is unavailable (e.g. simulator / GPS denied)
+const FALLBACK_LAT = 40.7589;
+const FALLBACK_LNG = -73.9851;
 
 const SORT_OPTIONS: { label: string; value: SortOption }[] = [
-  { label: "Relevance", value: "relevance" },
-  { label: "Distance",  value: "distance"  },
-  { label: "Price",     value: "price"     },
+  { label: "Quietest",     value: "relevance" },
+  { label: "Distance",     value: "distance"  },
+  { label: "Availability", value: "price"     },
 ];
 
 export default function CardListView() {
   const [sortBy, setSortBy] = useState<SortOption>("relevance");
   const [selectedRestaurant, setSelectedRestaurant] = useState<RestaurantSummary | null>(null);
 
+  const reduxLocation = useAppSelector((state) => state.user.location);
+  const lat = reduxLocation?.lat ?? FALLBACK_LAT;
+  const lng = reduxLocation?.lng ?? FALLBACK_LNG;
+
   const { data, isLoading, error } = useGetNearbyRestaurantsQuery({
-    lat: LATITUDE, 
-    lng: LONGITUDE,
-    radiusM: 150000
+    lat,
+    lng,
+    radiusM: 150000,
   });
 
   const restaurantsList = data?.restaurants ?? [];
+  const selectedCuisines = useAppSelector((state) => state.user.filters.cuisines);
 
   const sorted = useMemo(() => {
-    const list = [...restaurantsList];
-    if (sortBy === "distance")  list.sort((a, b) => a.distanceKm - b.distanceKm);
-    if (sortBy === "price")     list.sort((a, b) => a.priceLevel - b.priceLevel);
-    if (sortBy === "relevance") list.sort((a) => (a.hasFlashDeal ? -1 : 1));
+    let list = [...restaurantsList];
+    // Client-side cuisine filter — only apply when user has made a selection
+    if (selectedCuisines.length > 0) {
+      list = list.filter((r) => selectedCuisines.includes(r.cuisine.toLowerCase()));
+    }
+    if (sortBy === "distance")  list.sort((a, b) => a.distanceMeters - b.distanceMeters);
+    if (sortBy === "price")     list.sort((a, b) => b.availableTableCount - a.availableTableCount);
+    if (sortBy === "relevance") list.sort((a, b) => a.busynessScore - b.busynessScore);
     return list;
-  }, [data, sortBy]);
+  }, [data, sortBy, selectedCuisines]);
 
   // Render restaurant cards
   const renderCard = ({ item }: { item: RestaurantSummary }) => (
@@ -96,6 +105,16 @@ export default function CardListView() {
         </View>
       </View>
 
+      {/* Location banner — shown only when falling back to hardcoded coords */}
+      {!reduxLocation && (
+        <View className="mx-4 mt-2 mb-1 bg-table-surface border border-table-border rounded-xl px-4 py-3">
+          <Text className="text-[10px] text-table-gold mb-2">
+            Using default location. Enable GPS for local results.
+          </Text>
+          <LocationComponent />
+        </View>
+      )}
+
       <FlatList
         data={sorted}
         renderItem={renderCard}
@@ -112,7 +131,7 @@ export default function CardListView() {
       <BookingModal
         isVisible={selectedRestaurant !== null}
         restaurant={selectedRestaurant}
-        userCoordinates={USERCOORDS}
+        userCoordinates={{ lat, lng }}
         onClose={() => setSelectedRestaurant(null)}
       />
     </View>
