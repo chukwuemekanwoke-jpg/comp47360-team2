@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, TouchableOpacity } from "react-native";
 import * as Location from "expo-location";
+import { useAppDispatch, useAppSelector } from "@shared/hooks";
+import { setLocation as setSharedLocation, setLocationError } from "@shared/userSlice";
 
 export default function LocationComponent() {
-  const [location, setLocation] = useState<Location.LocationObjectCoords | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const location = useAppSelector((state) => state.user.location);
+  const errorMsg = useAppSelector((state) => state.user.locationError);
   const [loading, setLoading] = useState(true); // Starts as true on mount
 
   const fetchLocationData = async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        setErrorMsg("Location denied. Enable it in Settings.");
-        setLocation(null);
+        dispatch(setLocationError("Location denied. Enable it in Settings."));
         return;
       }
       const pos = await Location.getCurrentPositionAsync({});
-      setLocation(pos.coords);
-      setErrorMsg(null);
+      dispatch(setSharedLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }));
     } catch (e) {
-      setErrorMsg(e instanceof Error ? e.message : "Could not retrieve location.");
-      setLocation(null);
+      dispatch(setLocationError(e instanceof Error ? e.message : "Could not retrieve location."));
     } finally {
       setLoading(false);
     }
@@ -46,7 +46,7 @@ export default function LocationComponent() {
         <View className="flex-row items-center gap-2">
           <View className="w-2 h-2 rounded-full bg-table-live" />
           <Text className="text-xs text-table-cream font-bold">
-            {location.latitude.toFixed(4)}°N, {Math.abs(location.longitude).toFixed(4)}°W
+            {location.lat.toFixed(4)}°N, {Math.abs(location.lng).toFixed(4)}°W
           </Text>
         </View>
       ) : (

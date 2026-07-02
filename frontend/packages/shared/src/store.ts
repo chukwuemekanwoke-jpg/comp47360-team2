@@ -1,11 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { tableApi } from './apiSlice';
+import userReducer from './userSlice';
+import authReducer from './authSlice';
 
 export const store = configureStore({
   reducer: {
     [tableApi.reducerPath]: tableApi.reducer,
-    // TODO add other slices, including auth
+    user: userReducer,
+    auth: authReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(tableApi.middleware),

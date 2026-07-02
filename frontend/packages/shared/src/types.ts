@@ -35,6 +35,8 @@ export interface RestaurantSummary {
   distanceMeters: number;
   isWheelchairAccessible: boolean;
   sensoryFriendly: boolean;
+  capacity: number;
+  cuisine: string;
 }
 
 export interface RestaurantDetail extends RestaurantSummary {

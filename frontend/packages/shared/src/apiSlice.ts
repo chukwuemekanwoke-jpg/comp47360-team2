@@ -1,15 +1,24 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { Platform } from 'react-native'; 
 import { 
   UserProfile, RestaurantSummary, RestaurantDetail, EtaResult,
   Booking, OfferInboxItem, Campaign, TransportMode, BudgetTier
 } from './types';
 
+const getBaseUrl = () => {
+  const envUrl = process.env.EXPO_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL || process.env.VITE_API_URL;
+  if (envUrl) return envUrl;
+  if (typeof window === 'undefined' && typeof Platform !== 'undefined') {
+    return Platform.OS === 'android' ? 'http://10.0.2.2:3001/api/v1' : 'http://localhost:3001/api/v1';
+  }
+  return 'http://localhost:3001/api/v1';
+};
+
 export const tableApi = createApi({
   reducerPath: 'tableApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:3001/api/v1', // Fallback to Local
+    baseUrl: getBaseUrl(),
     prepareHeaders: (headers, { getState }) => {
-      // Access apps auth state dynamically. Replace with actual slice location if needed.
       const state = getState() as { auth?: { userId: string | null } };
       const userId = state.auth?.userId;
       
@@ -19,16 +28,16 @@ export const tableApi = createApi({
       return headers;
     },
   }),
-  // Tags track cache relationships so mutations trigger automatic data updates
   tagTypes: ['User', 'Restaurants', 'Bookings', 'Offers', 'Campaigns'],
   
   endpoints: (builder) => ({
     // --- API Contract 4.1 Health ---
     getHealth: builder.query<{ status: string }, void>({
-      query: () => ({ url: '/health', baseUrl: 'http://localhost:3001' }), // Ignores prefix context
+      query: () => ({ url: '/status' }),
     }),
 
     // ---  API Contract 4.2 Users & Onboarding ---
+    // POST /users has no auth requirement — user doesn't exist yet
     createUser: builder.mutation<UserProfile, { displayName: string }>({
       query: (body) => ({
         url: '/users',
@@ -38,23 +47,32 @@ export const tableApi = createApi({
       invalidatesTags: ['User'],
     }),
 
-    updatePreferences: builder.mutation<UserProfile, { budgetTier: BudgetTier; dietaryTags: string[]; lastLat?: number; lastLng?: number }>({
-      query: (body) => ({
+    updatePreferences: builder.mutation<UserProfile, { userId: string; budgetTier: BudgetTier; dietaryTags: string[]; lastLat?: number; lastLng?: number }>({
+      query: ({ userId, ...body }: { userId: string; budgetTier: BudgetTier; dietaryTags: string[]; lastLat?: number; lastLng?: number }) => ({
         url: '/users/me/preferences',
         method: 'PATCH',
         body,
+        headers: {
+          'X-User-Id': userId
+        }
       }),
-      invalidatesTags: ['User', 'Restaurants'], // Forces map refresh when preferences change
+      invalidatesTags: ['User', 'Restaurants'],
     }),
 
-    getProfile: builder.query<UserProfile, void>({
-      query: () => '/users/me',
-      providesTags: ['User'], // Provides user tag (State updated when invalidated: updatePreferences [invalidate] --> getProfile [provides])
+    getProfile: builder.query<UserProfile, {userId: string}>({
+      query: (userId: string) => ({
+        url: '/users/me',
+        method: 'GET',
+        headers: {
+          'X-User-Id': userId
+        }
+      }),
+      providesTags: ['User'],
     }),
 
     // --- API Contract 4.3 Discovery ---
     getNearbyRestaurants: builder.query<{ origin: { lat: number; lng: number }; radiusM: number; restaurants: RestaurantSummary[] }, { lat: number; lng: number; radiusM?: number; neighborhood?: string }>({
-      query: ({ lat, lng, radiusM = 1500, neighborhood }) => ({
+      query: ({ lat, lng, radiusM = 1500, neighborhood }: { lat: number; lng: number; radiusM?: number; neighborhood?: string }) => ({
         url: '/restaurants/nearby',
         params: neighborhood ? { lat, lng, radiusM, neighborhood } : { lat, lng, radiusM },
       }),
@@ -63,45 +81,52 @@ export const tableApi = createApi({
 
     // --- API Contract 4.4 Restaurant Detail & ETA ---
     getRestaurantDetail: builder.query<RestaurantDetail, string>({
-      query: (restaurantId) => `/restaurants/${restaurantId}`,
-      providesTags: (_result, _error, id) => [{ type: 'Restaurants', id }],
+      query: (restaurantId: string) => `/restaurants/${restaurantId}`,
+      providesTags: (_result: RestaurantDetail | undefined, _error: unknown, id: string) => [{ type: 'Restaurants', id }],
     }),
 
     getRestaurantEta: builder.query<EtaResult, { restaurantId: string; lat: number; lng: number; mode?: TransportMode }>({
-      query: ({ restaurantId, lat, lng, mode = 'walking' }) => ({
+      query: ({ restaurantId, lat, lng, mode = 'walking' }: { restaurantId: string; lat: number; lng: number; mode?: TransportMode }) => ({
         url: `/restaurants/${restaurantId}/eta`,
         params: { lat, lng, mode },
       }),
-      // Caches for exactly 5 minutes as per Contract Section 4.4 implementation notes
       keepUnusedDataFor: 300, 
     }),
 
     // --- API Contract 4.5 Bookings ---
-    createBooking: builder.mutation<Booking, { restaurantId: string; transportMode: TransportMode; userLat: number; userLng: number; offerId: string | null }>({
-      query: (body) => ({
+    createBooking: builder.mutation<Booking, { userId: string; restaurantId: string; transportMode: TransportMode; userLat: number; userLng: number; offerId: string | null }>({
+      query: ({ userId, ...body }: { userId: string; restaurantId: string; transportMode: TransportMode; userLat: number; userLng: number; offerId: string | null }) => ({
         url: '/bookings',
         method: 'POST',
         body,
+        headers: {
+          'X-User-Id': userId,
+        },
       }),
       invalidatesTags: ['Bookings', 'Restaurants', 'Offers'],
     }),
 
-    getMyBookings: builder.query<{ bookings: Booking[] }, void>({
-      query: () => '/users/me/bookings',
+    getMyBookings: builder.query<{ bookings: Booking[] }, { userId: string }>({
+      query: ({ userId }: { userId: string }) => ({
+        url: '/users/me/bookings',
+        method: 'GET',
+        headers: { 'X-User-Id': userId },
+      }),
       providesTags: ['Bookings'],
     }),
 
-    cancelBooking: builder.mutation<Booking, string>({
-      query: (bookingId) => ({
+    cancelBooking: builder.mutation<Booking, { bookingId: string; userId: string }>({
+      query: ({ bookingId, userId }) => ({
         url: `/bookings/${bookingId}/cancel`,
         method: 'POST',
+        headers: { 'X-User-Id': userId },
       }),
       invalidatesTags: ['Bookings', 'Restaurants', 'Offers'],
     }),
 
     // --- API Contract 4.6 Offers Inbox ---
     getOffersInbox: builder.query<{ offers: OfferInboxItem[] }, { status?: 'pending' } | void>({
-      query: (params) => ({
+      query: (params: { status?: 'pending' } | void) => ({
         url: '/users/me/offers',
         params: params?.status ? { status: params.status } : undefined,
       }),
@@ -109,7 +134,7 @@ export const tableApi = createApi({
     }),
 
     acceptOffer: builder.mutation<{ offerId: string; status: 'accepted'; booking: Booking }, string>({
-      query: (offerId) => ({
+      query: (offerId: string) => ({
         url: `/offers/${offerId}/accept`,
         method: 'POST',
       }),
@@ -118,7 +143,7 @@ export const tableApi = createApi({
 
     // --- API Contract 4.7 B-Side Campaigns ---
     createCampaign: builder.mutation<Campaign, { restaurantId: string; tableQuota: number; discountPercent: number }>({
-      query: ({ restaurantId, ...body }) => ({
+      query: ({ restaurantId, ...body }: { restaurantId: string; tableQuota: number; discountPercent: number }) => ({
         url: `/restaurants/${restaurantId}/campaigns`,
         method: 'POST',
         body,
@@ -127,13 +152,12 @@ export const tableApi = createApi({
     }),
 
     getRestaurantCampaigns: builder.query<{ campaigns: Campaign[] }, string>({
-      query: (restaurantId) => `/restaurants/${restaurantId}/campaigns`,
+      query: (restaurantId: string) => `/restaurants/${restaurantId}/campaigns`,
       providesTags: ['Campaigns'],
     }),
   }),
 });
 
-// Auto-generated runtime React Hooks
 export const {
   useGetHealthQuery,
   useCreateUserMutation,
