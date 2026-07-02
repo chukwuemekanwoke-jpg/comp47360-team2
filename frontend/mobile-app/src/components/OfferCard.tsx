@@ -16,24 +16,26 @@ function formatCountdown(seconds: number): string {
 }
 
 export default function OfferCard({ offer, onAccept, isAccepting }: OfferCardProps) {
+  // Tracks which server value secondsLeft was last synced to, so we can
+  // detect a fresh offer (new id, or a re-fetched secondsRemaining) during
+  // render instead of calling setState synchronously inside an effect.
+  const [syncedWith, setSyncedWith] = useState({ id: offer.id, seconds: offer.secondsRemaining });
   const [secondsLeft, setSecondsLeft] = useState(offer.secondsRemaining);
 
-  useEffect(() => {
+  if (offer.id !== syncedWith.id || offer.secondsRemaining !== syncedWith.seconds) {
+    setSyncedWith({ id: offer.id, seconds: offer.secondsRemaining });
     setSecondsLeft(offer.secondsRemaining);
-    if (offer.secondsRemaining <= 0) return;
+  }
+
+  useEffect(() => {
+    if (syncedWith.seconds <= 0) return;
 
     const interval = setInterval(() => {
-      setSecondsLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          return 0;
-        }
-        return prev - 1;
-      });
+      setSecondsLeft((prev) => (prev <= 1 ? 0 : prev - 1));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [offer.id, offer.secondsRemaining]);
+  }, [syncedWith]);
 
   const isExpired = !offer.canAccept || secondsLeft <= 0;
   const urgency = secondsLeft < 120;
