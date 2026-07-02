@@ -57,6 +57,7 @@ Server: `http://localhost:3001`
 |--------|------|------|---------|
 | POST | `/api/v1/bookings` | `X-User-Id` | Confirm reservation; decrements table count |
 | GET | `/api/v1/users/me/bookings` | `X-User-Id` | List the current user's bookings (newest first) |
+| GET | `/api/v1/restaurants/:restaurantId/bookings` | manager `X-User-Id` | List bookings for a restaurant (newest first) |
 
 ### Offers & campaigns (BE-13)
 
@@ -106,6 +107,10 @@ curl -X POST http://localhost:3001/api/v1/bookings \
 # List my bookings (Demo Diner)
 curl http://localhost:3001/api/v1/users/me/bookings \
   -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001'
+
+# B-side: list restaurant bookings (Demo Manager on The Maple Room)
+curl http://localhost:3001/api/v1/restaurants/550e8400-e29b-41d4-a716-446655441001/bookings \
+  -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440002'
 
 # B-side: create campaign (Demo Manager on The Maple Room)
 curl -X POST http://localhost:3001/api/v1/restaurants/550e8400-e29b-41d4-a716-446655441001/campaigns \
