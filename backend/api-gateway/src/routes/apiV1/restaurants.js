@@ -7,6 +7,7 @@ const { parseLatLng, parseRadiusM, parseTransportMode } = require("../../utils/v
 const { resolveEtaResult } = require("../../services/etaResolver");
 const { getCachedEta, setCachedEta } = require("../../utils/etaCache");
 const campaignsRouter = require("./campaigns");
+const restaurantBookingsRouter = require("./restaurantBookings");
 
 const router = Router();
 
@@ -53,6 +54,7 @@ async function maybeUpdateUserLocation(pool, req, lat, lng) {
 }
 
 router.use("/:restaurantId/campaigns", campaignsRouter);
+router.use("/:restaurantId/bookings", restaurantBookingsRouter);
 
 router.get(
   "/nearby",

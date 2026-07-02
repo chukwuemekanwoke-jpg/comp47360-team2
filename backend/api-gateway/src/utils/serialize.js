@@ -101,6 +101,13 @@ function toBookingJson(row) {
   return booking;
 }
 
+function toRestaurantBookingJson(row) {
+  return {
+    ...toBookingJson(row),
+    userDisplayName: row.user_display_name,
+  };
+}
+
 module.exports = {
   toUserJson,
   toRestaurantSummary,
@@ -108,4 +115,5 @@ module.exports = {
   toCampaignJson,
   toOfferInboxItem,
   toBookingJson,
+  toRestaurantBookingJson,
 };
