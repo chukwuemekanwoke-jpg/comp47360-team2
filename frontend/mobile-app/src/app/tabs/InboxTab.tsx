@@ -7,6 +7,9 @@ import OfferCard from "@/components/OfferCard";
 export default function InboxTab() {
   const userId = useAppSelector((state) => state.auth.userId);
 
+  // Polling stands in for push notifications for now — a push received here
+  // would call `refetch()` (or dispatch tableApi's cache invalidation) instead
+  // of waiting for the next interval. See mobile-app/push-notifications.md.
   const { data, isLoading, error, refetch } = useGetOffersInboxQuery(
     { status: "pending" },
     { skip: !userId, pollingInterval: 30000 }

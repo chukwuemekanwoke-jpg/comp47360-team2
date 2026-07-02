@@ -12,6 +12,7 @@ import { useProfile } from "@/context/ProfileContext";
 import { useCreateUserMutation, useUpdatePreferencesMutation } from "@shared/apiSlice";
 import { setUserId } from "@shared/authSlice";
 import { useAppDispatch } from "@shared/hooks";
+import { registerForPushNotificationsAsync } from "@/services/pushNotifications";
 
 type DiningStyle =
   | "casual"
@@ -74,6 +75,9 @@ export default function OnboardingScreen() {
       // Provide some pause
       const realUserId = userResponse.id;
       dispatch(setUserId(realUserId));
+
+      // Push notification integration point — stub only, see mobile-app/push-notifications.md
+      registerForPushNotificationsAsync(realUserId);
 
       // 2. Fire preference mutations using the real userId
       await triggerUpdatePreferences({

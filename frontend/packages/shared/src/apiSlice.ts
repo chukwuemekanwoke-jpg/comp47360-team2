@@ -30,29 +30,25 @@ export const tableApi = createApi({
   }),
   tagTypes: ['User', 'Restaurants', 'Bookings', 'Offers', 'Campaigns'],
   
-  endpoints: (builder: EndpointBuilder<any, any, any>) => ({
+  endpoints: (builder) => ({
     // --- API Contract 4.1 Health ---
     getHealth: builder.query<{ status: string }, void>({
-      query: (): { url: string} => {
-        return { url: '/status'};
-      },
+      query: () => ({ url: '/status' }),
     }),
 
     // ---  API Contract 4.2 Users & Onboarding ---
+    // POST /users has no auth requirement — user doesn't exist yet
     createUser: builder.mutation<UserProfile, { displayName: string }>({
-      query: ({userId , ...body}) => ({
+      query: (body) => ({
         url: '/users',
         method: 'POST',
         body,
-        headers: {
-          'X-User-Id': userId
-        }
       }),
       invalidatesTags: ['User'],
     }),
 
-    updatePreferences: builder.mutation<UserProfile, { userId:string, budgetTier: BudgetTier; dietaryTags: string[]; lastLat?: number; lastLng?: number }>({
-      query: ({userId, ...body}) => ({
+    updatePreferences: builder.mutation<UserProfile, { userId: string; budgetTier: BudgetTier; dietaryTags: string[]; lastLat?: number; lastLng?: number }>({
+      query: ({ userId, ...body }: { userId: string; budgetTier: BudgetTier; dietaryTags: string[]; lastLat?: number; lastLng?: number }) => ({
         url: '/users/me/preferences',
         method: 'PATCH',
         body,
@@ -86,7 +82,7 @@ export const tableApi = createApi({
     // --- API Contract 4.4 Restaurant Detail & ETA ---
     getRestaurantDetail: builder.query<RestaurantDetail, string>({
       query: (restaurantId: string) => `/restaurants/${restaurantId}`,
-      providesTags: (_result, _error, id: string) => [{ type: 'Restaurants', id }],
+      providesTags: (_result: RestaurantDetail | undefined, _error: unknown, id: string) => [{ type: 'Restaurants', id }],
     }),
 
     getRestaurantEta: builder.query<EtaResult, { restaurantId: string; lat: number; lng: number; mode?: TransportMode }>({
@@ -98,8 +94,8 @@ export const tableApi = createApi({
     }),
 
     // --- API Contract 4.5 Bookings ---
-    createBooking: builder.mutation<Booking, { userId:string; restaurantId: string; transportMode: TransportMode; userLat: number; userLng: number; offerId: string | null }>({
-      query: ({ userId, ...body }) => ({
+    createBooking: builder.mutation<Booking, { userId: string; restaurantId: string; transportMode: TransportMode; userLat: number; userLng: number; offerId: string | null }>({
+      query: ({ userId, ...body }: { userId: string; restaurantId: string; transportMode: TransportMode; userLat: number; userLng: number; offerId: string | null }) => ({
         url: '/bookings',
         method: 'POST',
         body,
@@ -110,21 +106,20 @@ export const tableApi = createApi({
       invalidatesTags: ['Bookings', 'Restaurants', 'Offers'],
     }),
 
-    getMyBookings: builder.query<{ bookings: Booking[] }, {userId: string}>({
-      query: (userId: string) => ({
+    getMyBookings: builder.query<{ bookings: Booking[] }, { userId: string }>({
+      query: ({ userId }: { userId: string }) => ({
         url: '/users/me/bookings',
         method: 'GET',
-        headers: {
-          'X-User-Id': userId,
-        },
+        headers: { 'X-User-Id': userId },
       }),
       providesTags: ['Bookings'],
     }),
 
-    cancelBooking: builder.mutation<Booking, string>({
-      query: (bookingId: string) => ({
+    cancelBooking: builder.mutation<Booking, { bookingId: string; userId: string }>({
+      query: ({ bookingId, userId }) => ({
         url: `/bookings/${bookingId}/cancel`,
         method: 'POST',
+        headers: { 'X-User-Id': userId },
       }),
       invalidatesTags: ['Bookings', 'Restaurants', 'Offers'],
     }),
