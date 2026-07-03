@@ -8,7 +8,6 @@ import SettingsPanel from '../components/SettingsPanel';
 import TableControl from '../components/TableControl';
 import OccupancyMeter from '../components/OccupancyMeter';
 import BookingsView from '../components/BookingsView';
-import { useMerchantSocket } from '../hooks/useMerchantSocket';
 import { useAuth } from '../context/AuthContext';
 
 // --- RTK Query Imports (Corrected to 3-level relative path with explicit extension) ---
@@ -120,24 +119,24 @@ export default function MerchantDashboard() {
   const [createCampaign] = useCreateCampaignMutation();
 
   // Real-Time Socket Streams
-  const handleIncomingBookingStream = useCallback((updatedBooking) => {
-    setReservations(prev => {
-      const exists = prev.some(b => b.id === updatedBooking.id);
-      if (exists) {
-        return prev.map(b => b.id === updatedBooking.id ? { ...b, ...updatedBooking } : b);
-      }
-      return [updatedBooking, ...prev];
-    });
-  }, []);
+  // const handleIncomingBookingStream = useCallback((updatedBooking) => {
+  //   setReservations(prev => {
+  //     const exists = prev.some(b => b.id === updatedBooking.id);
+  //     if (exists) {
+  //       return prev.map(b => b.id === updatedBooking.id ? { ...b, ...updatedBooking } : b);
+  //     }
+  //     return [updatedBooking, ...prev];
+  //   });
+  // }, []);
 
-  const handleIncomingTableStream = useCallback((updatedTable) => {
-    setTables(prev => prev.map(t => t.id === updatedTable.id ? { ...t, ...updatedTable } : t));
-  }, []);
+  // const handleIncomingTableStream = useCallback((updatedTable) => {
+  //   setTables(prev => prev.map(t => t.id === updatedTable.id ? { ...t, ...updatedTable } : t));
+  // }, []);
 
-  const { isConnected } = useMerchantSocket(restaurantId, {
-    onBookingUpdate: handleIncomingBookingStream,
-    onTableStateUpdate: handleIncomingTableStream
-  });
+  // const { isConnected } = useMerchantSocket(restaurantId, {
+  //   onBookingUpdate: handleIncomingBookingStream,
+  //   onTableStateUpdate: handleIncomingTableStream
+  // });
 
   // --- Data Seeding Effects ---
   useEffect(() => {
@@ -403,9 +402,9 @@ export default function MerchantDashboard() {
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 bg-[#11161D] border border-[#1F2936] px-4 py-2 rounded-xl">
               <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-[#33e1cc] animate-pulse' : 'bg-red-500'}`} />
-              <span className="text-[10px] font-mono tracking-wider uppercase text-slate-400">
+              {/* <span className="text-[10px] font-mono tracking-wider uppercase text-slate-400">
                 {isConnected ? 'Live WebSockets Active' : 'Connecting Data Pipeline...'}
-              </span>
+              </span> */}
             </div>
             <button onClick={logout} className="px-4 py-2 bg-[#171e26] border border-red-900/40 text-red-400 hover:bg-red-950/20 rounded-xl font-mono text-[10px] uppercase tracking-wider transition-colors">
               Logout 🚪
