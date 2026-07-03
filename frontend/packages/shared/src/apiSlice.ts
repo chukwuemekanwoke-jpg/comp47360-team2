@@ -177,7 +177,7 @@ export const tableApi = createApi({
     // --- API Contract 4.7 B-Side Campaigns ---
     createCampaign: builder.mutation<Campaign, { restaurantId: string; tableQuota: number; discountPercent: number }>({
       query: ({ restaurantId, ...body }: { restaurantId: string; tableQuota: number; discountPercent: number }) => ({
-        url: `/restaurants/${restaurantId}/campaigns/flash`,
+        url: `/restaurants/${restaurantId}/campaigns`,
         method: 'POST',
         body,
       }),

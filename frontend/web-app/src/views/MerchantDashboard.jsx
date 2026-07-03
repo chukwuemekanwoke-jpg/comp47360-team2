@@ -137,6 +137,7 @@ export default function MerchantDashboard() {
   //   onBookingUpdate: handleIncomingBookingStream,
   //   onTableStateUpdate: handleIncomingTableStream
   // });
+  const isConnected = false;
 
   // --- Data Seeding Effects ---
   useEffect(() => {
