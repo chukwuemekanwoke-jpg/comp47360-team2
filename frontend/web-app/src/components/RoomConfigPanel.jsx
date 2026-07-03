@@ -1,49 +1,70 @@
 
-export default function RoomConfigPanel({ roomConfig, onUpdateStatus, onUpdateName, onUpdateTableCount, onRemoveRoom, onClose }) {
+export default function RoomConfigPanel({ 
+  roomConfig, 
+  onUpdateName, 
+  onRemoveRoom,
+  onAddRoom 
+}) {
   return (
-    <div className="p-5 bg-zinc-950/60 border border-zinc-850 rounded-xl space-y-6 animate-fadeIn">
-      <div className="flex justify-between items-start border-b border-zinc-850 pb-4">
-        <div>
-          <h3 className="text-lg font-serif font-bold text-white">🏢 Rooms and Tables</h3>
-          <p className="text-sm text-zinc-500 mt-0.5">Dynamically add zones, toggle layout views, or customize table capacity scales (1-10).</p>
-        </div>
-        <button onClick={onClose} className="px-3 py-1.5 bg-zinc-900/40 border border-zinc-850 hover:text-zinc-200 text-zinc-400 text-sm font-mono rounded-lg transition-all">✕ Dismiss</button>
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-sm font-bold font-mono text-slate-100 flex items-center gap-2">
+          🎛️ Rooms and Tables
+        </h3>
+        <p className="text-[11px] font-mono text-slate-400 mt-0.5">
+          Dynamically add zones or customize labels.
+        </p>
       </div>
-      <div className="space-y-4">
+
+      <div className="space-y-3 max-w-2xl">
         {roomConfig.map((room) => (
-          <div key={room.id} className={`p-4 rounded-xl border transition-all ${room.isActive ? 'bg-zinc-950 border-zinc-850' : 'bg-zinc-900/10 border-zinc-900 opacity-50'}`}>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => onUpdateStatus(room.id)}
-                  className={`w-10 h-6 shrink-0 rounded-full p-0.5 transition-colors duration-200 ${room.isActive ? 'bg-amber-400 flex justify-end' : 'bg-zinc-800 flex justify-start'}`}
-                >
-                  <div className="bg-black w-5 h-5 rounded-full" />
-                </button>
-                <div>
-                  <span className="text-sm font-mono text-zinc-500 block">{room.defaultLabel}</span>
-                  <input 
-                    type="text" 
-                    value={room.customLabel} 
-                    disabled={!room.isActive}
-                    onChange={(e) => onUpdateName(room.id, e.target.value)}
-                    className="bg-transparent text-white text-base font-semibold border-b border-transparent hover:border-zinc-700 focus:border-amber-400 focus:outline-none py-0.5 transition-all w-36 sm:w-48 disabled:opacity-50"
-                  />
-                </div>
+          <div 
+            key={room.id} 
+            className="flex items-center justify-between p-3 rounded-xl border bg-[#0B0F14] border-[#1F2936] transition-all"
+          >
+            <div className="flex items-center gap-4 flex-1">
+              {/* Toggle switch removed, layout adjusted to fill space */}
+              <div className="flex flex-col flex-1">
+                <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider mb-0.5">
+                  {room.defaultLabel}
+                </span>
+                <input 
+                  type="text"
+                  value={room.customLabel || ''}
+                  onChange={(e) => onUpdateName(room.id, e.target.value)}
+                  className="bg-transparent border-none text-sm font-bold font-mono text-slate-100 focus:outline-none focus:ring-0 p-0 w-full placeholder-slate-600"
+                  placeholder={room.defaultLabel}
+                />
               </div>
-              <div className="flex items-center gap-4 self-end sm:self-auto">
-                <span className="text-sm font-mono text-zinc-400 uppercase tracking-wider">Tables</span>
-                <div className={`flex items-center border rounded-lg overflow-hidden mr-2 ${room.isActive ? 'border-zinc-800 bg-zinc-900' : 'border-zinc-900 bg-zinc-950 opacity-40'}`}>
-                  <button type="button" disabled={!room.isActive || room.tableCount <= 1} onClick={() => onUpdateTableCount(room.id, -1)} className="px-3 py-1.5 font-bold text-zinc-400 hover:bg-zinc-950 disabled:opacity-50 text-sm">-</button>
-                  <span className="font-mono text-white text-sm font-bold px-3 min-w-[32px] text-center">{room.tableCount}</span>
-                  <button type="button" disabled={!room.isActive || room.tableCount >= 10} onClick={() => onUpdateTableCount(room.id, 1)} className="px-3 py-1.5 font-bold text-zinc-400 hover:bg-zinc-950 disabled:opacity-50 text-sm">+</button>
-                </div>
-                <button type="button" onClick={() => onRemoveRoom(room.id)} className="w-8 h-8 rounded-full bg-zinc-950 border border-zinc-850 hover:border-rose-500/50 text-zinc-500 hover:text-rose-400 flex items-center justify-center transition-all text-sm">✕</button>
-              </div>
+            </div>
+
+            <div className="flex items-center pl-4 ml-4 border-l border-[#1F2936]">
+              <button 
+                onClick={() => onRemoveRoom(room.id)}
+                className="w-7 h-7 flex items-center justify-center rounded-full text-slate-400 hover:bg-[#1A222C] hover:text-red-400 transition-all text-xs border border-slate-700 hover:border-red-500/30"
+                title="Remove Room"
+              >
+                ✕
+              </button>
             </div>
           </div>
         ))}
+        
+        {roomConfig.length === 0 && (
+          <p className="text-xs font-mono text-slate-500 py-4 text-center border border-dashed border-[#1F2936] rounded-xl">
+            No rooms configured. Use the button below to add a zone.
+          </p>
+        )}
+
+        {/* New Add Room Button */}
+        <div className="pt-2">
+          <button
+            onClick={onAddRoom}
+            className="px-4 py-2.5 bg-[#12171E] hover:bg-[#1A222C] text-slate-300 border border-[#1F2936] rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-colors w-full flex items-center justify-center gap-2"
+          >
+            <span className="text-amber-500 text-lg leading-none">+</span> Add New Room
+          </button>
+        </div>
       </div>
     </div>
   );

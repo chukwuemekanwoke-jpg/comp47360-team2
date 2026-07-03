@@ -1,13 +1,24 @@
 import { Stack } from "expo-router";
+import { ProfileProvider } from "@/context/ProfileContext";
+import { Provider } from "react-redux";
+import { store } from '@shared/store';
+import "./../../global.css";
 
 export default function RootLayout() {
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ title: 'Dashboard' }} />
-      <Stack.Screen name="map-view" options={{ title: 'Map View' }} />
-      <Stack.Screen name="card-list-view" options={{ title: 'List View' }} />
-      <Stack.Screen name="business-dashboard" options={{ title: 'Business' }} />
-      <Stack.Screen name="profile" options={{ title: 'Profile'}} />
-    </Stack>
+    <Provider store={store}>
+      <ProfileProvider>
+        <Stack
+          screenOptions={{
+            headerStyle: { backgroundColor: '#09090b' },
+            headerTintColor: '#fbf7f2',
+            headerTitleStyle: { fontWeight: '700', fontSize: 16, letterSpacing: 0.3 },
+            headerShadowVisible: false,
+            contentStyle: { backgroundColor: '#000000' },
+          }}
+        >
+        </Stack>
+      </ProfileProvider>
+    </Provider>
   );
 }

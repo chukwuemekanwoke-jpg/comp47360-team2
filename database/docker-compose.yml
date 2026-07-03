@@ -23,5 +23,42 @@ services:
       retries: 5
       start_period: 10s
 
+    
+    networks:
+      - table-network
+
+  # Optional: pgAdmin for database management UI
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: table-pg-admin
+    restart: unless-stopped
+    
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    
+    depends_on:
+      postgres:
+        condition: service_healthy
+    
+    networks:
+      - table-network
+
 volumes:
   table_pg_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+
+networks:
+  table-network:
+    driver: bridge

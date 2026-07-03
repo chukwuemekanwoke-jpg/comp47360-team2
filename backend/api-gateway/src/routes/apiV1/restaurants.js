@@ -4,9 +4,10 @@ const { AppError, isUuid } = require("../../errors");
 const { getPool } = require("../../db/pool");
 const { toRestaurantSummary, toRestaurantDetail } = require("../../utils/serialize");
 const { parseLatLng, parseRadiusM, parseTransportMode } = require("../../utils/validate");
-const { buildEtaResult } = require("../../utils/geo");
+const { resolveEtaResult } = require("../../services/etaResolver");
 const { getCachedEta, setCachedEta } = require("../../utils/etaCache");
 const campaignsRouter = require("./campaigns");
+const restaurantBookingsRouter = require("./restaurantBookings");
 
 const router = Router();
 
@@ -29,6 +30,8 @@ const RESTAURANT_COLUMNS = `
   r.longitude,
   r.neighborhood,
   r.available_table_count,
+  r.capacity,
+  r.cuisine,
   r.busyness_score,
   r.is_wheelchair_accessible,
   r.sensory_friendly,
@@ -51,6 +54,7 @@ async function maybeUpdateUserLocation(pool, req, lat, lng) {
 }
 
 router.use("/:restaurantId/campaigns", campaignsRouter);
+router.use("/:restaurantId/bookings", restaurantBookingsRouter);
 
 router.get(
   "/nearby",
@@ -120,7 +124,7 @@ router.get(
       throw new AppError(404, "NOT_FOUND", "Restaurant not found");
     }
 
-    const etaResult = buildEtaResult({
+    const etaResult = await resolveEtaResult({
       restaurantId,
       transportMode,
       userLat: lat,

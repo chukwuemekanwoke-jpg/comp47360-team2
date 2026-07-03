@@ -7,7 +7,8 @@
     "database",
     "backend/api-gateway",
     "frontend/web-app",
-    "frontend/mobile-app"
+    "frontend/mobile-app",
+    "frontend/packages/shared"
   ],
   "scripts": {
     "db:up": "npm run db:up --workspace=table-database",
@@ -17,7 +18,8 @@
     "seed": "npm run seed --workspace=table-database",
     "dev:backend": "npm run dev --workspace=api-gateway",
     "dev:web": "npm run dev --workspace=table-app",
-    "dev:mobile": "npm run start --workspace=table",
+    "dev:mobile": "concurrently \"npm run dev:backend\" \"npm exec -w frontend/mobile-app -- expo start --tunnel\"",
+    "dev:mobile:clean": "npm exec -w frontend/mobile-app -- expo start -c --tunnel",
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:web\"",
     "install:all": "npm install"
   },

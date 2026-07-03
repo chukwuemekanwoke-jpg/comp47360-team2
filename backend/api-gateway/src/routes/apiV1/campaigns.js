@@ -6,7 +6,7 @@ const { AppError } = require("../../errors");
 const { getPool } = require("../../db/pool");
 const { toCampaignJson } = require("../../utils/serialize");
 const { validateCampaignBody } = require("../../utils/validate");
-const { createHeuristicOffers } = require("../../services/matchHeuristic");
+const { createCampaignOffers } = require("../../services/createCampaignOffers");
 
 const router = Router({ mergeParams: true });
 
@@ -88,7 +88,7 @@ router.post(
 
       const campaign = campaignRows[0];
 
-      await createHeuristicOffers(client, {
+      await createCampaignOffers(client, {
         campaignId: campaign.id,
         restaurant,
         tableQuota,

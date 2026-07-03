@@ -25,6 +25,8 @@ function toRestaurantSummary(row) {
     longitude: Number(row.longitude),
     neighborhood: row.neighborhood,
     availableTableCount: row.available_table_count,
+    capacity: row.capacity,
+    cuisine: row.cuisine,
     busynessScore: row.busyness_score != null ? Number(row.busyness_score) : 0,
     isWheelchairAccessible: row.is_wheelchair_accessible,
     sensoryFriendly: row.sensory_friendly,
@@ -92,7 +94,18 @@ function toBookingJson(row) {
     booking.confirmedAt = row.confirmed_at.toISOString();
   }
 
+  if (row.eta_source != null) {
+    booking.source = row.eta_source;
+  }
+
   return booking;
+}
+
+function toRestaurantBookingJson(row) {
+  return {
+    ...toBookingJson(row),
+    userDisplayName: row.user_display_name,
+  };
 }
 
 module.exports = {
@@ -102,4 +115,5 @@ module.exports = {
   toCampaignJson,
   toOfferInboxItem,
   toBookingJson,
+  toRestaurantBookingJson,
 };

@@ -13,18 +13,20 @@ const HAVERSINE_SQL = `
   )
 `;
 
-async function createHeuristicOffers(client, { campaignId, restaurant, tableQuota }) {
-  const { rows: candidates } = await client.query(
+async function findNearbyCandidates(client, { restaurant, limit }) {
+  const { rows } = await client.query(
     `WITH nearby_users AS (
        SELECT
          u.id,
+         u.budget_tier,
+         u.dietary_tags,
          ${HAVERSINE_SQL} AS distance_meters
        FROM users u
        WHERE u.last_lat IS NOT NULL
          AND u.last_lng IS NOT NULL
          AND u.id IS DISTINCT FROM $4
      )
-     SELECT id
+     SELECT id, budget_tier, dietary_tags, distance_meters
      FROM nearby_users
      WHERE distance_meters <= $3
      ORDER BY distance_meters ASC
@@ -34,27 +36,25 @@ async function createHeuristicOffers(client, { campaignId, restaurant, tableQuot
       restaurant.longitude,
       MATCH_RADIUS_M,
       restaurant.manager_user_id,
-      tableQuota,
+      limit,
     ]
   );
 
-  const offerIds = [];
-
-  for (const candidate of candidates) {
-    const { rows } = await client.query(
-      `INSERT INTO offers (campaign_id, user_id, expires_at)
-       VALUES ($1, $2, NOW() + ($3 * INTERVAL '1 second'))
-       ON CONFLICT (campaign_id, user_id) DO NOTHING
-       RETURNING id`,
-      [campaignId, candidate.id, FLASH_DEAL_TTL_SECONDS]
-    );
-
-    if (rows.length > 0) {
-      offerIds.push(rows[0].id);
-    }
-  }
-
-  return offerIds;
+  return rows;
 }
 
-module.exports = { createHeuristicOffers, FLASH_DEAL_TTL_SECONDS, MATCH_RADIUS_M };
+function toMlCandidates(rows) {
+  return rows.map((row) => ({
+    userId: row.id,
+    budgetTier: row.budget_tier,
+    dietaryTags: row.dietary_tags ?? [],
+    distanceMeters: Math.round(Number(row.distance_meters)),
+  }));
+}
+
+module.exports = {
+  FLASH_DEAL_TTL_SECONDS,
+  MATCH_RADIUS_M,
+  findNearbyCandidates,
+  toMlCandidates,
+};
