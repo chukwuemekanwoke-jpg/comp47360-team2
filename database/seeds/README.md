@@ -38,7 +38,7 @@ slate (drops stale rows from earlier attempts): `npm run db:reset && npm run mig
 
 ## Demo map origin (Story 2.1 — 1.5 km radius)
 
-Use this point in `GET /api/v1/restaurants/nearby` (when implemented):
+Use this point in `GET /api/v1/restaurants/nearby`:
 
 | Field | Value |
 |-------|--------|
@@ -48,7 +48,9 @@ Use this point in `GET /api/v1/restaurants/nearby` (when implemented):
 
 Near Times Square / Midtown — most seed restaurants fall within 1.5 km.
 
-## Test users (`X-User-Id` header)
+## Test users (dev / interim `X-User-Id` header)
+
+Until JWT login is wired on all clients, pass these UUIDs via `X-User-Id` or use matching accounts after `POST /api/v1/auth/login`.
 
 | Role | UUID | Notes |
 |------|------|--------|
