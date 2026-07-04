@@ -1,6 +1,6 @@
 # Tablé API Contract v0 (BE-3)
 
-**Status:** Draft for Sprint 1 sign-off · **Implements in:** Sprint 2–3 (`backend/api-gateway`)  
+**Status:** v0.1 · **Implementation:** `backend/api-gateway`  
 **Database:** [database/schema.md](../database/schema.md) (BE-2)  
 **Architecture:** [docs/adr/ADR-001.md](./adr/ADR-001.md) (BE-4)  
 **Data:** [docs/data-strategy.md](./data-strategy.md) (BE-5)  
@@ -12,24 +12,41 @@
 
 ### 1.1 Versioning
 
-- Path prefix: `/api/v1` (recommended when routes are implemented).
-- Sprint 1 health check may remain at `/health` without prefix until gateway refactor.
+- Path prefix: `/api/v1` for business routes.
+- Liveness: `GET /health` (no prefix). Readiness: `GET /api/v1/status`.
 
-### 1.2 Authentication (MVP stub)
+### 1.2 Authentication
 
-No real login in P0. Client sends a stable user id after dummy onboarding:
+Tablé uses **JWT** (Bearer token) for authenticated requests.
+
+**Register / login:**
+
+```http
+POST /api/v1/auth/register
+POST /api/v1/auth/login
+```
+
+Both return `{ "token": "<jwt>", "user": { ... } }`. Clients send:
+
+```http
+Authorization: Bearer <jwt>
+```
+
+**Interim dev header** (supported until all clients migrate):
 
 ```http
 X-User-Id: 550e8400-e29b-41d4-a716-446655440000
 ```
 
+The gateway accepts either `Authorization: Bearer` (preferred) or `X-User-Id` on protected routes.
+
 | Rule | Detail |
 |------|--------|
-| Missing header | `401` on protected routes |
-| Invalid UUID | `400` |
+| Missing/invalid auth | `401` on protected routes |
+| Invalid UUID (legacy header) | `400` |
 | User not found | `404` |
 
-`POST /api/v1/users` creates a user and returns `id` for subsequent requests.
+`POST /api/v1/users` remains for lightweight consumer onboarding (returns `id` for legacy flows).
 
 ### 1.3 JSON
 
@@ -231,7 +248,7 @@ Create consumer after dummy login.
 
 #### `PATCH /api/v1/users/me/preferences`
 
-**Auth:** `X-User-Id`  
+**Auth:** Bearer JWT or `X-User-Id` (interim)  
 
 **Request:**
 
@@ -253,9 +270,40 @@ Create consumer after dummy login.
 
 #### `GET /api/v1/users/me`
 
-**Auth:** `X-User-Id`  
+**Auth:** Bearer JWT or `X-User-Id` (interim)  
 
 **Response `200`:** user profile (same shape as create + preferences).
+
+#### `POST /api/v1/auth/register`
+
+**Auth:** none  
+
+**Request:**
+
+```json
+{
+  "email": "alex@example.com",
+  "password": "secure-password",
+  "displayName": "Alex"
+}
+```
+
+**Response `201`:** `{ "token": "<jwt>", "user": { ... } }`
+
+#### `POST /api/v1/auth/login`
+
+**Auth:** none  
+
+**Request:**
+
+```json
+{
+  "email": "alex@example.com",
+  "password": "secure-password"
+}
+```
+
+**Response `200`:** `{ "token": "<jwt>", "user": { ... } }`
 
 ---
 
@@ -265,7 +313,7 @@ Create consumer after dummy login.
 
 Returns restaurants within radius with `availableTableCount > 0`.
 
-**Auth:** optional (guest map allowed); if `X-User-Id` present, may update `lastLat`/`lastLng` from query.
+**Auth:** optional (guest map allowed); if Bearer JWT or `X-User-Id` present, may update `lastLat`/`lastLng` from query.
 
 **Query:**
 
@@ -323,7 +371,7 @@ Compute travel time once when opening restaurant page (per user story).
 
 #### `POST /api/v1/bookings`
 
-**Auth:** `X-User-Id`  
+**Auth:** Bearer JWT or `X-User-Id` (interim)  
 
 **Request:**
 
@@ -374,13 +422,19 @@ Include `offerId` when confirming from flash deal flow.
 
 #### `GET /api/v1/users/me/bookings`
 
-**Auth:** `X-User-Id`  
+**Auth:** Bearer JWT or `X-User-Id` (interim)  
 
 **Response `200`:** `{ "bookings": [ ... ] }`
 
+#### `GET /api/v1/restaurants/:restaurantId/bookings`
+
+**Auth:** manager Bearer JWT or `X-User-Id` (interim)  
+
+**Response `200`:** `{ "bookings": [ ... ] }` — newest first.
+
 #### `POST /api/v1/bookings/:bookingId/cancel` (P1 — Story 4.2)
 
-**Auth:** `X-User-Id`  
+**Auth:** Bearer JWT or `X-User-Id` (interim)  
 
 **Response `200`:** booking with `status: "cancelled"`; restore table count / offer state.
 
@@ -390,7 +444,7 @@ Include `offerId` when confirming from flash deal flow.
 
 #### `GET /api/v1/users/me/offers`
 
-**Auth:** `X-User-Id`  
+**Auth:** Bearer JWT or `X-User-Id` (interim)  
 
 **Query:** `status=pending` (optional filter)
 
@@ -418,7 +472,7 @@ Server runs expiry pass: `pending` + `now >= expiresAt` → `expired`, `canAccep
 
 #### `POST /api/v1/offers/:offerId/accept`
 
-**Auth:** `X-User-Id`  
+**Auth:** Bearer JWT or `X-User-Id` (interim)  
 
 Validates not expired, then returns booking payload or redirects client to `POST /bookings` with `offerId`.
 
@@ -440,7 +494,7 @@ Validates not expired, then returns booking payload or redirects client to `POST
 
 #### `POST /api/v1/restaurants/:restaurantId/campaigns`
 
-**Auth:** `X-User-Id` must match restaurant `managerUserId` (MVP: any manager seed user).
+**Auth:** manager Bearer JWT or `X-User-Id` (interim); must match restaurant `managerUserId` (MVP: any manager seed user).
 
 **Request:**
 
@@ -467,7 +521,7 @@ Validates not expired, then returns booking payload or redirects client to `POST
 }
 ```
 
-**Async (Sprint 3):** ML service creates `offers` for matched users (`POST` internal or job).
+On create, the gateway calls the ML match service and inserts `offers` for matched users (`expiresAt = now + 900s`).
 
 #### `GET /api/v1/restaurants/:restaurantId/campaigns`
 
@@ -534,14 +588,17 @@ Gateway then inserts `offers` with `expiresAt = now() + 900s`. If the ML service
 | P0 | GET | `/api/v1/users/me/offers` | 4.1 |
 | P0 | POST | `/api/v1/offers/:id/accept` | 4.1, 5.2 |
 | P0 | POST | `/api/v1/restaurants/:id/campaigns` | 5.2 |
+| P0 | GET | `/api/v1/restaurants/:id/bookings` | 5.2 |
 | P1 | GET | `/api/v1/restaurants/nearby?neighborhood=` | 2.2 |
 | P1 | POST | `/api/v1/bookings/:id/cancel` | 4.2 |
+| P1 | POST | `/api/v1/auth/register` | — |
+| P1 | POST | `/api/v1/auth/login` | — |
 
 ---
 
-## 7. Web prototype mapping
+## 7. Client type mapping
 
-Current mock types (`frontend/web-app/app/types.ts` on prototype branch) map to API fields:
+Shared TypeScript types (`frontend/packages/shared/src/types.ts`) map to API fields:
 
 | Mock field | API field |
 |------------|-----------|
@@ -554,19 +611,10 @@ Current mock types (`frontend/web-app/app/types.ts` on prototype branch) map to 
 
 ---
 
-## 8. Sprint 2 implementation order
-
-1. `POST /users`, `PATCH /users/me/preferences`
-2. `GET /restaurants/nearby`, `GET /restaurants/:id`
-3. `GET /restaurants/:id/eta`, `POST /bookings`
-4. `GET /users/me/offers`, `POST /offers/:id/accept`
-5. `POST /restaurants/:id/campaigns`
-
----
-
-## 9. Changelog
+## 8. Changelog
 
 | Version | Date | Notes |
 |---------|------|-------|
 | v0 | 2026-06-02 | Initial BE-3 contract aligned with schema v1 |
-| v0.1 | 2026-06-29 | Sync narrative with implementation: add `EtaResult`/`Booking` `source` field (BE-12 Google Routes API + estimate fallback); update ML match request to include `candidates[]` (BE-14) |
+| v0.1 | 2026-06-29 | Add `EtaResult`/`Booking` `source` field (BE-12 Google Routes API + estimate fallback); ML match `candidates[]` (BE-14) |
+| v0.2 | 2026-07-04 | JWT auth; merchant bookings endpoint; Routes API naming; align client types path |

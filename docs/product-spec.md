@@ -32,7 +32,7 @@ By integrating real-time geolocation, transit-validated routing, and machine lea
 
 - **Predictive Matching Pipeline:** A machine learning model that cross-references real-time location telemetry, historical dining behavior, and user profiles to pair a restaurant's flash deal with the most viable consumer.
     
-- **Dynamic Routing Calculator:** Integrates with external mapping APIs (e.g., Google Maps) to continuously evaluate live transit conditions, generating strict geofenced "reachable ranges" for active users.
+- **Dynamic Routing Calculator:** Integrates with the Google **Routes API** (`computeRouteMatrix`) when the user opens a restaurant or confirms a booking, with haversine fallback. Results drive strict ETA guardrails before a hold is granted.
     
 
 ## 3. Target User Personas

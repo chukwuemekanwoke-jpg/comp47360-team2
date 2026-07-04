@@ -1,18 +1,18 @@
 # Tablé Data Strategy (BE-5)
 
-**Status:** Sprint 1 · **Owners:** Backend Lead + Data & ML Lead  
+**Owners:** Backend Lead + Data & ML Lead  
 **Related:** [ADR-001](./adr/ADR-001.md) · [database/schema.md](../database/schema.md) · [api-contract-v0.md](./api-contract-v0.md)
 
 ---
 
 ## 1. Purpose
 
-This document satisfies COMP47360 Sprint 1 requirements to:
+This document defines:
 
-1. Select **≥2 Manhattan-relevant open datasets**
-2. Define how **busyness** and **table availability** are represented in the MVP
-3. Record **data quality** risks and mitigations
-4. Explain how **simulated “live”** updates replace production restaurant APIs (per business plan risk #2)
+1. **≥2 Manhattan-relevant open datasets**
+2. How **busyness** and **table availability** are represented in the MVP
+3. **Data quality** risks and mitigations
+4. How **simulated “live”** updates replace production restaurant APIs (per business plan risk #2)
 
 Tablé does **not** use paid OpenTable Partner APIs or Google Places as primary sources in MVP.
 
@@ -50,7 +50,7 @@ Historical signals (datasets below)
   Optional: cron or manual script updates Postgres + snapshots
 ```
 
-**Simulation rule (v0 — interpretable, Sprint 2 default):**
+**Simulation rule (v0 — interpretable default):**
 
 ```text
 base_tables = seed constant per restaurant (e.g. 4–12)
@@ -61,7 +61,7 @@ available_table_count = max(0, hour_factor - active_bookings)
 - `active_bookings` = count of `bookings` with status `pending` or `confirmed` for that restaurant.
 - Demo script can bump counts every N minutes to mimic “lulls” for flash deals.
 
-**ML enhancement (Sprint 3):** Data & ML replaces `f()` with a trained regressor/classifier using features in §5.
+**ML enhancement:** Data & ML replaces `f()` with a trained regressor/classifier using features in §5.
 
 ---
 
@@ -128,11 +128,11 @@ Restaurant `(lat, lng)` → taxi zone polygon (spatial join or nearest zone cent
 
 **Role:** Train **time-series / peak-hour** models (party size, lead time, cancellation patterns) aligned with business plan §3. Feeds FastAPI busyness forecast, not live inventory.
 
-**Status:** Exploratory in Sprint 1; EDA owner = Data & ML. Backend consumes **output scores** only.
+**Status:** Exploratory; EDA owner = Data & ML. Backend consumes **output scores** only.
 
 ---
 
-### Supplementary (Sprint 2+, not counted as primary)
+### Supplementary (not counted as primary)
 
 | Source | Use |
 |--------|-----|
@@ -150,7 +150,7 @@ flowchart LR
   B[Yellow Taxi 2020] --> Z[Zone hourly drops]
   Z --> S[busyness_score]
   S --> R
-  C[OpenTable-style CSV] --> M[ML model Sprint 3]
+  C[OpenTable-style CSV] --> M[ML model]
   M --> S
   R --> API[GET /restaurants/nearby]
   S --> API
@@ -166,17 +166,17 @@ flowchart LR
 |-------|-----|
 | External | `CAMIS` (inspections), TLC `LocationID` (taxi) |
 | Internal | `restaurants.id` UUID (BE-2) |
-| Mapping | `restaurant_external_ids` table optional in Sprint 2; or CSV column in seed file |
+| Mapping | `restaurant_external_ids` table optional; or CSV column in seed file |
 
 ### 4.3 ETL phases
 
-| Phase | Sprint | Output |
-|-------|--------|--------|
-| **P1 Sample** | 1 | Download ≤50k taxi rows + Manhattan inspections subset; notebook/CSV proof |
-| **P2 Seed** | 2 | `database/seeds/restaurants.sql` from inspections |
-| **P3 Aggregates** | 2 | Hourly zone busyness parquet/CSV |
-| **P4 Simulator** | 2–3 | Node or Python job writes `available_table_count` + `availability_snapshots` |
-| **P5 ML** | 3 | FastAPI serves `busyness_score` override |
+| Phase | Output |
+|-------|--------|
+| **P1 Sample** | Download ≤50k taxi rows + Manhattan inspections subset; notebook/CSV proof |
+| **P2 Seed** | `database/seeds/` from inspections |
+| **P3 Aggregates** | Hourly zone busyness parquet/CSV |
+| **P4 Simulator** | Node or Python job writes `available_table_count` + `availability_snapshots` |
+| **P5 ML** | FastAPI serves `busyness_score` override |
 
 ---
 
@@ -192,7 +192,7 @@ flowchart LR
 | `user.budget_tier`, `dietary_tags` | `users` (Story 1.1) |
 | `distance_meters` | Computed at match time |
 
-**Target (Sprint 3 options):**
+**Target options:**
 
 - Regression: `busyness_score`
 - Classification: `available_table_count > 0`
@@ -219,7 +219,7 @@ flowchart LR
 | Table / column | Populated from |
 |----------------|----------------|
 | `restaurants` | Dataset A seed (+ manual demo tweaks) |
-| `restaurants.busyness_score` | Dataset B aggregates + ML (Sprint 3) |
+| `restaurants.busyness_score` | Dataset B aggregates + ML |
 | `restaurants.available_table_count` | Simulation job − active bookings |
 | `availability_snapshots` | Append each simulation tick or hourly cron |
 | `users.dietary_tags`, `budget_tier` | App onboarding only |
@@ -228,7 +228,7 @@ flowchart LR
 
 ---
 
-## 8. Verification checklist (Sprint 1 — BE-5 done when)
+## 8. Verification checklist
 
 - [x] ≥2 named open datasets with URLs and Manhattan filter
 - [x] Busyness vs `available_table_count` defined
@@ -237,18 +237,17 @@ flowchart LR
 - [x] Join path to `restaurants` and ML features
 - [ ] Data & ML sign-off (comment in Jira / PR)
 - [x] Demo seed for development — `database/seeds/` (BE-9)
-- [ ] Optional: 1-page EDA notebook link in `ml-pipeline/notebooks/` (Sprint 2)
+- [ ] EDA notebook link in `ml-pipeline/notebooks/`
 
 ---
 
-## 9. Sprint 2 action items
+## 9. Remaining action items
 
 | Owner | Task |
 |-------|------|
-| Data & ML | Sample download + EDA notebook; taxi zone aggregation |
-| Backend | BE-9 demo seed (`database/seeds/`); later expand from inspections CSV |
+| Data & ML | Taxi zone aggregation; deploy trained model to FastAPI |
 | Backend | Simulator script updating `available_table_count` |
-| Backend | Wire `busyness_score` into `GET /restaurants/nearby` response |
+| Backend | Wire live `busyness_score` from ML into `GET /restaurants/nearby` |
 | Product | Paper wording: “simulated availability from open data” |
 
 ---
@@ -259,8 +258,8 @@ flowchart LR
 |------|------------|
 | Paid datasets | **Not used** |
 | Google Places | **Not** primary inventory (ADR-001-E) |
-| Google Distance Matrix | ETA only (BE-3), not busyness |
-| Storage | Local Postgres + files; Cloud SQL optional Sprint 5 |
+| Google Routes API | ETA only (BE-12), not busyness |
+| Storage | Local Postgres + files; Cloud SQL optional for deployment |
 
 ---
 
@@ -269,3 +268,4 @@ flowchart LR
 | Version | Date | Notes |
 |---------|------|-------|
 | v0 | 2026-06-02 | Initial BE-5 strategy |
+| v1 | 2026-07-04 | Routes API naming; align with ADR-001 rev 4 |

@@ -1,44 +1,41 @@
 # Tablé Frontend Strategy (FE-1)
 
-**Status:** Sprint 1 · **Owners:** Frontend Lead + Mobile Lead  
+**Owners:** Frontend Lead + Mobile Lead  
 **Related:** [ADR-001](./adr/ADR-001.md) · [User Stories](./user-stories)
 
 ---
 
 ## 1. Purpose
 
-This document outlines the frontend implementation plan for the Tablé application interface.
-It satisfies COMP47360 Sprint 1 requirements and Architecture Decisions outlined in [ADDR-001-I] to:
+This document outlines the frontend implementation plan for the Tablé application interface:
 
 1. Outline a **page flow** for implementing all acceptance criteria outlined in the user stories.
 2. Create **mockups** of user flow for both mobile and web platforms.
-2. Explore relevant technologies.
-3. Outline the initial **tech stack** used by both Web and Mobile Frontend platforms.
-4. Create initial **demos** using mocked API endpoints.
+3. Outline the **tech stack** used by both Web and Mobile Frontend platforms.
+4. Define **network sync** (REST polling) and **authentication** (JWT).
 5. Outline a **communication protocol** between Frontend + Mobile Leads.
-
 
 ---
 
-## 2.  View Architecture & Detailed Page Flow
+## 2. View Architecture & Detailed Page Flow
 
-To support both mobile and web deployment, the application uses shared page flow design.    
+To support both mobile and web deployment, the application uses shared page flow design.
 
 ![Page Flow](./assets/page-flow.png)
 
-
 ### 2.1 Authentication Gate
-*   **Login/Registration View:** The absolute point of entry where users must either sign in or complete the account creation workflow to initialize a valid session token. Unauthenticated incoming traffic is blocked from accessing application assets.
-> **Authentication Strategy:** Authentication is implemented using O-AUTH 2.0 framework and JSON Web Tokens, which are stateless and supported by both iOS, Android, and Web Clients. For biometric authentication (Mobile specific) Android and iOS this is a proposed addition but would require a platform dependent approach (Sprint 2 consideration).
 
+* **Login/Registration View:** Entry point where users sign in or register to obtain a JWT session.
+* Unauthenticated traffic is blocked from protected application routes.
 
-### 2.2 Index / Landing Dashboard 
+> **Authentication Strategy:** JWT issued by `POST /api/v1/auth/login` and `POST /api/v1/auth/register`. Clients store the token and send `Authorization: Bearer <jwt>` on protected API calls. The `X-User-Id` header remains supported for dev/demo until all clients migrate. Biometric login (mobile only) is a deferred optional enhancement.
+
+### 2.2 Index / Landing Dashboard
 
 #### Shared components
-*   **Preference Queries:** Features options to toggle allowed travel methods (e.g., walking, driving, transit) or culinary preferences (e.g. Italian, Indian, Vietnamese). Changing these travel parameters updates the arrival ETA and refreshes the predictive availability calculations, while user preferences filter the available results.
-*   **Layout Structure:** Users can toggle from the map interface into an organized, card-based list layout displaying search results **(retains query state)**
-> **Design Architecture Principle:** The search input fields, preference panels, and advanced filtering logic live within a parent container state that maps directly onto both the **Map View** and the **Card List View**.
 
+* **Preference Queries:** Toggle travel methods (walking, driving, transit) and culinary preferences. Changing travel mode refreshes ETA; preferences filter discovery results.
+* **Layout Structure:** Toggle between map and card list while retaining shared filter state.
 
 ```text
                   [ Shared Filter State Updated ]
@@ -48,29 +45,29 @@ To support both mobile and web deployment, the application uses shared page flow
 [ Map View Update ]                            [ List View Update ]
 - Repositions pins within boundaries            - Sorts cards by chosen metric
 - Adjusts routing overlay markers              - Renders details based on state
-- Updates predictive wait time badges          - Highlights flash deals instantly
+- Updates busyness badges on refetch           - Highlights flash deals on refetch
 ```
 
-
 #### Map View
-*   **Spatial Visualisation:** The resulting restaurants based on availability and preference criteria are displayed.
-*   **Spatial Discovery:** Once authenticated, users land directly on a primary map view displaying available Manhattan restaurants in real-time.
-> **[User Story 2](./user-stories/02-discovery.md):** To satisfy the acceptance criteria: User is prompted to and manually allowed to input a location if location services are disabled.       
-> **Location Services Updates:** are handled by the client side application polling the user device and sending an updated location to server side when a users given location changes by more than a given threshold (client side responsibility, minimizing post requests to server). For Mobile both platform (iOS & Android) updates are handled by expo-location package.
+
+* **Spatial Visualisation:** Restaurants with `availableTableCount > 0` within 1.5 km.
+* **Spatial Discovery:** Authenticated users land on a map of Manhattan restaurants; data refreshes via REST (`GET /restaurants/nearby`) on location change or pull-to-refresh.
+
+> **[User Story 2](./user-stories/02-discovery.md):** Manual neighbourhood input when GPS is denied.  
+> **Location updates:** Client polls device location (expo-location on mobile); sends updated coordinates when the user moves beyond a threshold.
 
 #### Card List View
-*   **Card Visualisation:** Card view provides a more detailed overview of the available restaraunts, including images of food (if available).
-*   **Sorting Parameters:** The list results view contains a sorting menu allowing users to prioritize results by criteria such as relevance, distance, or price tier.
+
+* **Card Visualisation:** Detailed restaurant cards including cuisine and distance.
+* **Sorting:** By relevance, distance, or price tier.
 
 ### 2.3 Business Demand Management Dashboard
->   **Conditional Rendering:** the business-side demand management dashboard, which manages 1-1 flash deals from the business owner is conditionally rendered depending on the status of the user (isBusiness).
 
+> **Conditional Rendering:** B-side dashboard (flash deals, occupancy) for restaurant managers (`isBusiness` / manager role).
 
 ---
 
 ## 3. Application Mockups
-
-Based on the central shared page flow application mockups for both Mobile and Web UI:
 
 <details>
 <summary><b>Step 1: Login & Authentication (Click to expand)</b></summary>
@@ -79,9 +76,9 @@ Based on the central shared page flow application mockups for both Mobile and We
 </details>
 
 <details>
-<summary><b>Step 1.2: Preference Setup - Customer </b></summary>
+<summary><b>Step 1.2: Preference Setup - Customer</b></summary>
 
-![Prefence Selection](./assets/preferences.png)
+![Preference Selection](./assets/preferences.png)
 </details>
 
 <details>
@@ -90,63 +87,72 @@ Based on the central shared page flow application mockups for both Mobile and We
 ![Map View](./assets/map-view.png)
 </details>
 
-> **Full Mockups:** can be f
 ---
 
 ## 4. Tech Stack & File Organisation
 
 ### Mobile Stack
-<img src="./assets/mobile-stack.png" alt="Mobile Stack" width="50%">    
 
-    
-*   **Mobile Engine:** **React Native** managed through **Expo** for clean multi-platform compilation.
-*   **Styling Consistency:** **NativeWind** (Tailwind CSS for React Native), ensuring that layouts, components, and search modules look identical and share styling code across both map and list layouts.
-*   **Network Layer:** Core data lifecycle queries call standard **REST APIs**, while push notifications and changing room availability update via **WebSockets** [ADDR-001-G] 
+<img src="./assets/mobile-stack.png" alt="Mobile Stack" width="50%">
 
-
-### Project organisation
-```text
-.\frontend/mobile-app/
-├── src/
-│   ├── app/
-│   │   ├── _layout.tsx (shared route views - nav bar)
-│   │   ├── index.tsx (dashboard hub)
-│   │   ├── map-view.tsx (map view)
-│   │   ├── card-list-view.tsx (card list view)
-│   │   └── business-dashboard.tsx (business dashboard)
-│   ├── screens/ (backup versions)
-│   │   ├── map-view.tsx
-│   │   ├── card-list-view.tsx
-│   │   ├── business-dashboard.tsx
-│   │   └── login.tsx
-│   └── components/
-│       └── preference-filters.tsx (shared preference filter elements)
-└── UI.md (documentation for all elements of the frontend)
-```
+* **Mobile Engine:** **React Native** via **Expo**.
+* **Styling:** **NativeWind** (Tailwind for React Native).
+* **State / API:** Redux Toolkit + `@shared/apiSlice` (RTK Query) → REST at `http://localhost:3001/api/v1`.
+* **Push notifications:** expo-notifications (optional); offers inbox also polled via REST.
 
 ### Web Stack
-<img src="./assets/web-stack.png" alt="Web Stack" width="50%">   
+
+<img src="./assets/web-stack.png" alt="Web Stack" width="50%">
+
+* **Web Engine:** **React 19** + **Vite** + **Tailwind CSS**.
+* **Routing:** React Router.
+* **B-side focus:** Merchant dashboard (`/merchant`), explore, profile setup.
+* **API integration:** Migrate from mock services to `@shared/apiSlice` (same contract as mobile).
+
+### Project organisation (mobile)
+
+```text
+frontend/mobile-app/
+├── src/
+│   ├── app/
+│   │   ├── _layout.tsx
+│   │   ├── index.tsx          # onboarding hub
+│   │   └── tabs/
+│   │       ├── MapTab.native.tsx
+│   │       ├── CardTab.tsx
+│   │       ├── InboxTab.tsx
+│   │       └── ProfileTab.tsx
+│   └── components/
+│       ├── BookingCheckout.tsx
+│       ├── LocationComponent.tsx
+│       └── PreferenceFilters.tsx
+frontend/packages/shared/      # apiSlice, types, auth slice
+```
+
 ---
 
 ## 5. Network Sync & State Management
 
 | Protocol | Use Case | Details |
-|----------|----------|---------| 
-| **REST Requests** | User modifications, authentication handshakes, structural search parameters | When a user filters by cuisine or travel type, a clean REST query pulls the prioritized data batch. |
-| **WebSocket Infrastructure** | Real-time updates to restaurant density and flash deals | Handles ongoing changes to local restaurant density values (busyness_score) and incoming flash deal distributions. If an operational simulation tick updates table data while a user is looking at a map, the UI alters the marker colors in real-time without requiring a page pull. |
+|----------|----------|---------|
+| **REST requests** | Auth, discovery, bookings, offers, campaigns | RTK Query caches responses; invalidates on mutations. |
+| **REST polling / refetch** | Offer inbox, map availability, busyness badges | Clients refetch on tab focus, pull-to-refresh, or interval (e.g. inbox). No WebSocket in MVP. |
+| **Push notifications (mobile)** | New flash deal alerts | Optional complement to inbox polling via expo-notifications. |
+
+Per [ADR-001-G](./adr/ADR-001.md), WebSockets are deferred; REST polling is the MVP approach.
+
+---
 
 ## 6. Collaboration Protocol
 
 ### Frontend & Mobile Lead Sync
-The Frontend Lead and Mobile Lead operate on **independent development cycles** with major checkpoints aligned weekly. Asynchronous communication occurs through **Discord** for real-time updates and changes. There is a weekly meeting for checkpoints:
 
-**Weekly Standup:**
-- **When:** Wednesday, 15 minutes
-- **Purpose:** Review incremental progress, discuss technical blockers, and synchronize styling across platforms
-- **Key Outcome:** Styling homogenization, alld color palettes, and layout patterns are validated and standardized during these sessions to ensure design consistency across mobile and web implementations.
+Independent development cycles with weekly alignment. Async updates on Discord.
 
-## 7. Other:
+**Weekly standup (Wednesday, 15 min):** progress, blockers, styling consistency across web and mobile.
 
-### Push Notification Strategy
-Push notifications (for Mobile) are managed platform independtly - with the exception of a few bespoke considerations - the client generates a push token using 'expo-notifications' which it sends to the server side to be used in any post requests to the expo client. 
-> Handling these notifications is done by wiring a listener to the main page of the application.
+---
+
+## 7. Push Notification Strategy
+
+Push notifications (mobile) use `expo-notifications`: the client registers a push token and sends it to the backend. A listener on the main app shell handles incoming notifications. Inbox state still syncs via REST for consistency.
