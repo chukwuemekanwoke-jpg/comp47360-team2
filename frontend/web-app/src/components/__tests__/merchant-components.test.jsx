@@ -35,7 +35,7 @@ describe('merchant dashboard components', () => {
       />
     );
 
-    expect(screen.getByText(/live activity log/i)).toBeInTheDocument();
+    expect(screen.getByText(/active bookings/i)).toBeInTheDocument();
     expect(screen.getByText('Ava Chen')).toBeInTheDocument();
     expect(screen.getByText(/19:30/)).toBeInTheDocument();
     expect(screen.getByText(/window table/i)).toBeInTheDocument();

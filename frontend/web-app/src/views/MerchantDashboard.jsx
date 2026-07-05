@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardHeader from '../components/DashboardHeader';
 import ActivityLog from '../components/ActivityLog';
@@ -36,7 +36,7 @@ const ALLERGEN_META = [
 
 export default function MerchantDashboard() {
   const navigate = useNavigate();
-  const { isAuthenticated, restaurantId, userId, logout } = useAuth() || {};
+  const { isAuthenticated, restaurantId, logout } = useAuth() || {};
 
   useEffect(() => {
     if (!isAuthenticated || !restaurantId) {
@@ -48,7 +48,8 @@ export default function MerchantDashboard() {
   const [isLive, setIsLive] = useState(true);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [restaurantName, setRestaurantName] = useState("Restaurant Control Panel");
-  const [activeCampaign, setActiveCampaign] = useState(null);
+  // activeCampaign value is not yet consumed by the UI; kept for the pending campaign-banner work.
+  const [, setActiveCampaign] = useState(null);
 
   // 100% Clean state initializations — No local fallback values
   const [reservations, setReservations] = useState([]);

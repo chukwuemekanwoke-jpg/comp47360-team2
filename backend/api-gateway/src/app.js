@@ -9,16 +9,14 @@ const apiV1Router = require("./routes/apiV1");
 function createApp() {
   const app = express();
 
-  // --- UPDATED CORS CONFIGURATION ---
   app.use(
     cors({
-      origin: 'http://localhost:5173', // Explicitly allow your Vite frontend
-      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      origin: config.corsOrigins,
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "X-User-Id", "Authorization"],
-      credentials: true
+      credentials: true,
     })
   );
-  // ----------------------------------
 
   app.use(express.json());
 

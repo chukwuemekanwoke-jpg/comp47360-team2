@@ -86,4 +86,5 @@ export function AuthProvider({ children }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- context + hook pair is the standard React context file shape
 export const useAuth = () => useContext(AuthContext);

@@ -6,7 +6,7 @@ export const MapService = {
   /**
    * Fetches mock localized active diners situated near the target restaurant parameters
    */
-  async getNearbyDiners(centerCoordinates, radiusKm = 1.0) {
+  async getNearbyDiners() {
     // Simulating remote data fetch with structured mock responses matching your UI dependencies
     return [
       { id: 'guest-101', name: 'Marcus Aurelius', lat: 40.7585, lng: -73.9845, distance: '120m', status: 'Active Walking' },

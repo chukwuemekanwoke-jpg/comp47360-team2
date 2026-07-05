@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { MerchantService } from '../services/MerchantService';
 
 const TRANSPORT_GLYPHS = {

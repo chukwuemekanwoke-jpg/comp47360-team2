@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink, Link } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ExploreView from './views/ExploreView';

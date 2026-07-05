@@ -1,5 +1,3 @@
-import React from 'react';
-
 /**
  * Cleanly displays database-synced reservations in a live feed view
  */

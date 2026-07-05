@@ -70,8 +70,12 @@ describe('discovery components', () => {
 
     expect(screen.getByText('Room 1')).toBeInTheDocument();
     expect(screen.getByText('Patio')).toBeInTheDocument();
-    expect(screen.getByText('50%')).toBeInTheDocument();
-    expect(screen.getByText('0%')).toBeInTheDocument();
+    expect(
+      screen.getByText((_, node) => node?.tagName.toLowerCase() === 'div' && node.textContent.replace(/\s+/g, ' ').trim() === '2 / 4')
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText((_, node) => node?.tagName.toLowerCase() === 'div' && node.textContent.replace(/\s+/g, ' ').trim() === '0 / 3')
+    ).toBeInTheDocument();
 
     rerender(<OccupancyMeter occupancyData={{}} />);
     expect(screen.getByText(/no zones configured/i)).toBeInTheDocument();
