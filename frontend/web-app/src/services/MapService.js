@@ -1,36 +1,71 @@
-// src/services/MapService.js
+/**
+ * Tablé Merchant Radar Map Layer Service Handler
+ */
 
 export const MapService = {
   /**
-   * FUTURE: Will call Google Places API mixed with our internal DB 
-   * to get restaurant data and accessibility metrics.
+   * Fetches mock localized active diners situated near the target restaurant parameters
    */
-  // eslint-disable-next-line no-unused-vars
-  getPlaces: async (searchQuery, location) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([
-          // We will eventually populate this with real Google Places payloads
-          { id: 1, name: "Osteria Morini", lat: 40.7225, lng: -74.0001, hasLullDeal: true },
-        ]);
-      }, 500); // simulate 500ms network delay
-    });
+  async getNearbyDiners(centerCoordinates, radiusKm = 1.0) {
+    // Simulating remote data fetch with structured mock responses matching your UI dependencies
+    return [
+      { id: 'guest-101', name: 'Marcus Aurelius', lat: 40.7585, lng: -73.9845, distance: '120m', status: 'Active Walking' },
+      { id: 'guest-102', name: 'Seneca Elder', lat: 40.7572, lng: -73.9860, distance: '340m', status: 'Approaching Vehicle' },
+      { id: 'guest-103', name: 'Hypatia Alexandria', lat: 40.7591, lng: -73.9830, distance: '610m', status: 'Stationary Delayed' }
+    ];
   },
 
   /**
-   * FUTURE: Will poll our backend WebSockets or Redis cache 
-   * for live, opted-in user GPS coordinates.
+   * Initializes a map instance on a target HTML container element
    */
-  // eslint-disable-next-line no-unused-vars
-  getNearbyDiners: async (centerCoords, radiusInMiles) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([
-          { id: 'u1', name: 'Alex M.', lat: 40.7590, lng: -73.9845, distance: '0.1 mi', status: 'Active Walking' }, 
-          { id: 'u2', name: 'Sarah T.', lat: 40.7565, lng: -73.9870, distance: '0.3 mi', status: 'Active Walking' }, 
-          { id: 'u3', name: 'Jordan K.', lat: 40.7542, lng: -73.9820, distance: '0.6 mi', status: 'Stationary' }, 
-        ]);
-      }, 800); // simulate 800ms network delay
-    });
+  initializeMap(containerId, centerCoordinates = [-73.935242, 40.730610], zoomLevel = 13) {
+    if (!containerId) throw new Error("Map initialization container target element ID is required.");
+    
+    console.log(`🌐 Spatial Radar Map initialized inside element #${containerId}`);
+    
+    return {
+      containerId,
+      center: centerCoordinates,
+      zoom: zoomLevel,
+      markers: [],
+      destroyed: false
+    };
+  },
+
+  /**
+   * Drops a localized custom push-pin or marker onto an active map instance grid matrix
+   */
+  addRadarMarker(mapInstance, markerData) {
+    if (!mapInstance || mapInstance.destroyed) return null;
+
+    const nextId = markerData.id || `marker-${Math.random().toString(36).substr(2, 9)}`;
+    const newMarker = {
+      id: nextId,
+      coordinates: markerData.coordinates || [0, 0],
+      title: markerData.title || "Target Node"
+    };
+
+    mapInstance.markers.push(newMarker);
+    return newMarker;
+  },
+
+  /**
+   * Clears a batch collection of tracking markers from the active view state layer
+   */
+  clearAllMarkers(mapInstance) {
+    if (!mapInstance) return;
+    mapInstance.markers = [];
+  },
+
+  /**
+   * Completely tears down map references to prevent lingering canvas memory leaks
+   */
+  destroyMapInstance(mapInstance) {
+    if (!mapInstance) return;
+    mapInstance.destroyed = true;
+    mapInstance.markers = [];
   }
 };
+
+// Fail-safe default export addition
+export default MapService;

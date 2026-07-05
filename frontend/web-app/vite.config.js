@@ -13,6 +13,15 @@ export default defineConfig({
       'react-dom': `${localNodeModules}react-dom`,
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  },
   test: {
     environment: 'jsdom',
     globals: true,
