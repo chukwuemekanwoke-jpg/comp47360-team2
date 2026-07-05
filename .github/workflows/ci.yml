@@ -29,6 +29,8 @@ jobs:
         run: npm ci 
       - name: Lint
         run: npm run lint --workspace=frontend/web-app
+      - name: Unit tests
+        run: npm run test:coverage --workspace=frontend/web-app
       - name: Build
         run: npm run build --workspace=frontend/web-app
 
@@ -65,7 +67,7 @@ jobs:
         run: npm run check:openapi-drift
       - name: Test
         working-directory: backend/api-gateway
-        run: npm test
+        run: npm run test:coverage
 
   ml-pipeline:
     name: ML pipeline (FastAPI install + import check)
@@ -78,6 +80,6 @@ jobs:
       - name: Install dependencies
         working-directory: ml-pipeline/fastapi-app
         run: pip install -r requirements.txt
-      - name: Import check
+      - name: Unit tests
         working-directory: ml-pipeline/fastapi-app
-        run: python -c "import main"
+        run: python -m pytest -q

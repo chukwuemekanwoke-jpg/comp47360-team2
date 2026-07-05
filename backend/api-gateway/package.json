@@ -7,6 +7,7 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "test": "jest",
+    "test:coverage": "jest --runInBand --coverage --coverageThreshold='{\"global\":{\"statements\":80,\"branches\":60,\"functions\":80,\"lines\":80}}'",
     "check:openapi-drift": "node scripts/check-openapi-drift.js"
   },
   "keywords": [],

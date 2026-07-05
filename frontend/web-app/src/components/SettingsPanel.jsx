@@ -1,3 +1,4 @@
+import { useState } from 'react';
 
 export default function SettingsPanel({ 
   uploadedMenu, 
@@ -6,8 +7,10 @@ export default function SettingsPanel({
   setAccessibility, 
   allergenMeta, 
   allergens, 
-  setAllergens 
+  setAllergens,
+  onSaveSettings 
 }) {
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleAccessibilityToggle = (key) => {
     setAccessibility(prev => ({ ...prev, [key]: !prev[key] }));
@@ -23,9 +26,42 @@ export default function SettingsPanel({
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!onSaveSettings) return;
+    
+    setIsSaving(true);
+    try {
+      await onSaveSettings();
+    } catch (err) {
+      console.error("Settings save error:", err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="w-full space-y-8 pb-12">
       
+      {/* PERSISTENCE ACTION BAR */}
+      <div className="bg-[#171E26] p-4 rounded-2xl border border-[#232D3A] shadow-xl flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="text-center sm:text-left">
+          <p className="text-xs font-mono uppercase tracking-wider text-slate-400">Database Sync Status</p>
+          <p className="text-[11px] font-mono text-slate-500 mt-0.5">Save changes to update live filtering indexes across user apps.</p>
+        </div>
+        <button
+          onClick={handleSubmit}
+          disabled={isSaving}
+          className={`w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs font-mono font-bold uppercase tracking-wider text-slate-950 transition-all shadow-md ${
+            isSaving 
+              ? 'bg-slate-600 opacity-50 cursor-not-allowed text-slate-300' 
+              : 'bg-[#33e1cc] hover:bg-[#2bc2b0] active:scale-[0.99]'
+          }`}
+        >
+          {isSaving ? '⏳ Syncing DB...' : '💾 Save Changes'}
+        </button>
+      </div>
+
       {/* SECTION 1: MENU DIGITIZATION */}
       <div className="bg-[#171E26] p-6 rounded-2xl border border-[#232D3A] shadow-xl space-y-4">
         <div className="border-b border-[#232D3A] pb-3">

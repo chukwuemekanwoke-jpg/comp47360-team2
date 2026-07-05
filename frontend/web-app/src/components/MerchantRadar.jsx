@@ -15,7 +15,8 @@ export default function MerchantRadar() {
   const [dealDiscount, setDealDiscount] = useState(15);
   const [dealDuration, setDealDuration] = useState(30);
   
-// eslint-disable-next-line no-unused-vars
+  // Dynamic map center verification linked to cross-component routing states
+  // eslint-disable-next-line no-unused-vars
   const [currentCenter, setCurrentCenter] = useState(() => {
     if (location.state?.targetLocation?.lat && location.state?.targetLocation?.lng) {
       return {
@@ -26,10 +27,12 @@ export default function MerchantRadar() {
     return DEFAULT_CENTER;
   });
 
+  // Zoom index scales dynamically depending on whether focused on specific guest contexts
   const [currentZoom] = useState(() => {
     return location.state?.targetLocation ? 16 : 15;
   });
 
+  // Polling loop synchronizing active live client coordinates on a 15-second cycle
   useEffect(() => {
     let isMounted = true;
 
@@ -39,8 +42,9 @@ export default function MerchantRadar() {
         const data = await MapService.getNearbyDiners(DEFAULT_CENTER, 1.0);
         
         if (isMounted) {
-          setNearbyCustomers(data);
+          setNearbyCustomers(data || []);
           
+          // Context validation handler matching customer states via deep links
           if (location.state?.customerName) {
             const matchedUser = data.find(u => u.name === location.state.customerName);
             if (matchedUser) setSelectedCustomer(matchedUser);

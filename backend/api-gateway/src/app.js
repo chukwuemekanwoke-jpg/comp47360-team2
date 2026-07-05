@@ -12,9 +12,12 @@ function createApp() {
   app.use(
     cors({
       origin: config.corsOrigins,
-      allowedHeaders: ["Content-Type", "X-User-Id"],
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "X-User-Id", "Authorization"],
+      credentials: true,
     })
   );
+
   app.use(express.json());
 
   app.use("/health", healthRouter);

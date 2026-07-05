@@ -1,0 +1,17 @@
+promotion_id,promotion_name,restaurant_id,cuisine,target_segment,discount_type,discount_value,retention_month,retention_evaluable_users,retained_next_month_users,next_month_retention_rate
+2,American Promo 2,50001835,American,all_users,fixed,12.0,2026-04,450,291,0.6466666666666666
+4,Korean Promo 4,50135792,Korean,all_users,percentage,0.25,2026-05,450,299,0.6644444444444444
+5,Chinese Promo 5,50146135,Chinese,all_users,percentage,0.25,2026-05,152,109,0.7171052631578947
+6,Latin American Promo 6,40391272,Latin American,all_users,percentage,0.1,2026-05,166,119,0.7168674698795181
+8,Japanese Promo 8,50074873,Japanese,all_users,percentage,0.2,2026-05,450,304,0.6755555555555556
+10,Other Promo 10,50181305,Other,all_users,percentage,0.1,2026-05,450,293,0.6511111111111111
+11,"Juice, Smoothies, Fruit Salads Promo 11",50063197,"Juice, Smoothies, Fruit Salads",new_users,percentage,0.2,2026-04,516,328,0.6356589147286822
+12,Japanese Promo 12,41628657,Japanese,all_users,fixed,10.0,2026-04,450,288,0.64
+14,Italian Promo 14,50047472,Italian,new_users,fixed,10.0,2026-04,211,120,0.5687203791469194
+14,Italian Promo 14,50047472,Italian,new_users,fixed,10.0,2026-05,45,25,0.5555555555555556
+15,Jewish/Kosher Promo 15,50053408,Jewish/Kosher,all_users,percentage,0.15,2026-04,286,194,0.6783216783216783
+15,Jewish/Kosher Promo 15,50053408,Jewish/Kosher,all_users,percentage,0.15,2026-05,164,115,0.7012195121951219
+16,Indian Promo 16,40557912,Indian,new_users,percentage,0.25,2026-04,600,386,0.6433333333333333
+17,Jewish/Kosher Promo 17,41177892,Jewish/Kosher,dormant_users,percentage,0.15,2026-05,63,41,0.6507936507936508
+18,Pizza Promo 18,50107938,Pizza,new_users,fixed,8.0,2026-05,168,76,0.4523809523809524
+19,American Promo 19,50082539,American,all_users,percentage,0.25,2026-05,450,299,0.6644444444444444
