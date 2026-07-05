@@ -1,0 +1,21 @@
+promotion_id,restaurant_id,cuisine,promotion_name,discount_type,discount_value,start_time,end_time,target_segment,created_at
+1,50150310,Coffee/Tea,Coffee/Tea Promo 1,percentage,0.25,2026-05-05,2026-05-12,dormant_users,2026-05-04
+2,50001835,American,American Promo 2,fixed,12.0,2026-03-14,2026-03-17,all_users,2026-03-10
+3,50150010,Coffee/Tea,Coffee/Tea Promo 3,percentage,0.15,2026-03-23,2026-04-02,dormant_users,2026-03-20
+4,50135792,Korean,Korean Promo 4,percentage,0.25,2026-04-21,2026-04-24,all_users,2026-04-18
+5,50146135,Chinese,Chinese Promo 5,percentage,0.25,2026-04-29,2026-05-04,all_users,2026-04-28
+6,40391272,Latin American,Latin American Promo 6,percentage,0.1,2026-04-28,2026-05-05,all_users,2026-04-24
+7,50094935,Donuts,Donuts Promo 7,fixed,10.0,2026-05-02,2026-05-16,dormant_users,2026-04-27
+8,50074873,Japanese,Japanese Promo 8,percentage,0.2,2026-04-23,2026-04-30,all_users,2026-04-21
+9,50044606,Sandwiches,Sandwiches Promo 9,percentage,0.1,2026-05-10,2026-05-15,dormant_users,2026-05-08
+10,50181305,Other,Other Promo 10,percentage,0.1,2026-04-20,2026-04-25,all_users,2026-04-14
+11,50063197,"Juice, Smoothies, Fruit Salads","Juice, Smoothies, Fruit Salads Promo 11",percentage,0.2,2026-03-05,2026-03-12,new_users,2026-03-02
+12,41628657,Japanese,Japanese Promo 12,fixed,10.0,2026-03-22,2026-03-29,all_users,2026-03-18
+13,50000207,Italian,Italian Promo 13,percentage,0.2,2026-05-08,2026-05-15,active_users,2026-05-07
+14,50047472,Italian,Italian Promo 14,fixed,10.0,2026-03-23,2026-04-02,new_users,2026-03-20
+15,50053408,Jewish/Kosher,Jewish/Kosher Promo 15,percentage,0.15,2026-03-28,2026-04-02,all_users,2026-03-26
+16,40557912,Indian,Indian Promo 16,percentage,0.25,2026-03-01,2026-03-04,new_users,2026-02-28
+17,41177892,Jewish/Kosher,Jewish/Kosher Promo 17,percentage,0.15,2026-04-11,2026-04-18,dormant_users,2026-04-09
+18,50107938,Pizza,Pizza Promo 18,fixed,8.0,2026-04-06,2026-04-16,new_users,2026-04-02
+19,50082539,American,American Promo 19,percentage,0.25,2026-04-10,2026-04-13,all_users,2026-04-08
+20,50013984,Bakery Products/Desserts,Bakery Products/Desserts Promo 20,percentage,0.2,2026-05-10,2026-05-15,dormant_users,2026-05-05
