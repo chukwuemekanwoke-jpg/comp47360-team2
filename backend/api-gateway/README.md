@@ -39,9 +39,11 @@ Server: `http://localhost:3001`
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
-| POST | `/api/v1/users` | none | Create user after dummy login |
-| GET | `/api/v1/users/me` | `X-User-Id` | Current user profile |
-| PATCH | `/api/v1/users/me/preferences` | `X-User-Id` | Update budget, dietary tags, location |
+| POST | `/api/v1/users` | none | Create user (legacy onboarding) |
+| POST | `/api/v1/auth/register` | none | Register; returns JWT *(planned)* |
+| POST | `/api/v1/auth/login` | none | Login; returns JWT *(planned)* |
+| GET | `/api/v1/users/me` | JWT or `X-User-Id` | Current user profile |
+| PATCH | `/api/v1/users/me/preferences` | JWT or `X-User-Id` | Update budget, dietary tags, location |
 
 ### Discovery (BE-11)
 
@@ -49,23 +51,25 @@ Server: `http://localhost:3001`
 |--------|------|------|---------|
 | GET | `/api/v1/restaurants/nearby` | optional `X-User-Id` | Restaurants within radius (`availableTableCount > 0`) |
 | GET | `/api/v1/restaurants/:restaurantId` | none | Restaurant detail for booking screen |
-| GET | `/api/v1/restaurants/:restaurantId/eta` | none | Travel time + `canBook` vs hold window |
+| GET | `/api/v1/restaurants/:restaurantId/eta` | none | Travel time (Google Routes API, BE-12) + `canBook` vs hold window |
 
-### Bookings (BE-12)
+### Bookings (BE-12, BE-16)
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
-| POST | `/api/v1/bookings` | `X-User-Id` | Confirm reservation; decrements table count |
+| POST | `/api/v1/bookings` | JWT or `X-User-Id` | Confirm reservation; decrements table count |
+| GET | `/api/v1/users/me/bookings` | JWT or `X-User-Id` | List the current user's bookings (newest first) |
+| GET | `/api/v1/restaurants/:restaurantId/bookings` | manager JWT or `X-User-Id` | List bookings for a restaurant (newest first) |
 
 ### Offers & campaigns (BE-13)
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
-| POST | `/api/v1/restaurants/:restaurantId/campaigns` | manager `X-User-Id` | Create flash-deal campaign + heuristic offers |
+| POST | `/api/v1/restaurants/:restaurantId/campaigns` | manager JWT or `X-User-Id` | Create flash-deal campaign + ML/heuristic offers |
 | GET | `/api/v1/restaurants/:restaurantId/campaigns` | manager | List campaigns |
 | GET | `/api/v1/restaurants/:restaurantId/campaigns/active` | manager | Active campaign or `null` |
-| GET | `/api/v1/users/me/offers` | `X-User-Id` | Offer inbox (`?status=pending` optional) |
-| POST | `/api/v1/offers/:offerId/accept` | `X-User-Id` | Accept offer → confirmed booking |
+| GET | `/api/v1/users/me/offers` | JWT or `X-User-Id` | Offer inbox (`?status=pending` optional) |
+| POST | `/api/v1/offers/:offerId/accept` | JWT or `X-User-Id` | Accept offer → confirmed booking |
 
 ### Examples
 
@@ -101,6 +105,14 @@ curl -X POST http://localhost:3001/api/v1/bookings \
   -H 'Content-Type: application/json' \
   -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001' \
   -d '{"restaurantId":"550e8400-e29b-41d4-a716-446655441001","transportMode":"walking","userLat":40.7589,"userLng":-73.9851}'
+
+# List my bookings (Demo Diner)
+curl http://localhost:3001/api/v1/users/me/bookings \
+  -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001'
+
+# B-side: list restaurant bookings (Demo Manager on The Maple Room)
+curl http://localhost:3001/api/v1/restaurants/550e8400-e29b-41d4-a716-446655441001/bookings \
+  -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440002'
 
 # B-side: create campaign (Demo Manager on The Maple Room)
 curl -X POST http://localhost:3001/api/v1/restaurants/550e8400-e29b-41d4-a716-446655441001/campaigns \
@@ -142,7 +154,7 @@ backend/api-gateway/
 │   │   ├── asyncHandler.js   # async route wrapper
 │   │   ├── errorHandler.js   # JSON errors (BE-3 shape)
 │   │   ├── notFound.js
-│   │   └── requireUser.js    # X-User-Id stub (for Sprint 2 routes)
+│   │   └── requireUser.js    # JWT + interim X-User-Id auth
 │   └── routes/
 │       ├── health.js
 │       └── apiV1/
@@ -158,7 +170,7 @@ backend/api-gateway/
 - **BE-4:** [docs/adr/ADR-001.md](../../docs/adr/ADR-001.md)
 - **BE-5:** [docs/data-strategy.md](../../docs/data-strategy.md)
 
-Sprint 2+ business routes (`/restaurants`, `/bookings`, …) mount under `src/routes/apiV1/`.
+Business routes (`/restaurants`, `/bookings`, …) mount under `src/routes/apiV1/`.
 
 ## Related tickets
 
@@ -167,6 +179,49 @@ Sprint 2+ business routes (`/restaurants`, `/bookings`, …) mount under `src/ro
 | BE-1 | Bootstrap + `/health` |
 | **BE-8** | Gateway foundation |
 | **BE-11** | Users + discovery (`/users`, `/restaurants/nearby`, `/restaurants/:id`) |
-| **BE-12** | ETA + bookings (`/restaurants/:id/eta`, `POST /bookings`) |
+| **BE-12** | ETA (Google Routes API + haversine fallback) + bookings (`/restaurants/:id/eta`, `POST /bookings`) |
 | **BE-13** | Offers + campaigns (inbox, accept, manager campaigns) |
-| BE-14+ | ML match integration, P1 routes |
+| **BE-14** | ML match integration (`POST /api/v1/match` via FastAPI on campaign create) |
+| **BE-16** | List my bookings (`GET /api/v1/users/me/bookings`) |
+| BE-15, BE-17+ | Availability simulator, remaining P1 routes |
+
+## ETA — Google Routes API (BE-12)
+
+`GET /restaurants/:id/eta` and `POST /bookings` resolve travel time via the
+Google **Routes API** (`computeRouteMatrix`) when `GOOGLE_MAPS_API_KEY` is set,
+mapping transport modes (`walking→WALK`, `driving→DRIVE`, `cycling→BICYCLE`,
+`transit→TRANSIT`). The response includes a `source` field:
+
+- `"google"` — live Routes API duration
+- `"estimate"` — local haversine + fixed-speed fallback (no key, timeout, or API error)
+
+This graceful degradation means bookings keep working offline. Enable the
+**Routes API** on the GCP project, then configure in `backend/api-gateway/.env`:
+
+```text
+GOOGLE_MAPS_API_KEY=your_key_here
+ETA_TIMEOUT_MS=3000
+```
+
+## ML match (BE-14)
+
+When a manager creates a campaign, the gateway:
+
+1. Queries nearby diners in Postgres (1.5 km radius)
+2. Calls FastAPI `POST {ML_SERVICE_URL}/api/v1/match` with `campaignId`, `restaurantId`, `candidateLimit`, and `candidates[]`
+3. Inserts `offers` for returned `matchedUserIds` (900s TTL)
+4. Falls back to nearest-distance matching if ML is unreachable
+
+Start the ML service before testing campaigns:
+
+```bash
+cd ml-pipeline/fastapi-app
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+```
+
+Set in `backend/api-gateway/.env`:
+
+```text
+ML_SERVICE_URL=http://localhost:8000
+```

@@ -28,15 +28,9 @@ function buildEtaMessage(etaMinutes, holdWindowMinutes, canBook) {
   return "You are too far to guarantee this table.";
 }
 
-function buildEtaResult({ restaurantId, transportMode, userLat, userLng, restaurant }) {
-  const distanceMeters = haversineMeters(
-    userLat,
-    userLng,
-    Number(restaurant.latitude),
-    Number(restaurant.longitude)
-  );
-  const etaMinutes = computeEtaMinutes(distanceMeters, transportMode);
-  const holdWindowMinutes = restaurant.hold_window_minutes;
+// Assemble the ETA response from an already-resolved duration (minutes).
+// `source` records how etaMinutes was obtained ("google" | "estimate").
+function finalizeEtaResult({ restaurantId, transportMode, etaMinutes, holdWindowMinutes, source }) {
   const canBook = etaMinutes <= holdWindowMinutes;
 
   return {
@@ -46,7 +40,27 @@ function buildEtaResult({ restaurantId, transportMode, userLat, userLng, restaur
     holdWindowMinutes,
     canBook,
     message: buildEtaMessage(etaMinutes, holdWindowMinutes, canBook),
+    source,
   };
+}
+
+// Local haversine + fixed-speed estimate (fallback when Google is unavailable).
+function buildEtaResult({ restaurantId, transportMode, userLat, userLng, restaurant }) {
+  const distanceMeters = haversineMeters(
+    userLat,
+    userLng,
+    Number(restaurant.latitude),
+    Number(restaurant.longitude)
+  );
+  const etaMinutes = computeEtaMinutes(distanceMeters, transportMode);
+
+  return finalizeEtaResult({
+    restaurantId,
+    transportMode,
+    etaMinutes,
+    holdWindowMinutes: restaurant.hold_window_minutes,
+    source: "estimate",
+  });
 }
 
 module.exports = {
@@ -54,5 +68,6 @@ module.exports = {
   haversineMeters,
   computeEtaMinutes,
   buildEtaMessage,
+  finalizeEtaResult,
   buildEtaResult,
 };

@@ -1,6 +1,6 @@
 # Tablé database schema v1 (BE-2)
 
-Entity-relationship overview for Sprint 1. Implementation: `migrations/001_initial_schema.sql`.
+Entity-relationship overview for MVP. Implementation: `migrations/001_initial_schema.sql`.
 
 ## ER diagram
 
@@ -27,6 +27,8 @@ erDiagram
     float latitude
     float longitude
     int available_table_count
+    int capacity
+    text cuisine
     int hold_window_minutes
   }
 
@@ -62,12 +64,12 @@ erDiagram
 | **4.1** Offers | 900 s TTL, disable accept when expired | `offers.expires_at`, `offers.status` (`pending` → `expired` via app or scheduled job) |
 | **5.2** Dashboard | Campaign `active` → `completed` when quota filled | `campaigns.table_quota`, `campaigns.tables_claimed`, `campaigns.status`; trigger revokes pending `offers` |
 
-### P1 (schema-ready, not required for Sprint 1 demo data)
+### P1 (schema-ready, optional for demo data)
 
 | Story | Schema support |
 |-------|----------------|
 | 2.2 Manual neighborhood search | `restaurants.neighborhood` |
-| 4.2 Cancel after accept | `bookings.status = 'cancelled'`, decrement logic in API (Sprint 3) |
+| 4.2 Cancel after accept | `bookings.status = 'cancelled'`, decrement logic in API |
 | 5.1 Discount 10–50% | `campaigns.discount_percent` CHECK constraint |
 | EDI | `restaurants.is_wheelchair_accessible`, `restaurants.sensory_friendly` |
 
@@ -75,7 +77,7 @@ erDiagram
 
 ### `users`
 
-Consumer profiles. Dummy auth can use fixed UUIDs in seed data.
+Consumer profiles. Auth via JWT (`Authorization: Bearer`); seed data may use fixed UUIDs with interim `X-User-Id` header.
 
 - `budget_tier`: `TIER_1` \| `TIER_2` \| `TIER_3` (UI labels € / €€ / €€€)
 - `dietary_tags`: PostgreSQL `TEXT[]` for ML features
@@ -85,6 +87,8 @@ Consumer profiles. Dummy auth can use fixed UUIDs in seed data.
 Venue master data for Manhattan prototype.
 
 - `available_table_count`: denormalized “live” count for map queries (updated by seeds or simulation scripts)
+- `capacity`: total table capacity (upper bound; `available_table_count <= capacity`)
+- `cuisine`: primary cuisine slug (e.g. `italian`, `thai`) for UI filters and ML features
 - `hold_window_minutes`: default **15** (Story 3.x)
 - `busyness_score`: optional 0–1 signal from ML pipeline
 - `manager_user_id`: links B-side dashboard to a user row
@@ -112,7 +116,7 @@ Standard or deal-backed reservations.
 
 ### `availability_snapshots`
 
-Append-only history for simulated availability (see [docs/data-strategy.md](../docs/data-strategy.md); Sprint 2+ ETL).
+Append-only history for simulated availability (see [docs/data-strategy.md](../docs/data-strategy.md)).
 
 ## Geospatial approach
 

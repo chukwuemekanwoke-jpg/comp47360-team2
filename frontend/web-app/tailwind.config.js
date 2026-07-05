@@ -8,14 +8,20 @@ export default {
     extend: {
       colors: {
         table: {
-          canvas: '#000000',
-          surface: '#09090b',
-          border: '#141416',
-          interactive: '#1f1f23',
-          cream: '#fbf7f2',
-          gold: '#ebd8c3',
-          live: '#10b981',
-          offer: '#f59e0b'
+          canvas: '#0F172A',
+          surface: '#111827',
+          surfaceElevated: '#172033',
+          border: '#243044',
+          interactive: '#1E293B',
+          text: '#F8FAFC',
+          textMuted: '#A8B3C7',
+          textSubtle: '#64748B',
+          primary: '#31D5D5',
+          primaryHover: '#67E8F9',
+          offer: '#F59E0B',
+          success: '#10B981',
+          warning: '#F59E0B',
+          danger: '#EF4444'
         }
       },
       fontFamily: {
@@ -23,7 +29,7 @@ export default {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'monospace']
       }
-    },
+    }
   },
   plugins: [],
 }

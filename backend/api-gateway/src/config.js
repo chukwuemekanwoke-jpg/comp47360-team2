@@ -20,6 +20,13 @@ const config = {
   databaseUrl: process.env.DATABASE_URL || null,
   corsOrigins: parseCorsOrigins(process.env.CORS_ORIGINS),
   nodeEnv: process.env.NODE_ENV || "development",
+  mlServiceUrl: process.env.ML_SERVICE_URL || "http://localhost:8000",
+  mlMatchTimeoutMs: Number(process.env.ML_MATCH_TIMEOUT_MS) || 5000,
+  googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || null,
+  googleRoutesUrl:
+    process.env.GOOGLE_ROUTES_URL
+    || "https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix",
+  etaTimeoutMs: Number(process.env.ETA_TIMEOUT_MS) || 3000,
 };
 
 module.exports = config;

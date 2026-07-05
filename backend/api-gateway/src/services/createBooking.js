@@ -1,5 +1,5 @@
 const { AppError } = require("../errors");
-const { buildEtaResult } = require("../utils/geo");
+const { resolveEtaResult } = require("./etaResolver");
 
 const BOOKING_COLUMNS = `
   id, user_id, restaurant_id, offer_id, campaign_id,
@@ -32,7 +32,7 @@ async function createBooking(client, {
     throw new AppError(409, "CONFLICT", "No tables available at this restaurant");
   }
 
-  const etaResult = buildEtaResult({
+  const etaResult = await resolveEtaResult({
     restaurantId,
     transportMode,
     userLat,
@@ -132,7 +132,7 @@ async function createBooking(client, {
     );
   }
 
-  return bookingRows[0];
+  return { ...bookingRows[0], eta_source: etaResult.source };
 }
 
 module.exports = { createBooking, BOOKING_COLUMNS };
