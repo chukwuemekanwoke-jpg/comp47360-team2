@@ -9,7 +9,7 @@ export default function DashboardHeader({ name, isLive, onToggleLive }) {
       {/* Left Column: Title Block */}
       <div className="flex flex-col items-start flex-shrink-0">
         <div className="text-[10px] font-mono font-bold tracking-widest text-[#e29c36] uppercase">
-          TABLÉ SLATE // MERCHANT DESK
+          TABLÉ
         </div>
         <h1 className="text-2xl font-black text-slate-100 mt-1 tracking-tight">
           {name}
@@ -46,7 +46,7 @@ export default function DashboardHeader({ name, isLive, onToggleLive }) {
           <span
             className={`inline-block h-4 w-4 transform rounded-full bg-[#0B0F14] transition-transform ${
               isLive ? 'translate-x-6' : 'translate-x-1'
-                }`}
+            }`}
           />
         </button>
       </div>

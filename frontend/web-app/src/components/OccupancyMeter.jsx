@@ -1,70 +1,90 @@
-// eslint-disable-next-line no-unused-vars
-import React from 'react';
-
 export default function OccupancyMeter({ occupancyData }) {
   return (
-    <div className="bg-[#11161D] border border-[#1F2936] rounded-xl p-5">
-      <div className="mb-5 border-b border-[#1F2936] pb-4">
-        <h2 className="text-sm font-bold font-mono text-slate-100 flex items-center gap-2 uppercase tracking-wider">
-          🍩 Restaurant Occupancy
-        </h2>
-        <p className="text-[11px] font-mono text-slate-400 mt-1">
-          Real-time visual breakdown by zone.
+    <div className="bg-[#11161D] border border-[#1F2936] rounded-xl p-6 shadow-xl w-full">
+      {/* Header matching original layout */}
+      <div className="mb-6">
+        <h3 className="text-xs font-bold font-mono tracking-wider text-slate-200 flex items-center gap-2 uppercase">
+           Restaurant Occupancy Overview
+        </h3>
+        <p className="text-[11px] font-mono text-slate-500 mt-1">
+          Real-time visual of table availability.
         </p>
       </div>
 
-      <div className="flex flex-col gap-3">
+      {/* Grid Container matching original layout */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-4">
         {Object.entries(occupancyData).map(([zone, data]) => {
           const percentage = data.total > 0 ? (data.available / data.total) * 100 : 0;
-          const radius = 22;
+          
+          // Adjusted scale constants for the larger ring matching the original layout style
+          const radius = 32;
           const circumference = 2 * Math.PI * radius;
           const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
-          let colorClass = "text-[#33e1cc]";
-          if (data.total > 0 && data.available === 0) colorClass = "text-red-400";
-          if (percentage === 100 && data.total > 0) colorClass = "text-[#e29c36]";
+          // Maintain color logic safely
+          let strokeColorClass = "text-[#33e1cc]";
+          if (data.total > 0 && data.available === 0) strokeColorClass = "text-red-400";
+          if (percentage === 100 && data.total > 0) strokeColorClass = "text-[#e29c36]";
 
           return (
-            <div key={zone} className="bg-[#0E1318] border border-[#1F2936] rounded-lg p-3 flex items-center justify-between hover:border-[#2A3644] transition-colors">
-              <div className="flex flex-col">
-                <span className="text-sm font-bold font-mono text-slate-100">{zone}</span>
-                <span className="text-[11px] font-mono text-slate-500 mt-0.5">
-                  <span className="text-slate-300 font-bold">{data.available}</span> / {data.total} Available
-                </span>
-              </div>
-              
-              <div className="relative flex items-center justify-center">
-                <svg className="w-12 h-12 transform -rotate-90">
+            <div 
+              key={zone} 
+              className="bg-[#12171E] border border-[#1F2936] rounded-xl p-4 flex flex-col items-center justify-between text-center min-h-[195px] shadow-sm hover:border-zinc-700 transition-colors"
+            >
+              {/* Zone Label at Top */}
+              <span className="text-xs font-mono font-bold tracking-tight text-slate-300 w-full truncate px-1">
+                {zone}
+              </span>
+
+              {/* Large Donut Graphic matching original layout */}
+              <div className="relative w-24 h-24 flex items-center justify-center my-1">
+                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 80 80">
+                  {/* Track ring */}
                   <circle
-                    cx="24" cy="24" r={radius}
-                    stroke="currentColor" strokeWidth="4" fill="transparent"
-                    className="text-[#1F2936]"
+                    cx="40"
+                    cy="40"
+                    r={radius}
+                    stroke="currentColor"
+                    strokeWidth="6"
+                    fill="transparent"
+                    className="text-[#1A222C]"
                   />
+                  {/* Progress ring */}
                   <circle
-                    cx="24" cy="24" r={radius}
-                    stroke="currentColor" strokeWidth="4" fill="transparent"
+                    cx="40"
+                    cy="40"
+                    r={radius}
+                    stroke="currentColor"
+                    strokeWidth="6"
+                    fill="transparent"
                     strokeDasharray={circumference}
                     strokeDashoffset={strokeDashoffset}
-                    className={`${colorClass} transition-all duration-700 ease-in-out`}
+                    className={`${strokeColorClass} transition-all duration-700 ease-in-out`}
                     strokeLinecap="round"
                   />
                 </svg>
-                <div className="absolute flex flex-col items-center justify-center">
-                   <span className="text-[9px] font-bold font-mono text-slate-200">
-                     {Math.round(percentage)}%
-                   </span>
+              </div>
+
+              {/* Fractional Numbers and Labels stacked at bottom */}
+              <div className="w-full">
+                <div className="text-lg font-mono font-black text-white tracking-wider">
+                  {data.available} <span className="text-xs font-normal text-slate-600">/</span> {data.total}
+                </div>
+                <div className="text-[9px] font-mono font-bold uppercase tracking-widest text-slate-500 mt-0.5">
+                  Tables Available
                 </div>
               </div>
             </div>
           );
         })}
-        
-        {Object.keys(occupancyData).length === 0 && (
-          <div className="py-6 text-center border border-[#1F2936] border-dashed rounded-lg">
-            <p className="text-xs font-mono text-slate-500">No zones configured.</p>
-          </div>
-        )}
       </div>
+
+      {/* Empty State Handler */}
+      {Object.keys(occupancyData).length === 0 && (
+        <div className="py-8 text-center border border-[#1F2936] border-dashed rounded-xl">
+          <p className="text-xs font-mono text-slate-500">No zones configured.</p>
+        </div>
+      )}
     </div>
   );
 }

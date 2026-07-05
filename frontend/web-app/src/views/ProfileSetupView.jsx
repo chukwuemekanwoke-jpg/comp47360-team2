@@ -5,31 +5,32 @@ import { OnboardingService } from '../services/OnboardingService';
 
 const PRESET_CUISINES = [
   'Italian',
-  'Sushi',
-  'French Bistro',
+  'French',
   'Mexican',
-  'American Progressive',
-  'Indian Contemporary',
+  'American',
+  'Indian',
   'Mediterranean',
   'Thai',
-  'Japanese Tavern',
-  'Steakhouse'
+  'Japanese',
+  'Chinese',
+  'Steakhouse',
+  'Pub Food',
 ];
 
 const ACCESSIBILITY_OPTIONS = [
   { key: 'stepFreeEntry', label: 'Step Free Entry' },
-  { key: 'spaciousRestroom', label: 'Spacious Restroom' },
+  { key: 'spaciousRestroom', label: 'Handicap Accessable Restroom' },
   { key: 'lowNoiseLevel', label: 'Low Noise Level' },
   { key: 'brailleMenuAvailable', label: 'Braille Menu Available' },
   { key: 'wideDoorways', label: 'Wide Doorways' },
-  { key: 'accessibleParking', label: 'Accessible Parking' }
+  { key: 'accessibleParking', label: 'Handicap Accessible Parking' }
 ];
 
 const ALLERGEN_OPTIONS = [
-  { key: 'peanutSafe', label: 'Peanut Safe Zone', icon: '🥜' },
-  { key: 'treeNutSafe', label: 'Tree Nut Safe Zone', icon: '🌲' },
-  { key: 'dairyFree', label: 'Dairy Free Options', icon: '🥛' },
-  { key: 'glutenSensitive', label: 'Gluten Sensitive Accommodation', icon: '🌾' }
+  { key: 'peanutSafe', label: 'Peanuts or Tree Nuts', icon: '🥜' },
+  { key: 'dairyFree', label: 'Dairy', icon: '🥛' },
+  { key: 'glutenSensitive', label: 'Gluten/Wheat', icon: '🌾' },
+  { key: 'crustaceanShellfish', label: 'Crustaceans/Shellfish', icon: '🦐' }
 ];
 
 export default function ProfileSetupView() {
@@ -58,9 +59,9 @@ export default function ProfileSetupView() {
 
   const [allergens, setAllergens] = useState({
     peanutSafe: false,
-    treeNutSafe: false,
     dairyFree: false,
-    glutenSensitive: false
+    glutenSensitive: false,
+    crustaceanShellfish: false
   });
 
   const [error, setError] = useState('');

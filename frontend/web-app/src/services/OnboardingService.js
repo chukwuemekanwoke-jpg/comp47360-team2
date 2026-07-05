@@ -7,10 +7,14 @@ export const OnboardingService = {
    * @param {string} onboardingData.restaurantName - The public name of the food establishment.
    * @param {string} onboardingData.restaurantAddress - The physical location coordinates/street address.
    * @param {string} onboardingData.cuisineType - The primary cuisine classification descriptor.
+   * @param {number} onboardingData.lat - Latitude (Required by your Postgres schema).
+   * @param {number} onboardingData.lng - Longitude (Required by your Postgres schema).
    */
   registerRestaurant: async (onboardingData) => {
     try {
-      const DATABASE_ENDPOINT = 'https://api.table-gateway.local/v1/merchant/register';
+      // Updated to point to your actual local Express gateway (adjust port if necessary)
+      const host = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
+      const DATABASE_ENDPOINT = `${host}/api/v1/auth/register`;
 
       const response = await fetch(DATABASE_ENDPOINT, {
         method: 'POST',
@@ -21,9 +25,12 @@ export const OnboardingService = {
         body: JSON.stringify({
           email: onboardingData.email,
           password: onboardingData.password,
-          restaurant_name: onboardingData.restaurantName,
-          address: onboardingData.restaurantAddress,
-          cuisine_type: onboardingData.cuisineType
+          name: onboardingData.restaurantName,
+          address_line: onboardingData.restaurantAddress,
+          cuisine_type: onboardingData.cuisineType,
+          // Note: Your backend schema strictly requires lat/lng to create a restaurant
+          latitude: onboardingData.lat || 0.0, 
+          longitude: onboardingData.lng || 0.0
         })
       });
 
@@ -32,7 +39,8 @@ export const OnboardingService = {
         throw new Error(errorPayload.message || `Database transaction rejected with status: ${response.status}`);
       }
 
-      return await response.json();
+      // Expected return: { token: 'jwt...', userId: 'uuid', restaurantId: 'uuid' }
+      return await response.json(); 
     } catch (error) {
       console.error("Critical Failure in Onboarding Database Persistence Layer:", error);
       throw error;
@@ -42,7 +50,8 @@ export const OnboardingService = {
   /**
    * Dispatches structural room mapping, allergen specifications, and physical accessibility arrays.
    * * @param {Object} profileData - The aggregated onboarding configurations.
-   * @param {string} profileData.email - Associated administrative token identifier.
+   * @param {string} profileData.restaurantId - The UUID returned from registerRestaurant.
+   * @param {string} profileData.userId - The UUID of the manager making the request.
    * @param {Array} profileData.rooms - Array of configured merchant zones and rooms.
    * @param {Array} profileData.cuisines - Up to 5 selected specialized food classifications.
    * @param {Object} profileData.accessibility - Toggled physical access structures.
@@ -50,19 +59,22 @@ export const OnboardingService = {
    */
   saveRestaurantProfile: async (profileData) => {
     try {
-      const PROFILE_ENDPOINT = 'https://api.table-gateway.local/v1/merchant/profile/setup';
+      const host = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '';
+      // Injecting the restaurantId dynamically into the URL route
+      const PROFILE_ENDPOINT = `${host}/api/v1/restaurants/${profileData.restaurantId}/profile`;
       
       const response = await fetch(PROFILE_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'X-User-Id': profileData.userId // Required by requireUser.js middleware
         },
         body: JSON.stringify({
-          email: profileData.email,
           rooms: profileData.rooms,
           cuisines: profileData.cuisines,
-          accessibility: profileData.accessibility,
+          is_wheelchair_accessible: profileData.accessibility?.wheelchair || false,
+          sensory_friendly: profileData.accessibility?.sensory || false,
           allergens: profileData.allergens
         })
       });

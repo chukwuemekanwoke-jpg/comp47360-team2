@@ -1,0 +1,1001 @@
+user_id,age_group,age,gender,budget_tier,preferred_cuisine_1,preferred_cuisine_2,dietary_restriction,signup_date,acquisition_channel,simulated_order_count
+1,25-34,32,female,low,Thai,French,none,2026-01-07,paid_search,2
+2,65+,83,female,low,Pizza,Latin American,vegetarian,2025-10-20,organic,10
+3,45-54,52,male,medium,Korean,Japanese,none,2025-10-12,restaurant_qr,0
+4,35-44,39,female,low,Asian/Asian Fusion,Latin American,none,2025-09-27,paid_search,4
+5,25-34,25,male,medium,Thai,Sandwiches,none,2026-01-18,organic,3
+6,25-34,31,male,medium,Korean,Chinese,none,2025-12-03,organic,5
+7,18-24,22,male,high,Asian/Asian Fusion,French,none,2025-11-07,restaurant_qr,6
+8,55-64,60,male,high,Chinese,Other,vegetarian,2025-11-23,organic,4
+9,35-44,40,female,medium,Pizza,Thai,none,2026-01-14,referral,1
+10,45-54,52,male,high,Donuts,Bakery Products/Desserts,none,2025-12-21,organic,2
+11,18-24,18,female,medium,"Juice, Smoothies, Fruit Salads",Coffee/Tea,none,2025-09-17,restaurant_qr,3
+12,65+,82,female,medium,Mediterranean,Bakery Products/Desserts,halal,2025-12-25,referral,4
+13,55-64,63,male,low,Sandwiches,Mexican,none,2025-12-30,social_media,3
+14,25-34,34,male,medium,Korean,Bakery Products/Desserts,none,2025-11-13,organic,3
+15,25-34,33,male,medium,Japanese,Asian/Asian Fusion,kosher,2025-09-16,organic,1
+16,25-34,34,female,high,Chicken,Indian,none,2026-01-24,paid_search,1
+17,25-34,34,female,medium,Italian,Chinese,none,2025-11-03,paid_search,3
+18,35-44,41,male,high,Mexican,Chicken,none,2025-12-06,organic,6
+19,35-44,35,female,medium,Italian,Thai,none,2025-10-27,organic,1
+20,25-34,31,male,low,Mexican,Sandwiches,none,2025-10-17,social_media,5
+21,35-44,44,male,high,Chicken,Donuts,none,2026-01-09,paid_search,5
+22,25-34,29,female,medium,French,Latin American,none,2025-12-01,organic,0
+23,25-34,30,female,medium,Thai,Coffee/Tea,none,2026-01-28,organic,4
+24,25-34,34,female,medium,Donuts,Latin American,none,2025-12-11,restaurant_qr,0
+25,35-44,41,female,low,Mexican,Bakery Products/Desserts,none,2026-01-19,paid_search,4
+26,45-54,49,male,medium,"Juice, Smoothies, Fruit Salads",French,none,2025-11-10,referral,5
+27,25-34,31,female,medium,Chinese,Pizza,vegetarian,2025-10-27,paid_search,4
+28,35-44,43,male,medium,Latin American,Italian,none,2025-09-28,organic,2
+29,35-44,37,female,high,Chinese,Italian,halal,2025-10-17,organic,9
+30,18-24,19,male,medium,Latin American,Chicken,none,2025-10-02,organic,3
+31,35-44,41,female,low,Pizza,"Juice, Smoothies, Fruit Salads",none,2025-11-16,referral,5
+32,25-34,26,female,medium,Chinese,Thai,none,2025-10-28,social_media,3
+33,18-24,24,female,high,Other,Chinese,none,2025-11-09,organic,14
+34,65+,84,male,low,Mediterranean,Indian,none,2025-12-28,restaurant_qr,2
+35,65+,71,male,low,Coffee/Tea,Indian,none,2025-10-30,organic,8
+36,55-64,57,male,low,American,Korean,vegetarian,2025-11-08,restaurant_qr,5
+37,25-34,26,female,low,Mexican,Mediterranean,none,2026-02-10,restaurant_qr,6
+38,18-24,20,female,high,Indian,Other,none,2026-02-14,organic,3
+39,45-54,54,female,medium,"Juice, Smoothies, Fruit Salads",Japanese,none,2025-10-08,organic,0
+40,35-44,41,female,medium,Sandwiches,Korean,kosher,2026-02-11,paid_search,2
+41,18-24,18,female,medium,Sandwiches,Bakery Products/Desserts,none,2025-11-02,social_media,10
+42,35-44,42,male,medium,Bakery Products/Desserts,Italian,none,2025-10-17,paid_search,0
+43,18-24,20,male,high,Latin American,Asian/Asian Fusion,vegetarian,2025-09-17,restaurant_qr,9
+44,55-64,56,male,high,Mexican,Donuts,none,2026-01-23,social_media,5
+45,25-34,27,male,medium,Other,Indian,vegetarian,2025-11-29,organic,0
+46,45-54,49,female,high,Bakery Products/Desserts,Pizza,none,2025-11-17,organic,9
+47,25-34,32,female,medium,Korean,Japanese,none,2025-11-22,social_media,7
+48,35-44,44,male,low,Coffee/Tea,Bakery Products/Desserts,vegetarian,2025-12-02,organic,4
+49,35-44,41,male,low,Thai,Indian,none,2025-09-24,referral,9
+50,25-34,31,female,medium,Sandwiches,Donuts,none,2026-01-17,organic,3
+51,65+,76,female,medium,American,Mediterranean,vegetarian,2025-12-16,organic,0
+52,45-54,51,female,high,Mexican,Korean,none,2025-10-08,organic,0
+53,65+,79,female,medium,Chinese,Mexican,none,2025-12-13,social_media,12
+54,55-64,62,male,high,Korean,Indian,none,2025-12-19,organic,7
+55,35-44,35,male,medium,American,Mexican,none,2025-09-16,referral,12
+56,65+,68,female,high,American,Chicken,gluten_free,2025-09-13,paid_search,6
+57,18-24,22,male,medium,French,Mediterranean,none,2025-09-07,referral,3
+58,25-34,30,male,medium,French,Thai,none,2025-10-13,social_media,3
+59,18-24,18,female,medium,Korean,Indian,none,2025-11-26,organic,7
+60,25-34,26,female,high,Donuts,French,vegetarian,2025-12-03,referral,5
+61,25-34,25,female,low,Pizza,Donuts,none,2025-11-19,organic,4
+62,25-34,34,female,high,Italian,Latin American,none,2025-10-07,paid_search,10
+63,55-64,56,male,low,Latin American,Donuts,kosher,2026-02-24,organic,3
+64,25-34,31,female,medium,Mediterranean,Bakery Products/Desserts,none,2025-10-31,referral,14
+65,25-34,27,male,high,Mexican,French,none,2025-09-12,restaurant_qr,4
+66,35-44,44,female,low,Korean,Coffee/Tea,none,2025-11-06,social_media,7
+67,25-34,26,female,low,Donuts,Japanese,none,2025-09-20,paid_search,7
+68,55-64,61,female,medium,Donuts,Pizza,none,2025-12-30,referral,7
+69,18-24,22,female,high,Latin American,Chicken,none,2025-10-09,organic,5
+70,65+,77,female,low,Donuts,Pizza,halal,2025-10-17,restaurant_qr,6
+71,45-54,46,male,high,Pizza,Donuts,none,2025-12-03,organic,1
+72,25-34,27,female,low,Donuts,Asian/Asian Fusion,none,2025-11-26,restaurant_qr,10
+73,18-24,20,male,high,Mediterranean,"Juice, Smoothies, Fruit Salads",none,2025-10-27,social_media,6
+74,55-64,61,female,high,Asian/Asian Fusion,Indian,vegetarian,2025-12-02,referral,8
+75,45-54,48,female,medium,Latin American,Coffee/Tea,none,2025-12-06,social_media,7
+76,45-54,45,female,medium,Pizza,Italian,none,2025-09-24,paid_search,3
+77,45-54,49,male,medium,Italian,"Juice, Smoothies, Fruit Salads",none,2025-10-15,social_media,0
+78,18-24,21,female,medium,Asian/Asian Fusion,Pizza,none,2025-11-01,organic,5
+79,25-34,33,female,low,Asian/Asian Fusion,Mediterranean,halal,2025-12-16,social_media,0
+80,18-24,21,male,low,Korean,Indian,halal,2025-11-30,social_media,20
+81,55-64,63,female,low,Mexican,Mediterranean,none,2025-12-22,referral,4
+82,35-44,44,female,medium,Korean,Bakery Products/Desserts,none,2025-10-05,paid_search,3
+83,25-34,33,female,low,Latin American,Mexican,none,2025-10-20,organic,2
+84,18-24,24,male,medium,Donuts,Indian,none,2026-02-07,organic,0
+85,25-34,31,male,high,Italian,Thai,none,2025-10-16,social_media,4
+86,25-34,28,female,medium,Pizza,Mediterranean,none,2026-01-03,organic,7
+87,45-54,49,female,medium,Chinese,Bakery Products/Desserts,none,2026-01-15,organic,4
+88,45-54,45,male,medium,Donuts,Other,none,2026-02-08,referral,5
+89,55-64,55,male,high,Coffee/Tea,Latin American,none,2026-02-22,social_media,10
+90,35-44,37,female,high,Korean,American,none,2025-10-30,paid_search,4
+91,18-24,22,male,high,Chinese,Mexican,none,2026-02-10,organic,5
+92,45-54,52,female,high,Thai,Japanese,none,2025-09-04,social_media,12
+93,45-54,46,male,low,Pizza,Italian,none,2025-12-14,organic,11
+94,35-44,38,male,high,Pizza,Italian,none,2026-01-22,social_media,5
+95,45-54,46,female,medium,Chicken,Latin American,gluten_free,2026-01-24,organic,1
+96,35-44,39,male,low,Chicken,Mexican,vegetarian,2025-09-05,referral,4
+97,35-44,43,male,high,Japanese,Bakery Products/Desserts,none,2025-09-21,paid_search,12
+98,35-44,35,male,low,Donuts,American,none,2025-12-17,paid_search,20
+99,18-24,22,female,medium,Asian/Asian Fusion,Mediterranean,halal,2025-11-04,social_media,4
+100,18-24,23,female,low,Asian/Asian Fusion,Pizza,none,2025-11-18,social_media,7
+101,18-24,24,female,medium,Latin American,Bakery Products/Desserts,none,2025-09-22,organic,0
+102,45-54,53,male,medium,Bakery Products/Desserts,Sandwiches,halal,2026-01-30,referral,6
+103,25-34,25,female,medium,Sandwiches,Other,vegetarian,2025-10-30,organic,5
+104,35-44,43,male,medium,Korean,"Juice, Smoothies, Fruit Salads",gluten_free,2026-01-07,restaurant_qr,1
+105,55-64,62,male,low,Indian,French,halal,2025-09-11,referral,7
+106,25-34,28,female,high,"Juice, Smoothies, Fruit Salads",American,halal,2026-01-27,organic,2
+107,35-44,44,male,low,Korean,Chicken,none,2025-10-31,referral,8
+108,45-54,49,female,medium,Sandwiches,Japanese,none,2025-11-09,paid_search,4
+109,25-34,29,male,high,Italian,Chinese,none,2025-12-30,organic,15
+110,18-24,20,female,high,Donuts,Other,none,2026-02-07,restaurant_qr,7
+111,25-34,30,female,medium,Italian,Donuts,none,2026-01-15,social_media,3
+112,25-34,31,female,medium,Indian,Italian,none,2026-01-05,paid_search,4
+113,65+,78,female,high,Thai,Mediterranean,none,2025-10-18,paid_search,2
+114,55-64,62,male,high,Japanese,Chinese,none,2025-11-04,organic,2
+115,45-54,46,male,medium,Italian,Mediterranean,none,2025-10-22,restaurant_qr,10
+116,55-64,63,male,low,Mediterranean,Italian,none,2025-09-17,organic,7
+117,55-64,61,female,low,Sandwiches,Thai,none,2025-09-21,organic,7
+118,25-34,28,female,low,Mexican,Korean,none,2025-11-09,paid_search,6
+119,55-64,58,female,medium,Donuts,Italian,none,2026-01-17,paid_search,8
+120,35-44,42,male,low,Bakery Products/Desserts,Thai,none,2025-10-25,paid_search,4
+121,55-64,58,male,medium,"Juice, Smoothies, Fruit Salads",Asian/Asian Fusion,none,2025-11-14,organic,1
+122,55-64,60,female,medium,Chicken,Mediterranean,none,2025-09-25,organic,6
+123,25-34,29,female,low,American,Donuts,none,2026-02-13,organic,4
+124,18-24,20,male,high,Italian,Thai,none,2026-01-02,restaurant_qr,3
+125,25-34,34,male,medium,Japanese,Chicken,none,2025-10-15,organic,2
+126,35-44,36,male,low,Latin American,Chicken,kosher,2025-11-23,referral,9
+127,55-64,63,male,high,Pizza,Asian/Asian Fusion,none,2025-12-08,referral,7
+128,55-64,64,female,low,Asian/Asian Fusion,Chicken,none,2025-10-07,referral,0
+129,18-24,18,female,medium,Chinese,Korean,none,2026-01-16,referral,2
+130,35-44,35,male,medium,Mediterranean,Korean,none,2025-11-14,organic,17
+131,35-44,44,male,medium,Korean,Pizza,none,2025-12-30,organic,6
+132,25-34,27,female,high,Korean,Donuts,none,2026-01-02,paid_search,4
+133,18-24,23,male,medium,Japanese,Chicken,none,2025-09-06,organic,9
+134,25-34,29,male,medium,Mexican,Japanese,none,2025-09-23,social_media,3
+135,65+,69,male,low,Mediterranean,Mexican,none,2025-10-15,social_media,10
+136,25-34,30,male,low,Mediterranean,Korean,none,2026-02-19,referral,0
+137,35-44,41,female,high,Japanese,Italian,none,2025-11-20,organic,9
+138,45-54,45,male,medium,Latin American,Korean,halal,2025-12-22,restaurant_qr,0
+139,25-34,33,female,medium,Latin American,Thai,none,2025-10-30,organic,7
+140,65+,67,male,medium,Coffee/Tea,Other,none,2025-09-08,paid_search,6
+141,65+,84,male,medium,Italian,Coffee/Tea,none,2026-01-27,paid_search,2
+142,25-34,34,male,low,Mexican,Coffee/Tea,none,2025-11-21,referral,12
+143,35-44,35,female,medium,Korean,Thai,vegetarian,2025-10-08,paid_search,3
+144,25-34,34,male,medium,"Juice, Smoothies, Fruit Salads",Donuts,none,2025-11-18,restaurant_qr,8
+145,25-34,27,male,low,Other,Latin American,vegetarian,2026-01-21,restaurant_qr,7
+146,18-24,19,male,low,Bakery Products/Desserts,American,none,2026-02-11,referral,9
+147,35-44,36,male,low,Latin American,Coffee/Tea,vegetarian,2025-12-25,organic,8
+148,35-44,35,male,medium,Coffee/Tea,Korean,none,2025-12-10,referral,4
+149,18-24,20,female,high,Mexican,Sandwiches,halal,2025-12-28,referral,4
+150,25-34,27,female,low,Bakery Products/Desserts,Asian/Asian Fusion,none,2025-12-09,organic,8
+151,55-64,60,female,low,Sandwiches,Coffee/Tea,none,2026-01-14,organic,4
+152,25-34,32,female,low,Indian,Chicken,none,2026-02-24,organic,2
+153,25-34,33,male,medium,Bakery Products/Desserts,"Juice, Smoothies, Fruit Salads",none,2026-02-14,organic,1
+154,35-44,43,male,medium,French,Pizza,gluten_free,2025-10-07,paid_search,1
+155,65+,68,female,medium,Mediterranean,Asian/Asian Fusion,none,2025-09-03,restaurant_qr,10
+156,25-34,29,female,medium,Italian,Mexican,none,2025-09-07,paid_search,3
+157,45-54,46,male,medium,French,Coffee/Tea,none,2025-09-12,paid_search,6
+158,45-54,53,female,high,Pizza,Donuts,none,2026-01-22,restaurant_qr,4
+159,25-34,32,female,high,Chicken,Chinese,none,2025-09-06,organic,2
+160,45-54,47,female,low,Chicken,Asian/Asian Fusion,none,2025-11-09,referral,3
+161,25-34,33,female,low,Chinese,Thai,none,2025-10-13,paid_search,3
+162,45-54,47,female,low,Bakery Products/Desserts,Italian,kosher,2025-10-15,social_media,4
+163,45-54,53,female,low,Coffee/Tea,Chinese,none,2025-12-21,organic,7
+164,35-44,36,female,high,"Juice, Smoothies, Fruit Salads",Mediterranean,none,2025-11-12,social_media,1
+165,18-24,21,male,medium,Latin American,Chicken,none,2026-01-06,organic,3
+166,55-64,64,female,low,Chinese,Donuts,none,2025-10-24,referral,1
+167,25-34,33,male,medium,Pizza,"Juice, Smoothies, Fruit Salads",none,2026-01-12,organic,3
+168,25-34,32,female,medium,Asian/Asian Fusion,Donuts,none,2025-09-19,referral,4
+169,18-24,18,female,low,Sandwiches,Mediterranean,none,2026-02-09,paid_search,1
+170,35-44,39,male,medium,Japanese,Coffee/Tea,none,2026-01-24,organic,9
+171,45-54,46,female,medium,Pizza,Japanese,halal,2025-11-06,social_media,9
+172,18-24,21,female,medium,French,Bakery Products/Desserts,none,2026-02-06,organic,11
+173,35-44,40,male,low,Chicken,Coffee/Tea,none,2026-01-06,referral,3
+174,25-34,32,male,low,Korean,Pizza,vegetarian,2026-02-05,restaurant_qr,6
+175,45-54,49,female,medium,Mexican,Donuts,gluten_free,2025-10-18,referral,12
+176,25-34,34,female,low,Other,Bakery Products/Desserts,none,2025-10-26,organic,4
+177,45-54,46,male,medium,Chinese,Coffee/Tea,none,2025-11-29,social_media,9
+178,25-34,30,female,medium,French,Chinese,none,2025-11-28,social_media,11
+179,65+,69,male,medium,Thai,American,kosher,2025-12-21,referral,2
+180,25-34,29,male,high,Pizza,Mediterranean,halal,2025-10-31,organic,4
+181,25-34,25,male,medium,Mediterranean,Indian,none,2026-02-06,paid_search,3
+182,18-24,19,female,low,Italian,Other,none,2026-02-19,paid_search,1
+183,65+,72,male,medium,French,Chinese,none,2025-12-19,organic,1
+184,55-64,57,female,medium,"Juice, Smoothies, Fruit Salads",Mexican,vegetarian,2026-02-18,organic,1
+185,25-34,34,female,medium,"Juice, Smoothies, Fruit Salads",Other,none,2026-01-26,paid_search,7
+186,45-54,47,female,low,Donuts,Chinese,none,2025-10-12,referral,2
+187,55-64,62,male,high,Japanese,French,gluten_free,2026-02-07,restaurant_qr,7
+188,35-44,42,female,medium,Japanese,Coffee/Tea,none,2025-12-09,social_media,5
+189,35-44,36,female,low,Donuts,Other,none,2025-09-16,paid_search,3
+190,25-34,32,female,low,Other,"Juice, Smoothies, Fruit Salads",none,2025-12-04,organic,4
+191,18-24,20,male,low,Indian,Japanese,none,2025-12-12,restaurant_qr,0
+192,55-64,55,male,high,Chinese,Coffee/Tea,none,2025-11-25,restaurant_qr,5
+193,55-64,60,male,low,Pizza,Coffee/Tea,none,2025-10-13,restaurant_qr,7
+194,45-54,52,female,low,Italian,Asian/Asian Fusion,none,2026-01-27,referral,7
+195,25-34,27,female,high,American,Other,halal,2025-12-17,organic,3
+196,25-34,32,male,low,Thai,Chicken,none,2025-09-24,referral,4
+197,45-54,45,female,low,Mediterranean,Bakery Products/Desserts,none,2025-10-25,paid_search,1
+198,55-64,63,female,low,"Juice, Smoothies, Fruit Salads",American,none,2025-10-12,organic,19
+199,55-64,63,male,low,Latin American,American,vegetarian,2026-01-30,social_media,3
+200,45-54,49,male,low,French,American,vegetarian,2025-10-23,organic,15
+201,45-54,54,male,medium,Italian,Japanese,none,2025-11-19,organic,17
+202,18-24,21,male,low,Other,Japanese,none,2026-02-15,paid_search,0
+203,25-34,30,male,low,Sandwiches,Chicken,none,2026-01-04,paid_search,7
+204,55-64,61,female,medium,Asian/Asian Fusion,"Juice, Smoothies, Fruit Salads",none,2025-12-17,referral,4
+205,35-44,39,male,medium,American,Coffee/Tea,none,2026-01-27,organic,5
+206,18-24,20,male,medium,Chicken,French,vegetarian,2025-11-19,organic,10
+207,18-24,22,female,medium,Donuts,Other,halal,2025-12-17,organic,6
+208,45-54,54,male,low,Other,Japanese,none,2026-02-01,organic,0
+209,18-24,18,male,medium,Other,Pizza,vegetarian,2026-02-14,organic,3
+210,25-34,27,male,medium,French,Mediterranean,kosher,2025-09-16,social_media,1
+211,35-44,41,male,medium,Indian,Coffee/Tea,none,2025-12-15,paid_search,1
+212,45-54,54,male,high,Korean,Chicken,none,2026-01-24,referral,1
+213,45-54,54,male,low,Chinese,French,kosher,2025-12-11,restaurant_qr,1
+214,25-34,29,female,medium,Korean,Donuts,none,2025-10-04,social_media,2
+215,45-54,51,male,low,Thai,Latin American,kosher,2025-09-11,organic,13
+216,25-34,26,female,medium,Coffee/Tea,Chicken,gluten_free,2025-10-29,organic,6
+217,25-34,28,female,medium,Latin American,Korean,none,2026-02-11,referral,0
+218,45-54,46,female,high,Mediterranean,Donuts,vegetarian,2025-11-20,paid_search,3
+219,45-54,51,female,low,Korean,Chinese,none,2025-10-17,referral,2
+220,55-64,56,female,medium,French,"Juice, Smoothies, Fruit Salads",none,2025-12-15,referral,5
+221,45-54,45,male,medium,Asian/Asian Fusion,Bakery Products/Desserts,none,2026-01-20,restaurant_qr,3
+222,35-44,43,male,medium,French,French,none,2025-12-31,restaurant_qr,3
+223,18-24,18,male,medium,Asian/Asian Fusion,Donuts,none,2026-02-04,social_media,7
+224,25-34,32,female,medium,Other,Korean,none,2025-12-21,organic,1
+225,25-34,26,male,medium,Asian/Asian Fusion,Chicken,none,2025-11-19,restaurant_qr,6
+226,25-34,32,male,low,Italian,Indian,none,2025-12-22,paid_search,12
+227,65+,77,male,medium,Thai,Coffee/Tea,none,2025-11-15,organic,0
+228,25-34,27,female,low,Mediterranean,Japanese,none,2025-09-26,social_media,1
+229,55-64,60,female,high,Coffee/Tea,Italian,gluten_free,2025-11-15,social_media,3
+230,45-54,47,female,medium,French,Bakery Products/Desserts,gluten_free,2025-11-19,referral,7
+231,55-64,61,female,high,Italian,Chicken,none,2026-02-11,social_media,6
+232,35-44,44,female,low,"Juice, Smoothies, Fruit Salads",French,halal,2025-12-24,organic,2
+233,35-44,43,male,high,"Juice, Smoothies, Fruit Salads",Bakery Products/Desserts,none,2025-12-22,restaurant_qr,6
+234,35-44,36,female,high,Latin American,Mexican,none,2025-11-09,referral,10
+235,25-34,29,female,medium,Bakery Products/Desserts,Pizza,none,2026-01-04,social_media,7
+236,45-54,50,female,medium,Donuts,American,none,2025-09-18,organic,4
+237,25-34,28,female,low,Coffee/Tea,Japanese,kosher,2025-12-31,paid_search,1
+238,18-24,21,female,high,Sandwiches,Asian/Asian Fusion,none,2025-11-30,social_media,6
+239,45-54,48,female,medium,French,Donuts,none,2026-01-31,organic,1
+240,25-34,26,female,low,Chicken,Thai,none,2025-09-30,organic,9
+241,65+,68,male,low,"Juice, Smoothies, Fruit Salads",Chicken,none,2025-10-26,social_media,12
+242,65+,81,male,high,Mediterranean,"Juice, Smoothies, Fruit Salads",none,2025-11-07,paid_search,3
+243,65+,76,female,high,Donuts,Asian/Asian Fusion,none,2026-02-24,paid_search,5
+244,25-34,30,female,high,Indian,Other,none,2026-02-12,organic,5
+245,18-24,18,male,medium,Chicken,Korean,none,2026-02-20,paid_search,7
+246,65+,74,female,low,Italian,Sandwiches,none,2025-11-30,referral,4
+247,35-44,40,female,low,Mediterranean,French,none,2025-10-14,organic,6
+248,65+,65,male,low,Pizza,Indian,none,2025-12-15,organic,3
+249,65+,82,female,low,Sandwiches,Indian,none,2025-11-21,social_media,1
+250,55-64,56,male,medium,"Juice, Smoothies, Fruit Salads",Pizza,none,2025-12-08,restaurant_qr,19
+251,25-34,28,male,low,Korean,Thai,none,2026-01-09,social_media,2
+252,25-34,27,female,medium,Korean,Pizza,vegetarian,2026-01-30,organic,8
+253,55-64,58,female,high,Mediterranean,Mexican,none,2025-10-08,organic,0
+254,25-34,31,male,medium,French,American,halal,2025-11-12,referral,1
+255,25-34,25,female,high,Sandwiches,Donuts,none,2025-11-29,organic,1
+256,35-44,40,female,medium,Latin American,Donuts,none,2025-09-19,social_media,0
+257,65+,79,male,low,Japanese,Korean,kosher,2025-09-29,paid_search,13
+258,45-54,47,male,medium,Bakery Products/Desserts,Korean,none,2026-01-08,organic,6
+259,35-44,44,female,low,Coffee/Tea,Indian,none,2025-10-08,referral,4
+260,18-24,24,male,low,Korean,Italian,none,2025-12-06,social_media,3
+261,35-44,44,female,medium,Mexican,"Juice, Smoothies, Fruit Salads",none,2025-09-30,social_media,4
+262,65+,66,male,low,Bakery Products/Desserts,Thai,none,2026-02-28,organic,2
+263,25-34,26,male,low,Korean,Indian,gluten_free,2025-12-06,organic,7
+264,35-44,38,male,medium,Asian/Asian Fusion,Other,none,2025-10-20,social_media,2
+265,55-64,55,female,high,Mexican,French,none,2026-02-26,social_media,3
+266,45-54,47,male,medium,Sandwiches,Coffee/Tea,gluten_free,2025-09-19,organic,5
+267,45-54,53,female,medium,Latin American,American,gluten_free,2026-02-24,organic,1
+268,45-54,51,male,low,"Juice, Smoothies, Fruit Salads",Mediterranean,none,2025-10-04,organic,4
+269,25-34,31,female,medium,Donuts,Chicken,none,2025-11-04,restaurant_qr,2
+270,25-34,28,female,medium,Donuts,French,vegetarian,2025-12-03,referral,6
+271,55-64,56,female,medium,Japanese,Pizza,none,2025-09-29,restaurant_qr,1
+272,55-64,58,male,high,Mexican,Asian/Asian Fusion,none,2025-09-16,organic,0
+273,55-64,60,male,low,Chinese,Korean,halal,2025-09-22,restaurant_qr,3
+274,65+,75,female,high,Mediterranean,Asian/Asian Fusion,none,2026-02-16,organic,7
+275,35-44,37,female,high,Japanese,Italian,none,2026-01-05,paid_search,2
+276,35-44,35,male,low,Korean,Indian,none,2025-12-11,referral,2
+277,55-64,62,female,medium,Sandwiches,Donuts,none,2025-10-04,organic,4
+278,45-54,49,female,high,Chinese,Coffee/Tea,vegetarian,2026-01-15,paid_search,4
+279,45-54,49,male,low,Mediterranean,Italian,none,2025-10-09,organic,11
+280,55-64,58,male,medium,Asian/Asian Fusion,Chicken,none,2026-02-14,organic,7
+281,55-64,60,male,high,French,American,none,2025-11-02,social_media,5
+282,25-34,27,female,medium,Bakery Products/Desserts,Thai,none,2025-12-08,social_media,5
+283,25-34,33,female,low,Latin American,Pizza,none,2025-09-26,referral,2
+284,18-24,22,male,medium,Thai,Chinese,none,2026-02-22,social_media,1
+285,35-44,37,male,low,Chinese,American,none,2025-12-04,social_media,0
+286,18-24,20,male,medium,Italian,Indian,vegetarian,2025-10-22,organic,7
+287,35-44,35,male,low,Korean,American,none,2026-02-11,organic,0
+288,35-44,44,female,medium,Japanese,Mediterranean,none,2025-11-25,restaurant_qr,18
+289,25-34,30,male,medium,Korean,Sandwiches,vegetarian,2025-12-26,organic,7
+290,35-44,36,female,medium,Asian/Asian Fusion,Mexican,none,2025-12-13,social_media,2
+291,18-24,22,female,medium,Thai,Mediterranean,none,2025-12-06,organic,5
+292,18-24,20,male,medium,Indian,American,kosher,2025-10-29,social_media,15
+293,55-64,55,female,medium,Latin American,Japanese,none,2025-10-03,social_media,0
+294,25-34,33,female,low,French,Other,none,2026-01-15,organic,0
+295,18-24,21,male,medium,Chinese,"Juice, Smoothies, Fruit Salads",none,2025-11-09,organic,0
+296,35-44,36,female,low,Thai,Donuts,none,2025-12-01,social_media,6
+297,45-54,52,male,high,Thai,Bakery Products/Desserts,kosher,2025-10-12,paid_search,3
+298,25-34,33,female,low,Pizza,Sandwiches,none,2026-01-28,organic,19
+299,35-44,35,male,medium,Japanese,Bakery Products/Desserts,vegetarian,2025-10-20,social_media,1
+300,18-24,22,female,medium,Coffee/Tea,Sandwiches,vegetarian,2025-12-15,organic,1
+301,18-24,22,female,medium,Mediterranean,Korean,none,2025-09-28,referral,3
+302,35-44,42,male,low,Chicken,Coffee/Tea,none,2025-11-01,paid_search,9
+303,35-44,36,male,medium,Chinese,Asian/Asian Fusion,none,2025-10-25,organic,4
+304,45-54,48,female,medium,Japanese,Latin American,none,2025-12-14,social_media,6
+305,45-54,51,female,medium,Latin American,Japanese,none,2025-10-01,paid_search,0
+306,65+,67,male,medium,Indian,Asian/Asian Fusion,kosher,2025-12-25,organic,4
+307,35-44,39,male,medium,Coffee/Tea,Asian/Asian Fusion,gluten_free,2025-11-07,paid_search,2
+308,25-34,32,male,medium,Latin American,Mediterranean,none,2025-12-29,organic,8
+309,55-64,64,male,medium,"Juice, Smoothies, Fruit Salads",Bakery Products/Desserts,none,2025-11-09,organic,0
+310,25-34,27,female,medium,Japanese,Indian,vegetarian,2025-11-28,organic,2
+311,35-44,38,female,medium,Thai,Coffee/Tea,none,2026-01-13,paid_search,6
+312,18-24,23,male,low,Thai,French,halal,2026-02-18,organic,4
+313,18-24,24,female,low,Korean,Chicken,none,2025-09-27,social_media,5
+314,65+,78,female,low,Japanese,Donuts,none,2025-09-11,social_media,7
+315,55-64,61,male,low,Other,Chinese,vegetarian,2025-09-12,paid_search,2
+316,45-54,45,male,medium,Bakery Products/Desserts,Sandwiches,none,2025-10-08,referral,6
+317,25-34,28,male,medium,Indian,Pizza,kosher,2026-01-21,referral,3
+318,25-34,28,male,low,Indian,Other,kosher,2025-09-06,social_media,0
+319,25-34,33,male,high,Pizza,Thai,none,2025-12-07,social_media,1
+320,25-34,30,female,low,Pizza,American,none,2026-01-04,organic,7
+321,35-44,43,female,medium,Thai,Korean,gluten_free,2025-12-05,referral,5
+322,45-54,50,female,medium,Korean,Pizza,halal,2025-12-08,organic,7
+323,45-54,50,female,medium,Korean,Indian,none,2025-11-01,organic,15
+324,25-34,29,male,low,Thai,Chicken,vegetarian,2025-12-18,social_media,1
+325,65+,85,female,medium,Other,Pizza,none,2025-11-15,organic,15
+326,45-54,46,female,medium,Japanese,Latin American,none,2025-10-29,organic,4
+327,35-44,42,female,high,Chicken,American,halal,2025-11-22,social_media,8
+328,35-44,42,female,medium,Chicken,Latin American,none,2026-01-18,social_media,1
+329,35-44,35,female,high,Chinese,Bakery Products/Desserts,kosher,2025-11-03,social_media,14
+330,25-34,32,female,low,Thai,Korean,none,2026-02-07,referral,1
+331,25-34,29,female,medium,"Juice, Smoothies, Fruit Salads",Sandwiches,none,2025-09-28,organic,6
+332,45-54,46,female,medium,Chinese,American,none,2026-01-24,organic,4
+333,18-24,23,female,medium,Japanese,Korean,none,2025-10-19,social_media,7
+334,18-24,19,male,low,Sandwiches,Japanese,none,2025-12-27,organic,15
+335,18-24,23,female,medium,Coffee/Tea,Latin American,none,2025-10-19,social_media,6
+336,18-24,24,female,medium,Latin American,Chinese,none,2025-09-05,organic,4
+337,55-64,60,male,medium,French,Coffee/Tea,none,2026-02-08,paid_search,4
+338,45-54,53,female,low,Other,American,none,2025-11-17,paid_search,0
+339,35-44,35,male,high,French,Mediterranean,vegetarian,2025-12-04,social_media,1
+340,18-24,21,female,low,Bakery Products/Desserts,Pizza,none,2025-09-30,paid_search,5
+341,35-44,40,female,high,Japanese,Mediterranean,none,2025-10-28,paid_search,9
+342,35-44,43,male,high,Indian,Asian/Asian Fusion,none,2025-12-13,organic,6
+343,25-34,32,female,high,French,Italian,none,2025-12-02,organic,10
+344,35-44,40,male,medium,Italian,Korean,none,2026-01-10,organic,2
+345,25-34,27,female,medium,Indian,Italian,none,2025-09-07,paid_search,16
+346,35-44,42,male,high,Coffee/Tea,Chicken,none,2025-11-20,paid_search,8
+347,45-54,53,female,low,Thai,American,none,2025-11-16,paid_search,7
+348,18-24,18,female,medium,French,Other,vegetarian,2026-01-01,organic,6
+349,25-34,33,male,medium,Coffee/Tea,Other,none,2026-01-15,social_media,2
+350,35-44,40,female,medium,Coffee/Tea,Bakery Products/Desserts,none,2026-01-25,referral,5
+351,35-44,40,female,low,Donuts,Italian,none,2025-09-17,organic,4
+352,55-64,58,male,medium,Mediterranean,Chicken,none,2026-02-19,organic,10
+353,45-54,45,male,high,Mediterranean,"Juice, Smoothies, Fruit Salads",none,2026-02-18,organic,4
+354,25-34,34,female,low,Asian/Asian Fusion,Bakery Products/Desserts,none,2025-09-13,social_media,2
+355,18-24,19,male,high,Bakery Products/Desserts,Other,none,2026-01-22,paid_search,5
+356,45-54,45,male,low,"Juice, Smoothies, Fruit Salads",American,none,2025-10-14,organic,17
+357,18-24,19,male,medium,American,Asian/Asian Fusion,none,2026-01-25,social_media,6
+358,35-44,35,female,low,"Juice, Smoothies, Fruit Salads",Thai,none,2026-01-09,organic,1
+359,65+,65,male,low,Japanese,Pizza,none,2026-01-30,social_media,4
+360,35-44,43,female,high,Bakery Products/Desserts,Japanese,none,2026-01-28,paid_search,2
+361,25-34,25,male,medium,Korean,French,none,2025-10-12,social_media,3
+362,45-54,48,female,medium,Chicken,Bakery Products/Desserts,none,2025-10-07,organic,0
+363,35-44,44,female,low,Sandwiches,Coffee/Tea,none,2025-09-14,referral,0
+364,35-44,40,male,medium,Donuts,Japanese,none,2026-01-03,social_media,9
+365,65+,71,female,medium,American,Donuts,none,2025-10-01,organic,15
+366,25-34,26,male,medium,"Juice, Smoothies, Fruit Salads",American,none,2025-10-25,organic,7
+367,65+,70,male,low,American,French,none,2026-01-30,paid_search,9
+368,55-64,61,male,high,Korean,Indian,none,2026-01-06,referral,1
+369,25-34,34,female,medium,French,Korean,none,2026-02-20,referral,4
+370,18-24,23,male,medium,Bakery Products/Desserts,French,none,2025-10-23,paid_search,4
+371,18-24,19,female,low,Coffee/Tea,Indian,none,2026-02-15,referral,4
+372,18-24,19,female,medium,French,Sandwiches,halal,2026-02-27,organic,2
+373,18-24,24,male,medium,Japanese,Mediterranean,none,2026-01-18,organic,15
+374,45-54,46,female,medium,Sandwiches,Other,none,2025-09-24,restaurant_qr,2
+375,18-24,19,female,low,Indian,Korean,halal,2025-12-25,referral,10
+376,25-34,31,male,high,"Juice, Smoothies, Fruit Salads",Donuts,vegetarian,2026-01-05,paid_search,5
+377,55-64,55,female,low,Mexican,Asian/Asian Fusion,none,2025-12-29,referral,2
+378,18-24,20,female,medium,Chicken,Other,none,2026-02-15,restaurant_qr,5
+379,55-64,57,male,medium,"Juice, Smoothies, Fruit Salads",Coffee/Tea,none,2025-11-13,referral,1
+380,25-34,30,female,low,"Juice, Smoothies, Fruit Salads",Japanese,none,2025-11-06,referral,1
+381,18-24,18,male,medium,Latin American,Chicken,none,2025-11-30,referral,4
+382,45-54,50,male,low,Italian,Bakery Products/Desserts,none,2025-10-15,organic,4
+383,35-44,43,male,high,Sandwiches,Latin American,none,2025-09-17,referral,4
+384,55-64,61,male,high,Italian,Korean,kosher,2026-01-14,organic,2
+385,45-54,53,female,high,French,American,kosher,2026-01-04,referral,14
+386,55-64,56,female,low,Donuts,"Juice, Smoothies, Fruit Salads",none,2026-01-11,paid_search,1
+387,25-34,32,male,medium,Coffee/Tea,French,none,2025-12-21,social_media,6
+388,25-34,32,male,medium,Donuts,Chinese,none,2025-10-10,paid_search,0
+389,45-54,46,male,high,Mediterranean,Mediterranean,halal,2025-10-07,organic,2
+390,55-64,58,female,medium,Coffee/Tea,"Juice, Smoothies, Fruit Salads",none,2025-12-10,organic,9
+391,65+,79,female,high,Thai,Pizza,none,2025-11-06,restaurant_qr,15
+392,35-44,41,female,medium,Pizza,Other,none,2025-11-17,restaurant_qr,6
+393,25-34,28,male,medium,French,Latin American,none,2025-12-04,organic,1
+394,45-54,48,female,low,French,Mexican,none,2026-02-28,restaurant_qr,20
+395,25-34,30,male,medium,Mexican,Asian/Asian Fusion,vegetarian,2025-11-18,referral,4
+396,65+,67,male,medium,American,Japanese,none,2025-12-08,social_media,1
+397,55-64,63,female,medium,Latin American,Donuts,none,2026-01-18,organic,6
+398,35-44,44,male,medium,Other,Chinese,none,2025-09-29,restaurant_qr,4
+399,45-54,46,female,medium,French,Coffee/Tea,none,2025-12-21,social_media,5
+400,45-54,50,male,low,Korean,Other,halal,2025-09-17,referral,4
+401,18-24,21,male,medium,Chinese,Japanese,kosher,2025-11-28,referral,4
+402,55-64,61,male,medium,Mediterranean,Donuts,gluten_free,2026-01-19,referral,5
+403,35-44,43,male,medium,Latin American,Donuts,halal,2025-10-20,social_media,7
+404,55-64,57,female,low,Thai,Chicken,none,2025-10-14,organic,10
+405,25-34,34,female,low,Chicken,Mediterranean,none,2025-12-27,organic,13
+406,55-64,57,male,low,"Juice, Smoothies, Fruit Salads",Mexican,none,2026-01-27,organic,3
+407,25-34,31,female,medium,Other,"Juice, Smoothies, Fruit Salads",kosher,2025-11-02,organic,11
+408,18-24,23,female,low,Mediterranean,Chicken,none,2026-03-01,social_media,4
+409,55-64,58,female,medium,Coffee/Tea,French,none,2025-10-23,social_media,5
+410,18-24,22,male,high,Coffee/Tea,Latin American,vegetarian,2025-10-05,referral,6
+411,25-34,32,female,low,Sandwiches,Donuts,none,2025-12-31,organic,2
+412,65+,85,male,medium,Mexican,Chicken,none,2025-10-04,paid_search,7
+413,65+,83,male,medium,Other,French,none,2025-12-04,organic,1
+414,35-44,36,female,high,Sandwiches,Mediterranean,none,2025-12-24,organic,3
+415,45-54,50,female,medium,Other,Thai,none,2025-10-26,organic,0
+416,35-44,36,female,medium,French,Chinese,vegetarian,2025-10-13,social_media,2
+417,25-34,27,male,high,Coffee/Tea,Latin American,none,2026-02-08,organic,5
+418,25-34,30,female,medium,Mediterranean,Chicken,gluten_free,2025-10-05,social_media,3
+419,45-54,49,female,high,Thai,Donuts,none,2025-12-10,organic,8
+420,45-54,52,female,low,Bakery Products/Desserts,Other,none,2025-10-24,referral,3
+421,55-64,63,male,high,Coffee/Tea,Asian/Asian Fusion,none,2026-01-31,referral,17
+422,45-54,47,female,medium,American,Donuts,none,2025-10-27,restaurant_qr,3
+423,18-24,21,male,medium,Indian,Japanese,none,2025-11-25,referral,15
+424,35-44,44,male,low,Japanese,Chicken,vegetarian,2026-02-06,restaurant_qr,13
+425,18-24,20,female,medium,Coffee/Tea,Thai,none,2026-02-16,referral,4
+426,35-44,37,male,low,Asian/Asian Fusion,Korean,none,2026-01-25,social_media,1
+427,35-44,40,female,high,Coffee/Tea,"Juice, Smoothies, Fruit Salads",none,2026-02-06,organic,7
+428,55-64,55,male,high,Korean,Sandwiches,none,2025-11-27,organic,2
+429,25-34,31,male,low,Sandwiches,Other,none,2026-01-06,organic,3
+430,18-24,21,male,high,Chinese,Latin American,none,2026-02-06,social_media,9
+431,25-34,25,female,medium,Thai,Korean,none,2025-10-01,paid_search,7
+432,45-54,49,female,medium,Bakery Products/Desserts,Korean,halal,2026-02-04,referral,7
+433,35-44,44,female,medium,French,Chinese,none,2025-12-12,restaurant_qr,3
+434,18-24,22,female,low,Asian/Asian Fusion,Indian,none,2025-09-17,paid_search,3
+435,18-24,21,female,low,Asian/Asian Fusion,Thai,none,2025-12-27,paid_search,4
+436,45-54,49,female,low,Chinese,Asian/Asian Fusion,none,2025-12-17,restaurant_qr,10
+437,18-24,21,female,high,Chicken,Donuts,none,2025-09-04,organic,4
+438,55-64,58,female,low,Asian/Asian Fusion,Chicken,none,2025-09-20,referral,7
+439,45-54,52,male,high,Coffee/Tea,Italian,vegetarian,2026-01-18,organic,2
+440,18-24,19,female,low,Sandwiches,Coffee/Tea,none,2026-02-01,social_media,4
+441,18-24,18,female,medium,Pizza,American,none,2025-09-18,organic,0
+442,65+,83,female,medium,Japanese,French,none,2025-12-11,referral,9
+443,25-34,33,female,high,Latin American,Indian,none,2026-01-07,social_media,2
+444,25-34,28,male,low,Japanese,Donuts,none,2026-01-22,organic,4
+445,55-64,64,female,medium,Asian/Asian Fusion,Sandwiches,gluten_free,2026-01-19,organic,0
+446,65+,85,male,medium,Mediterranean,American,none,2025-09-27,paid_search,4
+447,65+,66,male,low,Japanese,Sandwiches,vegetarian,2026-02-01,restaurant_qr,2
+448,45-54,48,male,low,American,Donuts,none,2025-09-12,referral,1
+449,25-34,26,male,medium,Latin American,Italian,none,2025-10-22,paid_search,2
+450,18-24,24,male,medium,Japanese,"Juice, Smoothies, Fruit Salads",none,2025-10-15,organic,8
+451,45-54,46,male,medium,Thai,Donuts,none,2025-10-11,paid_search,2
+452,35-44,38,male,medium,Chicken,Italian,none,2025-09-08,social_media,1
+453,35-44,40,male,medium,Pizza,Mexican,none,2026-01-19,referral,0
+454,55-64,61,male,medium,Italian,Thai,halal,2025-11-28,organic,5
+455,18-24,19,male,medium,Latin American,Japanese,none,2025-09-23,social_media,8
+456,35-44,37,male,high,Mediterranean,Bakery Products/Desserts,none,2026-01-29,social_media,15
+457,18-24,20,female,medium,Chinese,Asian/Asian Fusion,halal,2025-09-13,restaurant_qr,6
+458,35-44,44,female,medium,Japanese,Asian/Asian Fusion,vegetarian,2025-09-23,restaurant_qr,13
+459,18-24,23,female,low,Mexican,Japanese,none,2026-02-04,referral,0
+460,18-24,22,female,medium,Indian,Mediterranean,none,2025-11-07,social_media,6
+461,18-24,21,female,low,Asian/Asian Fusion,American,kosher,2025-10-24,organic,5
+462,45-54,47,female,medium,Bakery Products/Desserts,Donuts,none,2026-01-05,referral,3
+463,45-54,46,male,medium,Asian/Asian Fusion,French,none,2025-10-31,paid_search,1
+464,35-44,42,female,high,Pizza,Mediterranean,none,2025-11-16,organic,6
+465,65+,85,male,low,Sandwiches,Mediterranean,none,2025-10-23,paid_search,3
+466,25-34,25,female,medium,Mediterranean,Mexican,none,2025-12-11,referral,8
+467,25-34,27,female,medium,Donuts,Bakery Products/Desserts,none,2025-09-25,organic,4
+468,55-64,64,male,low,Latin American,Pizza,none,2025-11-02,paid_search,0
+469,25-34,32,male,low,Asian/Asian Fusion,Mediterranean,none,2026-01-09,paid_search,6
+470,65+,68,female,low,Bakery Products/Desserts,Thai,none,2025-12-01,organic,2
+471,18-24,23,male,low,Asian/Asian Fusion,Mediterranean,halal,2025-10-16,organic,2
+472,65+,74,male,low,Korean,Bakery Products/Desserts,kosher,2026-02-08,referral,14
+473,18-24,21,female,low,Sandwiches,Other,none,2026-01-27,referral,4
+474,55-64,56,female,low,Donuts,Asian/Asian Fusion,none,2025-11-12,organic,4
+475,35-44,41,male,medium,Other,"Juice, Smoothies, Fruit Salads",none,2026-01-12,referral,2
+476,65+,69,male,medium,Korean,Asian/Asian Fusion,none,2025-10-24,referral,8
+477,18-24,22,male,high,Sandwiches,Bakery Products/Desserts,none,2025-12-19,paid_search,1
+478,35-44,40,male,medium,Coffee/Tea,American,none,2025-12-08,social_media,8
+479,65+,77,female,medium,Chinese,Latin American,kosher,2026-01-08,restaurant_qr,7
+480,35-44,43,female,high,Latin American,Thai,none,2025-11-22,paid_search,13
+481,35-44,40,female,medium,Thai,Italian,none,2025-10-29,organic,6
+482,45-54,52,male,medium,Mexican,Thai,none,2025-09-15,restaurant_qr,4
+483,35-44,41,male,medium,Asian/Asian Fusion,Japanese,none,2026-01-16,social_media,7
+484,35-44,43,male,low,Korean,"Juice, Smoothies, Fruit Salads",vegetarian,2025-10-16,organic,8
+485,35-44,38,female,low,"Juice, Smoothies, Fruit Salads",Coffee/Tea,none,2025-11-17,social_media,8
+486,55-64,56,female,medium,American,Asian/Asian Fusion,none,2025-10-03,paid_search,7
+487,18-24,24,female,medium,Italian,Sandwiches,halal,2025-10-07,referral,1
+488,25-34,30,male,low,Donuts,Mediterranean,none,2025-11-16,paid_search,2
+489,65+,81,male,high,Indian,Sandwiches,gluten_free,2026-01-18,organic,1
+490,55-64,63,female,medium,Asian/Asian Fusion,Sandwiches,none,2025-09-16,social_media,2
+491,35-44,43,male,medium,Mexican,American,none,2025-10-19,paid_search,4
+492,35-44,36,female,high,Latin American,Indian,none,2026-01-13,organic,3
+493,25-34,27,male,medium,Thai,Asian/Asian Fusion,none,2025-10-27,social_media,1
+494,25-34,29,female,high,Italian,Coffee/Tea,none,2026-02-23,referral,1
+495,35-44,39,male,medium,Chinese,Sandwiches,none,2026-02-14,organic,14
+496,25-34,25,female,low,Other,Mediterranean,none,2025-10-24,social_media,1
+497,35-44,42,male,medium,Pizza,Japanese,none,2025-11-07,organic,3
+498,18-24,21,female,medium,Coffee/Tea,Mexican,none,2026-01-24,organic,3
+499,65+,68,female,medium,Latin American,Coffee/Tea,none,2025-09-18,paid_search,2
+500,65+,77,female,high,Chinese,French,none,2025-10-28,organic,8
+501,45-54,51,female,medium,Mexican,Other,none,2025-12-11,referral,5
+502,35-44,44,female,medium,American,Korean,none,2025-12-30,organic,5
+503,25-34,27,male,high,Thai,Latin American,kosher,2025-12-20,social_media,2
+504,55-64,60,female,medium,Sandwiches,Donuts,none,2025-10-28,organic,5
+505,45-54,54,male,medium,"Juice, Smoothies, Fruit Salads",Mediterranean,none,2025-09-22,restaurant_qr,2
+506,25-34,34,male,high,Bakery Products/Desserts,Coffee/Tea,none,2025-12-26,social_media,7
+507,65+,76,male,low,Korean,Thai,none,2026-01-31,social_media,4
+508,55-64,63,female,medium,"Juice, Smoothies, Fruit Salads",Thai,none,2026-02-10,organic,3
+509,65+,65,female,high,Mediterranean,Asian/Asian Fusion,halal,2025-12-10,paid_search,5
+510,45-54,49,male,medium,Italian,American,halal,2025-11-15,organic,1
+511,35-44,38,male,medium,Thai,Sandwiches,none,2025-10-01,restaurant_qr,1
+512,35-44,42,female,medium,Asian/Asian Fusion,Mexican,none,2025-10-21,paid_search,1
+513,65+,75,female,medium,Italian,Coffee/Tea,none,2026-01-24,social_media,3
+514,55-64,55,female,high,American,Japanese,none,2025-10-21,social_media,8
+515,18-24,18,male,low,Korean,Asian/Asian Fusion,none,2025-12-15,paid_search,6
+516,18-24,23,female,low,American,Mediterranean,none,2025-12-03,social_media,3
+517,25-34,28,female,low,Donuts,Indian,none,2025-10-07,social_media,5
+518,55-64,63,male,medium,Coffee/Tea,Pizza,vegetarian,2025-12-04,social_media,6
+519,65+,75,female,medium,Thai,Sandwiches,none,2025-09-07,paid_search,2
+520,25-34,29,female,high,Pizza,Asian/Asian Fusion,none,2026-01-28,paid_search,5
+521,35-44,39,male,medium,Mexican,Pizza,kosher,2026-01-03,organic,5
+522,25-34,29,male,medium,Mediterranean,Latin American,none,2026-02-02,referral,1
+523,65+,81,female,low,Indian,Japanese,halal,2026-01-26,social_media,5
+524,55-64,55,female,medium,American,Chicken,none,2025-10-28,paid_search,9
+525,55-64,62,female,medium,Italian,Sandwiches,none,2025-10-15,restaurant_qr,3
+526,35-44,42,female,low,Italian,Thai,kosher,2025-12-27,organic,12
+527,35-44,40,male,low,Chinese,Indian,none,2026-01-19,referral,2
+528,25-34,28,female,low,Sandwiches,Mexican,none,2025-12-07,restaurant_qr,1
+529,18-24,19,female,low,Sandwiches,Bakery Products/Desserts,none,2025-10-16,referral,2
+530,55-64,56,female,medium,Thai,Mediterranean,none,2025-11-11,referral,6
+531,55-64,63,male,low,Latin American,Indian,none,2026-02-15,paid_search,4
+532,65+,69,male,medium,Thai,Pizza,halal,2025-12-23,organic,6
+533,65+,84,male,high,Other,Thai,kosher,2025-11-17,social_media,3
+534,35-44,44,female,medium,Bakery Products/Desserts,"Juice, Smoothies, Fruit Salads",kosher,2025-10-03,organic,3
+535,45-54,45,male,high,Japanese,Chinese,none,2025-12-28,organic,4
+536,65+,67,male,medium,Indian,Mediterranean,none,2026-01-20,referral,4
+537,55-64,60,female,medium,Indian,Bakery Products/Desserts,none,2025-12-21,organic,11
+538,25-34,29,female,high,Pizza,Chinese,halal,2026-01-05,restaurant_qr,5
+539,35-44,39,female,low,Latin American,"Juice, Smoothies, Fruit Salads",none,2025-10-02,referral,2
+540,18-24,20,female,high,"Juice, Smoothies, Fruit Salads",Korean,none,2026-02-05,referral,8
+541,65+,69,female,low,Latin American,Italian,none,2025-11-17,referral,6
+542,35-44,35,female,medium,Latin American,Chinese,none,2025-10-19,referral,6
+543,25-34,25,female,low,Thai,Chinese,none,2025-11-03,referral,1
+544,45-54,47,male,medium,Korean,Other,gluten_free,2025-09-21,social_media,6
+545,35-44,44,female,medium,Latin American,Korean,gluten_free,2026-02-21,organic,0
+546,25-34,28,male,medium,"Juice, Smoothies, Fruit Salads",Italian,none,2026-01-01,referral,3
+547,18-24,22,male,medium,Indian,Pizza,none,2025-10-28,referral,5
+548,45-54,46,male,medium,Mexican,Donuts,gluten_free,2026-01-12,paid_search,11
+549,35-44,42,male,low,Thai,Mexican,none,2026-01-10,organic,10
+550,45-54,46,female,low,Mexican,"Juice, Smoothies, Fruit Salads",none,2025-12-22,social_media,4
+551,35-44,43,male,high,French,Pizza,none,2026-01-24,organic,2
+552,55-64,56,female,medium,Mediterranean,Mexican,none,2026-01-30,restaurant_qr,12
+553,35-44,43,female,high,Indian,French,none,2025-09-14,restaurant_qr,8
+554,35-44,41,male,high,"Juice, Smoothies, Fruit Salads",Italian,none,2025-12-30,organic,20
+555,55-64,62,female,medium,Latin American,Asian/Asian Fusion,none,2025-11-29,social_media,4
+556,25-34,26,female,medium,Other,Asian/Asian Fusion,none,2026-02-16,organic,10
+557,25-34,31,male,low,Thai,French,gluten_free,2025-09-19,social_media,4
+558,18-24,21,male,low,Indian,Sandwiches,vegetarian,2025-09-19,organic,4
+559,45-54,50,male,low,Mediterranean,Pizza,vegetarian,2025-12-13,social_media,4
+560,35-44,38,female,medium,Bakery Products/Desserts,Sandwiches,none,2026-02-22,paid_search,7
+561,45-54,51,male,medium,Indian,Asian/Asian Fusion,none,2025-09-29,organic,2
+562,25-34,28,female,medium,Sandwiches,Coffee/Tea,none,2026-01-25,paid_search,5
+563,25-34,26,male,medium,Korean,Other,kosher,2026-01-13,organic,2
+564,18-24,19,male,medium,Asian/Asian Fusion,French,none,2025-12-07,social_media,3
+565,25-34,31,male,medium,"Juice, Smoothies, Fruit Salads",Donuts,none,2026-02-02,organic,9
+566,35-44,42,male,medium,French,Donuts,none,2026-01-10,paid_search,9
+567,25-34,26,female,low,"Juice, Smoothies, Fruit Salads",Italian,none,2025-11-18,referral,3
+568,35-44,39,male,low,Pizza,Indian,none,2025-09-13,referral,6
+569,55-64,55,male,medium,Coffee/Tea,American,gluten_free,2025-11-21,referral,0
+570,25-34,31,female,medium,"Juice, Smoothies, Fruit Salads",Sandwiches,halal,2026-02-01,restaurant_qr,5
+571,35-44,42,male,medium,Indian,Bakery Products/Desserts,none,2025-10-26,organic,1
+572,45-54,50,female,low,Pizza,Japanese,gluten_free,2025-12-10,organic,7
+573,25-34,29,male,medium,Asian/Asian Fusion,French,none,2026-02-20,social_media,13
+574,35-44,40,male,low,Thai,Latin American,none,2025-11-16,referral,6
+575,55-64,56,male,low,Pizza,Coffee/Tea,none,2025-09-16,restaurant_qr,13
+576,65+,65,female,medium,Donuts,French,none,2026-03-01,organic,2
+577,25-34,31,male,medium,French,Japanese,none,2026-01-22,paid_search,3
+578,65+,75,male,medium,American,Chicken,halal,2026-02-09,organic,3
+579,35-44,44,male,high,Italian,Chinese,none,2025-12-27,referral,17
+580,25-34,26,female,medium,Mexican,Indian,none,2026-02-15,social_media,4
+581,35-44,36,female,medium,Mexican,Coffee/Tea,none,2025-10-21,organic,6
+582,65+,81,male,low,Thai,Sandwiches,vegetarian,2025-12-31,paid_search,7
+583,35-44,44,female,medium,Korean,Donuts,none,2025-10-05,social_media,8
+584,25-34,32,male,medium,Bakery Products/Desserts,French,none,2025-10-15,referral,2
+585,45-54,52,male,medium,"Juice, Smoothies, Fruit Salads",Coffee/Tea,none,2025-12-05,organic,2
+586,25-34,25,male,medium,Bakery Products/Desserts,Pizza,none,2025-11-17,referral,8
+587,18-24,21,male,low,Japanese,Mexican,none,2026-01-27,social_media,6
+588,18-24,20,female,medium,Sandwiches,Indian,none,2025-10-29,referral,5
+589,18-24,18,female,high,Pizza,"Juice, Smoothies, Fruit Salads",none,2025-11-12,referral,6
+590,25-34,28,female,high,Asian/Asian Fusion,Sandwiches,none,2025-09-07,organic,3
+591,25-34,25,female,medium,Sandwiches,Other,vegetarian,2026-01-28,organic,6
+592,45-54,45,female,medium,"Juice, Smoothies, Fruit Salads",Coffee/Tea,none,2025-11-24,social_media,4
+593,25-34,27,male,medium,Indian,Mexican,none,2025-12-31,organic,6
+594,25-34,29,male,medium,Chinese,"Juice, Smoothies, Fruit Salads",gluten_free,2026-02-20,referral,6
+595,55-64,59,male,low,Asian/Asian Fusion,Japanese,none,2025-12-08,social_media,7
+596,35-44,43,male,medium,Mediterranean,French,kosher,2025-12-27,referral,3
+597,45-54,54,male,medium,Latin American,Thai,none,2025-12-15,organic,3
+598,25-34,26,male,high,Thai,Mediterranean,none,2026-03-01,organic,2
+599,25-34,26,male,medium,Japanese,Mexican,none,2025-10-20,social_media,0
+600,18-24,23,male,medium,"Juice, Smoothies, Fruit Salads",Japanese,gluten_free,2025-12-12,organic,3
+601,25-34,33,female,medium,Donuts,French,none,2026-02-15,social_media,4
+602,25-34,25,female,medium,Bakery Products/Desserts,Sandwiches,none,2026-02-02,referral,2
+603,25-34,33,female,medium,Asian/Asian Fusion,French,gluten_free,2026-02-07,paid_search,2
+604,18-24,18,male,low,"Juice, Smoothies, Fruit Salads",Mediterranean,none,2025-11-13,referral,2
+605,18-24,22,male,medium,Other,Chicken,none,2025-11-15,organic,3
+606,35-44,43,female,high,Latin American,Sandwiches,none,2025-10-08,organic,5
+607,25-34,29,female,medium,Chicken,Mediterranean,none,2025-11-09,restaurant_qr,10
+608,25-34,33,male,low,"Juice, Smoothies, Fruit Salads",Bakery Products/Desserts,none,2025-11-24,restaurant_qr,3
+609,35-44,38,female,medium,Korean,Thai,none,2025-10-12,paid_search,2
+610,45-54,46,female,high,Indian,Bakery Products/Desserts,none,2025-10-11,restaurant_qr,5
+611,18-24,22,male,low,American,Other,none,2025-10-14,paid_search,3
+612,55-64,60,female,medium,Japanese,American,kosher,2026-02-02,organic,1
+613,35-44,38,female,high,Asian/Asian Fusion,Pizza,halal,2026-01-19,organic,4
+614,18-24,23,male,medium,Asian/Asian Fusion,Pizza,none,2025-11-23,restaurant_qr,8
+615,55-64,57,male,high,Italian,Sandwiches,vegetarian,2025-12-31,organic,7
+616,65+,70,male,medium,Donuts,Sandwiches,none,2025-10-30,social_media,3
+617,18-24,19,female,medium,Italian,French,none,2025-12-28,social_media,3
+618,25-34,26,female,medium,Mediterranean,Pizza,vegetarian,2026-01-30,social_media,6
+619,55-64,63,female,low,Asian/Asian Fusion,Donuts,none,2025-12-11,paid_search,3
+620,45-54,51,male,low,Thai,Indian,none,2026-02-20,organic,5
+621,25-34,27,male,medium,Latin American,Chicken,vegetarian,2026-02-22,organic,4
+622,25-34,25,female,low,Korean,Pizza,none,2025-10-04,social_media,7
+623,25-34,32,male,medium,Asian/Asian Fusion,Indian,halal,2026-01-02,social_media,3
+624,35-44,40,female,high,Indian,French,none,2025-09-05,social_media,5
+625,35-44,41,female,high,Pizza,Mexican,none,2026-01-31,social_media,11
+626,25-34,33,female,medium,French,Pizza,none,2025-10-08,organic,3
+627,35-44,39,female,high,Korean,Bakery Products/Desserts,none,2026-02-10,referral,2
+628,45-54,45,male,medium,Thai,American,vegetarian,2026-01-13,social_media,1
+629,18-24,21,female,medium,Pizza,Chicken,none,2025-10-23,organic,11
+630,25-34,34,female,low,French,Thai,none,2026-01-24,paid_search,4
+631,45-54,51,male,medium,Bakery Products/Desserts,Sandwiches,none,2025-10-24,referral,4
+632,55-64,59,female,medium,Donuts,Mediterranean,none,2025-10-21,referral,6
+633,35-44,37,male,medium,Chicken,French,none,2025-11-22,organic,5
+634,35-44,43,male,medium,Donuts,French,kosher,2026-01-07,social_media,20
+635,18-24,18,female,low,Other,Asian/Asian Fusion,none,2025-10-31,organic,1
+636,35-44,35,female,medium,French,Thai,none,2026-02-05,organic,4
+637,35-44,35,female,high,French,Japanese,halal,2025-10-22,social_media,2
+638,25-34,27,female,medium,Bakery Products/Desserts,French,none,2026-02-21,social_media,1
+639,25-34,30,female,high,Mediterranean,"Juice, Smoothies, Fruit Salads",none,2026-01-27,referral,6
+640,25-34,34,male,high,Chicken,Coffee/Tea,vegetarian,2026-01-18,organic,3
+641,18-24,20,male,high,Pizza,Thai,none,2025-12-18,organic,3
+642,25-34,27,female,high,Thai,Mexican,none,2025-11-28,paid_search,3
+643,25-34,32,male,high,American,Bakery Products/Desserts,none,2026-02-08,organic,0
+644,25-34,34,male,medium,American,Mexican,gluten_free,2025-12-22,organic,4
+645,18-24,19,male,low,Sandwiches,American,kosher,2025-10-23,organic,3
+646,55-64,63,male,medium,Coffee/Tea,Latin American,vegetarian,2025-11-28,paid_search,7
+647,35-44,37,male,medium,Japanese,Chicken,none,2026-01-29,organic,3
+648,45-54,49,female,low,Donuts,Korean,none,2025-11-16,social_media,1
+649,45-54,54,female,low,Japanese,American,none,2025-10-09,organic,3
+650,35-44,42,male,high,"Juice, Smoothies, Fruit Salads",Chinese,none,2026-03-01,organic,0
+651,18-24,19,female,high,Japanese,Coffee/Tea,none,2025-12-20,social_media,6
+652,35-44,40,male,high,American,Thai,gluten_free,2025-09-07,organic,4
+653,35-44,39,male,medium,Bakery Products/Desserts,Italian,halal,2026-01-11,social_media,1
+654,45-54,54,female,low,Chicken,Indian,none,2025-10-12,organic,2
+655,35-44,43,female,low,Other,Chicken,none,2026-02-15,paid_search,0
+656,18-24,21,female,low,Italian,Chicken,none,2026-01-08,organic,3
+657,25-34,29,male,low,Mexican,Asian/Asian Fusion,none,2025-09-11,organic,1
+658,25-34,26,female,low,Indian,Mexican,vegetarian,2026-02-22,social_media,4
+659,45-54,49,female,high,Japanese,Sandwiches,vegetarian,2025-12-18,restaurant_qr,6
+660,35-44,38,female,medium,Chicken,French,none,2026-01-15,organic,3
+661,25-34,31,female,low,Thai,Mediterranean,none,2025-12-23,paid_search,2
+662,65+,70,female,low,"Juice, Smoothies, Fruit Salads",Donuts,none,2025-11-08,social_media,4
+663,35-44,36,female,medium,Asian/Asian Fusion,"Juice, Smoothies, Fruit Salads",none,2025-10-06,paid_search,3
+664,25-34,29,male,low,Chicken,Coffee/Tea,none,2025-09-17,referral,5
+665,18-24,24,female,high,Mediterranean,Japanese,none,2025-10-30,organic,4
+666,25-34,31,female,medium,Italian,American,none,2025-10-14,restaurant_qr,7
+667,25-34,29,female,medium,Korean,Thai,halal,2025-11-05,paid_search,15
+668,25-34,33,female,medium,Japanese,Latin American,none,2026-01-18,organic,15
+669,25-34,28,male,low,Chinese,Mexican,none,2026-02-10,referral,14
+670,25-34,27,male,medium,Donuts,Japanese,none,2025-10-05,social_media,2
+671,25-34,28,female,medium,Bakery Products/Desserts,French,none,2026-02-09,paid_search,1
+672,55-64,59,male,medium,Mediterranean,Indian,none,2025-12-10,social_media,11
+673,18-24,22,female,low,Asian/Asian Fusion,Chicken,none,2026-01-04,social_media,5
+674,35-44,40,female,medium,Mediterranean,Chinese,none,2025-09-05,organic,2
+675,35-44,37,male,medium,Bakery Products/Desserts,Indian,none,2025-12-18,social_media,5
+676,65+,66,male,high,Other,Mediterranean,vegetarian,2025-11-24,organic,1
+677,18-24,23,male,medium,Japanese,American,none,2025-09-29,referral,5
+678,25-34,28,female,medium,"Juice, Smoothies, Fruit Salads",Sandwiches,vegetarian,2025-09-25,restaurant_qr,4
+679,65+,80,male,medium,Coffee/Tea,Pizza,none,2025-11-12,paid_search,13
+680,55-64,59,female,medium,Sandwiches,Mexican,none,2025-11-07,paid_search,2
+681,55-64,58,female,medium,Sandwiches,Chicken,none,2025-09-24,organic,0
+682,25-34,27,male,medium,Japanese,Mediterranean,none,2026-01-19,organic,9
+683,25-34,32,female,medium,Chicken,Chinese,kosher,2025-12-24,restaurant_qr,5
+684,45-54,54,male,high,Bakery Products/Desserts,Latin American,none,2025-12-22,organic,3
+685,65+,68,male,medium,American,Indian,kosher,2025-12-14,paid_search,6
+686,35-44,36,female,high,Latin American,Italian,halal,2025-12-02,referral,8
+687,35-44,36,female,medium,Pizza,Mexican,none,2025-11-11,referral,3
+688,25-34,25,male,high,Pizza,Sandwiches,none,2025-11-10,paid_search,6
+689,45-54,48,female,high,Sandwiches,Coffee/Tea,none,2025-11-19,social_media,2
+690,25-34,34,male,medium,Mexican,"Juice, Smoothies, Fruit Salads",gluten_free,2025-10-08,social_media,1
+691,25-34,33,male,high,Indian,Sandwiches,vegetarian,2026-02-11,restaurant_qr,1
+692,35-44,41,female,low,Chinese,Chicken,none,2025-09-04,social_media,4
+693,35-44,44,male,high,Chicken,Latin American,vegetarian,2025-12-22,social_media,2
+694,25-34,31,male,medium,Chinese,"Juice, Smoothies, Fruit Salads",none,2025-12-29,organic,4
+695,18-24,22,female,low,French,Sandwiches,none,2025-12-17,organic,2
+696,35-44,41,male,medium,American,Coffee/Tea,none,2025-09-25,social_media,10
+697,25-34,32,female,high,French,Chinese,none,2025-09-30,restaurant_qr,3
+698,35-44,35,male,low,Chinese,Bakery Products/Desserts,halal,2025-11-18,referral,2
+699,25-34,34,male,medium,Sandwiches,Italian,none,2025-12-17,restaurant_qr,3
+700,35-44,44,female,medium,Bakery Products/Desserts,Mediterranean,none,2025-10-25,paid_search,1
+701,35-44,42,female,high,Other,Mexican,none,2025-09-29,referral,2
+702,18-24,21,male,medium,Sandwiches,Other,none,2026-01-05,referral,4
+703,25-34,28,female,low,American,Korean,none,2026-02-08,social_media,1
+704,25-34,28,male,low,"Juice, Smoothies, Fruit Salads",Chinese,none,2025-12-03,organic,0
+705,18-24,23,female,medium,Korean,Latin American,none,2026-02-11,paid_search,4
+706,65+,71,male,medium,Coffee/Tea,Chinese,none,2025-09-24,referral,6
+707,25-34,30,male,high,Thai,"Juice, Smoothies, Fruit Salads",none,2026-02-04,organic,7
+708,55-64,55,male,low,Bakery Products/Desserts,French,none,2025-09-13,restaurant_qr,1
+709,25-34,32,female,medium,Sandwiches,Thai,none,2025-09-14,organic,5
+710,45-54,54,male,low,Chicken,Latin American,none,2026-02-07,social_media,0
+711,45-54,51,male,low,Italian,Other,none,2026-01-14,social_media,4
+712,35-44,40,female,medium,Bakery Products/Desserts,Asian/Asian Fusion,none,2026-02-17,social_media,8
+713,35-44,40,female,medium,"Juice, Smoothies, Fruit Salads",Chicken,none,2025-12-26,paid_search,3
+714,35-44,39,female,medium,Chicken,Korean,none,2025-10-09,restaurant_qr,3
+715,25-34,30,male,high,Sandwiches,French,kosher,2025-12-19,social_media,13
+716,65+,73,male,medium,Pizza,Bakery Products/Desserts,kosher,2025-09-27,organic,3
+717,55-64,64,female,high,Chinese,Mexican,none,2025-12-15,social_media,3
+718,65+,73,male,high,American,Italian,none,2025-09-20,organic,2
+719,18-24,24,female,medium,Sandwiches,Korean,vegetarian,2025-09-14,organic,2
+720,45-54,54,female,high,"Juice, Smoothies, Fruit Salads",Mediterranean,none,2026-01-30,paid_search,17
+721,65+,74,male,medium,Japanese,Thai,none,2025-12-07,referral,8
+722,25-34,32,male,low,Chicken,Pizza,vegetarian,2025-09-23,paid_search,6
+723,18-24,18,female,medium,Japanese,American,none,2026-01-02,social_media,2
+724,45-54,54,female,low,Donuts,Japanese,none,2026-01-20,paid_search,1
+725,35-44,39,male,medium,Coffee/Tea,"Juice, Smoothies, Fruit Salads",none,2025-11-10,organic,6
+726,55-64,58,female,medium,Coffee/Tea,Sandwiches,none,2025-11-26,restaurant_qr,11
+727,25-34,26,female,low,Sandwiches,Chinese,none,2025-09-15,social_media,1
+728,55-64,62,female,low,Pizza,Mediterranean,none,2025-10-31,restaurant_qr,1
+729,25-34,27,female,high,French,Latin American,none,2025-09-27,organic,1
+730,25-34,28,male,medium,Mediterranean,Latin American,none,2025-09-18,organic,2
+731,25-34,31,female,low,Asian/Asian Fusion,Donuts,none,2025-11-17,referral,7
+732,55-64,64,male,medium,Bakery Products/Desserts,French,none,2025-12-18,social_media,2
+733,45-54,53,male,medium,Indian,Mexican,none,2025-10-21,organic,8
+734,35-44,36,female,medium,Donuts,Latin American,none,2025-11-23,organic,0
+735,25-34,27,male,high,Other,Mediterranean,none,2025-10-27,referral,2
+736,55-64,58,male,medium,Latin American,Japanese,kosher,2025-10-15,paid_search,1
+737,25-34,34,female,medium,Chinese,Mexican,none,2025-09-08,social_media,15
+738,55-64,55,female,high,Chinese,Mediterranean,none,2025-12-17,organic,4
+739,35-44,41,male,high,French,American,none,2026-02-16,paid_search,5
+740,25-34,26,male,low,French,Sandwiches,none,2026-01-23,restaurant_qr,9
+741,35-44,39,male,low,Bakery Products/Desserts,Sandwiches,none,2025-10-13,organic,0
+742,25-34,25,female,low,Korean,Chinese,none,2026-01-16,paid_search,7
+743,45-54,47,male,medium,Bakery Products/Desserts,Mediterranean,none,2025-10-08,referral,6
+744,35-44,36,female,medium,Korean,American,none,2025-09-20,organic,6
+745,25-34,25,female,medium,Italian,Other,vegetarian,2025-12-17,paid_search,4
+746,55-64,61,male,high,Indian,Sandwiches,halal,2025-09-14,social_media,3
+747,25-34,29,female,medium,French,Chinese,none,2026-02-01,paid_search,5
+748,35-44,35,female,low,Korean,Thai,none,2026-02-12,paid_search,12
+749,55-64,60,female,low,Italian,Thai,none,2026-02-10,paid_search,0
+750,35-44,39,female,medium,Pizza,Chinese,none,2026-02-16,social_media,6
+751,18-24,24,female,medium,Sandwiches,Coffee/Tea,none,2025-09-21,social_media,6
+752,65+,67,male,medium,Korean,Asian/Asian Fusion,none,2025-09-06,social_media,5
+753,35-44,41,female,high,Pizza,Coffee/Tea,halal,2026-01-07,organic,9
+754,25-34,34,male,low,Latin American,"Juice, Smoothies, Fruit Salads",none,2026-01-30,social_media,3
+755,25-34,33,male,medium,Indian,Bakery Products/Desserts,none,2026-01-03,restaurant_qr,6
+756,55-64,63,male,medium,Italian,French,none,2025-11-18,paid_search,5
+757,35-44,43,female,medium,Mexican,Latin American,none,2025-09-13,social_media,2
+758,35-44,36,male,low,Mexican,Mediterranean,none,2025-10-25,social_media,16
+759,55-64,57,male,medium,Thai,Asian/Asian Fusion,none,2025-09-25,referral,2
+760,45-54,51,male,low,Korean,"Juice, Smoothies, Fruit Salads",vegetarian,2026-02-05,restaurant_qr,2
+761,25-34,29,male,high,Japanese,French,none,2026-02-11,organic,4
+762,25-34,26,male,low,Indian,Pizza,none,2025-10-17,paid_search,0
+763,25-34,27,female,medium,Italian,Japanese,gluten_free,2026-02-27,paid_search,0
+764,45-54,54,male,medium,Latin American,American,none,2025-12-06,paid_search,1
+765,18-24,23,male,high,Mexican,Bakery Products/Desserts,none,2025-10-08,organic,2
+766,35-44,41,male,low,Mediterranean,Other,vegetarian,2025-10-11,referral,1
+767,45-54,53,male,low,Latin American,Mexican,none,2026-02-21,organic,4
+768,55-64,55,female,low,Italian,Chinese,none,2025-11-28,paid_search,2
+769,25-34,31,male,low,Mediterranean,Indian,none,2025-10-04,social_media,16
+770,55-64,62,female,low,Other,French,gluten_free,2025-09-18,organic,10
+771,18-24,21,female,medium,Asian/Asian Fusion,"Juice, Smoothies, Fruit Salads",none,2025-10-14,restaurant_qr,3
+772,55-64,57,female,low,Latin American,Korean,none,2026-02-10,referral,13
+773,18-24,21,female,low,Bakery Products/Desserts,Pizza,none,2026-01-26,paid_search,3
+774,25-34,34,male,high,Korean,Sandwiches,none,2026-01-08,paid_search,9
+775,55-64,60,female,medium,Bakery Products/Desserts,Chinese,none,2025-09-08,organic,9
+776,25-34,34,female,medium,Pizza,Indian,none,2025-11-12,social_media,7
+777,25-34,31,male,low,Coffee/Tea,Indian,none,2025-09-03,organic,4
+778,45-54,48,male,high,Other,French,none,2025-10-17,social_media,5
+779,45-54,52,male,low,Donuts,Sandwiches,gluten_free,2026-02-26,referral,8
+780,45-54,49,male,high,Chinese,Japanese,none,2025-09-28,organic,7
+781,45-54,45,male,medium,Sandwiches,Chicken,none,2025-09-11,referral,2
+782,35-44,38,female,low,American,Mediterranean,kosher,2025-09-15,organic,9
+783,25-34,27,female,high,French,Mexican,none,2025-11-20,restaurant_qr,0
+784,25-34,33,male,low,"Juice, Smoothies, Fruit Salads",Japanese,none,2026-01-14,organic,0
+785,25-34,32,female,low,Mediterranean,Sandwiches,halal,2025-11-28,social_media,10
+786,55-64,55,male,high,Asian/Asian Fusion,Coffee/Tea,none,2025-09-11,organic,7
+787,35-44,40,female,medium,Mexican,Japanese,none,2026-01-13,referral,4
+788,25-34,33,female,medium,Donuts,Chinese,none,2025-12-01,paid_search,2
+789,35-44,41,male,low,Chicken,Italian,none,2025-09-03,organic,1
+790,65+,68,male,medium,Sandwiches,Other,none,2025-12-08,social_media,0
+791,25-34,25,male,medium,Donuts,Chicken,none,2025-12-24,paid_search,16
+792,35-44,36,male,low,Asian/Asian Fusion,"Juice, Smoothies, Fruit Salads",none,2025-10-14,social_media,0
+793,35-44,39,female,low,Mediterranean,Italian,none,2025-10-28,referral,0
+794,35-44,39,female,low,Asian/Asian Fusion,Coffee/Tea,none,2025-12-19,paid_search,4
+795,18-24,23,male,low,Other,Asian/Asian Fusion,none,2026-02-26,organic,5
+796,55-64,62,male,high,Japanese,Asian/Asian Fusion,halal,2025-12-16,organic,6
+797,65+,82,female,medium,"Juice, Smoothies, Fruit Salads",Japanese,none,2025-12-19,social_media,3
+798,35-44,37,male,high,Pizza,Other,halal,2025-12-15,paid_search,16
+799,45-54,50,female,medium,Korean,Latin American,none,2026-01-13,paid_search,6
+800,65+,76,female,medium,Chinese,Chicken,none,2025-09-29,organic,8
+801,45-54,54,female,low,"Juice, Smoothies, Fruit Salads",Korean,none,2025-11-20,paid_search,8
+802,25-34,27,male,medium,Chicken,French,none,2025-11-16,restaurant_qr,6
+803,35-44,40,male,low,Latin American,Mediterranean,none,2025-12-15,organic,1
+804,35-44,40,female,low,"Juice, Smoothies, Fruit Salads",Sandwiches,none,2026-01-22,social_media,4
+805,35-44,36,male,medium,Asian/Asian Fusion,Thai,none,2026-01-03,referral,5
+806,45-54,51,female,high,Chicken,Chinese,none,2026-02-11,social_media,3
+807,65+,76,female,medium,Indian,Coffee/Tea,none,2025-12-04,organic,13
+808,65+,66,female,low,Korean,French,none,2025-11-09,social_media,3
+809,35-44,40,female,low,Other,American,none,2025-12-15,referral,1
+810,18-24,18,female,low,Mexican,Bakery Products/Desserts,none,2025-12-15,organic,3
+811,65+,67,male,medium,Thai,Donuts,none,2026-02-02,paid_search,2
+812,55-64,56,male,medium,American,Mediterranean,none,2025-12-26,organic,7
+813,18-24,24,male,high,Japanese,Italian,none,2026-02-20,paid_search,4
+814,65+,84,female,low,Asian/Asian Fusion,Mexican,gluten_free,2025-10-27,paid_search,5
+815,55-64,62,female,medium,Coffee/Tea,French,none,2026-01-03,social_media,5
+816,35-44,40,female,medium,Mediterranean,Bakery Products/Desserts,none,2025-10-11,organic,1
+817,35-44,44,female,medium,Italian,Donuts,none,2025-10-28,paid_search,5
+818,25-34,28,male,medium,Mexican,Pizza,kosher,2025-11-10,social_media,2
+819,18-24,22,female,medium,Pizza,Japanese,none,2025-12-08,paid_search,2
+820,25-34,33,male,medium,Mediterranean,Donuts,kosher,2025-10-10,social_media,2
+821,55-64,61,male,low,Mediterranean,Other,none,2025-11-26,paid_search,12
+822,18-24,19,female,medium,Bakery Products/Desserts,Japanese,none,2026-01-28,restaurant_qr,3
+823,25-34,33,male,low,Latin American,Bakery Products/Desserts,halal,2025-10-08,paid_search,10
+824,25-34,31,male,medium,Latin American,Coffee/Tea,none,2025-10-01,social_media,20
+825,35-44,35,male,medium,Chinese,Donuts,none,2025-09-25,referral,10
+826,65+,80,male,medium,Thai,Mexican,vegetarian,2025-10-12,organic,3
+827,25-34,32,female,high,Chicken,Korean,kosher,2026-01-14,organic,1
+828,25-34,28,female,high,Korean,"Juice, Smoothies, Fruit Salads",none,2025-11-10,social_media,2
+829,45-54,47,female,high,Chicken,Mexican,none,2025-10-09,paid_search,1
+830,35-44,41,female,medium,Coffee/Tea,Mediterranean,vegetarian,2026-01-18,referral,13
+831,25-34,27,male,medium,French,Indian,none,2026-02-22,restaurant_qr,1
+832,35-44,42,female,medium,Latin American,"Juice, Smoothies, Fruit Salads",halal,2026-02-27,paid_search,8
+833,25-34,30,male,high,Chicken,Coffee/Tea,none,2025-10-28,paid_search,9
+834,25-34,29,male,medium,Korean,Donuts,none,2026-02-18,paid_search,5
+835,35-44,38,female,high,Sandwiches,Mediterranean,kosher,2025-12-08,organic,4
+836,35-44,42,female,high,Korean,Japanese,none,2026-02-14,referral,6
+837,65+,76,male,medium,Latin American,Bakery Products/Desserts,none,2025-12-14,referral,8
+838,25-34,25,male,low,Chicken,Korean,none,2026-01-02,paid_search,4
+839,35-44,43,male,low,Korean,Japanese,none,2025-09-06,organic,11
+840,45-54,49,female,high,"Juice, Smoothies, Fruit Salads",Mediterranean,none,2025-12-29,organic,3
+841,18-24,21,female,low,Indian,Sandwiches,vegetarian,2026-01-12,organic,5
+842,45-54,50,female,high,Italian,Japanese,none,2026-01-10,referral,1
+843,25-34,30,female,medium,Bakery Products/Desserts,Italian,none,2026-01-28,organic,7
+844,65+,82,male,medium,Asian/Asian Fusion,Donuts,vegetarian,2026-01-31,referral,3
+845,25-34,32,male,high,Asian/Asian Fusion,Chicken,none,2025-12-16,social_media,8
+846,35-44,41,male,medium,Latin American,Chicken,none,2026-02-15,social_media,5
+847,18-24,18,male,medium,Sandwiches,Donuts,none,2025-12-10,paid_search,2
+848,65+,85,male,medium,Other,Sandwiches,kosher,2025-11-30,social_media,1
+849,35-44,40,female,medium,American,Japanese,none,2026-02-07,social_media,4
+850,35-44,38,female,medium,Indian,Sandwiches,none,2025-11-28,referral,0
+851,18-24,19,male,low,"Juice, Smoothies, Fruit Salads",Thai,none,2026-01-16,paid_search,18
+852,45-54,48,female,high,Indian,Korean,none,2025-12-30,paid_search,3
+853,25-34,25,male,high,Chicken,Mediterranean,none,2026-02-15,social_media,4
+854,55-64,61,male,low,Sandwiches,Chinese,none,2026-01-15,organic,2
+855,25-34,26,female,medium,American,Korean,none,2025-12-28,paid_search,2
+856,25-34,26,male,medium,Indian,Donuts,gluten_free,2025-09-09,restaurant_qr,5
+857,18-24,18,male,low,Thai,Chicken,none,2025-09-11,organic,1
+858,35-44,39,male,high,Donuts,Chinese,none,2025-12-17,organic,3
+859,35-44,36,male,low,Chinese,Latin American,none,2025-09-26,organic,0
+860,18-24,20,male,low,Italian,Indian,none,2026-01-09,social_media,2
+861,45-54,53,female,medium,Coffee/Tea,Latin American,none,2025-12-04,organic,1
+862,35-44,43,female,medium,Italian,Chicken,none,2026-01-04,social_media,13
+863,35-44,35,male,medium,Mexican,Asian/Asian Fusion,none,2025-12-09,organic,6
+864,35-44,37,male,medium,Mediterranean,Japanese,none,2025-12-26,organic,6
+865,25-34,28,female,medium,Pizza,Japanese,none,2025-10-03,social_media,6
+866,35-44,41,female,medium,Latin American,Thai,none,2026-02-10,organic,2
+867,25-34,34,male,low,Mediterranean,Thai,none,2026-01-28,restaurant_qr,5
+868,25-34,28,male,medium,Mediterranean,Indian,none,2025-12-20,organic,8
+869,55-64,56,male,low,Italian,Latin American,none,2026-02-05,paid_search,1
+870,65+,70,male,low,Latin American,Sandwiches,none,2026-01-15,organic,1
+871,25-34,27,female,medium,Asian/Asian Fusion,Bakery Products/Desserts,none,2025-12-19,paid_search,6
+872,25-34,30,female,low,Mexican,Sandwiches,halal,2025-11-24,restaurant_qr,1
+873,45-54,50,male,low,Sandwiches,Japanese,none,2026-01-04,referral,5
+874,25-34,29,female,low,Mexican,Coffee/Tea,none,2025-12-05,organic,2
+875,18-24,21,female,high,Other,Coffee/Tea,none,2025-10-20,social_media,5
+876,25-34,34,female,high,American,Chinese,none,2026-01-06,social_media,9
+877,45-54,45,male,medium,Pizza,French,none,2025-12-31,organic,2
+878,45-54,54,male,high,Indian,French,kosher,2025-12-03,organic,0
+879,18-24,23,female,medium,"Juice, Smoothies, Fruit Salads",Other,none,2026-02-22,restaurant_qr,4
+880,25-34,26,female,medium,"Juice, Smoothies, Fruit Salads",Latin American,gluten_free,2026-02-14,restaurant_qr,6
+881,25-34,27,male,low,Latin American,Bakery Products/Desserts,halal,2025-09-07,restaurant_qr,0
+882,45-54,52,male,medium,"Juice, Smoothies, Fruit Salads",Chinese,none,2025-11-06,referral,9
+883,18-24,19,female,medium,Chicken,French,none,2025-12-31,social_media,6
+884,18-24,23,female,medium,Korean,French,none,2026-02-15,organic,0
+885,55-64,60,female,medium,American,Pizza,none,2025-10-03,organic,1
+886,25-34,27,male,medium,Bakery Products/Desserts,Indian,halal,2025-10-22,organic,13
+887,45-54,51,female,medium,Latin American,Mexican,none,2025-11-20,social_media,3
+888,25-34,28,female,high,Sandwiches,American,halal,2026-01-07,referral,4
+889,18-24,23,male,medium,Chicken,Donuts,none,2026-02-16,referral,2
+890,25-34,33,male,medium,Indian,Bakery Products/Desserts,halal,2026-01-25,restaurant_qr,3
+891,45-54,49,female,medium,Korean,Asian/Asian Fusion,kosher,2025-11-17,referral,0
+892,55-64,57,male,medium,Mexican,Donuts,none,2025-12-10,restaurant_qr,3
+893,55-64,56,female,medium,Indian,Other,none,2025-12-25,organic,6
+894,25-34,26,male,low,French,Donuts,none,2026-02-20,referral,5
+895,45-54,47,female,medium,Bakery Products/Desserts,Chinese,vegetarian,2026-01-12,social_media,0
+896,25-34,26,male,low,Chicken,Thai,gluten_free,2025-11-11,organic,7
+897,25-34,28,female,medium,Mediterranean,Mexican,vegetarian,2025-12-27,restaurant_qr,18
+898,55-64,56,male,medium,Thai,Pizza,none,2026-01-04,referral,3
+899,18-24,19,male,medium,Pizza,"Juice, Smoothies, Fruit Salads",none,2026-02-03,organic,10
+900,18-24,18,male,low,Other,Indian,vegetarian,2025-11-09,organic,9
+901,25-34,26,male,medium,Latin American,Japanese,none,2025-10-20,social_media,12
+902,18-24,18,male,low,Mexican,Chicken,vegetarian,2025-12-21,social_media,4
+903,25-34,30,female,high,Mediterranean,American,none,2025-12-09,restaurant_qr,6
+904,35-44,35,female,high,Latin American,French,none,2026-01-04,organic,4
+905,35-44,38,male,high,Latin American,Asian/Asian Fusion,none,2025-11-02,organic,1
+906,55-64,55,female,medium,Donuts,American,none,2025-11-29,organic,9
+907,55-64,60,male,medium,Thai,"Juice, Smoothies, Fruit Salads",none,2026-02-15,organic,5
+908,25-34,28,male,low,Chinese,Donuts,none,2025-11-11,organic,3
+909,25-34,27,female,low,Donuts,Japanese,none,2025-11-21,restaurant_qr,2
+910,25-34,27,male,medium,Other,Sandwiches,none,2025-11-03,paid_search,3
+911,35-44,43,female,medium,Coffee/Tea,French,none,2025-12-16,paid_search,6
+912,25-34,30,male,high,Chicken,Pizza,none,2025-09-25,organic,6
+913,35-44,43,female,low,Other,American,gluten_free,2026-02-10,organic,2
+914,25-34,29,female,high,Pizza,Bakery Products/Desserts,none,2025-09-18,referral,12
+915,35-44,36,male,medium,"Juice, Smoothies, Fruit Salads",Mediterranean,gluten_free,2025-10-22,social_media,1
+916,35-44,42,male,medium,Pizza,Asian/Asian Fusion,none,2025-12-19,referral,3
+917,25-34,29,male,low,Pizza,Thai,none,2025-10-31,paid_search,3
+918,65+,66,male,low,Latin American,Thai,none,2026-01-20,organic,15
+919,45-54,48,female,medium,"Juice, Smoothies, Fruit Salads",Pizza,none,2025-09-16,paid_search,5
+920,25-34,33,male,medium,Asian/Asian Fusion,Chinese,none,2025-09-29,organic,10
+921,55-64,58,female,low,Coffee/Tea,Chicken,none,2025-10-23,referral,0
+922,35-44,38,male,medium,Mexican,Korean,none,2026-02-07,organic,0
+923,55-64,56,male,high,Italian,Pizza,none,2026-02-07,social_media,0
+924,55-64,60,male,high,Italian,Indian,none,2025-10-09,organic,3
+925,35-44,36,male,high,American,Indian,none,2026-02-21,social_media,12
+926,18-24,21,female,medium,Indian,American,none,2026-02-17,restaurant_qr,3
+927,25-34,31,male,low,Chicken,Latin American,none,2025-09-27,social_media,2
+928,35-44,37,female,medium,Donuts,Italian,none,2025-09-28,social_media,5
+929,45-54,47,male,medium,Thai,French,none,2026-01-10,restaurant_qr,9
+930,25-34,29,female,low,Latin American,Italian,none,2025-12-28,social_media,2
+931,25-34,27,male,low,Italian,Other,vegetarian,2026-01-09,organic,1
+932,55-64,56,male,medium,American,Mexican,halal,2026-01-23,organic,2
+933,65+,74,female,low,Japanese,Italian,none,2025-11-22,social_media,4
+934,35-44,43,female,low,Latin American,Japanese,none,2025-10-07,social_media,5
+935,25-34,26,male,low,Donuts,Pizza,none,2026-01-10,organic,0
+936,25-34,26,female,low,"Juice, Smoothies, Fruit Salads",Latin American,none,2025-10-16,organic,1
+937,18-24,22,female,medium,Coffee/Tea,Thai,none,2025-10-12,restaurant_qr,3
+938,65+,79,female,medium,Mediterranean,Thai,none,2025-09-15,organic,9
+939,18-24,18,female,medium,Coffee/Tea,Sandwiches,none,2026-01-06,paid_search,4
+940,35-44,41,male,low,Indian,Latin American,none,2025-11-13,organic,9
+941,25-34,27,male,low,Indian,Coffee/Tea,none,2025-09-12,referral,2
+942,35-44,43,female,medium,Mediterranean,Coffee/Tea,none,2026-01-17,organic,3
+943,45-54,47,female,medium,Indian,Pizza,none,2025-11-12,social_media,5
+944,55-64,59,female,medium,Other,Indian,none,2025-09-22,organic,10
+945,25-34,33,female,medium,American,Latin American,none,2025-10-01,social_media,14
+946,18-24,21,female,high,French,Donuts,none,2025-09-19,referral,14
+947,25-34,27,female,low,Indian,Other,none,2025-10-25,paid_search,12
+948,55-64,61,female,medium,American,Donuts,none,2025-11-17,paid_search,4
+949,55-64,55,male,medium,Coffee/Tea,Chicken,none,2026-02-20,paid_search,2
+950,35-44,38,female,medium,Mediterranean,Indian,halal,2025-11-22,organic,5
+951,35-44,38,male,low,Sandwiches,Indian,none,2025-10-05,referral,8
+952,45-54,51,male,medium,Mexican,Bakery Products/Desserts,gluten_free,2025-11-13,organic,6
+953,25-34,32,male,medium,Chicken,French,none,2025-11-14,social_media,5
+954,65+,81,male,low,Coffee/Tea,French,none,2025-10-13,organic,9
+955,35-44,39,male,low,Latin American,Thai,none,2025-10-07,organic,3
+956,25-34,31,male,low,Pizza,Other,none,2025-11-28,organic,4
+957,35-44,38,male,high,Pizza,Donuts,none,2025-12-29,social_media,4
+958,18-24,22,male,low,Other,Korean,none,2025-12-08,paid_search,1
+959,25-34,28,male,high,Mediterranean,Coffee/Tea,vegetarian,2026-02-05,social_media,3
+960,45-54,48,male,medium,"Juice, Smoothies, Fruit Salads",Japanese,halal,2026-02-18,organic,2
+961,18-24,21,female,high,Bakery Products/Desserts,Indian,none,2025-10-04,organic,1
+962,35-44,40,female,high,French,Donuts,none,2026-02-05,referral,7
+963,25-34,31,female,medium,French,Chinese,none,2026-02-19,referral,4
+964,25-34,26,male,low,Thai,Bakery Products/Desserts,none,2025-12-28,organic,2
+965,25-34,29,male,low,Chicken,Asian/Asian Fusion,vegetarian,2025-10-27,social_media,4
+966,25-34,28,male,low,Thai,Bakery Products/Desserts,vegetarian,2026-01-11,paid_search,2
+967,45-54,47,male,medium,Other,Donuts,halal,2025-12-03,referral,4
+968,25-34,31,female,low,Korean,Bakery Products/Desserts,none,2025-11-23,referral,10
+969,35-44,40,female,low,Japanese,Mediterranean,none,2025-11-06,referral,4
+970,35-44,41,male,medium,Mexican,"Juice, Smoothies, Fruit Salads",none,2025-11-26,referral,9
+971,45-54,49,male,high,Other,Latin American,gluten_free,2025-09-06,organic,6
+972,65+,69,male,low,Latin American,Japanese,none,2026-02-16,referral,3
+973,45-54,51,female,low,Other,Pizza,none,2026-03-01,paid_search,1
+974,25-34,26,male,low,Japanese,Chinese,none,2026-02-05,organic,4
+975,18-24,23,male,high,Donuts,Sandwiches,vegetarian,2025-12-20,paid_search,0
+976,25-34,29,male,medium,Mediterranean,Japanese,none,2025-12-23,restaurant_qr,1
+977,35-44,40,male,low,Korean,Other,none,2025-10-20,referral,5
+978,18-24,23,male,low,Italian,Japanese,kosher,2025-11-17,organic,15
+979,35-44,39,female,low,Thai,Indian,kosher,2025-10-06,social_media,7
+980,35-44,44,male,low,Chinese,Asian/Asian Fusion,none,2026-02-07,referral,3
+981,25-34,31,male,high,Chinese,French,none,2026-02-21,organic,3
+982,45-54,54,male,medium,Thai,Chicken,vegetarian,2025-11-04,paid_search,9
+983,18-24,24,male,medium,Korean,French,halal,2025-11-28,social_media,3
+984,18-24,22,female,high,Chicken,Indian,none,2025-09-05,paid_search,4
+985,45-54,45,female,low,Korean,Sandwiches,none,2025-10-09,organic,5
+986,35-44,39,male,medium,Coffee/Tea,Chicken,none,2026-01-28,social_media,6
+987,45-54,54,male,high,Latin American,Donuts,vegetarian,2025-10-23,restaurant_qr,9
+988,35-44,36,male,medium,Japanese,"Juice, Smoothies, Fruit Salads",none,2026-02-16,social_media,11
+989,25-34,29,female,medium,French,Italian,none,2026-03-01,referral,0
+990,55-64,59,male,low,Latin American,Donuts,none,2025-12-02,paid_search,8
+991,55-64,56,male,low,French,American,kosher,2025-12-03,organic,2
+992,45-54,49,male,low,Other,Korean,none,2025-10-09,social_media,5
+993,25-34,28,female,medium,Mexican,Other,none,2025-12-02,organic,3
+994,35-44,35,male,medium,Italian,Korean,none,2025-09-08,referral,5
+995,25-34,27,male,high,Mediterranean,Italian,none,2025-09-11,organic,4
+996,18-24,18,female,medium,Asian/Asian Fusion,Indian,none,2026-02-16,paid_search,2
+997,65+,75,male,high,Other,Latin American,none,2025-10-01,paid_search,10
+998,25-34,29,male,high,"Juice, Smoothies, Fruit Salads",Sandwiches,none,2025-11-11,restaurant_qr,4
+999,65+,84,male,low,Italian,Thai,kosher,2025-10-10,organic,6
+1000,35-44,41,female,medium,Chinese,American,none,2025-12-09,organic,2

@@ -1,0 +1,330 @@
+const request = require("supertest");
+
+const mockPool = {
+  query: jest.fn(),
+  connect: jest.fn(),
+};
+
+jest.mock("../db/pool", () => ({
+  getPool: jest.fn(() => mockPool),
+  checkConnection: jest.fn(async () => ({ configured: true, ok: true })),
+  closePool: jest.fn(),
+}));
+
+jest.mock("../services/createBooking", () => ({
+  createBooking: jest.fn(),
+}));
+
+jest.mock("../services/createCampaignOffers", () => ({
+  createCampaignOffers: jest.fn(),
+}));
+
+const createApp = require("../app");
+const { createBooking } = require("../services/createBooking");
+const { createCampaignOffers } = require("../services/createCampaignOffers");
+
+const app = createApp();
+
+const USER_ID = "11111111-1111-4111-8111-111111111111";
+const RESTAURANT_ID = "22222222-2222-4222-8222-222222222222";
+const OFFER_ID = "33333333-3333-4333-8333-333333333333";
+const CAMPAIGN_ID = "44444444-4444-4444-8444-444444444444";
+const NOW = new Date("2026-06-30T12:00:00.000Z");
+
+function userRow(overrides = {}) {
+  return {
+    id: USER_ID,
+    display_name: "Yuhao",
+    budget_tier: null,
+    dietary_tags: [],
+    last_lat: null,
+    last_lng: null,
+    created_at: NOW,
+    ...overrides,
+  };
+}
+
+function restaurantRow(overrides = {}) {
+  return {
+    id: RESTAURANT_ID,
+    name: "Mercer Room",
+    latitude: 40.735,
+    longitude: -73.99,
+    neighborhood: "Manhattan",
+    available_table_count: 2,
+    capacity: 24,
+    cuisine: "Omakase",
+    busyness_score: 0.35,
+    is_wheelchair_accessible: true,
+    sensory_friendly: false,
+    address_line: "12 Mercer Street",
+    hold_window_minutes: 15,
+    distance_meters: 450,
+    manager_user_id: USER_ID,
+    ...overrides,
+  };
+}
+
+function bookingRow(overrides = {}) {
+  return {
+    id: "55555555-5555-4555-8555-555555555555",
+    user_id: USER_ID,
+    restaurant_id: RESTAURANT_ID,
+    offer_id: null,
+    campaign_id: null,
+    status: "confirmed",
+    transport_mode: "walking",
+    eta_minutes: 8,
+    eta_source: "estimate",
+    hold_expires_at: new Date("2026-06-30T12:15:00.000Z"),
+    confirmed_at: NOW,
+    ...overrides,
+  };
+}
+
+function campaignRow(overrides = {}) {
+  return {
+    id: CAMPAIGN_ID,
+    restaurant_id: RESTAURANT_ID,
+    status: "active",
+    table_quota: 3,
+    tables_claimed: 0,
+    discount_percent: 20,
+    created_at: NOW,
+    ...overrides,
+  };
+}
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockPool.query.mockReset();
+  mockPool.connect.mockReset();
+});
+
+describe("users routes", () => {
+  it("creates a user profile", async () => {
+    mockPool.query.mockResolvedValueOnce({ rows: [userRow()] });
+
+    const res = await request(app)
+      .post("/api/v1/users")
+      .send({ displayName: " Yuhao " });
+
+    expect(res.status).toBe(201);
+    expect(res.body).toMatchObject({
+      id: USER_ID,
+      displayName: "Yuhao",
+      dietaryTags: [],
+      createdAt: NOW.toISOString(),
+    });
+    expect(mockPool.query).toHaveBeenCalledWith(expect.stringContaining("INSERT INTO users"), [
+      "Yuhao",
+    ]);
+  });
+
+  it("updates preferences and returns normalized coordinates", async () => {
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
+      .mockResolvedValueOnce({
+        rows: [
+          userRow({
+            budget_tier: "TIER_2",
+            dietary_tags: ["vegetarian"],
+            last_lat: "40.73",
+            last_lng: "-73.99",
+          }),
+        ],
+      });
+
+    const res = await request(app)
+      .patch("/api/v1/users/me/preferences")
+      .set("X-User-Id", USER_ID)
+      .send({
+        budgetTier: "TIER_2",
+        dietaryTags: ["vegetarian"],
+        lastLat: 40.73,
+        lastLng: -73.99,
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      budgetTier: "TIER_2",
+      dietaryTags: ["vegetarian"],
+      lastLat: 40.73,
+      lastLng: -73.99,
+    });
+  });
+
+  it("returns bookings for the signed-in user", async () => {
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
+      .mockResolvedValueOnce({ rows: [bookingRow()] });
+
+    const res = await request(app)
+      .get("/api/v1/users/me/bookings")
+      .set("X-User-Id", USER_ID);
+
+    expect(res.status).toBe(200);
+    expect(res.body.bookings[0]).toMatchObject({
+      id: "55555555-5555-4555-8555-555555555555",
+      userId: USER_ID,
+      restaurantId: RESTAURANT_ID,
+      etaMinutes: 8,
+    });
+  });
+});
+
+describe("restaurant routes", () => {
+  it("returns nearby restaurants with parsed location and radius", async () => {
+    mockPool.query.mockResolvedValueOnce({ rows: [restaurantRow()] });
+
+    const res = await request(app).get("/api/v1/restaurants/nearby?lat=40.73&lng=-73.99");
+
+    expect(res.status).toBe(200);
+    expect(res.body.origin).toEqual({ lat: 40.73, lng: -73.99 });
+    expect(res.body.radiusM).toBe(1500);
+    expect(res.body.restaurants[0]).toMatchObject({
+      id: RESTAURANT_ID,
+      name: "Mercer Room",
+      availableTableCount: 2,
+      distanceMeters: 450,
+    });
+  });
+
+  it("returns restaurant details", async () => {
+    mockPool.query.mockResolvedValueOnce({ rows: [restaurantRow()] });
+
+    const res = await request(app).get(`/api/v1/restaurants/${RESTAURANT_ID}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      id: RESTAURANT_ID,
+      addressLine: "12 Mercer Street",
+      holdWindowMinutes: 15,
+    });
+  });
+});
+
+describe("booking routes", () => {
+  it("requires a signed-in user", async () => {
+    const res = await request(app).post("/api/v1/bookings").send({});
+
+    expect(res.status).toBe(401);
+    expect(res.body.error.code).toBe("UNAUTHORIZED");
+  });
+
+  it("creates a confirmed booking inside a transaction", async () => {
+    const client = {
+      query: jest.fn().mockResolvedValue({ rows: [] }),
+      release: jest.fn(),
+    };
+
+    mockPool.query.mockResolvedValueOnce({ rows: [{ id: USER_ID }] });
+    mockPool.connect.mockResolvedValueOnce(client);
+    createBooking.mockResolvedValueOnce(bookingRow());
+
+    const res = await request(app)
+      .post("/api/v1/bookings")
+      .set("X-User-Id", USER_ID)
+      .send({
+        restaurantId: RESTAURANT_ID,
+        transportMode: "walking",
+        userLat: 40.73,
+        userLng: -73.99,
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body).toMatchObject({
+      userId: USER_ID,
+      restaurantId: RESTAURANT_ID,
+      status: "confirmed",
+      etaMinutes: 8,
+    });
+    expect(client.query).toHaveBeenCalledWith("BEGIN");
+    expect(client.query).toHaveBeenCalledWith("COMMIT");
+    expect(client.release).toHaveBeenCalled();
+  });
+});
+
+describe("offer routes", () => {
+  it("accepts a pending offer and returns the generated booking", async () => {
+    const client = {
+      query: jest
+        .fn()
+        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({
+          rows: [
+            {
+              id: OFFER_ID,
+              status: "pending",
+              expires_at: new Date("2099-01-01T00:00:00.000Z"),
+              restaurant_id: RESTAURANT_ID,
+            },
+          ],
+        })
+        .mockResolvedValueOnce({ rows: [{ last_lat: "40.73", last_lng: "-73.99" }] })
+        .mockResolvedValueOnce({ rows: [] }),
+      release: jest.fn(),
+    };
+
+    mockPool.query.mockResolvedValueOnce({ rows: [{ id: USER_ID }] });
+    mockPool.connect.mockResolvedValueOnce(client);
+    createBooking.mockResolvedValueOnce(
+      bookingRow({
+        offer_id: OFFER_ID,
+        campaign_id: CAMPAIGN_ID,
+      })
+    );
+
+    const res = await request(app)
+      .post(`/api/v1/offers/${OFFER_ID}/accept`)
+      .set("X-User-Id", USER_ID)
+      .send();
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      offerId: OFFER_ID,
+      status: "accepted",
+      booking: {
+        offerId: OFFER_ID,
+        campaignId: CAMPAIGN_ID,
+      },
+    });
+  });
+});
+
+describe("campaign routes", () => {
+  it("creates a campaign and generates matched offers", async () => {
+    const client = {
+      query: jest
+        .fn()
+        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: [restaurantRow()] })
+        .mockResolvedValueOnce({ rows: [campaignRow()] })
+        .mockResolvedValueOnce({ rows: [] }),
+      release: jest.fn(),
+    };
+
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
+      .mockResolvedValueOnce({ rows: [{ id: RESTAURANT_ID, manager_user_id: USER_ID }] });
+    mockPool.connect.mockResolvedValueOnce(client);
+    createCampaignOffers.mockResolvedValueOnce(["offer-1"]);
+
+    const res = await request(app)
+      .post(`/api/v1/restaurants/${RESTAURANT_ID}/campaigns`)
+      .set("X-User-Id", USER_ID)
+      .send({ tableQuota: 3, discountPercent: 20 });
+
+    expect(res.status).toBe(201);
+    expect(res.body).toMatchObject({
+      restaurantId: RESTAURANT_ID,
+      tableQuota: 3,
+      discountPercent: 20,
+    });
+    expect(createCampaignOffers).toHaveBeenCalledWith(client, {
+      campaignId: CAMPAIGN_ID,
+      restaurant: expect.objectContaining({ id: RESTAURANT_ID }),
+      tableQuota: 3,
+    });
+  });
+});
