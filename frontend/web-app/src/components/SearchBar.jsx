@@ -5,8 +5,9 @@ export default function SearchBar({ searchQuery, setSearchQuery, locationFallbac
   return (
     <div className="bg-[#12171E] border border-[#1F2936] rounded-xl p-4 flex flex-col md:flex-row gap-4 w-full">
       <div className="flex-1">
-        <label className="text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1 block">Search</label>
+        <label htmlFor="restaurant-search" className="text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1 block">Search</label>
         <input 
+          id="restaurant-search"
           type="text" 
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -16,8 +17,9 @@ export default function SearchBar({ searchQuery, setSearchQuery, locationFallbac
       </div>
       
       <div className="flex-1 md:max-w-md">
-        <label className="text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1 block">Starting Point (Optional)</label>
+        <label htmlFor="location-fallback" className="text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1 block">Starting Point (Optional)</label>
         <input 
+          id="location-fallback"
           type="text" 
           value={locationFallback}
           onChange={(e) => setLocationFallback(e.target.value)}
