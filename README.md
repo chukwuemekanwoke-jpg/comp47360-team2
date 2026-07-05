@@ -27,7 +27,7 @@ Operating as a two-sided marketplace, Tablé bridges the gap between spontaneous
 - 📍 **Geospatial Discovery**
   Acquires real-time user location to accurately display premium restaurants with immediate table availability within a strictly defined `1.5km` radius.
 - ⏱️ **Transit-Validated Booking (ETA Guardrails)**
-  Integrates the Google Distance Matrix API to dynamically calculate Estimated Time of Arrival (ETA). It ensures users can physically arrive before the restaurant's reservation hold window expires, effectively mitigating "no-shows".
+  Integrates the Google **Routes API** to calculate Estimated Time of Arrival (ETA). It ensures users can physically arrive before the restaurant's reservation hold window expires, effectively mitigating "no-shows".
 - ⚡ **Lull-Mitigation Trigger (Flash Deals)**
   A B-suite dashboard feature allowing restaurant managers to convert empty tables into exclusive 1-to-1 flash deals with a single click. These offers are pushed secretly to the most compatible nearby diners via our recommendation algorithms, avoiding public mass discounting.
 
@@ -38,19 +38,19 @@ Operating as a two-sided marketplace, Tablé bridges the gap between spontaneous
 This repository follows a Monorepo architecture to ensure high-efficiency collaboration across frontend, backend, and data engineering teams:
 
 ```text
-Table-Workspace/
-├── docs/                # 📄 Core documents (Business Plan, MVP ACs, API contract, ADR)
+comp47360-team2/
+├── docs/                # Core documents (Business Plan, MVP ACs, API contract, ADR)
 │   └── adr/             # Architecture Decision Records (ADR-001.md)
-├── frontend/            # 💻 Frontend Ecosystem
+├── frontend/            # Frontend ecosystem
 │   ├── web-app/         # Responsive Web App (React + Vite)
-│   └── mobile-app/      # Cross-platform Mobile App (React Native/Expo)
-├── backend/             # ⚙️ Backend Microservices
-│   ├── api-gateway/     # Core API Gateway & Business Logic (Node.js/Express)
-│   └── realtime/        # State streaming and polling services
-├── ml-pipeline/         # 🧠 Machine Learning & Data Engine
+│   ├── mobile-app/      # Cross-platform Mobile App (React Native/Expo)
+│   └── packages/shared/ # Shared API client + types (RTK Query)
+├── backend/             # Backend
+│   └── api-gateway/     # API Gateway & business logic (Node.js/Express monolith)
+├── ml-pipeline/         # Machine Learning & Data Engine
 │   ├── fastapi-app/     # Algorithm Inference API (Python/FastAPI)
 │   └── notebooks/       # Data exploration & feature engineering workflows
-└── database/            # 🗄️ Database Infrastructure (PostgreSQL scripts & Mock data)
+└── database/            # PostgreSQL migrations, seeds, Docker Compose
 ```
 
 ## 👥 Team Roles
@@ -61,7 +61,7 @@ Table-Workspace/
 | **Chukwuemeka Nwoke** | Scrum Master | Drives agile iterations, CI/CD pipeline integration, and GitHub compliance reviews. |
 | **Andrew Mitchell** | Web Frontend Lead | Leads `frontend/web-app` architecture and responsive UI implementation. |
 | **Milo Dennehy** | Mobile App Lead | Leads `frontend/mobile-app` cross-platform development and map component integration. |
-| **Yang Liu** | Backend Lead | Leads `backend/` microservices design, routing gateway, and core database interactions. |
+| **Yang Liu** | Backend Lead | Leads `backend/api-gateway`, database schema, and core API implementation. |
 | **Rui Xu** | Data & ML Lead | Leads `ml-pipeline/` recommendation algorithm modeling, data cleaning, and FastAPI deployment. |
 
 ---

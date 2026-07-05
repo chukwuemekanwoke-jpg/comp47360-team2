@@ -39,9 +39,11 @@ Server: `http://localhost:3001`
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
-| POST | `/api/v1/users` | none | Create user after dummy login |
-| GET | `/api/v1/users/me` | `X-User-Id` | Current user profile |
-| PATCH | `/api/v1/users/me/preferences` | `X-User-Id` | Update budget, dietary tags, location |
+| POST | `/api/v1/users` | none | Create user (legacy onboarding) |
+| POST | `/api/v1/auth/register` | none | Register; returns JWT *(planned)* |
+| POST | `/api/v1/auth/login` | none | Login; returns JWT *(planned)* |
+| GET | `/api/v1/users/me` | JWT or `X-User-Id` | Current user profile |
+| PATCH | `/api/v1/users/me/preferences` | JWT or `X-User-Id` | Update budget, dietary tags, location |
 
 ### Discovery (BE-11)
 
@@ -55,19 +57,19 @@ Server: `http://localhost:3001`
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
-| POST | `/api/v1/bookings` | `X-User-Id` | Confirm reservation; decrements table count |
-| GET | `/api/v1/users/me/bookings` | `X-User-Id` | List the current user's bookings (newest first) |
-| GET | `/api/v1/restaurants/:restaurantId/bookings` | manager `X-User-Id` | List bookings for a restaurant (newest first) |
+| POST | `/api/v1/bookings` | JWT or `X-User-Id` | Confirm reservation; decrements table count |
+| GET | `/api/v1/users/me/bookings` | JWT or `X-User-Id` | List the current user's bookings (newest first) |
+| GET | `/api/v1/restaurants/:restaurantId/bookings` | manager JWT or `X-User-Id` | List bookings for a restaurant (newest first) |
 
 ### Offers & campaigns (BE-13)
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
-| POST | `/api/v1/restaurants/:restaurantId/campaigns` | manager `X-User-Id` | Create flash-deal campaign + heuristic offers |
+| POST | `/api/v1/restaurants/:restaurantId/campaigns` | manager JWT or `X-User-Id` | Create flash-deal campaign + ML/heuristic offers |
 | GET | `/api/v1/restaurants/:restaurantId/campaigns` | manager | List campaigns |
 | GET | `/api/v1/restaurants/:restaurantId/campaigns/active` | manager | Active campaign or `null` |
-| GET | `/api/v1/users/me/offers` | `X-User-Id` | Offer inbox (`?status=pending` optional) |
-| POST | `/api/v1/offers/:offerId/accept` | `X-User-Id` | Accept offer → confirmed booking |
+| GET | `/api/v1/users/me/offers` | JWT or `X-User-Id` | Offer inbox (`?status=pending` optional) |
+| POST | `/api/v1/offers/:offerId/accept` | JWT or `X-User-Id` | Accept offer → confirmed booking |
 
 ### Examples
 
@@ -152,7 +154,7 @@ backend/api-gateway/
 │   │   ├── asyncHandler.js   # async route wrapper
 │   │   ├── errorHandler.js   # JSON errors (BE-3 shape)
 │   │   ├── notFound.js
-│   │   └── requireUser.js    # X-User-Id stub (for Sprint 2 routes)
+│   │   └── requireUser.js    # JWT + interim X-User-Id auth
 │   └── routes/
 │       ├── health.js
 │       └── apiV1/
@@ -168,7 +170,7 @@ backend/api-gateway/
 - **BE-4:** [docs/adr/ADR-001.md](../../docs/adr/ADR-001.md)
 - **BE-5:** [docs/data-strategy.md](../../docs/data-strategy.md)
 
-Sprint 2+ business routes (`/restaurants`, `/bookings`, …) mount under `src/routes/apiV1/`.
+Business routes (`/restaurants`, `/bookings`, …) mount under `src/routes/apiV1/`.
 
 ## Related tickets
 
