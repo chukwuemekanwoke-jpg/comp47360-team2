@@ -22,6 +22,20 @@ async function loadUserAuthRow(pool, userId) {
 }
 
 async function requireUser(req, _res, next) {
+  const bearer = parseBearerToken(req);
+
+  if (!bearer) {
+    const userId = req.header("X-User-Id");
+    if (!userId) {
+      return next(
+        new AppError(401, "UNAUTHORIZED", "Missing Authorization Bearer token or X-User-Id header")
+      );
+    }
+    if (!isUuid(userId)) {
+      return next(new AppError(400, "VALIDATION_ERROR", "Invalid X-User-Id format"));
+    }
+  }
+
   const pool = getPool();
   if (!pool) {
     return next(
@@ -29,7 +43,6 @@ async function requireUser(req, _res, next) {
     );
   }
 
-  const bearer = parseBearerToken(req);
   if (bearer) {
     try {
       const { userId, tokenVersion } = verifyAccessToken(bearer);
@@ -49,15 +62,6 @@ async function requireUser(req, _res, next) {
   }
 
   const userId = req.header("X-User-Id");
-  if (!userId) {
-    return next(
-      new AppError(401, "UNAUTHORIZED", "Missing Authorization Bearer token or X-User-Id header")
-    );
-  }
-  if (!isUuid(userId)) {
-    return next(new AppError(400, "VALIDATION_ERROR", "Invalid X-User-Id format"));
-  }
-
   const row = await loadUserAuthRow(pool, userId);
   if (!row) {
     return next(new AppError(404, "NOT_FOUND", "User not found"));
