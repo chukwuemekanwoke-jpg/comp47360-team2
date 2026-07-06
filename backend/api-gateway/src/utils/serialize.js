@@ -13,6 +13,9 @@ function toUserJson(row) {
   if (row.last_lng != null) {
     user.lastLng = Number(row.last_lng);
   }
+  if (row.email != null) {
+    user.email = row.email;
+  }
 
   return user;
 }

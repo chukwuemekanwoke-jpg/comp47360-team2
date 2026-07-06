@@ -79,6 +79,9 @@ erDiagram
 
 Consumer profiles. Auth via JWT (`Authorization: Bearer`); seed data may use fixed UUIDs with interim `X-User-Id` header.
 
+- `email`: unique login identifier (nullable for legacy seed users)
+- `password_hash`: bcrypt hash; null for users without credentials
+- `token_version`: incremented on logout to invalidate outstanding JWTs
 - `budget_tier`: `TIER_1` \| `TIER_2` \| `TIER_3` (UI labels € / €€ / €€€)
 - `dietary_tags`: PostgreSQL `TEXT[]` for ML features
 

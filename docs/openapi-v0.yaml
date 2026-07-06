@@ -10,6 +10,7 @@ servers:
 
 tags:
   - name: Health
+  - name: Auth
   - name: Users
   - name: Restaurants
   - name: Bookings
@@ -56,6 +57,65 @@ paths:
                     enum: [connected, error, not_configured]
                   databaseMessage:
                     type: string
+
+  /api/v1/auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthRegisterRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSession"
+        "409":
+          $ref: "#/components/responses/Conflict"
+
+  /api/v1/auth/login:
+    post:
+      tags: [Auth]
+      summary: Sign in with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthLoginRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSession"
+        "401":
+          description: Invalid credentials
+
+  /api/v1/auth/logout:
+    post:
+      tags: [Auth]
+      summary: Invalidate the current JWT (server-side logout)
+      security:
+        - BearerAuth: []
+        - UserIdHeader: []
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: logged_out
 
   /api/v1/users:
     post:
@@ -441,6 +501,9 @@ components:
           format: uuid
         displayName:
           type: string
+        email:
+          type: string
+          format: email
         budgetTier:
           $ref: "#/components/schemas/BudgetTier"
         dietaryTags:
@@ -450,6 +513,45 @@ components:
         createdAt:
           type: string
           format: date-time
+
+    AuthRegisterRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        displayName:
+          type: string
+
+    AuthLoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+
+    AuthSession:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+        userId:
+          type: string
+          format: uuid
+        restaurantId:
+          type: string
+          format: uuid
+          nullable: true
 
     UserPreferences:
       type: object
