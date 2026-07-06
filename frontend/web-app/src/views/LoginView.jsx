@@ -1,24 +1,26 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function LoginView() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
 
-    console.log('Login attempt with:', { email, password });
-
-    // Staging gateway check for sprint evaluation and internal navigation testing
+    // Dummy auth gate per docs/user-stories/01-onboarding.md — real credential
+    // checking is out of scope; this just bypasses into the seeded manager identity.
     if (email === 'merchant@table.com' && password === 'password') {
+      await login();
       navigate('/merchant');
     } else {
-      setError('Invalid authentication pairing. Use administrative credentials or register your node.');
+      setError('Invalid credentials. Use the demo manager credentials to continue.');
     }
   };
 
@@ -88,17 +90,6 @@ export default function LoginView() {
             </button>
           </div>
         </form>
-
-        {/* Dynamic Navigation Entry to Onboarding Interface */}
-        <div className="mt-8 pt-6 border-t border-zinc-800/80 text-center">
-          <button
-            type="button"
-            onClick={() => navigate('/register')}
-            className="text-xs font-mono font-bold text-table-primary hover:text-table-primaryHover transition-colors uppercase tracking-wider bg-transparent border-none p-0 cursor-pointer"
-          >
-            Create an account
-          </button>
-        </div>
       </div>
     </div>
   );

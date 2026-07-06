@@ -76,6 +76,9 @@ export interface Booking {
   etaMinutes: number;
   holdExpiresAt: string;
   confirmedAt: string;
+  // Joined for restaurant-facing views (GET /restaurants/:id/bookings) — not
+  // present on the consumer-facing GET /users/me/bookings response.
+  userDisplayName?: string;
 }
 
 export interface Campaign {
