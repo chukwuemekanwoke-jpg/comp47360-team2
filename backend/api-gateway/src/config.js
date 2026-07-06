@@ -4,6 +4,8 @@ require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
 const DEFAULT_CORS = [
   "http://localhost:3000",
   "http://127.0.0.1:3000",
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
   "http://localhost:8081",
   "http://127.0.0.1:8081",
 ];

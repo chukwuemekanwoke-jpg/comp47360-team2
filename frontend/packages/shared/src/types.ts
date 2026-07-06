@@ -91,4 +91,14 @@ export interface Campaign {
   createdAt: string;
 }
 
+export type RevpashWindow = 'today' | 'week' | 'month';
+
+export interface RevpashSummary {
+  restaurantId: string;
+  window: RevpashWindow;
+  revenue: number;
+  availableSeatHours: number;
+  revpash: number;
+}
+
 // -- mobile specific state -- //

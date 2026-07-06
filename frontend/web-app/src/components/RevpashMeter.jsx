@@ -1,0 +1,45 @@
+import { useGetRevpashQuery } from '../../../packages/shared/src/apiSlice.ts';
+
+function formatCurrency(value) {
+  if (typeof value !== 'number') return '—';
+  return value.toLocaleString(undefined, { style: 'currency', currency: 'USD' });
+}
+
+export default function RevpashMeter({ restaurantId }) {
+  const { data, isLoading, isError } = useGetRevpashQuery(
+    { restaurantId, window: 'today' },
+    { skip: !restaurantId }
+  );
+
+  return (
+    <div className="bg-table-surface border border-table-border rounded-2xl p-6 shadow-xl w-full">
+      <div className="mb-4">
+        <h3 className="text-xs font-bold font-mono tracking-wider text-table-text uppercase">
+          RevPASH
+        </h3>
+        <p className="text-[11px] font-mono text-table-textSubtle mt-1">
+          Revenue per available seat-hour, today.
+        </p>
+      </div>
+
+      {isLoading ? (
+        <p className="text-xs text-table-textSubtle font-mono">Loading RevPASH...</p>
+      ) : isError ? (
+        <p className="text-xs text-table-textSubtle font-mono">
+          Not available yet — pending backend support (GET /restaurants/:id/revpash).
+        </p>
+      ) : (
+        <>
+          <div className="text-2xl font-mono font-black text-table-primary tracking-wider">
+            {formatCurrency(data?.revpash)}
+            <span className="text-sm font-normal text-table-textSubtle"> /seat-hr</span>
+          </div>
+          <div className="flex justify-between items-center mt-2 text-[10px] font-mono uppercase tracking-widest text-table-textSubtle">
+            <span>{formatCurrency(data?.revenue)} revenue</span>
+            <span>{data?.availableSeatHours ?? '—'} seat-hrs</span>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}

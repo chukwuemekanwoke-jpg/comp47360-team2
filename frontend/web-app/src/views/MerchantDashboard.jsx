@@ -3,6 +3,7 @@ import DashboardHeader from '../components/DashboardHeader';
 import OccupancyMeter from '../components/OccupancyMeter';
 import AccessibilityPanel from '../components/AccessibilityPanel';
 import BusynessMeter from '../components/BusynessMeter';
+import RevpashMeter from '../components/RevpashMeter';
 import CampaignHistory from '../components/CampaignHistory';
 import BookingsList from '../components/BookingsList';
 import { useAuth } from '../context/AuthContext';
@@ -119,6 +120,7 @@ export default function MerchantDashboard() {
               <>
                 <OccupancyMeter available={restaurant.availableTableCount} capacity={restaurant.capacity} />
                 <BusynessMeter busynessScore={restaurant.busynessScore} />
+                <RevpashMeter restaurantId={restaurantId} />
                 <AccessibilityPanel restaurantId={restaurantId} restaurant={restaurant} />
               </>
             )}

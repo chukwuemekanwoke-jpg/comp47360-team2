@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
   UserProfile, RestaurantSummary, RestaurantDetail, EtaResult,
-  Booking, OfferInboxItem, Campaign, TransportMode, BudgetTier, BookingStatus
+  Booking, OfferInboxItem, Campaign, TransportMode, BudgetTier, BookingStatus,
+  RevpashSummary, RevpashWindow
 } from './types';
 
 // --- CROSS-PLATFORM URL RESOLVER ---
@@ -230,6 +231,16 @@ export const tableApi = createApi({
       invalidatesTags: ['Bookings'],
     }),
 
+    // Needs GET /restaurants/:id/revpash on the backend (see handoff spec) —
+    // revenue per available seat-hour, backed by the restaurant_revpash_hourly view.
+    getRevpash: builder.query<RevpashSummary, { restaurantId: string; window?: RevpashWindow }>({
+      query: ({ restaurantId, window = 'today' }) => ({
+        url: `/restaurants/${restaurantId}/revpash`,
+        params: { window },
+      }),
+      providesTags: (_result, _error, arg) => [{ type: 'Restaurants', id: arg.restaurantId }],
+    }),
+
   }),
 });
 
@@ -253,4 +264,5 @@ export const {
   useUpdateRestaurantSettingsMutation,
   useGetRestaurantBookingsQuery,
   useUpdateBookingStatusMutation,
+  useGetRevpashQuery,
 } = tableApi;
