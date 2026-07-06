@@ -40,8 +40,9 @@ Server: `http://localhost:3001`
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
 | POST | `/api/v1/users` | none | Create user (legacy onboarding) |
-| POST | `/api/v1/auth/register` | none | Register; returns JWT *(planned)* |
-| POST | `/api/v1/auth/login` | none | Login; returns JWT *(planned)* |
+| POST | `/api/v1/auth/register` | none | Register; returns JWT |
+| POST | `/api/v1/auth/login` | none | Login; returns JWT |
+| POST | `/api/v1/auth/logout` | JWT | Invalidate current token (server-side logout) |
 | GET | `/api/v1/users/me` | JWT or `X-User-Id` | Current user profile |
 | PATCH | `/api/v1/users/me/preferences` | JWT or `X-User-Id` | Update budget, dietary tags, location |
 
@@ -81,6 +82,19 @@ curl http://localhost:3001/api/v1/status
 curl -X POST http://localhost:3001/api/v1/users \
   -H 'Content-Type: application/json' \
   -d '{"displayName":"Alex"}'
+
+# Login (demo manager after migration + seed)
+curl -X POST http://localhost:3001/api/v1/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"manager@demo.com","password":"password123"}'
+
+# Use Bearer token on protected routes (replace TOKEN)
+curl http://localhost:3001/api/v1/users/me/bookings \
+  -H 'Authorization: Bearer TOKEN'
+
+# Logout (invalidates JWT server-side)
+curl -X POST http://localhost:3001/api/v1/auth/logout \
+  -H 'Authorization: Bearer TOKEN'
 
 # Demo consumer (after npm run seed in database/)
 curl http://localhost:3001/api/v1/users/me \
