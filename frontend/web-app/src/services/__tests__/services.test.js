@@ -12,7 +12,7 @@ function jsonResponse(body, ok = true, status = 200) {
 
 describe('MerchantService', () => {
   beforeEach(() => {
-    global.fetch = vi.fn();
+    globalThis.fetch = vi.fn();
   });
 
   afterEach(() => {
@@ -70,7 +70,7 @@ describe('MerchantService', () => {
 
 describe('OnboardingService', () => {
   beforeEach(() => {
-    global.fetch = vi.fn();
+    globalThis.fetch = vi.fn();
   });
 
   afterEach(() => {
