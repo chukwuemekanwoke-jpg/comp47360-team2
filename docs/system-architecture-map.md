@@ -18,7 +18,7 @@ flowchart TD
 
     subgraph Services["Data, ML & external services"]
         DB["Database<br/>PostgreSQL + PostGIS<br/>database/<br/>lead: Derek"]
-        ML["ML inference<br/>FastAPI<br/>ml-pipeline/fastapi-app<br/>lead: Emeka + Tesla"]
+        ML["ML inference<br/>FastAPI<br/>ml-pipeline/fastapi-app<br/>lead: Emeka + Rui"]
         MAPS["Google routes API<br/>external, no owner"]
     end
 
@@ -71,7 +71,7 @@ Node.js/Express REST API — the hub everything else calls.
 | `docker-compose.yml` | local Postgres+PostGIS container |
 | `schema.md`, `README.md`, `.env.example` | docs/config |
 
-## ML pipeline — `ml-pipeline/` (lead: **Emeka**, 4 commits; **Tesla**, recommendation algorithm, 3 commits)
+## ML pipeline — `ml-pipeline/` (lead: **Emeka**, 4 commits; **Rui**, recommendation algorithm, 3 commits)
 
 | File | Role |
 |---|---|
@@ -92,7 +92,7 @@ Node.js/Express REST API — the hub everything else calls.
 Imported via **relative path** (`../../packages/shared/src/...`) by both `web-app`
 and `mobile-app` — not a declared npm dependency, just a monorepo path import.
 
-## Frontend web — `frontend/web-app/` (lead: **Milo**, 8 commits; secondary: Emeka, Andrew)
+## Frontend web — `frontend/web-app/` (lead: **Milo**, 8 commits; secondary: Andrew)
 
 | File | Role |
 |---|---|
