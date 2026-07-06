@@ -6,17 +6,17 @@ export default function OccupancyMeter({ available, capacity }) {
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
-  let strokeColorClass = 'text-[#33e1cc]';
-  if (total > 0 && available === 0) strokeColorClass = 'text-red-400';
-  if (percentage === 100 && total > 0) strokeColorClass = 'text-[#e29c36]';
+  let strokeColorClass = 'text-table-primary';
+  if (total > 0 && available === 0) strokeColorClass = 'text-table-danger';
+  if (percentage === 100 && total > 0) strokeColorClass = 'text-table-offer';
 
   return (
-    <div className="bg-[#11161D] border border-[#1F2936] rounded-2xl p-6 shadow-xl w-full">
+    <div className="bg-table-surface border border-table-border rounded-2xl p-6 shadow-xl w-full">
       <div className="mb-4">
-        <h3 className="text-xs font-bold font-mono tracking-wider text-slate-200 uppercase">
+        <h3 className="text-xs font-bold font-mono tracking-wider text-table-text uppercase">
           Table Occupancy
         </h3>
-        <p className="text-[11px] font-mono text-slate-500 mt-1">
+        <p className="text-[11px] font-mono text-table-textSubtle mt-1">
           Live availability from the venue record.
         </p>
       </div>
@@ -31,7 +31,7 @@ export default function OccupancyMeter({ available, capacity }) {
               stroke="currentColor"
               strokeWidth="6"
               fill="transparent"
-              className="text-[#1A222C]"
+              className="text-table-interactive"
             />
             <circle
               cx="40"
@@ -49,10 +49,10 @@ export default function OccupancyMeter({ available, capacity }) {
         </div>
 
         <div>
-          <div className="text-2xl font-mono font-black text-white tracking-wider">
-            {available} <span className="text-sm font-normal text-slate-600">/</span> {total}
+          <div className="text-2xl font-mono font-black text-table-text tracking-wider">
+            {available} <span className="text-sm font-normal text-table-textSubtle">/</span> {total}
           </div>
-          <div className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-500 mt-0.5">
+          <div className="text-[10px] font-mono font-bold uppercase tracking-widest text-table-textSubtle mt-0.5">
             Tables Available
           </div>
         </div>

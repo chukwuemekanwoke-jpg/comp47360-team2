@@ -5,7 +5,7 @@ import LoginView from './views/LoginView';
 
 function AppLayout({ children }) {
   return (
-    <div className="min-h-screen text-table-text font-sans transition-colors duration-300 bg-[#0A0A0A]">
+    <div className="min-h-screen text-table-text font-sans transition-colors duration-300 bg-table-canvas">
       {children}
     </div>
   );

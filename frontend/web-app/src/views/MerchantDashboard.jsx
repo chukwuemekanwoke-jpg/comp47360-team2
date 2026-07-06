@@ -71,22 +71,22 @@ export default function MerchantDashboard() {
 
   if (!restaurantId) {
     return (
-      <div className="h-screen w-full bg-[#0B0F14] flex items-center justify-center font-mono">
+      <div className="h-screen w-full bg-table-canvas flex items-center justify-center font-mono">
         <div className="text-center space-y-4">
-          <div className="w-8 h-8 border-2 border-[#e29c36] border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-xs tracking-widest text-slate-400 uppercase">Validating merchant workspace credentials...</p>
+          <div className="w-8 h-8 border-2 border-table-offer border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-xs tracking-widest text-table-textMuted uppercase">Validating merchant workspace credentials...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#0B0F14] text-slate-100 font-sans antialiased">
+    <div className="min-h-screen w-full bg-table-canvas text-table-text font-sans antialiased">
       <div className="p-4 sm:p-8 space-y-6 max-w-5xl mx-auto">
         <div className="flex justify-end">
           <button
             onClick={logout}
-            className="px-4 py-2 bg-[#171e26] border border-red-900/40 text-red-400 hover:bg-red-950/20 rounded-xl font-mono text-[10px] uppercase tracking-wider transition-colors"
+            className="px-4 py-2 bg-table-surface border border-table-danger/40 text-table-danger hover:bg-table-danger/10 rounded-xl font-mono text-[10px] uppercase tracking-wider transition-colors"
           >
             Logout
           </button>
@@ -97,21 +97,21 @@ export default function MerchantDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           {/* Restaurant details */}
           <div className="space-y-6">
-            <section className="bg-[#11161D] border border-[#1F2936] rounded-2xl p-6 space-y-4">
-              <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
+            <section className="bg-table-surface border border-table-border rounded-2xl p-6 space-y-4">
+              <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-table-textMuted">
                 Venue Details
               </h2>
               {restaurant ? (
                 <dl className="grid grid-cols-2 gap-y-3 text-sm font-mono">
-                  <dt className="text-slate-500">Cuisine</dt>
-                  <dd className="text-slate-200">{restaurant.cuisine}</dd>
-                  <dt className="text-slate-500">Neighborhood</dt>
-                  <dd className="text-slate-200">{restaurant.neighborhood}</dd>
-                  <dt className="text-slate-500">Reservation Hold Window</dt>
-                  <dd className="text-slate-200">{restaurant.holdWindowMinutes} min</dd>
+                  <dt className="text-table-textSubtle">Cuisine</dt>
+                  <dd className="text-table-text">{restaurant.cuisine}</dd>
+                  <dt className="text-table-textSubtle">Neighborhood</dt>
+                  <dd className="text-table-text">{restaurant.neighborhood}</dd>
+                  <dt className="text-table-textSubtle">Reservation Hold Window</dt>
+                  <dd className="text-table-text">{restaurant.holdWindowMinutes} min</dd>
                 </dl>
               ) : (
-                <p className="text-xs text-slate-500 font-mono">Loading venue details...</p>
+                <p className="text-xs text-table-textSubtle font-mono">Loading venue details...</p>
               )}
             </section>
 
@@ -126,26 +126,26 @@ export default function MerchantDashboard() {
 
           {/* Active campaign + flash deal creation */}
           <div className="space-y-6">
-            <section className="bg-[#11161D] border border-[#1F2936] rounded-2xl p-6 space-y-6">
+            <section className="bg-table-surface border border-table-border rounded-2xl p-6 space-y-6">
               <div>
-                <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 mb-3">
+                <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-table-textMuted mb-3">
                   Active Lull-Mitigation Campaign
                 </h2>
                 {isCampaignLoading && !activeCampaign ? (
-                  <p className="text-xs text-slate-500 font-mono">Checking for an active campaign...</p>
+                  <p className="text-xs text-table-textSubtle font-mono">Checking for an active campaign...</p>
                 ) : activeCampaign ? (
                   <div className="space-y-4">
                     <dl className="grid grid-cols-2 gap-y-3 text-sm font-mono">
-                      <dt className="text-slate-500">Status</dt>
-                      <dd className="text-[#e29c36] font-bold uppercase">{activeCampaign.status}</dd>
-                      <dt className="text-slate-500">Discount</dt>
-                      <dd className="text-slate-200">{activeCampaign.discountPercent}%</dd>
-                      <dt className="text-slate-500">Tables Claimed</dt>
-                      <dd className="text-slate-200">{activeCampaign.tablesClaimed} / {activeCampaign.tableQuota}</dd>
+                      <dt className="text-table-textSubtle">Status</dt>
+                      <dd className="text-table-offer font-bold uppercase">{activeCampaign.status}</dd>
+                      <dt className="text-table-textSubtle">Discount</dt>
+                      <dd className="text-table-text">{activeCampaign.discountPercent}%</dd>
+                      <dt className="text-table-textSubtle">Tables Claimed</dt>
+                      <dd className="text-table-text">{activeCampaign.tablesClaimed} / {activeCampaign.tableQuota}</dd>
                     </dl>
 
                     {cancelError && (
-                      <div className="p-2.5 bg-red-950/40 border border-red-500/30 text-red-400 rounded-lg text-[11px] font-mono">
+                      <div className="p-2.5 bg-table-danger/10 border border-table-danger/30 text-table-danger rounded-lg text-[11px] font-mono">
                         {cancelError}
                       </div>
                     )}
@@ -154,30 +154,30 @@ export default function MerchantDashboard() {
                       type="button"
                       onClick={handleCancelCampaign}
                       disabled={isCancellingCampaign}
-                      className="w-full py-2.5 bg-transparent border border-red-800/40 text-red-400 hover:bg-red-950/20 font-bold font-mono text-xs rounded-xl transition-colors uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full py-2.5 bg-transparent border border-table-danger/40 text-table-danger hover:bg-table-danger/10 font-bold font-mono text-xs rounded-xl transition-colors uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isCancellingCampaign ? 'Cancelling...' : 'Cancel Campaign'}
                     </button>
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-500 font-mono">No active campaign right now.</p>
+                  <p className="text-xs text-table-textSubtle font-mono">No active campaign right now.</p>
                 )}
               </div>
 
-              <form onSubmit={handleCreateCampaign} className="space-y-4 border-t border-[#1F2936] pt-6">
-                <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
+              <form onSubmit={handleCreateCampaign} className="space-y-4 border-t border-table-border pt-6">
+                <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-table-textMuted">
                   Trigger Flash Deal
                 </h3>
 
                 {formError && (
-                  <div className="p-3 bg-red-950/40 border border-red-500/30 text-red-400 rounded-lg text-xs font-mono">
+                  <div className="p-3 bg-table-danger/10 border border-table-danger/30 text-table-danger rounded-lg text-xs font-mono">
                     {formError}
                   </div>
                 )}
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] font-mono text-slate-400 uppercase tracking-wide mb-1.5">
+                    <label className="block text-[10px] font-mono text-table-textMuted uppercase tracking-wide mb-1.5">
                       Tables to Release
                     </label>
                     <input
@@ -186,11 +186,11 @@ export default function MerchantDashboard() {
                       value={tableQuota}
                       onChange={(e) => setTableQuota(Number(e.target.value))}
                       disabled={!!activeCampaign || isCreatingCampaign}
-                      className="w-full bg-[#0B0F14] border border-[#1F2936] rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-[#e29c36] transition-colors disabled:opacity-50"
+                      className="w-full bg-table-canvas border border-table-border rounded-xl px-4 py-2.5 text-sm text-table-text focus:outline-none focus:border-table-offer transition-colors disabled:opacity-50"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-mono text-slate-400 uppercase tracking-wide mb-1.5">
+                    <label className="block text-[10px] font-mono text-table-textMuted uppercase tracking-wide mb-1.5">
                       Discount % ({MIN_DISCOUNT}-{MAX_DISCOUNT})
                     </label>
                     <input
@@ -200,7 +200,7 @@ export default function MerchantDashboard() {
                       value={discountPercent}
                       onChange={(e) => setDiscountPercent(Number(e.target.value))}
                       disabled={!!activeCampaign || isCreatingCampaign}
-                      className="w-full bg-[#0B0F14] border border-[#1F2936] rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-[#e29c36] transition-colors disabled:opacity-50"
+                      className="w-full bg-table-canvas border border-table-border rounded-xl px-4 py-2.5 text-sm text-table-text focus:outline-none focus:border-table-offer transition-colors disabled:opacity-50"
                     />
                   </div>
                 </div>
@@ -208,7 +208,7 @@ export default function MerchantDashboard() {
                 <button
                   type="submit"
                   disabled={!!activeCampaign || isCreatingCampaign}
-                  className="w-full py-3 bg-[#e29c36] hover:bg-[#d18b25] text-slate-950 font-bold font-mono text-xs rounded-xl transition-all uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3 bg-table-offer hover:bg-table-offer/90 text-table-canvas font-bold font-mono text-xs rounded-xl transition-all uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {activeCampaign
                     ? 'Campaign Already Active'

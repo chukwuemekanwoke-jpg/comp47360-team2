@@ -1,9 +1,9 @@
 import { useGetCampaignHistoryQuery } from '../../../packages/shared/src/apiSlice.ts';
 
 const STATUS_STYLE = {
-  active: 'bg-[#e29c36]/10 text-[#e29c36] border-[#e29c36]/30',
-  completed: 'bg-[#33e1cc]/10 text-[#33e1cc] border-[#33e1cc]/30',
-  cancelled: 'bg-red-500/10 text-red-400 border-red-500/30',
+  active: 'bg-table-offer/10 text-table-offer border-table-offer/30',
+  completed: 'bg-table-primary/10 text-table-primary border-table-primary/30',
+  cancelled: 'bg-table-danger/10 text-table-danger border-table-danger/30',
 };
 
 function formatDate(iso) {
@@ -20,30 +20,30 @@ export default function CampaignHistory({ restaurantId }) {
   const campaigns = data?.campaigns ?? [];
 
   return (
-    <section className="bg-[#11161D] border border-[#1F2936] rounded-2xl p-6 space-y-4">
-      <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-400">
+    <section className="bg-table-surface border border-table-border rounded-2xl p-6 space-y-4">
+      <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-table-textMuted">
         Campaign History
       </h2>
 
       {isLoading ? (
-        <p className="text-xs text-slate-500 font-mono">Loading campaign history...</p>
+        <p className="text-xs text-table-textSubtle font-mono">Loading campaign history...</p>
       ) : campaigns.length === 0 ? (
-        <p className="text-xs text-slate-500 font-mono">No flash deals triggered yet.</p>
+        <p className="text-xs text-table-textSubtle font-mono">No flash deals triggered yet.</p>
       ) : (
-        <ul className="divide-y divide-[#1F2936]">
+        <ul className="divide-y divide-table-border">
           {campaigns.map((campaign) => (
             <li key={campaign.id} className="py-3 flex items-center justify-between gap-4 text-xs font-mono">
               <div className="flex flex-col gap-1">
-                <span className="text-slate-200 font-bold">{campaign.discountPercent}% off</span>
-                <span className="text-slate-500">{formatDate(campaign.createdAt)}</span>
+                <span className="text-table-text font-bold">{campaign.discountPercent}% off</span>
+                <span className="text-table-textSubtle">{formatDate(campaign.createdAt)}</span>
               </div>
               <div className="flex items-center gap-4">
-                <span className="text-slate-400">
+                <span className="text-table-textMuted">
                   {campaign.tablesClaimed} / {campaign.tableQuota} claimed
                 </span>
                 <span
                   className={`px-2.5 py-0.5 rounded border text-[10px] font-bold uppercase tracking-wider ${
-                    STATUS_STYLE[campaign.status] || 'bg-zinc-800 text-zinc-400 border-zinc-700'
+                    STATUS_STYLE[campaign.status] || 'bg-table-interactive text-table-textMuted border-table-border'
                   }`}
                 >
                   {campaign.status}
