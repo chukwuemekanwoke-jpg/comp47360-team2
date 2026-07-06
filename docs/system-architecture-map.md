@@ -71,6 +71,122 @@ Node.js/Express REST API — the hub everything else calls.
 | `docker-compose.yml` | local Postgres+PostGIS container |
 | `schema.md`, `README.md`, `.env.example` | docs/config |
 
+### Database schema
+
+Source: `migrations/001_initial_schema.sql` (+ `002_postgis_optional.sql`,
+`003_add_restaurant_capacity_cuisine.sql`) and `schema.md`.
+
+```mermaid
+erDiagram
+  users ||--o{ bookings : places
+  users ||--o{ offers : receives
+  users ||--o{ restaurants : manages
+  restaurants ||--o{ campaigns : runs
+  restaurants ||--o{ bookings : hosts
+  restaurants ||--o{ availability_snapshots : logs
+  campaigns ||--o{ offers : generates
+  campaigns ||--o{ bookings : fulfills
+  offers ||--o| bookings : may_create
+
+  users {
+    uuid id PK
+    budget_tier budget_tier
+    text_array dietary_tags
+  }
+
+  restaurants {
+    uuid id PK
+    float latitude
+    float longitude
+    int available_table_count
+    int capacity
+    text cuisine
+    int hold_window_minutes
+  }
+
+  campaigns {
+    uuid id PK
+    campaign_status status
+    int table_quota
+    int tables_claimed
+    int discount_percent
+  }
+
+  offers {
+    uuid id PK
+    offer_status status
+    timestamptz expires_at
+  }
+
+  bookings {
+    uuid id PK
+    booking_status status
+    int eta_minutes
+    timestamptz hold_expires_at
+  }
+```
+
+**`users`** — consumer profiles. `id` (UUID PK), `display_name`, `budget_tier`
+(enum `TIER_1`/`TIER_2`/`TIER_3` → €/€€/€€€), `dietary_tags` (`TEXT[]`, ML
+feature), `last_lat`/`last_lng`. Auth is JWT-based; seed data can use a fixed
+UUID via an interim `X-User-Id` header.
+
+**`restaurants`** — Manhattan venue master data. `id` (UUID PK), `name`,
+`latitude`/`longitude` (validated -90..90 / -180..180), `neighborhood`,
+`address_line`. `available_table_count` (denormalized "live" count, must be
+`<= capacity`), `capacity` (migration 003), `cuisine` (slug, migration 003).
+`hold_window_minutes` (default 15), `busyness_score` (0–1, ML-fed),
+`is_wheelchair_accessible`, `sensory_friendly`. `manager_user_id` → FK to
+`users` (links a merchant dashboard user to their venue, `ON DELETE SET
+NULL`). Indexes: partial index on `available_table_count > 0`, index on
+`neighborhood`. Migration 002 (optional) adds a PostGIS `GEOGRAPHY(POINT,
+4326)` column + GIST index for `ST_DWithin` radius queries — not applied by
+default; v1 uses plain lat/lng with haversine done in app/SQL (1500m
+discovery radius).
+
+**`campaigns`** — restaurant-triggered flash-deal runs. `id` (UUID PK),
+`restaurant_id` FK (`ON DELETE CASCADE`), `status` (enum
+`active`/`completed`/`cancelled`). `table_quota`, `tables_claimed` (CHECK
+`tables_claimed <= table_quota`), `discount_percent` (CHECK 10–50). Partial
+index on `restaurant_id` where `status = 'active'`.
+
+**`offers`** — per-user flash-deal inbox items. `id` (UUID PK), `campaign_id`
+FK, `user_id` FK (both cascade), `status` (enum
+`pending`/`accepted`/`expired`/`revoked`). `expires_at` (app sets `created_at
++ 900s`), unique constraint on `(campaign_id, user_id)` — one offer per user
+per campaign. Indexes: `(user_id, status, expires_at)` for inbox reads,
+partial index on pending offers per campaign.
+
+**`bookings`** — reservations, standalone or deal-backed. `id` (UUID PK),
+`user_id`/`restaurant_id` FK (cascade), `offer_id`/`campaign_id` FK
+(nullable, `SET NULL`). `status` (enum
+`pending`/`confirmed`/`cancelled`/`completed`/`no_show`), `transport_mode`
+(enum `walking`/`driving`/`transit`/`cycling`). `eta_minutes`,
+`hold_expires_at`. CHECK: `offer_id` and `campaign_id` must both be null or
+both set (no orphaned half-deal bookings).
+
+**`availability_snapshots`** — append-only busyness history. `id`
+(BIGSERIAL PK), `restaurant_id` FK (cascade), `recorded_at`,
+`available_table_count`, `busyness_score`. Feeds the ML pipeline's
+time-series training data.
+
+**`schema_migrations`** — simple version tracker (`version`, `applied_at`).
+
+**DB-enforced behavior** (not just app code):
+- `set_updated_at()` trigger on `users`/`restaurants` — auto-stamps `updated_at`
+- `sync_campaign_after_booking_confirm()` trigger on `bookings` (Story 5.2) —
+  when a booking tied to a campaign is confirmed: increments
+  `campaigns.tables_claimed`; if claimed reaches quota, flips the campaign to
+  `completed` and bulk-revokes any still-pending `offers` for that campaign
+- Value constraints as CHECKs, not app code: `discount_percent BETWEEN 10 AND
+  50`, `available_table_count <= capacity`, non-negative counts/ETAs, valid
+  lat/lng ranges
+
+This backs `backend/api-gateway`'s services directly — `createBooking.js` /
+`createCampaignOffers.js` insert into `bookings`/`offers`, and
+`mlMatchClient.js`'s output (from `ml-pipeline`) becomes the `user_id` list
+that `createCampaignOffers.js` turns into `offers` rows.
+
 ## ML pipeline — `ml-pipeline/` (lead: **Emeka**, 4 commits; **Rui**, recommendation algorithm, 3 commits)
 
 | File | Role |
