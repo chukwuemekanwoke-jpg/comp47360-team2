@@ -66,6 +66,81 @@ describe('MerchantService', () => {
     );
     expect(campaign).toEqual({ id: 'campaign-1', discountPercent: 25 });
   });
+
+  it('wraps merchant metadata, floor plan, table, room, campaign, and analytics endpoints', async () => {
+    fetch
+      .mockResolvedValueOnce(jsonResponse({ id: 'restaurant-1', name: 'Mercer Room' }))
+      .mockResolvedValueOnce(jsonResponse({ serviceCharge: 12 }))
+      .mockResolvedValueOnce(jsonResponse({ rooms: [], tables: [] }))
+      .mockResolvedValueOnce(jsonResponse({ id: 'room-1' }))
+      .mockResolvedValueOnce(jsonResponse({ id: 'room-1', customLabel: 'Patio' }))
+      .mockResolvedValueOnce(jsonResponse({}))
+      .mockResolvedValueOnce(jsonResponse({ id: 'table-1' }))
+      .mockResolvedValueOnce(jsonResponse({ id: 'table-1', capacity: 4 }))
+      .mockResolvedValueOnce(jsonResponse({}))
+      .mockResolvedValueOnce(jsonResponse({ id: 'campaign-1' }))
+      .mockResolvedValueOnce(jsonResponse({ covers: 24 }));
+
+    await expect(MerchantService.getRestaurantDetails('restaurant-1')).resolves.toEqual({
+      id: 'restaurant-1',
+      name: 'Mercer Room',
+    });
+    await expect(
+      MerchantService.updateRestaurantSettings('restaurant-1', { serviceCharge: 12 })
+    ).resolves.toEqual({ serviceCharge: 12 });
+    await expect(MerchantService.getFloorPlan('restaurant-1')).resolves.toEqual({
+      rooms: [],
+      tables: [],
+    });
+    await expect(MerchantService.createRoom('restaurant-1', { customLabel: 'Patio' })).resolves.toEqual({
+      id: 'room-1',
+    });
+    await expect(MerchantService.updateRoom('room-1', { customLabel: 'Patio' })).resolves.toEqual({
+      id: 'room-1',
+      customLabel: 'Patio',
+    });
+    await expect(MerchantService.deleteRoom('room-1')).resolves.toBe(true);
+    await expect(MerchantService.createTable('restaurant-1', { capacity: 2 })).resolves.toEqual({
+      id: 'table-1',
+    });
+    await expect(MerchantService.updateTable('table-1', { capacity: 4 })).resolves.toEqual({
+      id: 'table-1',
+      capacity: 4,
+    });
+    await expect(MerchantService.deleteTable('table-1')).resolves.toBe(true);
+    await expect(MerchantService.getActiveCampaign('restaurant-1')).resolves.toEqual({
+      id: 'campaign-1',
+    });
+    await expect(MerchantService.getAnalytics('restaurant-1', 'today')).resolves.toEqual({
+      covers: 24,
+    });
+
+    expect(fetch).toHaveBeenNthCalledWith(2, 'http://localhost:5000/api/v1/restaurants/restaurant-1/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ serviceCharge: 12 }),
+    });
+    expect(fetch).toHaveBeenNthCalledWith(4, 'http://localhost:5000/api/v1/restaurants/restaurant-1/rooms', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ customLabel: 'Patio' }),
+    });
+    expect(fetch).toHaveBeenNthCalledWith(6, 'http://localhost:5000/api/v1/rooms/room-1', {
+      method: 'DELETE',
+    });
+    expect(fetch).toHaveBeenNthCalledWith(
+      11,
+      'http://localhost:5000/api/v1/restaurants/restaurant-1/analytics?timeframe=today'
+    );
+  });
+
+  it('throws clear errors when merchant persistence endpoints reject requests', async () => {
+    fetch.mockResolvedValueOnce(jsonResponse({}, false, 500));
+
+    await expect(MerchantService.deleteTable('table-1')).rejects.toThrow(
+      'Failed to delete table in DB'
+    );
+  });
 });
 
 describe('OnboardingService', () => {
@@ -156,6 +231,45 @@ describe('OnboardingService', () => {
         }),
       })
     );
+  });
+
+  it('uses fallback coordinates and surfaces backend registration errors', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    fetch.mockResolvedValueOnce(jsonResponse({ message: 'Email already registered' }, false, 409));
+
+    await expect(
+      OnboardingService.registerRestaurant({
+        email: 'merchant@table.com',
+        password: 'password',
+        restaurantName: 'Mercer Room',
+        restaurantAddress: '12 Mercer Street',
+        cuisineType: 'Omakase',
+      })
+    ).rejects.toThrow('Email already registered');
+
+    expect(fetch).toHaveBeenCalledWith(
+      'http://localhost:5000/api/v1/auth/register',
+      expect.objectContaining({
+        body: expect.stringContaining('"latitude":0'),
+      })
+    );
+    expect(consoleError).toHaveBeenCalled();
+  });
+
+  it('surfaces profile setup failures from the backend', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    fetch.mockResolvedValueOnce(jsonResponse({}, false, 500));
+
+    await expect(
+      OnboardingService.saveRestaurantProfile({
+        restaurantId: 'restaurant-1',
+        userId: 'manager-1',
+        rooms: [],
+        cuisines: [],
+      })
+    ).rejects.toThrow('Failed to persist setup configurations: 500');
+
+    expect(consoleError).toHaveBeenCalled();
   });
 });
 
