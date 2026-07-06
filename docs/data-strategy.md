@@ -263,9 +263,36 @@ flowchart LR
 
 ---
 
+## 11. RevPASH metric — data acquisition
+
+RevPASH (`total_revenue / available_seat_hours`) measures whether flash deals
+lift off-peak revenue without diluting peak pricing. It needs new fields on
+`restaurants` and `bookings` (see `database/schema.md`); this table documents
+where each one comes from and whether it's real or simulated, following the
+same pattern as §2.3 above.
+
+| Data point | How it's gotten | Real or simulated |
+|---|---|---|
+| `restaurants.seat_capacity` | Merchant enters it once at onboarding (physical fact about the venue) | **Real** — one-time manual input |
+| `restaurants.opens_at` / `closes_at` | Merchant onboarding input, or enriched from Google Places' `regularOpeningHours` | **Real** — merchant-entered or externally sourced |
+| `restaurants.avg_check_per_cover` | No POS to pull this from yet — seeded from a cuisine/neighborhood benchmark, then updated from real `check_amount` averages as data accumulates | **Simulated at launch**, becomes real over time |
+| `bookings.party_size` | User enters it when booking a table | **Real** — direct user input |
+| `bookings.seated_at` | Ideally a real event (host taps "seated" at check-in); falls back to `confirmed_at` if that flow doesn't exist yet | **Real if check-in exists, simulated proxy otherwise** |
+| `bookings.check_amount` | No payment/POS integration exists — computed as `party_size × avg_check_per_cover × (1 − discount if campaign)` | **Simulated** — same category as `available_table_count`/`busyness_score` |
+| `bookings.duration_minutes` | No real turn-time tracking — defaulted to a constant (e.g. 90 min) unless a real `departed_at` is later captured | **Simulated** |
+
+**Takeaway:** capacity and hours are one-time facts, party size is genuinely
+real (typed in by the user) — the only two fields that must be faked are
+`check_amount` and turn-time, and both fall into the same "simulate until we
+have a real feed" bucket as `available_table_count` and `busyness_score`, so
+RevPASH doesn't introduce a new category of data problem.
+
+---
+
 ## Changelog
 
 | Version | Date | Notes |
 |---------|------|-------|
 | v0 | 2026-06-02 | Initial BE-5 strategy |
 | v1 | 2026-07-04 | Routes API naming; align with ADR-001 rev 4 |
+| v2 | 2026-07-06 | Add §11 RevPASH metric data acquisition (real vs simulated) |
