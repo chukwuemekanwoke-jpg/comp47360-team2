@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, NavLink, Link } from 'react-rou
 import { AuthProvider } from './context/AuthContext';
 import MerchantDashboard from './views/MerchantDashboard';
 import LoginView from './views/LoginView';
+import RegisterView from './views/RegisterView';
+import RestaurantSetupView from './views/RestaurantSetupView';
 
 function AppLayout({ children }) {
   return (
@@ -50,6 +52,8 @@ function App() {
           <main>
             <Routes>
               <Route path="/" element={<LoginView />} />
+              <Route path="/register" element={<RegisterView />} />
+              <Route path="/register/restaurant" element={<RestaurantSetupView />} />
               <Route path="/merchant" element={<MerchantDashboard />} />
             </Routes>
           </main>

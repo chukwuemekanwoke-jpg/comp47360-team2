@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import DashboardHeader from '../components/DashboardHeader';
 import OccupancyMeter from '../components/OccupancyMeter';
 import AccessibilityPanel from '../components/AccessibilityPanel';
@@ -6,6 +7,7 @@ import BusynessMeter from '../components/BusynessMeter';
 import RevpashMeter from '../components/RevpashMeter';
 import CampaignHistory from '../components/CampaignHistory';
 import BookingsList from '../components/BookingsList';
+import LiveOfferTracker from '../components/LiveOfferTracker';
 import { useAuth } from '../context/AuthContext';
 
 import {
@@ -65,17 +67,33 @@ export default function MerchantDashboard() {
     try {
       await cancelCampaign({ restaurantId, campaignId: activeCampaign.id }).unwrap();
     } catch (err) {
-      // Expected to 404 until the backend adds the cancel route.
-      setCancelError(err?.data?.error?.message || 'Could not cancel yet — pending backend support.');
+      // 404 means the route doesn't exist yet, not a real error from the
+      // request itself — the generic Express "Route not found" message
+      // isn't useful to show.
+      setCancelError(
+        err?.status === 404
+          ? 'Could not cancel yet — pending backend support.'
+          : err?.data?.error?.message || 'Failed to cancel campaign.'
+      );
     }
   };
 
   if (!restaurantId) {
+    // Not a loading state — restaurantId comes synchronously from context.
+    // A signed-in user with no restaurantId genuinely has no restaurant yet
+    // (e.g. registered but hasn't completed the pending restaurant-creation
+    // step), so this needs to say that rather than imply a spinner will
+    // resolve it.
     return (
       <div className="h-screen w-full bg-table-canvas flex items-center justify-center font-mono">
-        <div className="text-center space-y-4">
-          <div className="w-8 h-8 border-2 border-table-offer border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-xs tracking-widest text-table-textMuted uppercase">Validating merchant workspace credentials...</p>
+        <div className="text-center space-y-4 max-w-sm px-6">
+          <p className="text-xs tracking-widest text-table-textMuted uppercase">No restaurant linked to this account yet.</p>
+          <Link
+            to="/register/restaurant"
+            className="inline-block text-xs font-bold text-table-primary hover:text-table-primaryHover transition-colors uppercase tracking-wider"
+          >
+            Set up your restaurant
+          </Link>
         </div>
       </div>
     );
@@ -133,37 +151,42 @@ export default function MerchantDashboard() {
                 <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-table-textMuted mb-3">
                   Active Lull-Mitigation Campaign
                 </h2>
-                {isCampaignLoading && !activeCampaign ? (
-                  <p className="text-xs text-table-textSubtle font-mono">Checking for an active campaign...</p>
-                ) : activeCampaign ? (
-                  <div className="space-y-4">
-                    <dl className="grid grid-cols-2 gap-y-3 text-sm font-mono">
-                      <dt className="text-table-textSubtle">Status</dt>
-                      <dd className="text-table-offer font-bold uppercase">{activeCampaign.status}</dd>
-                      <dt className="text-table-textSubtle">Discount</dt>
-                      <dd className="text-table-text">{activeCampaign.discountPercent}%</dd>
-                      <dt className="text-table-textSubtle">Tables Claimed</dt>
-                      <dd className="text-table-text">{activeCampaign.tablesClaimed} / {activeCampaign.tableQuota}</dd>
-                    </dl>
+                {/* aria-live: this section updates on its own via 5s polling
+                    (e.g. active -> completed), not just user action, so screen
+                    reader users need to be notified without navigating here. */}
+                <div aria-live="polite">
+                  {isCampaignLoading && !activeCampaign ? (
+                    <p className="text-xs text-table-textSubtle font-mono">Checking for an active campaign...</p>
+                  ) : activeCampaign ? (
+                    <div className="space-y-4">
+                      <dl className="grid grid-cols-2 gap-y-3 text-sm font-mono">
+                        <dt className="text-table-textSubtle">Status</dt>
+                        <dd className="text-table-offer font-bold uppercase">{activeCampaign.status}</dd>
+                        <dt className="text-table-textSubtle">Discount</dt>
+                        <dd className="text-table-text">{activeCampaign.discountPercent}%</dd>
+                        <dt className="text-table-textSubtle">Tables Claimed</dt>
+                        <dd className="text-table-text">{activeCampaign.tablesClaimed} / {activeCampaign.tableQuota}</dd>
+                      </dl>
 
-                    {cancelError && (
-                      <div className="p-2.5 bg-table-danger/10 border border-table-danger/30 text-table-danger rounded-lg text-[11px] font-mono">
-                        {cancelError}
-                      </div>
-                    )}
+                      {cancelError && (
+                        <div role="alert" className="p-2.5 bg-table-danger/10 border border-table-danger/30 text-table-danger rounded-lg text-[11px] font-mono">
+                          {cancelError}
+                        </div>
+                      )}
 
-                    <button
-                      type="button"
-                      onClick={handleCancelCampaign}
-                      disabled={isCancellingCampaign}
-                      className="w-full py-2.5 bg-transparent border border-table-danger/40 text-table-danger hover:bg-table-danger/10 font-bold font-mono text-xs rounded-xl transition-colors uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isCancellingCampaign ? 'Cancelling...' : 'Cancel Campaign'}
-                    </button>
-                  </div>
-                ) : (
-                  <p className="text-xs text-table-textSubtle font-mono">No active campaign right now.</p>
-                )}
+                      <button
+                        type="button"
+                        onClick={handleCancelCampaign}
+                        disabled={isCancellingCampaign}
+                        className="w-full py-2.5 bg-transparent border border-table-danger/40 text-table-danger hover:bg-table-danger/10 font-bold font-mono text-xs rounded-xl transition-colors uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isCancellingCampaign ? 'Cancelling...' : 'Cancel Campaign'}
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-table-textSubtle font-mono">No active campaign right now.</p>
+                  )}
+                </div>
               </div>
 
               <form onSubmit={handleCreateCampaign} className="space-y-4 border-t border-table-border pt-6">
@@ -172,17 +195,18 @@ export default function MerchantDashboard() {
                 </h3>
 
                 {formError && (
-                  <div className="p-3 bg-table-danger/10 border border-table-danger/30 text-table-danger rounded-lg text-xs font-mono">
+                  <div role="alert" className="p-3 bg-table-danger/10 border border-table-danger/30 text-table-danger rounded-lg text-xs font-mono">
                     {formError}
                   </div>
                 )}
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[10px] font-mono text-table-textMuted uppercase tracking-wide mb-1.5">
+                    <label htmlFor="tableQuota" className="block text-[10px] font-mono text-table-textMuted uppercase tracking-wide mb-1.5">
                       Tables to Release
                     </label>
                     <input
+                      id="tableQuota"
                       type="number"
                       min={1}
                       value={tableQuota}
@@ -192,10 +216,11 @@ export default function MerchantDashboard() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-mono text-table-textMuted uppercase tracking-wide mb-1.5">
+                    <label htmlFor="discountPercent" className="block text-[10px] font-mono text-table-textMuted uppercase tracking-wide mb-1.5">
                       Discount % ({MIN_DISCOUNT}-{MAX_DISCOUNT})
                     </label>
                     <input
+                      id="discountPercent"
                       type="number"
                       min={MIN_DISCOUNT}
                       max={MAX_DISCOUNT}
@@ -220,6 +245,10 @@ export default function MerchantDashboard() {
                 </button>
               </form>
             </section>
+
+            {activeCampaign && (
+              <LiveOfferTracker restaurantId={restaurantId} campaignId={activeCampaign.id} />
+            )}
 
             <CampaignHistory restaurantId={restaurantId} />
             <BookingsList restaurantId={restaurantId} />

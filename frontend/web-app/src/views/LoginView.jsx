@@ -1,7 +1,8 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { isValidEmail } from '../utils/validation';
 
 export default function LoginView() {
   const navigate = useNavigate();
@@ -13,6 +14,11 @@ export default function LoginView() {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (!isValidEmail(email)) {
+      setError('Enter a valid email address.');
+      return;
+    }
 
     // Dummy auth gate per docs/user-stories/01-onboarding.md — real credential
     // checking is out of scope; this just bypasses into the seeded manager identity.
@@ -43,12 +49,16 @@ export default function LoginView() {
 
         {/* Informative Error Banner Alert UI */}
         {error && (
-          <div className="mb-6 p-4 bg-red-950/45 border border-red-500/30 text-red-400 rounded-xl text-xs font-mono leading-relaxed text-left">
+          <div role="alert" className="mb-6 p-4 bg-red-950/45 border border-red-500/30 text-red-400 rounded-xl text-xs font-mono leading-relaxed text-left">
             ⚠️ {error}
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-6">
+        {/* noValidate: native browser validation would block onSubmit (and
+            thus our styled, consistent error messages) before our own JS
+            validation ever runs — required/type=email stay for a11y/mobile
+            keyboard hints, but we own the actual validation UX. */}
+        <form onSubmit={handleLogin} noValidate className="space-y-6">
           <div className="space-y-2">
             <label htmlFor="email" className="block text-xs font-mono text-table-textMuted uppercase tracking-widest text-left">
               Email Address
@@ -90,6 +100,15 @@ export default function LoginView() {
             </button>
           </div>
         </form>
+
+        <div className="mt-8 pt-6 border-t border-table-border/80 text-center">
+          <Link
+            to="/register"
+            className="text-xs font-mono font-bold text-table-primary hover:text-table-primaryHover transition-colors uppercase tracking-wider"
+          >
+            Create an account
+          </Link>
+        </div>
       </div>
     </div>
   );

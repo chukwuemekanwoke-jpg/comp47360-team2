@@ -6,7 +6,7 @@ function formatCurrency(value) {
 }
 
 export default function RevpashMeter({ restaurantId }) {
-  const { data, isLoading, isError } = useGetRevpashQuery(
+  const { data, isLoading, isError, error } = useGetRevpashQuery(
     { restaurantId, window: 'today' },
     { skip: !restaurantId }
   );
@@ -25,8 +25,10 @@ export default function RevpashMeter({ restaurantId }) {
       {isLoading ? (
         <p className="text-xs text-table-textSubtle font-mono">Loading RevPASH...</p>
       ) : isError ? (
-        <p className="text-xs text-table-textSubtle font-mono">
-          Not available yet — pending backend support (GET /restaurants/:id/revpash).
+        <p role={error?.status === 404 ? undefined : 'alert'} className="text-xs text-table-textSubtle font-mono">
+          {error?.status === 404
+            ? 'Not available yet — pending backend support (GET /restaurants/:id/revpash).'
+            : error?.data?.error?.message || 'Failed to load RevPASH.'}
         </p>
       ) : (
         <>
