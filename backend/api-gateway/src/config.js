@@ -4,6 +4,8 @@ require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
 const DEFAULT_CORS = [
   "http://localhost:3000",
   "http://127.0.0.1:3000",
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
   "http://localhost:8081",
   "http://127.0.0.1:8081",
 ];
@@ -27,6 +29,14 @@ const config = {
     process.env.GOOGLE_ROUTES_URL
     || "https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix",
   etaTimeoutMs: Number(process.env.ETA_TIMEOUT_MS) || 3000,
+  jwtSecret:
+    process.env.JWT_SECRET
+    || (process.env.NODE_ENV === "production" ? null : "dev-jwt-secret-change-me"),
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN || "7d",
 };
+
+if (!config.jwtSecret) {
+  throw new Error("JWT_SECRET is required when NODE_ENV=production");
+}
 
 module.exports = config;

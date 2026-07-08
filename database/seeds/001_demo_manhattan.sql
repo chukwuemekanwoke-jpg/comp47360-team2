@@ -7,7 +7,7 @@ BEGIN;
 -- ---------------------------------------------------------------------------
 -- Demo users
 -- ---------------------------------------------------------------------------
-INSERT INTO users (id, display_name, budget_tier, dietary_tags, last_lat, last_lng)
+INSERT INTO users (id, display_name, budget_tier, dietary_tags, last_lat, last_lng, email, password_hash)
 VALUES
   (
     '550e8400-e29b-41d4-a716-446655440001',
@@ -15,7 +15,9 @@ VALUES
     'TIER_2',
     ARRAY['vegan'],
     40.7589,
-    -73.9851
+    -73.9851,
+    NULL,
+    NULL
   ),
   (
     '550e8400-e29b-41d4-a716-446655440002',
@@ -23,14 +25,18 @@ VALUES
     NULL,
     '{}',
     NULL,
-    NULL
+    NULL,
+    'manager@demo.com',
+    '$2b$10$d6x4wB2hGK7ox5OQioj7VeJ9EYNJCoG.mKCvwFAB1I/Jewo7coF0K'
   )
 ON CONFLICT (id) DO UPDATE SET
   display_name = EXCLUDED.display_name,
   budget_tier = EXCLUDED.budget_tier,
   dietary_tags = EXCLUDED.dietary_tags,
   last_lat = EXCLUDED.last_lat,
-  last_lng = EXCLUDED.last_lng;
+  last_lng = EXCLUDED.last_lng,
+  email = EXCLUDED.email,
+  password_hash = EXCLUDED.password_hash;
 
 -- ---------------------------------------------------------------------------
 -- Demo restaurants (Manhattan — fictional names, realistic coordinates)

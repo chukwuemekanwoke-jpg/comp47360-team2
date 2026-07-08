@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { 
+import {
   UserProfile, RestaurantSummary, RestaurantDetail, EtaResult,
-  Booking, OfferInboxItem, Campaign, TransportMode, BudgetTier
+  Booking, OfferInboxItem, Campaign, TransportMode, BudgetTier, BookingStatus,
+  RevpashSummary, RevpashWindow
 } from './types';
 
 // --- CROSS-PLATFORM URL RESOLVER ---
@@ -56,7 +57,7 @@ export const tableApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ['User', 'Restaurants', 'Bookings', 'Offers', 'Campaigns', 'Floorplan', 'Analytics'],
+  tagTypes: ['User', 'Restaurants', 'Bookings', 'Offers', 'Campaigns'],
   
   endpoints: (builder) => ({
     // --- API Contract 4.1 Health ---
@@ -179,136 +180,67 @@ export const tableApi = createApi({
       invalidatesTags: ['Campaigns'],
     }),
 
-    getRestaurantCampaigns: builder.query<{ campaigns: Campaign[] }, string>({
+    getActiveCampaign: builder.query<{ campaign: Campaign | null }, string>({
       query: (restaurantId: string) => `/restaurants/${restaurantId}/campaigns/active`,
       providesTags: ['Campaigns'],
     }),
 
-    // --- NEW: API Contract 4.8 Merchant Web Dashboard ---
-    
-    // ==========================================
-    // !!! MOCK DATA START (FOR DEMO PURPOSES) !!!
-    // ==========================================
-    getLiveBookings: builder.query<{ bookings: Booking[] }, string>({
-      // COMMENTED OUT FOR DEMO: query: (restaurantId: string) => `/restaurants/${restaurantId}/bookings`,
-      queryFn: () => {
-        return {
-          data: {
-            bookings: [
-              { id: 'b1', guestName: 'Alice', time: '19:00', partySize: 2, status: 'confirmed' },
-              { id: 'b2', guestName: 'Bob', time: '20:30', partySize: 4, status: 'pending' }
-            ]
-          }
-        };
-      },
+    getCampaignHistory: builder.query<{ campaigns: Campaign[] }, string>({
+      query: (restaurantId: string) => `/restaurants/${restaurantId}/campaigns`,
+      providesTags: ['Campaigns'],
+    }),
+
+    // Needs POST /restaurants/:id/campaigns/:campaignId/cancel on the backend
+    // (see handoff spec) — manual cancel for an in-progress campaign.
+    cancelCampaign: builder.mutation<Campaign, { restaurantId: string; campaignId: string }>({
+      query: ({ restaurantId, campaignId }) => ({
+        url: `/restaurants/${restaurantId}/campaigns/${campaignId}/cancel`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Campaigns'],
+    }),
+
+    // --- Pending backend support (see handoff spec) ---
+    // Columns already exist (is_wheelchair_accessible, sensory_friendly);
+    // this just needs the PATCH /restaurants/:id/settings route to exist.
+    updateRestaurantSettings: builder.mutation<
+      RestaurantDetail,
+      { restaurantId: string; isWheelchairAccessible?: boolean; sensoryFriendly?: boolean }
+    >({
+      query: ({ restaurantId, ...body }) => ({
+        url: `/restaurants/${restaurantId}/settings`,
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: (_result, _error, arg) => [{ type: 'Restaurants', id: arg.restaurantId }],
+    }),
+
+    // Needs GET /restaurants/:id/bookings on the backend (see handoff spec).
+    getRestaurantBookings: builder.query<{ bookings: Booking[] }, string>({
+      query: (restaurantId: string) => `/restaurants/${restaurantId}/bookings`,
       providesTags: ['Bookings'],
     }),
-    // ==========================================
-    // !!! MOCK DATA END !!!
-    // ==========================================
 
-    updateRestaurantSettings: builder.mutation<any, { restaurantId: string; settings: any }>({
-      query: ({ restaurantId, settings }) => ({
-        url: `/restaurants/${restaurantId}/settings`,
-        method: 'PUT',
-        body: settings,
+    // Needs PATCH /bookings/:id/status on the backend (see handoff spec).
+    updateBookingStatus: builder.mutation<Booking, { bookingId: string; status: BookingStatus }>({
+      query: ({ bookingId, status }) => ({
+        url: `/bookings/${bookingId}/status`,
+        method: 'PATCH',
+        body: { status },
       }),
-      invalidatesTags: ['Restaurants'],
+      invalidatesTags: ['Bookings'],
     }),
 
-    // ==========================================
-    // !!! MOCK DATA START (FOR DEMO PURPOSES) !!!
-    // ==========================================
-    getAnalytics: builder.query<any, string>({
-      // COMMENTED OUT FOR DEMO: query: (restaurantId: string) => `/restaurants/${restaurantId}/analytics`,
-      queryFn: () => {
-        return {
-          data: {
-            totalRevenue: 4500,
-            activeCampaigns: 2,
-            occupancyRate: 85,
-            popularTimes: ['18:00', '19:00', '20:00']
-          }
-        };
-      },
-      providesTags: ['Analytics'],
-    }),
-    // ==========================================
-    // !!! MOCK DATA END !!!
-    // ==========================================
-
-    // ==========================================
-    // !!! MOCK DATA START (FOR DEMO PURPOSES) !!!
-    // ==========================================
-    getFloorPlan: builder.query<any, string>({
-      // COMMENTED OUT FOR DEMO: query: (restaurantId: string) => `/restaurants/${restaurantId}/floorplan`,
-      queryFn: () => {
-        return {
-          data: {
-            // Updated to use defaultLabel/customLabel to match RoomConfigPanel.jsx
-            rooms: [
-              { id: 'r1', defaultLabel: 'Room 1', customLabel: 'Main Dining', tableCount: 3 },
-              { id: 'r2', defaultLabel: 'Room 2', customLabel: 'Patio', tableCount: 2 }
-            ],
-            // Un-nested tables into a separate top-level array to match MerchantDashboard.jsx
-            tables: [
-              { id: 't1', label: 'Table-1', type: 'Square', capacity: 4, status: 'Occupied', room: 'Main Dining' },
-              { id: 't2', label: 'Table-2', type: 'Round', capacity: 2, status: 'Available', room: 'Main Dining' },
-              { id: 't3', label: 'Table-3', type: 'Square', capacity: 6, status: 'Available', room: 'Main Dining' },
-              { id: 't4', label: 'Table-4', type: 'Square', capacity: 4, status: 'Available', room: 'Patio' },
-              { id: 't5', label: 'Table-5', type: 'Round', capacity: 2, status: 'Occupied', room: 'Patio' }
-            ]
-          }
-        };
-      },
-      providesTags: ['Floorplan'],
-    }),
-    // ==========================================
-    // !!! MOCK DATA END !!!
-    // ==========================================
-
-    // ==========================================
-    // !!! MOCK MUTATIONS START (FOR DEMO PURPOSES) !!!
-    // ==========================================
-    
-    createRoom: builder.mutation<any, { restaurantId: string; roomData: any }>({
-      // COMMENTED OUT FOR DEMO: query: ({ restaurantId, roomData }) => ({ url: `/restaurants/${restaurantId}/rooms`, method: 'POST', body: roomData }),
-      queryFn: (args) => {
-        // Simulate network delay and return the injected data with a fake ID
-        return { data: { id: `mock-room-${Date.now()}`, ...args.roomData } };
-      }
+    // Needs GET /restaurants/:id/revpash on the backend (see handoff spec) —
+    // revenue per available seat-hour, backed by the restaurant_revpash_hourly view.
+    getRevpash: builder.query<RevpashSummary, { restaurantId: string; window?: RevpashWindow }>({
+      query: ({ restaurantId, window = 'today' }) => ({
+        url: `/restaurants/${restaurantId}/revpash`,
+        params: { window },
+      }),
+      providesTags: (_result, _error, arg) => [{ type: 'Restaurants', id: arg.restaurantId }],
     }),
 
-    updateRoom: builder.mutation<any, { roomId: string; roomData: any }>({
-      // COMMENTED OUT FOR DEMO: query: ({ roomId, roomData }) => ({ url: `/rooms/${roomId}`, method: 'PUT', body: roomData }),
-      queryFn: (args) => ({ data: args.roomData })
-    }),
-
-    deleteRoom: builder.mutation<any, string>({
-      // COMMENTED OUT FOR DEMO: query: (roomId: string) => ({ url: `/rooms/${roomId}`, method: 'DELETE' }),
-      queryFn: () => ({ data: { success: true } })
-    }),
-
-    createTable: builder.mutation<any, { restaurantId: string; tableData: any }>({
-      // COMMENTED OUT FOR DEMO: query: ({ restaurantId, tableData }) => ({ url: `/restaurants/${restaurantId}/tables`, method: 'POST', body: tableData }),
-      queryFn: (args) => {
-        return { data: { id: `mock-table-${Date.now()}`, ...args.tableData } };
-      }
-    }),
-
-    updateTable: builder.mutation<any, { tableId: string; tableData: any }>({
-      // COMMENTED OUT FOR DEMO: query: ({ tableId, tableData }) => ({ url: `/tables/${tableId}`, method: 'PUT', body: tableData }),
-      queryFn: (args) => ({ data: args.tableData })
-    }),
-
-    deleteTable: builder.mutation<any, string>({
-      // COMMENTED OUT FOR DEMO: query: (tableId: string) => ({ url: `/tables/${tableId}`, method: 'DELETE' }),
-      queryFn: () => ({ data: { success: true } })
-    }),
-
-    // ==========================================
-    // !!! MOCK MUTATIONS END !!!
-    // ==========================================
   }),
 });
 
@@ -326,17 +258,11 @@ export const {
   useGetOffersInboxQuery,
   useAcceptOfferMutation,
   useCreateCampaignMutation,
-  useGetRestaurantCampaignsQuery,
-  
-  // --- NEW: Merchant Web Dashboard Hooks ---
-  useGetLiveBookingsQuery,
+  useGetActiveCampaignQuery,
+  useGetCampaignHistoryQuery,
+  useCancelCampaignMutation,
   useUpdateRestaurantSettingsMutation,
-  useGetAnalyticsQuery,
-  useGetFloorPlanQuery,
-  useCreateRoomMutation,
-  useUpdateRoomMutation,
-  useDeleteRoomMutation,
-  useCreateTableMutation,
-  useUpdateTableMutation,
-  useDeleteTableMutation,
+  useGetRestaurantBookingsQuery,
+  useUpdateBookingStatusMutation,
+  useGetRevpashQuery,
 } = tableApi;

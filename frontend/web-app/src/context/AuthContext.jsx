@@ -33,39 +33,18 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const login = async (email, password) => {
-    try {
-      const response = await fetch('/api/v1/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
+  // Dummy auth per docs/user-stories/01-onboarding.md — there is no real login
+  // endpoint; the backend identifies users/managers via the seeded UUIDs below
+  // (see database/seeds/001_demo_manhattan.sql).
+  const login = async () => {
+    localStorage.setItem('table_user_id', DEV_USER_ID);
+    localStorage.setItem('table_restaurant_id', DEV_RESTAURANT_ID);
+    localStorage.setItem('table_merchant_token', 'future-jwt-placeholder');
 
-      if (!response.ok) throw new Error('Invalid credentials');
-      
-      const data = await response.json();
-      
-      localStorage.setItem('table_user_id', data.userId);
-      localStorage.setItem('table_restaurant_id', data.restaurantId);
-      localStorage.setItem('table_merchant_token', data.token);
-      
-      setUserId(data.userId);
-      setRestaurantId(data.restaurantId);
-      setAuthToken(data.token);
-      setIsAuthenticated(true);
-      
-    } catch (error) {
-      console.warn("Login endpoint unavailable. Falling back to local Postgres UUID simulation.");
-      
-      localStorage.setItem('table_user_id', DEV_USER_ID);
-      localStorage.setItem('table_restaurant_id', DEV_RESTAURANT_ID);
-      localStorage.setItem('table_merchant_token', 'future-jwt-placeholder');
-      
-      setUserId(DEV_USER_ID);
-      setRestaurantId(DEV_RESTAURANT_ID);
-      setAuthToken('future-jwt-placeholder');
-      setIsAuthenticated(true);
-    }
+    setUserId(DEV_USER_ID);
+    setRestaurantId(DEV_RESTAURANT_ID);
+    setAuthToken('future-jwt-placeholder');
+    setIsAuthenticated(true);
   };
 
   const logout = () => {

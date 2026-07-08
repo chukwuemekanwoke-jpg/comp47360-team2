@@ -1,15 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, NavLink, Link } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import ExploreView from './views/ExploreView';
 import MerchantDashboard from './views/MerchantDashboard';
 import LoginView from './views/LoginView';
-import RegisterView from './views/RegisterView';
-import ProfileSetupView from './views/ProfileSetupView';
-import FlashDealBookingView from './views/FlashDealBookingView';
 
 function AppLayout({ children }) {
   return (
-    <div className="min-h-screen bg-table-canvas text-table-text font-sans transition-colors duration-350">
+    <div className="min-h-screen text-table-text font-sans transition-colors duration-300 bg-table-canvas">
       {children}
     </div>
   );
@@ -29,15 +25,6 @@ function App() {
               </Link>
 
               <nav className="flex space-x-6 text-sm font-medium">
-                <NavLink
-                  to="/explore"
-                  className={({ isActive }) =>
-                    `transition-colors duration-200 ${isActive ? 'text-table-primary' : 'text-table-textMuted hover:text-table-text'}`
-                  }
-                >
-                  Explore
-                </NavLink>
-
                 <NavLink
                   to="/merchant"
                   className={({ isActive }) =>
@@ -63,11 +50,7 @@ function App() {
           <main>
             <Routes>
               <Route path="/" element={<LoginView />} />
-              <Route path="/explore" element={<ExploreView />} />
-              <Route path="/book-deal" element={<FlashDealBookingView />} />
               <Route path="/merchant" element={<MerchantDashboard />} />
-              <Route path="/register" element={<RegisterView />} />
-              <Route path="/setup-profile" element={<ProfileSetupView />} />
             </Routes>
           </main>
 
