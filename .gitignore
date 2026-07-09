@@ -56,3 +56,8 @@ ENV/
 .pypy/
 .ipynb_checkpoints/
 *.notebook
+
+# ==========================================
+# 5. Firebase CLI local cache
+# ==========================================
+.firebase/
