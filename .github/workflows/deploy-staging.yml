@@ -25,6 +25,8 @@ jobs:
         run: npm ci
       - name: Build
         working-directory: frontend/web-app
+        env:
+          VITE_API_URL: ${{ vars.STAGING_API_URL }}
         run: npm run build
       - name: Upload web build artifact
         uses: actions/upload-artifact@v4
@@ -34,7 +36,10 @@ jobs:
           retention-days: 7
 
   build-backend:
-    name: Install backend
+    # api-gateway itself deploys separately via its own Cloud Build trigger
+    # (continuous deploy from the develop branch, configured directly on the
+    # Cloud Run service). This job is just a CI sanity check that it installs.
+    name: Verify backend installs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -48,7 +53,7 @@ jobs:
         run: npm ci
 
   deploy:
-    name: Deploy to staging (placeholder)
+    name: Deploy web app to Firebase Hosting
     needs: [build-web, build-backend]
     runs-on: ubuntu-latest
     environment: staging
@@ -58,8 +63,10 @@ jobs:
         with:
           name: web-dist
           path: frontend/web-app/dist
-      - name: Deploy (TODO)
-        run: |
-          echo "No staging infra configured yet."
-          echo "Replace this step once a deploy target is chosen (e.g. Docker registry push, SSH, Vercel/Netlify, etc.)."
-          echo "Artifacts ready: frontend/web-app/dist"
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_TABL_APP_STAGING }}
+          projectId: tabl-app-staging
+          channelId: live
