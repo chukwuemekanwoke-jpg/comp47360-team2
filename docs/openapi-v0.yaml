@@ -180,6 +180,30 @@ paths:
         "401":
           $ref: "#/components/responses/Unauthorized"
 
+  /api/v1/restaurants:
+    post:
+      tags: [Restaurants]
+      summary: Create a restaurant for the authenticated manager
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRestaurantRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantDetail"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
   /api/v1/restaurants/nearby:
     get:
       tags: [Restaurants]
@@ -236,6 +260,33 @@ paths:
                 $ref: "#/components/schemas/RestaurantDetail"
         "400":
           $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/v1/restaurants/{restaurantId}/settings:
+    patch:
+      tags: [Restaurants]
+      summary: Update accessibility settings for a managed restaurant
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+        - $ref: "#/components/parameters/RestaurantId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestaurantSettingsPatch"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RestaurantDetail"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
 
@@ -678,6 +729,41 @@ components:
               type: string
             holdWindowMinutes:
               type: integer
+            phone:
+              type: string
+
+    CreateRestaurantRequest:
+      type: object
+      required: [name, addressLine, phone, latitude, longitude, cuisine]
+      properties:
+        name:
+          type: string
+        addressLine:
+          type: string
+        phone:
+          type: string
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        cuisine:
+          type: string
+        neighborhood:
+          type: string
+        isWheelchairAccessible:
+          type: boolean
+        sensoryFriendly:
+          type: boolean
+
+    RestaurantSettingsPatch:
+      type: object
+      properties:
+        isWheelchairAccessible:
+          type: boolean
+        sensoryFriendly:
+          type: boolean
 
     EtaResult:
       type: object
