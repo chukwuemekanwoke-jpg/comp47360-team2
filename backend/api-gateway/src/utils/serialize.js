@@ -43,11 +43,17 @@ function toRestaurantSummary(row) {
 }
 
 function toRestaurantDetail(row) {
-  return {
+  const detail = {
     ...toRestaurantSummary(row),
     addressLine: row.address_line,
     holdWindowMinutes: row.hold_window_minutes,
   };
+
+  if (row.phone != null) {
+    detail.phone = row.phone;
+  }
+
+  return detail;
 }
 
 function toCampaignJson(row) {

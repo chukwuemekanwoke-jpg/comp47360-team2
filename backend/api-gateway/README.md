@@ -51,7 +51,9 @@ Server: `http://localhost:3001`
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
 | GET | `/api/v1/restaurants/nearby` | optional `X-User-Id` | Restaurants within radius (`availableTableCount > 0`) |
+| POST | `/api/v1/restaurants` | JWT or `X-User-Id` | Create restaurant (`manager_user_id` = caller) |
 | GET | `/api/v1/restaurants/:restaurantId` | none | Restaurant detail for booking screen |
+| PATCH | `/api/v1/restaurants/:restaurantId/settings` | manager JWT or `X-User-Id` | Update accessibility settings |
 | GET | `/api/v1/restaurants/:restaurantId/eta` | none | Travel time (Google Routes API, BE-12) + `canBook` vs hold window |
 
 ### Bookings (BE-12, BE-16)

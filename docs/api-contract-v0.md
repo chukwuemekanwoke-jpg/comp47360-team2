@@ -335,6 +335,40 @@ Returns restaurants within radius with `availableTableCount > 0`.
 
 **P1 extension:** `neighborhood=Manhattan` when GPS denied (Story 2.2) — geocode then same response shape.
 
+#### `POST /api/v1/restaurants`
+
+Create a venue owned by the authenticated manager (`manager_user_id` set server-side from JWT).
+
+**Auth:** Bearer JWT or `X-User-Id`
+
+**Request:**
+
+```json
+{
+  "name": "The Maple Room",
+  "addressLine": "125 W 44th St",
+  "phone": "+1 212-555-0100",
+  "latitude": 40.7614,
+  "longitude": -73.9857,
+  "cuisine": "american",
+  "neighborhood": "Midtown",
+  "isWheelchairAccessible": false,
+  "sensoryFriendly": false
+}
+```
+
+**Response `201`:** `RestaurantDetail` (new `availableTableCount` defaults to `0`)
+
+#### `PATCH /api/v1/restaurants/:restaurantId/settings`
+
+Update accessibility flags for a restaurant the caller manages.
+
+**Auth:** manager Bearer JWT or `X-User-Id`
+
+**Request:** `{ "isWheelchairAccessible"?: boolean, "sensoryFriendly"?: boolean }` (at least one field)
+
+**Response `200`:** `RestaurantDetail`
+
 ---
 
 ### 4.4 Restaurant detail & ETA (Stories 2.1, 3.1, 3.2)
