@@ -35,8 +35,13 @@ export default function AccessibilityPanel({ restaurantId, restaurant }) {
     try {
       await updateSettings({ restaurantId, ...values }).unwrap();
     } catch (err) {
-      // Expected to 404 until the backend adds PATCH /restaurants/:id/settings.
-      setError(err?.data?.error?.message || 'Could not save yet — pending backend support.');
+      // 404 means the route doesn't exist yet, not a real validation error —
+      // the generic Express "Route not found" message isn't useful to show.
+      setError(
+        err?.status === 404
+          ? 'Could not save yet — pending backend support.'
+          : err?.data?.error?.message || 'Failed to save settings.'
+      );
     }
   };
 
@@ -56,6 +61,8 @@ export default function AccessibilityPanel({ restaurantId, restaurant }) {
           <button
             key={key}
             type="button"
+            role="switch"
+            aria-checked={values[key]}
             onClick={() => handleToggle(key)}
             className={`flex items-center justify-between px-4 py-2.5 rounded-xl border text-xs font-mono font-medium transition-colors ${
               values[key]
@@ -68,6 +75,7 @@ export default function AccessibilityPanel({ restaurantId, restaurant }) {
               <span>{label}</span>
             </span>
             <span
+              aria-hidden="true"
               className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                 values[key] ? 'bg-table-primary' : 'bg-table-interactive'
               }`}
@@ -83,7 +91,7 @@ export default function AccessibilityPanel({ restaurantId, restaurant }) {
       </div>
 
       {error && (
-        <div className="p-2.5 bg-table-danger/10 border border-table-danger/30 text-table-danger rounded-lg text-[11px] font-mono">
+        <div role="alert" className="p-2.5 bg-table-danger/10 border border-table-danger/30 text-table-danger rounded-lg text-[11px] font-mono">
           {error}
         </div>
       )}

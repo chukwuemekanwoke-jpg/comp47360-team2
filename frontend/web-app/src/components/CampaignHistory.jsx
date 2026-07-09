@@ -16,7 +16,7 @@ function formatDate(iso) {
 }
 
 export default function CampaignHistory({ restaurantId }) {
-  const { data, isLoading } = useGetCampaignHistoryQuery(restaurantId, { skip: !restaurantId });
+  const { data, isLoading, isError, error } = useGetCampaignHistoryQuery(restaurantId, { skip: !restaurantId });
   const campaigns = data?.campaigns ?? [];
 
   return (
@@ -27,6 +27,10 @@ export default function CampaignHistory({ restaurantId }) {
 
       {isLoading ? (
         <p className="text-xs text-table-textSubtle font-mono">Loading campaign history...</p>
+      ) : isError ? (
+        <p role="alert" className="text-xs text-table-danger font-mono">
+          {error?.data?.error?.message || 'Failed to load campaign history.'}
+        </p>
       ) : campaigns.length === 0 ? (
         <p className="text-xs text-table-textSubtle font-mono">No flash deals triggered yet.</p>
       ) : (

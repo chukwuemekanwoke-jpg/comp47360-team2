@@ -15,7 +15,7 @@ export default {
           interactive: 'var(--table-interactive, #1E293B)',
           text: 'var(--table-text, #F8FAFC)',
           textMuted: 'var(--table-text-muted, #A8B3C7)',
-          textSubtle: 'var(--table-text-subtle, #64748B)',
+          textSubtle: 'var(--table-text-subtle, #8896AB)',
           primary: 'var(--table-primary, #31D5D5)',
           primaryHover: 'var(--table-primary-hover, #67E8F9)',
           offer: 'var(--table-offer, #F59E0B)',

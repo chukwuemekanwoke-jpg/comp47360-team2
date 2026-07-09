@@ -7,6 +7,7 @@ const navigateMock = vi.hoisted(() => vi.fn());
 
 vi.mock('react-router-dom', () => ({
   useNavigate: () => navigateMock,
+  Link: ({ children, to, ...props }) => <a href={to} {...props}>{children}</a>,
 }));
 
 function renderLoginView() {
@@ -20,6 +21,18 @@ function renderLoginView() {
 describe('LoginView', () => {
   beforeEach(() => {
     navigateMock.mockClear();
+  });
+
+  it('rejects an invalid email format before checking credentials', async () => {
+    const user = userEvent.setup();
+    renderLoginView();
+
+    await user.type(screen.getByLabelText(/email address/i), 'not-an-email');
+    await user.type(screen.getByLabelText(/password/i), 'password');
+    await user.click(screen.getByRole('button', { name: /sign in to tablé/i }));
+
+    expect(screen.getByText(/enter a valid email address/i)).toBeInTheDocument();
+    expect(navigateMock).not.toHaveBeenCalled();
   });
 
   it('shows an authentication error for invalid credentials', async () => {
