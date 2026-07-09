@@ -93,6 +93,7 @@ Venue master data for Manhattan prototype.
 - `capacity`: total table capacity (upper bound; `available_table_count <= capacity`)
 - `cuisine`: primary cuisine slug (e.g. `italian`, `thai`) for UI filters and ML features
 - `hold_window_minutes`: default **15** (Story 3.x)
+- `phone`: venue contact number (merchant registration)
 - `busyness_score`: optional 0–1 signal from ML pipeline
 - `manager_user_id`: links B-side dashboard to a user row
 
