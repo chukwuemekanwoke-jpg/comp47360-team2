@@ -34,11 +34,9 @@ node_modules/
 /frontend/web-app/.next/
 /frontend/web-app/out/
 /frontend/web-app/dist/
-/frontend/web-app/coverage/
 /frontend/mobile-app/.expo/
 /frontend/mobile-app/dist/
 /backend/api-gateway/dist/
-/backend/api-gateway/coverage/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -56,8 +54,3 @@ ENV/
 .pypy/
 .ipynb_checkpoints/
 *.notebook
-
-# ==========================================
-# 5. Firebase CLI local cache
-# ==========================================
-.firebase/

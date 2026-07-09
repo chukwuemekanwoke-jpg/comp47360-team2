@@ -13,9 +13,6 @@ function toUserJson(row) {
   if (row.last_lng != null) {
     user.lastLng = Number(row.last_lng);
   }
-  if (row.email != null) {
-    user.email = row.email;
-  }
 
   return user;
 }
@@ -43,17 +40,11 @@ function toRestaurantSummary(row) {
 }
 
 function toRestaurantDetail(row) {
-  const detail = {
+  return {
     ...toRestaurantSummary(row),
     addressLine: row.address_line,
     holdWindowMinutes: row.hold_window_minutes,
   };
-
-  if (row.phone != null) {
-    detail.phone = row.phone;
-  }
-
-  return detail;
 }
 
 function toCampaignJson(row) {

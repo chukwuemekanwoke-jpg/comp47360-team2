@@ -105,75 +105,6 @@ function validateCampaignBody(body) {
   return { tableQuota, discountPercent };
 }
 
-function parseOptionalBoolean(value, fieldName) {
-  if (value === undefined || value === null) {
-    return undefined;
-  }
-  if (typeof value !== "boolean") {
-    throw new AppError(400, "VALIDATION_ERROR", `${fieldName} must be a boolean`);
-  }
-  return value;
-}
-
-function validateCreateRestaurantBody(body) {
-  const payload = body ?? {};
-  const name = requireNonEmptyString(payload.name, "name");
-  const addressLine = requireNonEmptyString(payload.addressLine, "addressLine");
-  const phone = requireNonEmptyString(payload.phone, "phone");
-  const cuisine = requireNonEmptyString(payload.cuisine, "cuisine");
-  const { lat, lng } = parseLatLng(payload.latitude, payload.longitude);
-
-  let neighborhood = null;
-  if (payload.neighborhood !== undefined && payload.neighborhood !== null) {
-    if (typeof payload.neighborhood !== "string") {
-      throw new AppError(400, "VALIDATION_ERROR", "neighborhood must be a string");
-    }
-    neighborhood = payload.neighborhood.trim() || null;
-  }
-
-  return {
-    name,
-    addressLine,
-    phone,
-    cuisine,
-    latitude: lat,
-    longitude: lng,
-    neighborhood,
-    isWheelchairAccessible: parseOptionalBoolean(
-      payload.isWheelchairAccessible,
-      "isWheelchairAccessible"
-    ) ?? false,
-    sensoryFriendly: parseOptionalBoolean(payload.sensoryFriendly, "sensoryFriendly") ?? false,
-  };
-}
-
-function validateRestaurantSettingsBody(body) {
-  const payload = body ?? {};
-  const isWheelchairAccessible = parseOptionalBoolean(
-    payload.isWheelchairAccessible,
-    "isWheelchairAccessible"
-  );
-  const sensoryFriendly = parseOptionalBoolean(payload.sensoryFriendly, "sensoryFriendly");
-
-  if (isWheelchairAccessible === undefined && sensoryFriendly === undefined) {
-    throw new AppError(
-      400,
-      "VALIDATION_ERROR",
-      "At least one of isWheelchairAccessible or sensoryFriendly is required"
-    );
-  }
-
-  const updates = {};
-  if (isWheelchairAccessible !== undefined) {
-    updates.is_wheelchair_accessible = isWheelchairAccessible;
-  }
-  if (sensoryFriendly !== undefined) {
-    updates.sensory_friendly = sensoryFriendly;
-  }
-
-  return updates;
-}
-
 module.exports = {
   BUDGET_TIERS,
   TRANSPORT_MODES,
@@ -184,8 +115,6 @@ module.exports = {
   parseTransportMode,
   parseBodyLatLng,
   validateCampaignBody,
-  validateCreateRestaurantBody,
-  validateRestaurantSettingsBody,
   validateBudgetTier,
   validateDietaryTags,
   requireNonEmptyString,

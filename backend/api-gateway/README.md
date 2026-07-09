@@ -40,9 +40,8 @@ Server: `http://localhost:3001`
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
 | POST | `/api/v1/users` | none | Create user (legacy onboarding) |
-| POST | `/api/v1/auth/register` | none | Register; returns JWT |
-| POST | `/api/v1/auth/login` | none | Login; returns JWT |
-| POST | `/api/v1/auth/logout` | JWT | Invalidate current token (server-side logout) |
+| POST | `/api/v1/auth/register` | none | Register; returns JWT *(planned)* |
+| POST | `/api/v1/auth/login` | none | Login; returns JWT *(planned)* |
 | GET | `/api/v1/users/me` | JWT or `X-User-Id` | Current user profile |
 | PATCH | `/api/v1/users/me/preferences` | JWT or `X-User-Id` | Update budget, dietary tags, location |
 
@@ -51,9 +50,7 @@ Server: `http://localhost:3001`
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
 | GET | `/api/v1/restaurants/nearby` | optional `X-User-Id` | Restaurants within radius (`availableTableCount > 0`) |
-| POST | `/api/v1/restaurants` | JWT or `X-User-Id` | Create restaurant (`manager_user_id` = caller) |
 | GET | `/api/v1/restaurants/:restaurantId` | none | Restaurant detail for booking screen |
-| PATCH | `/api/v1/restaurants/:restaurantId/settings` | manager JWT or `X-User-Id` | Update accessibility settings |
 | GET | `/api/v1/restaurants/:restaurantId/eta` | none | Travel time (Google Routes API, BE-12) + `canBook` vs hold window |
 
 ### Bookings (BE-12, BE-16)
@@ -84,19 +81,6 @@ curl http://localhost:3001/api/v1/status
 curl -X POST http://localhost:3001/api/v1/users \
   -H 'Content-Type: application/json' \
   -d '{"displayName":"Alex"}'
-
-# Login (demo manager after migration + seed)
-curl -X POST http://localhost:3001/api/v1/auth/login \
-  -H 'Content-Type: application/json' \
-  -d '{"email":"manager@demo.com","password":"password123"}'
-
-# Use Bearer token on protected routes (replace TOKEN)
-curl http://localhost:3001/api/v1/users/me/bookings \
-  -H 'Authorization: Bearer TOKEN'
-
-# Logout (invalidates JWT server-side)
-curl -X POST http://localhost:3001/api/v1/auth/logout \
-  -H 'Authorization: Bearer TOKEN'
 
 # Demo consumer (after npm run seed in database/)
 curl http://localhost:3001/api/v1/users/me \
