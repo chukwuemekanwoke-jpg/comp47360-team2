@@ -86,6 +86,16 @@ export const tableApi = createApi({
       invalidatesTags: ['User'],
     }),
 
+    // Real JWT sign-in — POST /auth/login, no auth header needed.
+    login: builder.mutation<AuthSession, { email: string; password: string }>({
+      query: (body) => ({
+        url: '/auth/login',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['User'],
+    }),
+
     updatePreferences: builder.mutation<UserProfile, { userId: string; budgetTier: BudgetTier; dietaryTags: string[]; lastLat?: number; lastLng?: number }>({
       query: ({ userId, ...body }: { userId: string; budgetTier: BudgetTier; dietaryTags: string[]; lastLat?: number; lastLng?: number }) => ({
         url: '/users/me/preferences',
@@ -290,6 +300,7 @@ export const {
   useGetHealthQuery,
   useCreateUserMutation,
   useRegisterMutation,
+  useLoginMutation,
   useUpdatePreferencesMutation,
   useGetProfileQuery,
   useGetNearbyRestaurantsQuery,
