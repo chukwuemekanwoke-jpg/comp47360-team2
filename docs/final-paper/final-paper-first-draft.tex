@@ -1,0 +1,172 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage{cite}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title{Tabl\'e: A Location-Aware Dining Availability and Lull-Mitigation Platform for Manhattan}
+
+\author{
+\IEEEauthorblockN{Yuhao Xu, Chukwuemeka Nwoke, Andrew Mitchell, Milo Dennehy, Yang Liu, Rui Xu}
+\IEEEauthorblockA{School of Computer Science, University College Dublin\\
+COMP47360 Research Practicum, Team 2\\
+Application URL: \textbf{TODO: add deployed application URL}}
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Urban diners often make short-notice restaurant decisions with incomplete information about queue length, table availability, travel time, and accessibility. At the same time, restaurants can experience sudden demand lulls that leave perishable table capacity unused, yet public mass discounting can weaken brand perception. This paper presents Tabl\'e, a Manhattan-focused web and mobile prototype that combines geospatial discovery, ETA-guarded booking, and targeted one-to-one flash deals. The system uses React/Vite and Expo clients, a Node.js/Express API gateway, PostgreSQL, and a Python/FastAPI inference service. Restaurant metadata is seeded from NYC open data, while taxi-zone demand and simulated availability snapshots provide interpretable busyness signals for the MVP. The current implementation prioritizes a contract-first architecture, backend-authoritative booking checks, and a conservative machine-learning path that can begin with heuristics and later absorb richer labelled data. We outline the product motivation, related systems, architecture, analytics pipeline, and an evaluation plan covering model quality, API correctness, usability, and operational robustness.
+\end{abstract}
+
+\begin{IEEEkeywords}
+location-based services, restaurant reservations, urban analytics, recommender systems, yield management, web application, mobile application
+\end{IEEEkeywords}
+
+\section{Introduction}
+Spontaneous restaurant choice in dense cities is a coordination problem. A diner may be close to several suitable restaurants, but still lack reliable answers to three practical questions: which venues have tables now, whether the diner can arrive before the table hold expires, and whether the venue is likely to be uncomfortably busy. The same uncertainty affects restaurants. Empty tables during unexpected slow periods represent lost revenue, but broad public discounts can train customers to wait for deals and may damage a premium or independent restaurant's brand.
+
+Tabl\'e addresses this two-sided problem through a location-based dining marketplace for Manhattan. On the consumer side, it displays nearby restaurants within a 1.5 km radius only when the venue has available table capacity. It then validates booking feasibility through an estimated-time-of-arrival guardrail: if the user cannot reach the restaurant within the hold window, the booking is blocked rather than merely warned. On the restaurant side, Tabl\'e provides a manager dashboard that can trigger a short-lived, one-to-one flash deal campaign during a lull. The matching service ranks nearby diners using distance and profile signals, while the database enforces offer expiry, campaign completion, and inventory constraints.
+
+The core innovation is not only another reservation interface. Existing reservation products are strong at planned bookings and restaurant operations, but Tabl\'e focuses on the immediate ``can I go now?'' decision, combined with private, targeted demand shaping for restaurants. The project therefore has both user-side and technical novelty: it merges geospatial filtering, routing feasibility, predicted or simulated busyness, and preference-aware flash-deal matching into one operational loop.
+
+This first paper draft is based on the repository state after synchronizing the remote branch on 9 July 2026. It follows the COMP47360 final paper structure: problem context, related work and competing solutions, methodology and architecture, data analytics and visualization, evaluation plan, and future work.
+
+\section{Literature Review and Related Solutions}
+\subsection{Reservation and Restaurant Platforms}
+OpenTable, Resy, Yelp Reservations, Eat App, and Tock demonstrate that restaurant discovery and reservation management are mature product categories. Their strengths are network scale, table-management workflows, restaurant profiles, and consumer booking convenience. However, these systems primarily center on planned reservations, waitlists, prepaid experiences, or full restaurant operations. Tabl\'e narrows the MVP around a different moment: a diner already in the city wants an immediately reachable table, while a manager wants to fill an unexpected lull without exposing a public discount.
+
+This distinction shapes the design. Rather than ranking all possible restaurants by popularity or review quality, the discovery query filters first by physical reachability and actual current availability. Rather than broadcasting promotions, the flash-deal workflow creates private offers with a 900-second time-to-live and automatically completes the campaign when the released tables are claimed. This protects the restaurant from overbooking and from public price dilution.
+
+\subsection{Urban Mobility and Demand Signals}
+Urban mobility data has been widely used as a proxy for local demand patterns. New York taxi records provide pickup and drop-off times, locations, distances, fares, and passenger counts, making them useful for spatiotemporal demand analysis at the taxi-zone level \cite{nyc_tlc_trip_data}. Prior research on New York mobility data has shown that open transport datasets can support spatial demand modelling and consumer-facing decision tools \cite{toman2020spatiotemporal,noulas2015openstreetcab}. Tabl\'e applies the same general idea to dining: drop-off density near restaurant zones is treated as a proxy for area busyness, not as direct evidence of restaurant occupancy.
+
+\subsection{Open Restaurant Data}
+The restaurant dimension in Tabl\'e is derived from public Manhattan restaurant metadata, especially NYC Department of Health and Mental Hygiene inspection data \cite{nyc_restaurant_inspections}. This dataset is appropriate for restaurant identity, cuisine, address, and geospatial seeding, but it does not provide live occupancy. The project therefore separates three concepts that are often blurred in casual product descriptions: restaurant metadata, predicted busyness, and available tables. This distinction is important for scientific honesty. The MVP uses simulated live availability because production reservation feeds such as partner APIs are unavailable in the course context.
+
+\section{Methodology}
+\subsection{Product Requirements}
+The MVP requirements were derived from five user-story groups. First, onboarding captures budget tier and dietary tags so that matching can use minimal preference data. Second, discovery shows restaurants inside a 1.5 km radius with \texttt{available\_table\_count > 0}. Third, booking is guarded by a 15-minute hold window and an ETA check. Fourth, flash deals expire after 900 seconds and become unclaimable. Fifth, restaurant-side campaigns automatically complete when their table quota is claimed.
+
+The project personas include spontaneous executives, deal-hunting foodies, urban explorers, accessibility-sensitive diners, and independent restaurateurs. These personas informed both the consumer and business workflows. For example, the transit-dependent persona motivated backend-authoritative ETA validation, while the restaurateur persona motivated one-click lull mitigation with discount boundaries.
+
+\subsection{Architecture Selection}
+The team adopted a monorepo and a monolith-first MVP. Earlier planning explored a larger microservice architecture with realtime services, Redis, and multiple deployables. The current repository and architecture decision record instead choose a compact design that matches the team size and practicum timeline. The system is logically modular but operationally simple: clients call one gateway, the gateway owns business rules and persistence, and the ML service remains stateless.
+
+This decision has three advantages. First, it reduces integration overhead for a six-person team. Second, it keeps API keys and external service calls server-side. Third, it allows the team to enforce booking and campaign invariants in the gateway and PostgreSQL rather than duplicating them across clients.
+
+\subsection{Technology Stack}
+The web client uses React, Vite, Tailwind CSS, React Router, and Redux Toolkit Query. The mobile client uses React Native through Expo and NativeWind. Both clients share API types and query logic through \texttt{frontend/packages/shared}. The backend API gateway uses Node.js and Express, with route modules for users, restaurants, bookings, offers, campaigns, authentication, and health checks. PostgreSQL stores users, restaurants, bookings, offers, campaigns, and availability snapshots. The Python FastAPI service exposes busyness prediction and campaign matching endpoints.
+
+External integration is deliberately limited. Google Routes API is used for ETA calculation when an API key is available, with a local haversine estimate fallback. NYC Open Data and TLC taxi data are offline data sources rather than runtime dependencies. REST polling is used for the MVP instead of WebSockets or push notifications, although mobile push can be added later as an additive notification channel.
+
+\section{System Architecture}
+Fig.~\ref{fig:architecture} summarizes the implemented request flow.
+
+\begin{figure}[htbp]
+\centering
+\fbox{\begin{minipage}{0.94\linewidth}
+\small
+\textbf{Clients:} React/Vite web app and Expo mobile app\\
+$\downarrow$ shared RTK Query client and TypeScript types\\
+\textbf{API Gateway:} Node.js/Express REST API under \texttt{/api/v1}\\
+$\downarrow$ PostgreSQL for system of record\\
+$\downarrow$ FastAPI for match and busyness inference\\
+$\downarrow$ Google Routes API or haversine fallback for ETA
+\end{minipage}}
+\caption{Compact architecture of the Tabl\'e MVP. The gateway is the only integration point for clients; it calls PostgreSQL, FastAPI, and external routing services.}
+\label{fig:architecture}
+\end{figure}
+
+\subsection{Client Layer}
+The client layer supports both consumer and restaurant-manager workflows. The consumer flow includes login or registration, preference setup, map/list discovery, restaurant detail, ETA validation, booking, and flash-deal inbox. The business flow includes a merchant dashboard, capacity and booking visibility, and campaign creation. Shared API state reduces divergence between mobile and web, and RTK Query cache invalidation supports refetching after mutations such as booking or offer acceptance.
+
+\subsection{Gateway and Domain Logic}
+The Express gateway exposes versioned REST endpoints. Key routes include \texttt{GET /restaurants/nearby}, \texttt{GET /restaurants/:id/eta}, \texttt{POST /bookings}, \texttt{GET /users/me/offers}, \texttt{POST /offers/:id/accept}, and \texttt{POST /restaurants/:id/campaigns}. The gateway is authoritative for whether a user can book. A client may display advisory ETA text, but the final booking check is performed server-side.
+
+The gateway also isolates failures. If the ML service is unavailable, campaign creation can fall back to a nearest-distance heuristic. If Google routing is unavailable, the ETA service falls back to haversine-based estimates and reports the source in the response. This is important for demo robustness and for cost control.
+
+\subsection{Database and Constraints}
+PostgreSQL stores six main entities: users, restaurants, bookings, campaigns, offers, and availability snapshots. The schema encodes important business rules. Restaurant available tables cannot exceed capacity. Campaign discounts are constrained to 10--50 percent. Offers are unique per campaign and user. A booking linked to a deal must include both an offer and campaign, preventing partial deal records. A trigger increments claimed campaign tables when a deal-backed booking is confirmed, completes the campaign when quota is reached, and revokes still-pending offers.
+
+\subsection{Machine Learning Service}
+The FastAPI service currently provides two interfaces: \texttt{/predict/busyness} and \texttt{/api/v1/match}. The busyness endpoint estimates a normalized busyness score from hour, day of week, taxi drop-off count, rolling busyness, neighborhood, cuisine, and distance features. The matching endpoint receives pre-filtered candidate diners from the gateway and returns the top user IDs and scores for offer creation. The current runtime implementation is heuristic and interpretable; notebook work and simulated datasets provide the path for replacing it with a trained model.
+
+\section{Data Analytics and Visualization}
+\subsection{Datasets}
+Tabl\'e uses at least two Manhattan-relevant open datasets. The first is NYC restaurant inspection data, filtered to Manhattan, for restaurant metadata such as name, address, cuisine, latitude, and longitude. The second is NYC taxi trip data, aggregated by taxi zone, day, and hour to provide a proxy for local area demand. The repository also includes OpenTable-style or simulated reservation and promotion datasets for recommendation experiments, retention analysis, and promotion metrics.
+
+\begin{table}[htbp]
+\caption{Dataset Roles in the MVP}
+\centering
+\begin{tabular}{p{0.28\linewidth}p{0.27\linewidth}p{0.33\linewidth}}
+\toprule
+\textbf{Dataset} & \textbf{Use} & \textbf{Limitation}\\
+\midrule
+NYC restaurant inspections & Restaurant seed, cuisine, location & Metadata only, not live occupancy\\
+NYC taxi trips and zones & Hourly area busyness proxy & Mobility demand, not restaurant-specific ground truth\\
+Simulated reservations/promotions & Matching and evaluation experiments & Synthetic behavior until real usage exists\\
+\bottomrule
+\end{tabular}
+\label{tab:datasets}
+\end{table}
+
+\subsection{Feature Engineering}
+The analytics pipeline maps restaurant coordinates to Manhattan taxi zones and aggregates taxi drop-offs by hour and weekday. The main model features are hour of day, day of week, taxi drop-offs in the previous hour, rolling busyness, neighborhood, cuisine, distance from user, budget tier, and dietary tags. The MVP defines \texttt{busyness\_score} in the interval $[0,1]$ and derives \texttt{available\_table\_count} through an interpretable simulation rule:
+\[
+\text{available tables} = \max(0, \text{base tables}(1 - \text{busyness}) - \text{active bookings}).
+\]
+This rule is simple enough to explain and validate during the practicum, while still leaving a clear interface for a trained regressor or classifier.
+
+\subsection{Visualizations}
+The product visualizes analytics through operational UI rather than static dashboards alone. The consumer map displays restaurants within range, availability badges, distance, and busyness signals. The restaurant dashboard visualizes current bookings, occupancy, available tables, and campaign status. Future paper iterations should include screenshots from \texttt{docs/assets} and final deployed screens, especially the login flow, preference setup, map view, and merchant dashboard.
+
+\section{Evaluation and Results Plan}
+Because this is a first draft, final quantitative results should be filled in after the demo build and usability tests. The evaluation should cover four layers.
+
+\subsection{System Correctness}
+The backend already includes Jest and Supertest coverage for route behavior, authentication, booking creation, campaign offer creation, ETA resolution, Google routing fallback, OpenAPI drift, and service utilities. The CI pipeline checks OpenAPI validity, web lint/build/test coverage, mobile lint, backend test coverage, and FastAPI tests. The final paper should report the number of tests, passing CI status, and any coverage metrics available at submission time.
+
+\subsection{Model and Recommendation Quality}
+For busyness prediction, the team should compare the heuristic baseline against any trained model using mean absolute error or root mean squared error if labelled or simulated targets are available. For matching, offline evaluation can use precision-at-$k$, mean reciprocal rank, or click/order-after-exposure rates from simulated promotion data. Existing notebooks already contain promotion click-rate, order-after-exposure, retention, and ranked recommendation outputs, which can become preliminary evidence once summarized.
+
+\subsection{User Experience}
+Usability testing should measure whether users can complete four core tasks: set preferences, find a nearby available restaurant, understand an ETA rejection, and accept a valid flash deal before expiry. Suggested metrics include task completion rate, time on task, number of errors, and qualitative confusion points. Accessibility evaluation should include readable status text, manual neighborhood fallback when GPS is denied, and visibility of wheelchair-accessible or sensory-friendly tags.
+
+\subsection{Operational Robustness}
+The evaluation should also test failure modes: missing Google API key, ML service unavailable, expired offer acceptance, no available tables, and campaign quota completion. These scenarios matter because Tabl\'e's promise depends on not overbooking and not showing stale deals.
+
+\section{Discussion}
+The strongest aspect of Tabl\'e is the tight product loop between immediate diner needs and restaurant yield management. The design does not simply predict busy places; it turns a prediction and availability signal into an action: book now if reachable, or privately fill empty capacity if the restaurant is quiet. The project also makes a disciplined architectural trade-off by using one gateway and a stateless ML service instead of a premature microservice system.
+
+The main weakness is data realism. Restaurant inspection data and taxi trips are useful open datasets, but neither measures live table inventory. The MVP therefore depends on simulated availability and should avoid presenting the result as production-grade real-time occupancy. A second limitation is that heuristic matching may be sufficient for demonstration but not for fairness, personalization, or long-term business optimization. A third limitation is evaluation maturity: until real users interact with a deployed system, click rates, retention, and redemption metrics remain simulated.
+
+\section{Conclusion and Future Work}
+Tabl\'e demonstrates a feasible MVP for location-aware dining availability and private lull mitigation in Manhattan. The project combines a React/Vite web app, Expo mobile app, Express gateway, PostgreSQL schema, FastAPI inference service, open urban datasets, and a contract-first integration workflow. Its contribution lies in connecting busyness analytics to a concrete two-sided marketplace workflow: diners get reachable immediate seating, and restaurants get targeted off-peak demand without broad public discounting.
+
+Future work should replace simulated availability with restaurant POS or reservation integrations, train and validate busyness models against richer labelled data, deploy the staging environment publicly, add push notifications, improve anti-fatigue controls, and expand accessibility testing. The final paper should also report completed CI results, model metrics, screenshots, user feedback, and the deployed application URL.
+
+\begin{thebibliography}{00}
+\bibitem{nyc_restaurant_inspections}
+NYC Open Data, ``DOHMH New York City Restaurant Inspection Results.'' [Online]. Available: \url{https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-8n43j}
+
+\bibitem{nyc_tlc_trip_data}
+New York City Taxi and Limousine Commission, ``TLC Trip Record Data.'' [Online]. Available: \url{https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page}
+
+\bibitem{toman2020spatiotemporal}
+P. Toman, J. Zhang, N. Ravishanker, and K. Konduri, ``Spatiotemporal Analysis of Ridesourcing and Taxi Demand by Taxi Zones in New York City,'' arXiv:2008.00568, 2020.
+
+\bibitem{noulas2015openstreetcab}
+A. Noulas, V. Salnikov, R. Lambiotte, and C. Mascolo, ``Mining Open Datasets for Transparency in Taxi Transport in Metropolitan Environments,'' arXiv:1508.07292, 2015.
+
+\bibitem{opentable}
+OpenTable, ``Restaurants and Restaurant Bookings.'' [Online]. Available: \url{https://www.opentable.com/}
+
+\bibitem{resy}
+Resy, ``Resy.'' [Online]. Available: \url{https://resy.com/}
+\end{thebibliography}
+
+\end{document}
