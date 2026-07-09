@@ -23,7 +23,6 @@ function toOpenApiPath(expressPath) {
 function collectCodeRoutes() {
   const healthRouter = require("../src/routes/health");
   const apiV1Router = require("../src/routes/apiV1");
-  const authRouter = require("../src/routes/apiV1/auth");
   const usersRouter = require("../src/routes/apiV1/users");
   const restaurantsRouter = require("../src/routes/apiV1/restaurants");
   const bookingsRouter = require("../src/routes/apiV1/bookings");
@@ -34,7 +33,6 @@ function collectCodeRoutes() {
   const mounts = [
     { prefix: "/health", router: healthRouter },
     { prefix: "/api/v1", router: apiV1Router },
-    { prefix: "/api/v1/auth", router: authRouter },
     { prefix: "/api/v1/users", router: usersRouter },
     { prefix: "/api/v1/restaurants", router: restaurantsRouter },
     { prefix: "/api/v1/bookings", router: bookingsRouter },

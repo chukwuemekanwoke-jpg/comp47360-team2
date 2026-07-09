@@ -1,17 +1,9 @@
 const { Router } = require("express");
 const asyncHandler = require("../../middleware/asyncHandler");
-const requireUser = require("../../middleware/requireUser");
-const requireRestaurantManager = require("../../middleware/requireRestaurantManager");
 const { AppError, isUuid } = require("../../errors");
 const { getPool } = require("../../db/pool");
 const { toRestaurantSummary, toRestaurantDetail } = require("../../utils/serialize");
-const {
-  parseLatLng,
-  parseRadiusM,
-  parseTransportMode,
-  validateCreateRestaurantBody,
-  validateRestaurantSettingsBody,
-} = require("../../utils/validate");
+const { parseLatLng, parseRadiusM, parseTransportMode } = require("../../utils/validate");
 const { resolveEtaResult } = require("../../services/etaResolver");
 const { getCachedEta, setCachedEta } = require("../../utils/etaCache");
 const campaignsRouter = require("./campaigns");
@@ -44,25 +36,7 @@ const RESTAURANT_COLUMNS = `
   r.is_wheelchair_accessible,
   r.sensory_friendly,
   r.address_line,
-  r.hold_window_minutes,
-  r.phone
-`;
-
-const RESTAURANT_RETURNING_COLUMNS = `
-  id,
-  name,
-  latitude,
-  longitude,
-  neighborhood,
-  available_table_count,
-  capacity,
-  cuisine,
-  busyness_score,
-  is_wheelchair_accessible,
-  sensory_friendly,
-  address_line,
-  hold_window_minutes,
-  phone
+  r.hold_window_minutes
 `;
 
 async function maybeUpdateUserLocation(pool, req, lat, lng) {
@@ -81,83 +55,6 @@ async function maybeUpdateUserLocation(pool, req, lat, lng) {
 
 router.use("/:restaurantId/campaigns", campaignsRouter);
 router.use("/:restaurantId/bookings", restaurantBookingsRouter);
-
-router.post(
-  "/",
-  requireUser,
-  asyncHandler(async (req, res) => {
-    const pool = getPool();
-    if (!pool) {
-      throw new AppError(500, "INTERNAL_ERROR", "Database is not configured (DATABASE_URL)");
-    }
-
-    const input = validateCreateRestaurantBody(req.body);
-
-    const { rows } = await pool.query(
-      `INSERT INTO restaurants (
-         name,
-         latitude,
-         longitude,
-         address_line,
-         neighborhood,
-         phone,
-         cuisine,
-         is_wheelchair_accessible,
-         sensory_friendly,
-         manager_user_id,
-         available_table_count
-       )
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 0)
-       RETURNING ${RESTAURANT_RETURNING_COLUMNS}`,
-      [
-        input.name,
-        input.latitude,
-        input.longitude,
-        input.addressLine,
-        input.neighborhood,
-        input.phone,
-        input.cuisine,
-        input.isWheelchairAccessible,
-        input.sensoryFriendly,
-        req.userId,
-      ]
-    );
-
-    res.status(201).json(toRestaurantDetail(rows[0]));
-  })
-);
-
-router.patch(
-  "/:restaurantId/settings",
-  requireUser,
-  requireRestaurantManager,
-  asyncHandler(async (req, res) => {
-    const pool = getPool();
-    const updates = validateRestaurantSettingsBody(req.body);
-    const setClauses = [];
-    const values = [];
-    let index = 1;
-
-    for (const [column, value] of Object.entries(updates)) {
-      setClauses.push(`${column} = $${index}`);
-      values.push(value);
-      index += 1;
-    }
-
-    values.push(req.restaurantId);
-
-    const { rows } = await pool.query(
-      `UPDATE restaurants
-       SET ${setClauses.join(", ")},
-           updated_at = NOW()
-       WHERE id = $${index}
-       RETURNING ${RESTAURANT_RETURNING_COLUMNS}`,
-      values
-    );
-
-    res.status(200).json(toRestaurantDetail(rows[0]));
-  })
-);
 
 router.get(
   "/nearby",

@@ -10,7 +10,6 @@ servers:
 
 tags:
   - name: Health
-  - name: Auth
   - name: Users
   - name: Restaurants
   - name: Bookings
@@ -58,67 +57,6 @@ paths:
                   databaseMessage:
                     type: string
 
-  /api/v1/auth/register:
-    post:
-      tags: [Auth]
-      summary: Register a new account
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AuthRegisterRequest"
-      responses:
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthSession"
-        "409":
-          $ref: "#/components/responses/Conflict"
-
-  /api/v1/auth/login:
-    post:
-      tags: [Auth]
-      summary: Sign in with email and password
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AuthLoginRequest"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthSession"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-
-  /api/v1/auth/logout:
-    post:
-      tags: [Auth]
-      summary: Invalidate the current JWT (server-side logout)
-      security:
-        - BearerAuth: []
-        - UserIdHeader: []
-      responses:
-        "200":
-          description: Logged out
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: logged_out
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-
   /api/v1/users:
     post:
       tags: [Users]
@@ -153,8 +91,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
 
   /api/v1/users/me/preferences:
     patch:
@@ -175,34 +111,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-        "400":
-          $ref: "#/components/responses/ValidationError"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-
-  /api/v1/restaurants:
-    post:
-      tags: [Restaurants]
-      summary: Create a restaurant for the authenticated manager
-      parameters:
-        - $ref: "#/components/parameters/UserIdHeader"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateRestaurantRequest"
-      responses:
-        "201":
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RestaurantDetail"
-        "400":
-          $ref: "#/components/responses/ValidationError"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
 
   /api/v1/restaurants/nearby:
     get:
@@ -242,8 +150,6 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/RestaurantSummary"
-        "400":
-          $ref: "#/components/responses/ValidationError"
 
   /api/v1/restaurants/{restaurantId}:
     get:
@@ -258,37 +164,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RestaurantDetail"
-        "400":
-          $ref: "#/components/responses/ValidationError"
-        "404":
-          $ref: "#/components/responses/NotFound"
-
-  /api/v1/restaurants/{restaurantId}/settings:
-    patch:
-      tags: [Restaurants]
-      summary: Update accessibility settings for a managed restaurant
-      parameters:
-        - $ref: "#/components/parameters/UserIdHeader"
-        - $ref: "#/components/parameters/RestaurantId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RestaurantSettingsPatch"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RestaurantDetail"
-        "400":
-          $ref: "#/components/responses/ValidationError"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "404":
-          $ref: "#/components/responses/NotFound"
 
   /api/v1/restaurants/{restaurantId}/eta:
     get:
@@ -317,10 +192,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/EtaResult"
-        "400":
-          $ref: "#/components/responses/ValidationError"
-        "404":
-          $ref: "#/components/responses/NotFound"
 
   /api/v1/restaurants/{restaurantId}/bookings:
     get:
@@ -341,8 +212,6 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/RestaurantBooking"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
 
   /api/v1/bookings:
     post:
@@ -363,10 +232,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Booking"
-        "400":
-          $ref: "#/components/responses/ValidationError"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
         "409":
           $ref: "#/components/responses/Conflict"
 
@@ -388,8 +253,6 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Booking"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
 
   /api/v1/users/me/offers:
     get:
@@ -413,10 +276,6 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/OfferInboxItem"
-        "400":
-          $ref: "#/components/responses/ValidationError"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
 
   /api/v1/offers/{offerId}/accept:
     post:
@@ -433,16 +292,6 @@ paths:
       responses:
         "200":
           description: Accepted
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AcceptOfferResponse"
-        "400":
-          $ref: "#/components/responses/ValidationError"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
-        "404":
-          $ref: "#/components/responses/NotFound"
         "409":
           $ref: "#/components/responses/Conflict"
 
@@ -465,8 +314,6 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Campaign"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
     post:
       tags: [Campaigns]
       summary: Start lull-mitigation campaign (Story 5.2)
@@ -486,10 +333,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Campaign"
-        "400":
-          $ref: "#/components/responses/ValidationError"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
 
   /api/v1/restaurants/{restaurantId}/campaigns/active:
     get:
@@ -509,8 +352,6 @@ paths:
                   campaign:
                     nullable: true
                     $ref: "#/components/schemas/Campaign"
-        "401":
-          $ref: "#/components/responses/Unauthorized"
 
 components:
   securitySchemes:
@@ -543,24 +384,6 @@ components:
         format: uuid
 
   responses:
-    ValidationError:
-      description: Validation error
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorEnvelope"
-    Unauthorized:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorEnvelope"
-    NotFound:
-      description: Not found
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/ErrorEnvelope"
     Conflict:
       description: Conflict
       content:
@@ -618,13 +441,8 @@ components:
           format: uuid
         displayName:
           type: string
-        email:
-          type: string
-          format: email
         budgetTier:
-          type: string
-          enum: [TIER_1, TIER_2, TIER_3]
-          nullable: true
+          $ref: "#/components/schemas/BudgetTier"
         dietaryTags:
           type: array
           items:
@@ -632,49 +450,6 @@ components:
         createdAt:
           type: string
           format: date-time
-        lastLat:
-          type: number
-        lastLng:
-          type: number
-
-    AuthRegisterRequest:
-      type: object
-      required: [email, password]
-      properties:
-        email:
-          type: string
-          format: email
-        password:
-          type: string
-          minLength: 8
-        displayName:
-          type: string
-
-    AuthLoginRequest:
-      type: object
-      required: [email, password]
-      properties:
-        email:
-          type: string
-          format: email
-        password:
-          type: string
-          minLength: 8
-
-    AuthSession:
-      type: object
-      properties:
-        token:
-          type: string
-        user:
-          $ref: "#/components/schemas/User"
-        userId:
-          type: string
-          format: uuid
-        restaurantId:
-          type: string
-          format: uuid
-          nullable: true
 
     UserPreferences:
       type: object
@@ -707,10 +482,6 @@ components:
           type: string
         availableTableCount:
           type: integer
-        capacity:
-          type: integer
-        cuisine:
-          type: string
         busynessScore:
           type: number
         distanceMeters:
@@ -729,41 +500,6 @@ components:
               type: string
             holdWindowMinutes:
               type: integer
-            phone:
-              type: string
-
-    CreateRestaurantRequest:
-      type: object
-      required: [name, addressLine, phone, latitude, longitude, cuisine]
-      properties:
-        name:
-          type: string
-        addressLine:
-          type: string
-        phone:
-          type: string
-        latitude:
-          type: number
-          format: double
-        longitude:
-          type: number
-          format: double
-        cuisine:
-          type: string
-        neighborhood:
-          type: string
-        isWheelchairAccessible:
-          type: boolean
-        sensoryFriendly:
-          type: boolean
-
-    RestaurantSettingsPatch:
-      type: object
-      properties:
-        isWheelchairAccessible:
-          type: boolean
-        sensoryFriendly:
-          type: boolean
 
     EtaResult:
       type: object
@@ -808,35 +544,16 @@ components:
         id:
           type: string
           format: uuid
-        userId:
-          type: string
-          format: uuid
-        restaurantId:
-          type: string
-          format: uuid
-        offerId:
-          type: string
-          format: uuid
-          nullable: true
-        campaignId:
-          type: string
-          format: uuid
-          nullable: true
         status:
           type: string
-        transportMode:
-          $ref: "#/components/schemas/TransportMode"
         etaMinutes:
           type: integer
         holdExpiresAt:
           type: string
           format: date-time
-        confirmedAt:
-          type: string
-          format: date-time
         source:
-          type: string
-          enum: [google, estimate]
+          allOf:
+            - $ref: "#/components/schemas/EtaSource"
           nullable: true
           description: >
             ETA source resolved at booking-confirmation time. Present on
@@ -879,18 +596,6 @@ components:
         canAccept:
           type: boolean
 
-    AcceptOfferResponse:
-      type: object
-      properties:
-        offerId:
-          type: string
-          format: uuid
-        status:
-          type: string
-          enum: [accepted]
-        booking:
-          $ref: "#/components/schemas/Booking"
-
     CreateCampaignRequest:
       type: object
       required: [tableQuota, discountPercent]
@@ -920,6 +625,3 @@ components:
           type: integer
         discountPercent:
           type: integer
-        createdAt:
-          type: string
-          format: date-time

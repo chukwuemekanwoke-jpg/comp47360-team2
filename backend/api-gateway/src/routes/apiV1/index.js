@@ -1,7 +1,6 @@
 const { Router } = require("express");
 const asyncHandler = require("../../middleware/asyncHandler");
 const { checkConnection } = require("../../db/pool");
-const authRouter = require("./auth");
 const usersRouter = require("./users");
 const restaurantsRouter = require("./restaurants");
 const bookingsRouter = require("./bookings");
@@ -9,7 +8,6 @@ const offersRouter = require("./offers");
 
 const router = Router();
 
-router.use("/auth", authRouter);
 router.use("/users", usersRouter);
 router.use("/restaurants", restaurantsRouter);
 router.use("/bookings", bookingsRouter);
