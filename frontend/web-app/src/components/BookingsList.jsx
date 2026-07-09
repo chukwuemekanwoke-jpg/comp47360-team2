@@ -33,8 +33,14 @@ export default function BookingsList({ restaurantId }) {
     try {
       await updateStatus({ bookingId, status }).unwrap();
     } catch (err) {
-      // Expected to 404 until the backend adds PATCH /bookings/:id/status.
-      setActionError(err?.data?.error?.message || 'Could not update yet — pending backend support.');
+      // 404 means the route doesn't exist yet, not a real error from the
+      // request itself — the generic Express "Route not found" message
+      // isn't useful to show.
+      setActionError(
+        err?.status === 404
+          ? 'Could not update yet — pending backend support.'
+          : err?.data?.error?.message || 'Failed to update booking.'
+      );
     }
   };
 
@@ -45,7 +51,7 @@ export default function BookingsList({ restaurantId }) {
       </h2>
 
       {actionError && (
-        <div className="p-2.5 bg-table-danger/10 border border-table-danger/30 text-table-danger rounded-lg text-[11px] font-mono">
+        <div role="alert" className="p-2.5 bg-table-danger/10 border border-table-danger/30 text-table-danger rounded-lg text-[11px] font-mono">
           {actionError}
         </div>
       )}
@@ -53,8 +59,10 @@ export default function BookingsList({ restaurantId }) {
       {isLoading ? (
         <p className="text-xs text-table-textSubtle font-mono">Loading reservations...</p>
       ) : error ? (
-        <p className="text-xs text-table-textSubtle font-mono">
-          Not available yet — pending backend support (GET /restaurants/:id/bookings).
+        <p role="alert" className="text-xs text-table-danger font-mono">
+          {error?.status === 404
+            ? 'Not available yet — pending backend support (GET /restaurants/:id/bookings).'
+            : error?.data?.error?.message || 'Failed to load reservations.'}
         </p>
       ) : bookings.length === 0 ? (
         <p className="text-xs text-table-textSubtle font-mono">No reservations yet.</p>

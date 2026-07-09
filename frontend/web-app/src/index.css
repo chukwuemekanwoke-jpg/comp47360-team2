@@ -12,7 +12,9 @@
   --table-interactive: #1e293b;
   --table-text: #f8fafc;
   --table-text-muted: #a8b3c7;
-  --table-text-subtle: #64748b;
+  /* WCAG AA fix: #64748b only hit 3.73:1 against --table-surface/--table-canvas
+     (needs 4.5:1) — #8896ab holds the same "dimmer than muted" hierarchy at 5.91:1. */
+  --table-text-subtle: #8896ab;
   --table-primary: #31d5d5;
   --table-primary-hover: #67e8f9;
   --table-offer: #f59e0b;

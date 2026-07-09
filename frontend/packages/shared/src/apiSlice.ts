@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
   UserProfile, RestaurantSummary, RestaurantDetail, EtaResult,
   Booking, OfferInboxItem, Campaign, TransportMode, BudgetTier, BookingStatus,
-  RevpashSummary, RevpashWindow
+  RevpashSummary, RevpashWindow, AuthSession, ManagerOfferItem
 } from './types';
 
 // --- CROSS-PLATFORM URL RESOLVER ---
@@ -70,6 +70,16 @@ export const tableApi = createApi({
     createUser: builder.mutation<UserProfile, { displayName: string }>({
       query: (body) => ({
         url: '/users',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    // Real JWT merchant sign-up — POST /auth/register, no auth header needed.
+    register: builder.mutation<AuthSession, { email: string; password: string; displayName?: string }>({
+      query: (body) => ({
+        url: '/auth/register',
         method: 'POST',
         body,
       }),
@@ -185,6 +195,14 @@ export const tableApi = createApi({
       providesTags: ['Campaigns'],
     }),
 
+    // Needs GET /restaurants/:id/campaigns/:campaignId/offers on the backend
+    // (see handoff spec) — per-offer status for the active campaign's "live
+    // offer tracker" (who got the flash deal, pending/accepted/expired).
+    getCampaignOffers: builder.query<{ offers: ManagerOfferItem[] }, { restaurantId: string; campaignId: string }>({
+      query: ({ restaurantId, campaignId }) => `/restaurants/${restaurantId}/campaigns/${campaignId}/offers`,
+      providesTags: ['Offers'],
+    }),
+
     getCampaignHistory: builder.query<{ campaigns: Campaign[] }, string>({
       query: (restaurantId: string) => `/restaurants/${restaurantId}/campaigns`,
       providesTags: ['Campaigns'],
@@ -201,6 +219,30 @@ export const tableApi = createApi({
     }),
 
     // --- Pending backend support (see handoff spec) ---
+    // Needs POST /restaurants on the backend — creates the restaurant a
+    // freshly-registered manager owns (manager_user_id = the caller).
+    createRestaurant: builder.mutation<
+      RestaurantDetail,
+      {
+        name: string;
+        addressLine: string;
+        phone: string;
+        latitude: number;
+        longitude: number;
+        cuisine: string;
+        neighborhood?: string;
+        isWheelchairAccessible?: boolean;
+        sensoryFriendly?: boolean;
+      }
+    >({
+      query: (body) => ({
+        url: '/restaurants',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Restaurants'],
+    }),
+
     // Columns already exist (is_wheelchair_accessible, sensory_friendly);
     // this just needs the PATCH /restaurants/:id/settings route to exist.
     updateRestaurantSettings: builder.mutation<
@@ -247,6 +289,7 @@ export const tableApi = createApi({
 export const {
   useGetHealthQuery,
   useCreateUserMutation,
+  useRegisterMutation,
   useUpdatePreferencesMutation,
   useGetProfileQuery,
   useGetNearbyRestaurantsQuery,
@@ -259,10 +302,12 @@ export const {
   useAcceptOfferMutation,
   useCreateCampaignMutation,
   useGetActiveCampaignQuery,
+  useGetCampaignOffersQuery,
   useGetCampaignHistoryQuery,
   useCancelCampaignMutation,
   useUpdateRestaurantSettingsMutation,
   useGetRestaurantBookingsQuery,
   useUpdateBookingStatusMutation,
   useGetRevpashQuery,
+  useCreateRestaurantMutation,
 } = tableApi;
