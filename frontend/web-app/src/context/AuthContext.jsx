@@ -57,21 +57,6 @@ export function AuthProvider({ children }) {
 
   const [isAuthenticated, setIsAuthenticated] = useState(true); // Default to true for local testing speed
 
-  // Dummy auth per docs/user-stories/01-onboarding.md — there is no real login
-  // endpoint; the backend identifies users/managers via the seeded UUIDs below
-  // (see database/seeds/001_demo_manhattan.sql).
-  const login = async () => {
-    localStorage.setItem('table_user_id', DEV_USER_ID);
-    localStorage.setItem('table_restaurant_id', DEV_RESTAURANT_ID);
-    // No Authorization header for the dummy session — see module-level note above.
-    localStorage.removeItem('table_merchant_token');
-
-    setUserId(DEV_USER_ID);
-    setRestaurantId(DEV_RESTAURANT_ID);
-    setAuthToken(null);
-    setIsAuthenticated(true);
-  };
-
   // Real auth session from POST /auth/register or /auth/login — writes to
   // the same localStorage keys as the dummy login() above, so everything
   // downstream (apiSlice headers, MerchantDashboard) works unchanged
@@ -103,7 +88,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, userId, restaurantId, authToken, login, logout, setSession }}>
+    <AuthContext.Provider value={{ isAuthenticated, userId, restaurantId, authToken, logout, setSession }}>
       {children}
     </AuthContext.Provider>
   );

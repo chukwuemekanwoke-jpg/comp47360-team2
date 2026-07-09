@@ -3,10 +3,12 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { isValidEmail } from '../utils/validation';
+import { useLoginMutation } from '../../../packages/shared/src/apiSlice.ts';
 
 export default function LoginView() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { setSession } = useAuth();
+  const [login, { isLoading: isSubmitting }] = useLoginMutation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -20,13 +22,12 @@ export default function LoginView() {
       return;
     }
 
-    // Dummy auth gate per docs/user-stories/01-onboarding.md — real credential
-    // checking is out of scope; this just bypasses into the seeded manager identity.
-    if (email === 'merchant@table.com' && password === 'password') {
-      await login();
+    try {
+      const session = await login({ email, password }).unwrap();
+      setSession(session);
       navigate('/merchant');
-    } else {
-      setError('Invalid credentials. Use the demo manager credentials to continue.');
+    } catch (err) {
+      setError(err?.data?.error?.message || 'Failed to sign in.');
     }
   };
 
@@ -69,8 +70,9 @@ export default function LoginView() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={isSubmitting}
               placeholder="your.name@provider.com"
-              className="w-full px-4 py-3 bg-black/40 border border-zinc-800 rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:ring-2 focus:ring-table-primary/50 focus:border-table-primary transition-all outline-none"
+              className="w-full px-4 py-3 bg-black/40 border border-zinc-800 rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:ring-2 focus:ring-table-primary/50 focus:border-table-primary transition-all outline-none disabled:opacity-50"
             />
           </div>
 
@@ -86,17 +88,19 @@ export default function LoginView() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={isSubmitting}
               placeholder="••••••••"
-              className="w-full px-4 py-3 bg-black/40 border border-zinc-800 rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:ring-2 focus:ring-table-primary/50 focus:border-table-primary transition-all outline-none"
+              className="w-full px-4 py-3 bg-black/40 border border-zinc-800 rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:ring-2 focus:ring-table-primary/50 focus:border-table-primary transition-all outline-none disabled:opacity-50"
             />
           </div>
 
           <div className="pt-4">
             <button
               type="submit"
-              className="w-full py-3.5 bg-table-primary text-table-canvas font-sans font-bold rounded-xl hover:bg-table-primaryHover transition-all duration-300 shadow-lg shadow-table-primary/10"
+              disabled={isSubmitting}
+              className="w-full py-3.5 bg-table-primary text-table-canvas font-sans font-bold rounded-xl hover:bg-table-primaryHover transition-all duration-300 shadow-lg shadow-table-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Sign In to Tablé
+              {isSubmitting ? 'Signing in...' : 'Sign In to Tablé'}
             </button>
           </div>
         </form>

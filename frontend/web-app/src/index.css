@@ -47,9 +47,12 @@ html, body, #root {
   color: var(--table-text);
   margin: 0;
   padding: 0;
-  height: 100%;
+  min-height: 100%;
   width: 100%;
-  overflow: hidden;
+  /* Was overflow: hidden — fine for LoginView (designed to fit exactly one
+     viewport) but silently blocked scrolling on every page whose content
+     is taller than the screen, e.g. MerchantDashboard's stacked widgets. */
+  overflow-y: auto;
 }
 
 @layer base {
