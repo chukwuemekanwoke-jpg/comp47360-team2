@@ -79,6 +79,9 @@ erDiagram
 
 Consumer profiles. Auth via JWT (`Authorization: Bearer`); seed data may use fixed UUIDs with interim `X-User-Id` header.
 
+- `email`: unique login identifier (nullable for legacy seed users)
+- `password_hash`: bcrypt hash; null for users without credentials
+- `token_version`: incremented on logout to invalidate outstanding JWTs
 - `budget_tier`: `TIER_1` \| `TIER_2` \| `TIER_3` (UI labels € / €€ / €€€)
 - `dietary_tags`: PostgreSQL `TEXT[]` for ML features
 
@@ -90,6 +93,7 @@ Venue master data for Manhattan prototype.
 - `capacity`: total table capacity (upper bound; `available_table_count <= capacity`)
 - `cuisine`: primary cuisine slug (e.g. `italian`, `thai`) for UI filters and ML features
 - `hold_window_minutes`: default **15** (Story 3.x)
+- `phone`: venue contact number (merchant registration)
 - `busyness_score`: optional 0–1 signal from ML pipeline
 - `manager_user_id`: links B-side dashboard to a user row
 

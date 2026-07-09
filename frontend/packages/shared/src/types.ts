@@ -42,6 +42,9 @@ export interface RestaurantSummary {
 export interface RestaurantDetail extends RestaurantSummary {
   addressLine: string;
   holdWindowMinutes: number;
+  // Not on the restaurants table yet — added when POST /restaurants lands
+  // (see pending-backend-handoff memory / handoff spec).
+  phone?: string;
 }
 
 export interface EtaResult {
@@ -76,6 +79,9 @@ export interface Booking {
   etaMinutes: number;
   holdExpiresAt: string;
   confirmedAt: string;
+  // Joined for restaurant-facing views (GET /restaurants/:id/bookings) — not
+  // present on the consumer-facing GET /users/me/bookings response.
+  userDisplayName?: string;
 }
 
 export interface Campaign {
@@ -86,6 +92,37 @@ export interface Campaign {
   tablesClaimed: number;
   discountPercent: number;
   createdAt: string;
+}
+
+export interface AuthSession {
+  token: string;
+  user: UserProfile;
+  userId: string;
+  restaurantId: string | null;
+}
+
+// Manager-facing view of a single offer sent as part of a campaign — same
+// underlying `offers` row as OfferInboxItem, but joined to the recipient's
+// display name instead of the restaurant name (which the manager already
+// knows, since this is scoped to their own restaurant/campaign).
+export interface ManagerOfferItem {
+  id: string;
+  campaignId: string;
+  userDisplayName: string;
+  status: OfferStatus;
+  expiresAt: string;
+  secondsRemaining: number;
+  acceptedAt: string | null;
+}
+
+export type RevpashWindow = 'today' | 'week' | 'month';
+
+export interface RevpashSummary {
+  restaurantId: string;
+  window: RevpashWindow;
+  revenue: number;
+  availableSeatHours: number;
+  revpash: number;
 }
 
 // -- mobile specific state -- //

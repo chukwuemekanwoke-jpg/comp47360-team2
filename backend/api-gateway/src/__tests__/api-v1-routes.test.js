@@ -59,6 +59,7 @@ function restaurantRow(overrides = {}) {
     sensory_friendly: false,
     address_line: "12 Mercer Street",
     hold_window_minutes: 15,
+    phone: "+1 212-555-0100",
     distance_meters: 450,
     manager_user_id: USER_ID,
     ...overrides,
@@ -200,6 +201,77 @@ describe("restaurant routes", () => {
       id: RESTAURANT_ID,
       addressLine: "12 Mercer Street",
       holdWindowMinutes: 15,
+    });
+  });
+
+  it("creates a restaurant for the authenticated manager", async () => {
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [{ id: USER_ID, token_version: 0 }] })
+      .mockResolvedValueOnce({
+        rows: [
+          restaurantRow({
+            name: "New Venue",
+            address_line: "100 Main St",
+            phone: "+1 212-555-0199",
+            cuisine: "italian",
+            neighborhood: "Midtown",
+            available_table_count: 0,
+          }),
+        ],
+      });
+
+    const res = await request(app)
+      .post("/api/v1/restaurants")
+      .set("X-User-Id", USER_ID)
+      .send({
+        name: "New Venue",
+        addressLine: "100 Main St",
+        phone: "+1 212-555-0199",
+        latitude: 40.73,
+        longitude: -73.99,
+        cuisine: "italian",
+        neighborhood: "Midtown",
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body).toMatchObject({
+      name: "New Venue",
+      addressLine: "100 Main St",
+      phone: "+1 212-555-0199",
+      cuisine: "italian",
+      availableTableCount: 0,
+    });
+    expect(mockPool.query).toHaveBeenLastCalledWith(
+      expect.stringContaining("INSERT INTO restaurants"),
+      expect.arrayContaining([USER_ID])
+    );
+  });
+
+  it("updates accessibility settings for a managed restaurant", async () => {
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [{ id: USER_ID, token_version: 0 }] })
+      .mockResolvedValueOnce({ rows: [{ id: RESTAURANT_ID, manager_user_id: USER_ID }] })
+      .mockResolvedValueOnce({
+        rows: [
+          restaurantRow({
+            is_wheelchair_accessible: true,
+            sensory_friendly: true,
+          }),
+        ],
+      });
+
+    const res = await request(app)
+      .patch(`/api/v1/restaurants/${RESTAURANT_ID}/settings`)
+      .set("X-User-Id", USER_ID)
+      .send({
+        isWheelchairAccessible: true,
+        sensoryFriendly: true,
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      isWheelchairAccessible: true,
+      sensoryFriendly: true,
     });
   });
 });
