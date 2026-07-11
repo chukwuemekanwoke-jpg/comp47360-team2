@@ -4,13 +4,22 @@
  * cleaned NYC restaurant dataset used by the ML pipeline.
  *
  * Strategy (agreed with backend lead):
- *   - Restaurant IDENTITY (name, address, lat/lng, cuisine, neighborhood) comes
- *     from real data so the app DB shares restaurant_id space with the ML model
+ *   - Restaurant IDENTITY (name, address, lat/lng, cuisine) comes from real
+ *     data so the app DB shares restaurant_id space with the ML model
  *     ("fully connected" MVP) and the demo looks credible.
- *   - Tablé OPERATIONAL fields (capacity, available tables, busyness, hold
- *     window, manager, accessibility) do not exist in any public dataset, so
- *     they are SIMULATED deterministically (seeded by restaurant_id) — re-running
- *     this script reproduces identical SQL.
+ *   - `neighborhood` is resolved from real NYC NTA (Neighborhood Tabulation
+ *     Area) boundary geometry via database/scripts/geo/ntaLookup.js, falling
+ *     back to a coarse ZIP guess only if a coordinate misses every polygon.
+ *   - `phone` and `is_wheelchair_accessible` are real when
+ *     database/scripts/enrich-places.js has been run (Places API (New) —
+ *     paid, requires GOOGLE_MAPS_API_KEY, see that script's header before
+ *     running it) and read from database/scripts/data/places-cache.json;
+ *     otherwise they fall back to deterministic simulation.
+ *   - Remaining Tablé OPERATIONAL fields (capacity, available tables,
+ *     busyness, hold window, manager, sensory_friendly) do not exist in any
+ *     public dataset, so they stay SIMULATED deterministically (seeded by
+ *     restaurant_id) — re-running this script without enrichment reproduces
+ *     identical SQL.
  *
  * Source : ml-pipeline/notebooks/restaurant_clean.csv
  * Output : database/seeds/002_manhattan_real.sql
@@ -19,21 +28,19 @@
  *   node scripts/generate-seed.js
  *   node scripts/generate-seed.js --radius=2000 --limit=500
  *   node scripts/generate-seed.js --origin=40.7589,-73.9851
+ *
+ * Optional (paid) enrichment, run first for real phone/accessibility data:
+ *   node scripts/enrich-places.js
  */
 
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const { lookupNeighborhood } = require("./geo/ntaLookup");
+const { parseArgs, selectPool } = require("./lib/restaurantPool");
 
-const SOURCE_CSV = path.join(
-  __dirname,
-  "..",
-  "..",
-  "ml-pipeline",
-  "notebooks",
-  "restaurant_clean.csv"
-);
 const OUTPUT_SQL = path.join(__dirname, "..", "seeds", "002_manhattan_real.sql");
+const PLACES_CACHE_PATH = path.join(__dirname, "data", "places-cache.json");
 
 // Demo identities shared with 001_demo_manhattan.sql / seeds/README.md
 const DEMO_DINER_ID = "550e8400-e29b-41d4-a716-446655440001";
@@ -43,100 +50,18 @@ const DEMO_MANAGER_ID = "550e8400-e29b-41d4-a716-446655440002";
 const TABLE_NAMESPACE = "5f3e9b2a-1c4d-4e8f-9a7b-2d6c8e0f1a3b";
 
 // ---------------------------------------------------------------------------
-// CLI args
+// Places API enrichment cache (see enrich-places.js) \u2014 phone + wheelchair
+// accessibility, keyed by the same restaurant_id used throughout this file.
+// Absent/empty when enrich-places.js hasn't been run; callers fall back to
+// simulated values in that case.
 // ---------------------------------------------------------------------------
-function parseArgs(argv) {
-  const args = { radius: 1500, limit: 300, origin: [40.7589, -73.9851] };
-  for (const a of argv) {
-    if (a.startsWith("--radius=")) args.radius = Number(a.split("=")[1]);
-    else if (a.startsWith("--limit=")) args.limit = Number(a.split("=")[1]);
-    else if (a.startsWith("--origin=")) {
-      const [lat, lng] = a.split("=")[1].split(",").map(Number);
-      args.origin = [lat, lng];
-    }
+function loadPlacesCache() {
+  if (!fs.existsSync(PLACES_CACHE_PATH)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(PLACES_CACHE_PATH, "utf8"));
+  } catch {
+    return {};
   }
-  return args;
-}
-
-// ---------------------------------------------------------------------------
-// Minimal RFC-4180 CSV parsing (handles quoted fields with commas/quotes)
-// ---------------------------------------------------------------------------
-function parseCsvLine(line) {
-  const out = [];
-  let cur = "";
-  let inQuotes = false;
-  for (let i = 0; i < line.length; i++) {
-    const c = line[i];
-    if (inQuotes) {
-      if (c === '"') {
-        if (line[i + 1] === '"') {
-          cur += '"';
-          i++;
-        } else {
-          inQuotes = false;
-        }
-      } else {
-        cur += c;
-      }
-    } else if (c === '"') {
-      inQuotes = true;
-    } else if (c === ",") {
-      out.push(cur);
-      cur = "";
-    } else {
-      cur += c;
-    }
-  }
-  out.push(cur);
-  return out;
-}
-
-function readRestaurants(csvPath) {
-  const raw = fs.readFileSync(csvPath, "utf8").replace(/^\uFEFF/, "");
-  const lines = raw.split(/\r?\n/).filter((l) => l.length > 0);
-  const header = parseCsvLine(lines[0]).map((h) => h.trim());
-  const col = Object.fromEntries(header.map((h, i) => [h, i]));
-
-  const seen = new Set();
-  const rows = [];
-  for (let i = 1; i < lines.length; i++) {
-    const f = parseCsvLine(lines[i]);
-    const id = (f[col.restaurant_id] || "").trim();
-    if (!id || seen.has(id)) continue;
-
-    const lat = Number(f[col.lat]);
-    const lng = Number(f[col.lon]);
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
-
-    const name = (f[col.name] || "").trim();
-    if (!name) continue;
-
-    seen.add(id);
-    rows.push({
-      sourceId: id,
-      name,
-      cuisine: (f[col.cuisine] || "").trim(),
-      address: (f[col.address] || "").trim(),
-      zipcode: (f[col.zipcode] || "").trim(),
-      lat,
-      lng,
-    });
-  }
-  return rows;
-}
-
-// ---------------------------------------------------------------------------
-// Geo
-// ---------------------------------------------------------------------------
-function haversineMeters(lat1, lng1, lat2, lng2) {
-  const R = 6371000;
-  const toRad = (d) => (d * Math.PI) / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLng = toRad(lng2 - lng1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
-  return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 // ---------------------------------------------------------------------------
@@ -247,10 +172,17 @@ function neighborhoodFromZip(zip) {
   return ZIP_NEIGHBORHOOD[zip] || "Manhattan";
 }
 
+// Real NTA (Neighborhood Tabulation Area) point-in-polygon lookup, falling
+// back to the ZIP guess table only when a coordinate falls outside every
+// Manhattan NTA polygon (bad geocode, or right on the borough line).
+function resolveNeighborhood(lat, lng, zip) {
+  return lookupNeighborhood(lat, lng) || neighborhoodFromZip(zip);
+}
+
 // ---------------------------------------------------------------------------
 // Simulated operational fields (deterministic per source id)
 // ---------------------------------------------------------------------------
-function simulateOperations(sourceId) {
+function simulateOperations(sourceId, placesEntry) {
   const rnd = mulberry32(seedFromString(sourceId));
 
   const capacity = 4 + Math.floor(rnd() * 17); // 4..20
@@ -261,10 +193,21 @@ function simulateOperations(sourceId) {
   available = Math.max(0, Math.min(capacity, available));
 
   const holdWindow = [10, 15, 20][Math.floor(rnd() * 3)];
-  const wheelchair = rnd() < 0.4;
-  const sensory = rnd() < 0.25;
+  // Draw order preserved exactly as before so simulated fallback values for
+  // restaurants without a Places match don't churn on every regeneration.
+  const simulatedWheelchair = rnd() < 0.4;
+  const sensory = rnd() < 0.25; // no public data source exists for this — stays simulated
 
-  return { capacity, busyness, available, holdWindow, wheelchair, sensory };
+  // Real values from Places API (New) when enrich-places.js has resolved this
+  // restaurant; otherwise fall back to the deterministic simulation so the
+  // seed still works without ever running the (paid) enrichment step.
+  const wheelchair =
+    placesEntry && placesEntry.matched && placesEntry.wheelchairAccessibleEntrance !== null
+      ? placesEntry.wheelchairAccessibleEntrance
+      : simulatedWheelchair;
+  const phone = placesEntry && placesEntry.matched ? placesEntry.phone : null;
+
+  return { capacity, busyness, available, holdWindow, wheelchair, sensory, phone };
 }
 
 // ---------------------------------------------------------------------------
@@ -307,7 +250,7 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO restaurants (
   id, name, latitude, longitude, address_line, neighborhood,
   hold_window_minutes, available_table_count, busyness_score,
-  capacity, cuisine,
+  capacity, cuisine, phone,
   is_wheelchair_accessible, sensory_friendly, manager_user_id
 )
 VALUES
@@ -328,6 +271,7 @@ VALUES
         r.busyness.toFixed(3),
         r.capacity,
         sqlStr(r.cuisine),
+        sqlStr(r.phone),
         sqlBool(r.wheelchair),
         sqlBool(r.sensory),
         r.managerId ? sqlStr(r.managerId) : "NULL",
@@ -348,6 +292,7 @@ ON CONFLICT (id) DO UPDATE SET
   busyness_score = EXCLUDED.busyness_score,
   capacity = EXCLUDED.capacity,
   cuisine = EXCLUDED.cuisine,
+  phone = EXCLUDED.phone,
   is_wheelchair_accessible = EXCLUDED.is_wheelchair_accessible,
   sensory_friendly = EXCLUDED.sensory_friendly,
   manager_user_id = EXCLUDED.manager_user_id;
@@ -363,31 +308,23 @@ COMMIT;
 // ---------------------------------------------------------------------------
 function main() {
   const args = parseArgs(process.argv.slice(2));
-
-  if (!fs.existsSync(SOURCE_CSV)) {
-    console.error(`Source CSV not found: ${SOURCE_CSV}`);
-    process.exit(1);
-  }
-
-  const all = readRestaurants(SOURCE_CSV);
   const [oLat, oLng] = args.origin;
 
-  const withDistance = all
-    .map((r) => ({ ...r, distance: haversineMeters(oLat, oLng, r.lat, r.lng) }))
-    .filter((r) => r.distance <= args.radius)
-    .sort((a, b) => a.distance - b.distance)
-    .slice(0, args.limit);
+  const { all, pool } = selectPool(args);
+  const placesCache = loadPlacesCache();
+  const enrichedCount = pool.filter((r) => placesCache[r.sourceId]?.matched).length;
 
-  const records = withDistance.map((r, index) => {
-    const ops = simulateOperations(r.sourceId);
+  const records = pool.map((r, index) => {
+    const ops = simulateOperations(r.sourceId, placesCache[r.sourceId]);
     return {
       id: uuidv5(r.sourceId, TABLE_NAMESPACE),
       name: titleCase(r.name).replace(/\s{2,}/g, " "),
       lat: r.lat,
       lng: r.lng,
       addressLine: streetFromAddress(r.address),
-      neighborhood: neighborhoodFromZip(r.zipcode),
+      neighborhood: resolveNeighborhood(r.lat, r.lng, r.zipcode),
       cuisine: cuisineSlug(r.cuisine),
+      phone: ops.phone,
       holdWindow: ops.holdWindow,
       available: ops.available,
       busyness: ops.busyness,
@@ -414,6 +351,9 @@ function main() {
     `  ${records.length} real restaurants within ${args.radius}m of ${oLat},${oLng}`
   );
   console.log(`  ${availableCount} with tables available (rest are "full")`);
+  console.log(
+    `  ${enrichedCount}/${records.length} enriched with real phone/accessibility (run enrich-places.js for the rest; others use simulated values)`
+  );
   console.log(`  Manager (${DEMO_MANAGER_ID}) assigned to ${Math.min(2, records.length)} venue(s).`);
   console.log("Apply with: npm run seed:real");
 }
