@@ -491,6 +491,30 @@ paths:
         "401":
           $ref: "#/components/responses/Unauthorized"
 
+  /api/v1/restaurants/{restaurantId}/campaigns/{campaignId}/cancel:
+    post:
+      tags: [Campaigns]
+      summary: Cancel an active campaign (manager only)
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+        - $ref: "#/components/parameters/RestaurantId"
+        - $ref: "#/components/parameters/CampaignId"
+      responses:
+        "200":
+          description: Cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+
   /api/v1/restaurants/{restaurantId}/campaigns/active:
     get:
       tags: [Campaigns]
@@ -536,6 +560,13 @@ components:
       description: Interim auth header. Prefer Authorization Bearer JWT.
     RestaurantId:
       name: restaurantId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    CampaignId:
+      name: campaignId
       in: path
       required: true
       schema:

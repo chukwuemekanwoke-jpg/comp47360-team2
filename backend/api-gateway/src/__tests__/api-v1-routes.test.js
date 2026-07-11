@@ -431,4 +431,44 @@ describe("campaign routes", () => {
       tableQuota: 3,
     });
   });
+
+  it("cancels an active campaign and revokes pending offers", async () => {
+    const client = {
+      query: jest
+        .fn()
+        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({
+          rows: [campaignRow({ status: "active" })],
+        })
+        .mockResolvedValueOnce({
+          rows: [campaignRow({ status: "cancelled" })],
+        })
+        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: [] }),
+      release: jest.fn(),
+    };
+
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
+      .mockResolvedValueOnce({ rows: [{ id: RESTAURANT_ID, manager_user_id: USER_ID }] });
+    mockPool.connect.mockResolvedValueOnce(client);
+
+    const res = await request(app)
+      .post(`/api/v1/restaurants/${RESTAURANT_ID}/campaigns/${CAMPAIGN_ID}/cancel`)
+      .set("X-User-Id", USER_ID)
+      .send();
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      id: CAMPAIGN_ID,
+      restaurantId: RESTAURANT_ID,
+      status: "cancelled",
+    });
+    expect(client.query).toHaveBeenCalledWith("BEGIN");
+    expect(client.query).toHaveBeenCalledWith(
+      expect.stringContaining("status = 'revoked'"),
+      [CAMPAIGN_ID]
+    );
+    expect(client.query).toHaveBeenCalledWith("COMMIT");
+  });
 });

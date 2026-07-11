@@ -2,7 +2,7 @@ const { Router } = require("express");
 const asyncHandler = require("../../middleware/asyncHandler");
 const requireUser = require("../../middleware/requireUser");
 const requireRestaurantManager = require("../../middleware/requireRestaurantManager");
-const { AppError } = require("../../errors");
+const { AppError, isUuid } = require("../../errors");
 const { getPool } = require("../../db/pool");
 const { toCampaignJson } = require("../../utils/serialize");
 const { validateCampaignBody } = require("../../utils/validate");
@@ -96,6 +96,65 @@ router.post(
 
       await client.query("COMMIT");
       res.status(201).json(toCampaignJson(campaign));
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
+    }
+  })
+);
+
+router.post(
+  "/:campaignId/cancel",
+  asyncHandler(async (req, res) => {
+    const pool = getPool();
+    const { campaignId } = req.params;
+
+    if (!campaignId || !isUuid(campaignId)) {
+      throw new AppError(400, "VALIDATION_ERROR", "Invalid campaignId format");
+    }
+
+    const client = await pool.connect();
+
+    try {
+      await client.query("BEGIN");
+
+      const { rows } = await client.query(
+        `SELECT ${CAMPAIGN_COLUMNS}
+         FROM campaigns
+         WHERE id = $1 AND restaurant_id = $2
+         FOR UPDATE`,
+        [campaignId, req.restaurantId]
+      );
+
+      if (rows.length === 0) {
+        throw new AppError(404, "NOT_FOUND", "Campaign not found");
+      }
+
+      const campaign = rows[0];
+      if (campaign.status !== "active") {
+        throw new AppError(409, "CONFLICT", "Only active campaigns can be cancelled");
+      }
+
+      const { rows: updatedRows } = await client.query(
+        `UPDATE campaigns
+         SET status = 'cancelled',
+             cancelled_at = NOW()
+         WHERE id = $1
+         RETURNING ${CAMPAIGN_COLUMNS}`,
+        [campaignId]
+      );
+
+      await client.query(
+        `UPDATE offers
+         SET status = 'revoked'
+         WHERE campaign_id = $1 AND status = 'pending'`,
+        [campaignId]
+      );
+
+      await client.query("COMMIT");
+      res.status(200).json(toCampaignJson(updatedRows[0]));
     } catch (err) {
       await client.query("ROLLBACK");
       throw err;

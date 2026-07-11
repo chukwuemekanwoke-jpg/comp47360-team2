@@ -69,6 +69,7 @@ Server: `http://localhost:3001`
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
 | POST | `/api/v1/restaurants/:restaurantId/campaigns` | manager JWT or `X-User-Id` | Create flash-deal campaign + ML/heuristic offers |
+| POST | `/api/v1/restaurants/:restaurantId/campaigns/:campaignId/cancel` | manager JWT or `X-User-Id` | Cancel active campaign; revoke pending offers |
 | GET | `/api/v1/restaurants/:restaurantId/campaigns` | manager | List campaigns |
 | GET | `/api/v1/restaurants/:restaurantId/campaigns/active` | manager | Active campaign or `null` |
 | GET | `/api/v1/users/me/offers` | JWT or `X-User-Id` | Offer inbox (`?status=pending` optional) |
