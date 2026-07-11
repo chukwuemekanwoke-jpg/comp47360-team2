@@ -567,6 +567,16 @@ On create, the gateway calls the ML match service and inserts `offers` for match
 
 Single active campaign or `null`.
 
+#### `POST /api/v1/restaurants/:restaurantId/campaigns/:campaignId/cancel`
+
+**Auth:** manager  
+
+Cancels an `active` campaign, sets `status: "cancelled"`, and revokes pending offers for that campaign.
+
+**Response `200`:** updated `Campaign`  
+
+**Response `409`:** campaign is not active (already completed or cancelled)
+
 ---
 
 ## 5. ML service (BE-7 / BE-14)
