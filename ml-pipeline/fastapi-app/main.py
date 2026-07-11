@@ -3,6 +3,8 @@ from pydantic import BaseModel, Field
 from typing import Optional, List
 import random
 
+from area_factor import get_area_factor
+
 app = FastAPI(
     title="Tablé Algorithm Inference API",
     description="Machine Learning & recommendation inference API for Manhattan dining availability and lull-mitigation deals.",
@@ -12,7 +14,18 @@ app = FastAPI(
 class InferenceRequest(BaseModel):
     hour_of_day: int = Field(..., ge=0, le=23, description="Hour of the day (0-23)")
     day_of_week: int = Field(..., ge=0, le=6, description="Day of the week (0-6, where 0 is Monday)")
-    taxi_dropoffs_1h: Optional[int] = Field(None, ge=0, description="Taxi dropoffs near restaurant in last 1 hour")
+    latitude: Optional[float] = Field(
+        None, ge=-90.0, le=90.0,
+        description="Restaurant latitude — when given (with longitude), taxi_dropoffs_1h and an "
+                     "area busyness factor are computed automatically from real NYC taxi + pedestrian "
+                     "data instead of relying on the caller to supply taxi_dropoffs_1h directly.",
+    )
+    longitude: Optional[float] = Field(None, ge=-180.0, le=180.0, description="Restaurant longitude")
+    taxi_dropoffs_1h: Optional[int] = Field(
+        None, ge=0,
+        description="Taxi dropoffs near restaurant in last 1 hour. Auto-computed from "
+                     "latitude/longitude when omitted and coordinates are provided.",
+    )
     rolling_busyness_7d: Optional[float] = Field(None, ge=0.0, le=1.0, description="Rolling average busyness score for past 7 days")
     neighborhood: Optional[str] = Field(None, description="Neighborhood name")
     cuisine: Optional[str] = Field(None, description="Cuisine type")
@@ -23,6 +36,8 @@ class InferenceResponse(BaseModel):
     busyness_score: float = Field(..., ge=0.0, le=1.0, description="Predicted busyness score (0 = quiet, 1 = extremely busy)")
     available_table_count: int = Field(..., ge=0, description="Simulated/predicted available table count")
     confidence: float = Field(..., ge=0.0, le=1.0, description="Model prediction confidence score")
+    taxi_dropoffs_1h: Optional[float] = Field(None, description="Taxi dropoffs used for this prediction (supplied or auto-computed)")
+    area_busyness_factor: Optional[float] = Field(None, ge=0.0, le=1.0, description="Combined real-data area signal (taxi + foot traffic), when coordinates were provided")
 
 class MatchCandidate(BaseModel):
     userId: str
@@ -99,7 +114,9 @@ def match_users(request: MatchRequest):
 def predict_busyness(restaurant_id: str, request: InferenceRequest):
     """
     Predicts the busyness score and available tables for a given restaurant.
-    Currently uses a heuristic-based simulation model as a fallback.
+    Currently uses a heuristic-based simulation model as a fallback, blended
+    with a real area-busyness signal (NYC taxi dropoffs + NYC DOT pedestrian
+    counts, see area_factor.py) whenever latitude/longitude are supplied.
     """
     try:
         hour = request.hour_of_day
@@ -112,9 +129,36 @@ def predict_busyness(restaurant_id: str, request: InferenceRequest):
 
         predicted_score = min(1.0, max(0.0, base_score + random.uniform(-0.1, 0.1)))
 
-        if request.taxi_dropoffs_1h is not None:
-            density_boost = min(0.2, request.taxi_dropoffs_1h / 250.0)
+        taxi_dropoffs_1h = request.taxi_dropoffs_1h
+        area_busyness_factor = None
+        confidence = 0.75
+
+        if request.latitude is not None and request.longitude is not None:
+            try:
+                area = get_area_factor(
+                    request.latitude, request.longitude,
+                    weekday=request.day_of_week, hour=request.hour_of_day,
+                )
+                area_busyness_factor = area.area_busyness_factor
+                if taxi_dropoffs_1h is None:
+                    taxi_dropoffs_1h = area.taxi_dropoffs_1h
+
+                # Blend the real signal in, weighted by how much of it (taxi
+                # + foot traffic) actually had coverage at this location.
+                predicted_score = min(1.0, max(0.0,
+                    predicted_score * (1 - 0.5 * area.confidence)
+                    + area.area_busyness_factor * (0.5 * area.confidence)
+                ))
+                confidence = 0.6 + 0.35 * area.confidence
+            except FileNotFoundError:
+                # Area data unavailable in this environment — degrade to the
+                # manual taxi_dropoffs_1h path below instead of erroring.
+                pass
+
+        if area_busyness_factor is None and taxi_dropoffs_1h is not None:
+            density_boost = min(0.2, taxi_dropoffs_1h / 250.0)
             predicted_score = min(1.0, predicted_score + density_boost)
+            confidence = 0.95
 
         base_tables = 8
         available_tables = max(0, round(base_tables * (1.0 - predicted_score)))
@@ -123,7 +167,9 @@ def predict_busyness(restaurant_id: str, request: InferenceRequest):
             restaurant_id=restaurant_id,
             busyness_score=round(predicted_score, 4),
             available_table_count=available_tables,
-            confidence=0.95 if request.taxi_dropoffs_1h is not None else 0.75
+            confidence=round(confidence, 4),
+            taxi_dropoffs_1h=taxi_dropoffs_1h,
+            area_busyness_factor=area_busyness_factor,
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

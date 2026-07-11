@@ -46,7 +46,34 @@ def test_predict_busyness_returns_stable_prediction(monkeypatch):
         "busyness_score": 0.9,
         "available_table_count": 1,
         "confidence": 0.95,
+        "taxi_dropoffs_1h": 25.0,
+        "area_busyness_factor": None,
     }
+
+
+def test_predict_busyness_uses_area_factor_when_coordinates_given(monkeypatch):
+    monkeypatch.setattr(main.random, "uniform", lambda _low, _high: 0.0)
+
+    # Times Square coordinates — real taxi zone + pedestrian-count data
+    # should resolve here, exercising the full area_factor path.
+    response = client.post(
+        "/predict/busyness?restaurant_id=times-square-spot",
+        json={
+            "hour_of_day": 19,
+            "day_of_week": 4,
+            "latitude": 40.758948773339,
+            "longitude": -73.984774441289,
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["restaurant_id"] == "times-square-spot"
+    assert 0.0 <= body["busyness_score"] <= 1.0
+    assert body["taxi_dropoffs_1h"] is not None and body["taxi_dropoffs_1h"] > 0
+    assert body["area_busyness_factor"] is not None
+    assert 0.0 <= body["area_busyness_factor"] <= 1.0
+    assert body["confidence"] > 0.75  # both taxi + pedestrian signals available here
 
 
 def test_match_users_orders_candidates_by_score(monkeypatch):
