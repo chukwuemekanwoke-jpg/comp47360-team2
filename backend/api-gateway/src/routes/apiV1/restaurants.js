@@ -14,6 +14,7 @@ const {
 } = require("../../utils/validate");
 const { resolveEtaResult } = require("../../services/etaResolver");
 const { getCachedEta, setCachedEta } = require("../../utils/etaCache");
+const { refreshRestaurantBusyness } = require("../../services/busynessService");
 const campaignsRouter = require("./campaigns");
 const restaurantBookingsRouter = require("./restaurantBookings");
 
@@ -264,7 +265,21 @@ router.get(
       throw new AppError(404, "NOT_FOUND", "Restaurant not found");
     }
 
-    res.status(200).json(toRestaurantDetail(rows[0]));
+    const restaurant = rows[0];
+    const prediction = await refreshRestaurantBusyness(pool, {
+      id: restaurant.id,
+      latitude: restaurant.latitude,
+      longitude: restaurant.longitude,
+      availableTableCount: restaurant.available_table_count,
+    });
+    // Only the busyness score is live-updated here — available_table_count
+    // stays the real, booking-driven DB value; the ml-service's simulated
+    // table count is recorded to availability_snapshots for history only.
+    if (prediction) {
+      restaurant.busyness_score = prediction.busynessScore;
+    }
+
+    res.status(200).json(toRestaurantDetail(restaurant));
   })
 );
 

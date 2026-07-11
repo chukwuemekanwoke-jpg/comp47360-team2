@@ -24,6 +24,7 @@ const config = {
   nodeEnv: process.env.NODE_ENV || "development",
   mlServiceUrl: process.env.ML_SERVICE_URL || "http://localhost:8000",
   mlMatchTimeoutMs: Number(process.env.ML_MATCH_TIMEOUT_MS) || 5000,
+  mlBusynessTimeoutMs: Number(process.env.ML_BUSYNESS_TIMEOUT_MS) || 5000,
   googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || null,
   googleRoutesUrl:
     process.env.GOOGLE_ROUTES_URL

@@ -19,9 +19,14 @@ jest.mock("../services/createCampaignOffers", () => ({
   createCampaignOffers: jest.fn(),
 }));
 
+jest.mock("../services/mlBusynessClient", () => ({
+  callMlBusyness: jest.fn(),
+}));
+
 const createApp = require("../app");
 const { createBooking } = require("../services/createBooking");
 const { createCampaignOffers } = require("../services/createCampaignOffers");
+const { callMlBusyness } = require("../services/mlBusynessClient");
 
 const app = createApp();
 
@@ -191,8 +196,15 @@ describe("restaurant routes", () => {
     });
   });
 
-  it("returns restaurant details", async () => {
-    mockPool.query.mockResolvedValueOnce({ rows: [restaurantRow()] });
+  it("returns restaurant details with a live busyness prediction", async () => {
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [restaurantRow()] })
+      .mockResolvedValueOnce({ rows: [] }); // availability_snapshots insert
+    callMlBusyness.mockResolvedValueOnce({
+      busynessScore: 0.72,
+      availableTableCount: 3,
+      confidence: 0.9,
+    });
 
     const res = await request(app).get(`/api/v1/restaurants/${RESTAURANT_ID}`);
 
@@ -201,7 +213,27 @@ describe("restaurant routes", () => {
       id: RESTAURANT_ID,
       addressLine: "12 Mercer Street",
       holdWindowMinutes: 15,
+      busynessScore: 0.72,
+      availableTableCount: 2, // real DB value, not overridden by ml-service's simulated count
     });
+    expect(mockPool.query).toHaveBeenLastCalledWith(
+      expect.stringContaining("INSERT INTO availability_snapshots"),
+      [RESTAURANT_ID, 3, 0.72]
+    );
+  });
+
+  it("falls back to the stored busyness score when ml-service is unavailable", async () => {
+    mockPool.query.mockResolvedValueOnce({ rows: [restaurantRow()] });
+    callMlBusyness.mockRejectedValueOnce(new Error("connection refused"));
+
+    const res = await request(app).get(`/api/v1/restaurants/${RESTAURANT_ID}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      id: RESTAURANT_ID,
+      busynessScore: 0.35, // stored restaurants.busyness_score, unchanged
+    });
+    expect(mockPool.query).toHaveBeenCalledTimes(1); // no snapshot insert attempted
   });
 
   it("creates a restaurant for the authenticated manager", async () => {
