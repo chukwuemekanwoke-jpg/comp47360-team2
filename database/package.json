@@ -12,7 +12,8 @@
     "migrate:down": "node scripts/migrate.js --down",
     "seed": "node scripts/seed.js",
     "seed:real": "node scripts/seed.js --real",
-    "generate:seed": "node scripts/generate-seed.js"
+    "generate:seed": "node scripts/generate-seed.js",
+    "enrich:places": "node scripts/enrich-places.js"
   },
   "dependencies": {
     "dotenv": "^16.4.7",
