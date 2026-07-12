@@ -62,6 +62,7 @@ Server: `http://localhost:3001`
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
 | POST | `/api/v1/bookings` | JWT or `X-User-Id` | Confirm reservation; decrements table count; accepts optional `partySize` |
+| PATCH | `/api/v1/bookings/:bookingId/status` | manager JWT or `X-User-Id` | Update booking status (dashboard) |
 | POST | `/api/v1/bookings/:bookingId/cancel` | JWT or `X-User-Id` | Cancel booking; restore table count / offer state |
 | GET | `/api/v1/users/me/bookings` | JWT or `X-User-Id` | List the current user's bookings (newest first) |
 | GET | `/api/v1/restaurants/:restaurantId/bookings` | manager JWT or `X-User-Id` | List bookings for a restaurant (newest first) |

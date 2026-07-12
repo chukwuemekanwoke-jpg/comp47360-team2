@@ -425,6 +425,40 @@ paths:
         "409":
           $ref: "#/components/responses/Conflict"
 
+  /api/v1/bookings/{bookingId}/status:
+    patch:
+      tags: [Bookings]
+      summary: Update booking status (merchant dashboard, Story 5.2)
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+        - name: bookingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingStatusPatch"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+
   /api/v1/users/me/bookings:
     get:
       tags: [Bookings]
@@ -892,6 +926,14 @@ components:
           minimum: 1
           maximum: 20
           description: Party size for RevPASH revenue simulation (defaults to 2).
+
+    BookingStatusPatch:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled, completed, no_show]
 
     RevpashSummary:
       type: object

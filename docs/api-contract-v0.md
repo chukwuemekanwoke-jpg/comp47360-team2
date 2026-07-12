@@ -499,6 +499,17 @@ Compute travel time once when opening restaurant page (per user story).
 
 **Response `200`:** `{ "bookings": [ ... ] }` — newest first.
 
+#### `PATCH /api/v1/bookings/:bookingId/status` (P1 — Story 5.2)
+
+**Auth:** manager Bearer JWT or `X-User-Id` (interim)  
+
+**Request:** `{ "status": "confirmed" | "cancelled" | "completed" | "no_show" }`
+
+Merchant dashboard transitions: `pending`/`confirmed` → `confirmed`/`completed`/`cancelled`/`no_show`.  
+Releasing a `confirmed` booking to `cancelled` or `no_show` restores table count and offer/campaign state.
+
+**Response `200`:** updated `Booking`
+
 #### `POST /api/v1/bookings/:bookingId/cancel` (P1 — Story 4.2)
 
 **Auth:** Bearer JWT or `X-User-Id` (interim)  
@@ -667,6 +678,7 @@ Gateway then inserts `offers` with `expiresAt = now() + 900s`. If the ML service
 | P0 | GET | `/api/v1/restaurants/:id/eta` | 3.1, 3.2 |
 | P0 | POST | `/api/v1/bookings` | 3.x, 5.2 |
 | P0 | POST | `/api/v1/bookings/:id/cancel` | 4.2 |
+| P0 | PATCH | `/api/v1/bookings/:id/status` | 5.2 dashboard |
 | P0 | GET | `/api/v1/users/me/bookings` | 3.x |
 | P0 | GET | `/api/v1/users/me/offers` | 4.1 |
 | P0 | POST | `/api/v1/offers/:id/accept` | 4.1, 5.2 |
@@ -687,7 +699,6 @@ Gateway then inserts `offers` with `expiresAt = now() + 900s`. If the ML service
 | Priority | Method | Path | Story |
 |----------|--------|------|-------|
 | P1 | GET | `/api/v1/restaurants/nearby?neighborhood=` | 2.2 |
-| P1 | PATCH | `/api/v1/bookings/:id/status` | 5.2 dashboard |
 | P1 | GET | `/api/v1/restaurants/:id/campaigns/:campaignId/offers` | 5.2 live tracker |
 
 ---
@@ -717,3 +728,4 @@ Shared TypeScript types (`frontend/packages/shared/src/types.ts`) map to API fie
 | v0.3 | 2026-07-12 | Merchant restaurant create/settings; campaign cancel; refresh §6 endpoint checklist; auth logout |
 | v0.3.1 | 2026-07-12 | Booking cancel endpoint (Story 4.2) |
 | v0.4 | 2026-07-12 | RevPASH schema, hourly view, GET /revpash, booking partySize |
+| v0.4.1 | 2026-07-12 | Merchant PATCH booking status for dashboard |

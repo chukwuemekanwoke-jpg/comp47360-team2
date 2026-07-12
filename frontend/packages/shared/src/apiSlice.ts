@@ -263,7 +263,6 @@ export const tableApi = createApi({
       providesTags: ['Bookings'],
     }),
 
-    // Pending backend: PATCH /bookings/:id/status
     updateBookingStatus: builder.mutation<Booking, { bookingId: string; status: BookingStatus }>({
       query: ({ bookingId, status }) => ({
         url: `/bookings/${bookingId}/status`,
