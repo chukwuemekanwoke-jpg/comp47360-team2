@@ -123,4 +123,14 @@ export interface RevpashSummary {
   revpash: number;
 }
 
+// Per-campaign RevPASH lift comparison — Phase 2 of the RevPASH rollout,
+// blocked on TABL-118 (no schema/route exists yet, see RISK_REGISTER R-09).
+export interface CampaignRevpashLift {
+  campaignId: string;
+  organicRevpash: number;
+  dealRevpash: number;
+  liftPercent: number;
+  offPeak: boolean;
+}
+
 // -- mobile specific state -- //

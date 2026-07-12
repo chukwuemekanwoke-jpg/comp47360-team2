@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
   UserProfile, RestaurantSummary, RestaurantDetail, EtaResult,
   Booking, OfferInboxItem, Campaign, TransportMode, BudgetTier, BookingStatus,
-  RevpashSummary, RevpashWindow, AuthSession, ManagerOfferItem
+  RevpashSummary, RevpashWindow, AuthSession, ManagerOfferItem, CampaignRevpashLift
 } from './types';
 
 // --- CROSS-PLATFORM URL RESOLVER ---
@@ -282,6 +282,15 @@ export const tableApi = createApi({
       providesTags: (_result, _error, arg) => [{ type: 'Restaurants', id: arg.restaurantId }],
     }),
 
+    // Needs GET /restaurants/:id/campaigns/:campaignId/revpash-lift on the
+    // backend (see handoff spec) — Phase 2 of the RevPASH rollout, per-campaign
+    // organic-vs-deal RevPASH comparison. Blocked on TABL-118 (RISK_REGISTER
+    // R-09): no RevPASH schema/route exists anywhere yet, so this always 404s.
+    getCampaignRevpashLift: builder.query<CampaignRevpashLift, { restaurantId: string; campaignId: string }>({
+      query: ({ restaurantId, campaignId }) => `/restaurants/${restaurantId}/campaigns/${campaignId}/revpash-lift`,
+      providesTags: (_result, _error, arg) => [{ type: 'Campaigns', id: arg.campaignId }],
+    }),
+
   }),
 });
 
@@ -310,4 +319,5 @@ export const {
   useUpdateBookingStatusMutation,
   useGetRevpashQuery,
   useCreateRestaurantMutation,
+  useGetCampaignRevpashLiftQuery,
 } = tableApi;
