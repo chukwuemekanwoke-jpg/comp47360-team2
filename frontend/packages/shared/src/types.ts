@@ -133,4 +133,12 @@ export interface CampaignRevpashLift {
   offPeak: boolean;
 }
 
+// Password recovery — no reset_token column, email-sending infra, or routes
+// exist anywhere yet (see handoff spec). Both endpoints return this generic
+// shape; the backend intentionally gives the same response whether or not
+// the email matches an account, to avoid leaking which emails are registered.
+export interface PasswordResetResult {
+  message: string;
+}
+
 // -- mobile specific state -- //

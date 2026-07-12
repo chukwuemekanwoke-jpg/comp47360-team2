@@ -4,6 +4,8 @@ import MerchantDashboard from './views/MerchantDashboard';
 import LoginView from './views/LoginView';
 import RegisterView from './views/RegisterView';
 import RestaurantSetupView from './views/RestaurantSetupView';
+import ForgotPasswordView from './views/ForgotPasswordView';
+import ResetPasswordView from './views/ResetPasswordView';
 
 function AppLayout({ children }) {
   return (
@@ -32,6 +34,8 @@ function App() {
               <Route path="/" element={<LoginView />} />
               <Route path="/register" element={<RegisterView />} />
               <Route path="/register/restaurant" element={<RestaurantSetupView />} />
+              <Route path="/forgot-password" element={<ForgotPasswordView />} />
+              <Route path="/reset-password" element={<ResetPasswordView />} />
               <Route path="/merchant" element={<MerchantDashboard />} />
             </Routes>
           </main>

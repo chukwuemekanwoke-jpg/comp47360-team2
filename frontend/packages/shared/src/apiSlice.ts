@@ -2,7 +2,8 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
   UserProfile, RestaurantSummary, RestaurantDetail, EtaResult,
   Booking, OfferInboxItem, Campaign, TransportMode, BudgetTier, BookingStatus,
-  RevpashSummary, RevpashWindow, AuthSession, ManagerOfferItem, CampaignRevpashLift
+  RevpashSummary, RevpashWindow, AuthSession, ManagerOfferItem, CampaignRevpashLift,
+  PasswordResetResult
 } from './types';
 
 // --- CROSS-PLATFORM URL RESOLVER ---
@@ -291,6 +292,27 @@ export const tableApi = createApi({
       providesTags: (_result, _error, arg) => [{ type: 'Campaigns', id: arg.campaignId }],
     }),
 
+    // Needs POST /auth/forgot-password on the backend (see handoff spec) —
+    // generates a reset token and emails a reset link. No reset_token column,
+    // email-sending infra, or route exists anywhere yet.
+    forgotPassword: builder.mutation<PasswordResetResult, { email: string }>({
+      query: (body) => ({
+        url: '/auth/forgot-password',
+        method: 'POST',
+        body,
+      }),
+    }),
+
+    // Needs POST /auth/reset-password on the backend (see handoff spec) —
+    // validates the token from the emailed link and sets a new password.
+    resetPassword: builder.mutation<PasswordResetResult, { token: string; newPassword: string }>({
+      query: (body) => ({
+        url: '/auth/reset-password',
+        method: 'POST',
+        body,
+      }),
+    }),
+
   }),
 });
 
@@ -320,4 +342,6 @@ export const {
   useGetRevpashQuery,
   useCreateRestaurantMutation,
   useGetCampaignRevpashLiftQuery,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
 } = tableApi;
