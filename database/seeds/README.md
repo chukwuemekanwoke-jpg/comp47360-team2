@@ -6,8 +6,9 @@ Two complementary seeds:
 |------|------|---------|
 | `001_demo_manhattan.sql` | 15 **fictional** venues, fixed UUIDs | Deterministic API/integration tests, examples in docs |
 | `002_manhattan_real.sql` | ~300 **real** Manhattan venues (generated) | Demo, frontend map, and ML connectivity (shared `restaurant_id` universe) |
+| `003_demo_revpash_bookings.sql` | Sample completed/confirmed bookings | RevPASH view smoke data for merchant dashboard |
 
-After migration `006_add_revpash_fields`, both seeds populate `opens_at`, `closes_at`, and `avg_check_per_cover` for RevPASH.
+After migration `006_add_revpash_fields`, both restaurant seeds populate `opens_at`, `closes_at`, and `avg_check_per_cover` for RevPASH.
 
 `001` names are **not** real venues; `002` identity (name/address/coords/cuisine) is
 real (from `ml-pipeline/notebooks/restaurant_clean.csv`), while operational fields
@@ -20,7 +21,7 @@ real (from `ml-pipeline/notebooks/restaurant_clean.csv`), while operational fiel
 cd database
 npm run db:up      # if Postgres not running
 npm run migrate    # once per fresh database
-npm run seed       # fictional fixtures only (001)
+npm run seed       # fictional fixtures + RevPASH demo bookings (001 + 003)
 ```
 
 ## Real-data seed (002)

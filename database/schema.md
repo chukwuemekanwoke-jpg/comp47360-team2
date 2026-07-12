@@ -129,6 +129,21 @@ Standard or deal-backed reservations.
 
 Append-only history for simulated availability (see [docs/data-strategy.md](../docs/data-strategy.md)).
 
+### `restaurant_revpash_hourly` (view)
+
+Hourly RevPASH buckets in **America/New_York** local time.
+
+| Column | Meaning |
+|--------|---------|
+| `restaurant_id` | Venue |
+| `bucket_start` | Hour bucket start (local) |
+| `total_revenue` | Sum of `bookings.check_amount` seated in the hour |
+| `available_seat_hours` | `restaurants.capacity` for each open hour |
+| `booking_count` | Confirmed/completed bookings in the hour |
+| `revpash` | `total_revenue / available_seat_hours` |
+
+The view includes **zero-revenue open hours** for days with booking activity plus the current local day, so `GET /revpash?window=today` can sum the full operating denominator.
+
 ## Geospatial approach
 
 | Approach | Used in v1 | Notes |

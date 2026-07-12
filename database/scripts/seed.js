@@ -16,6 +16,7 @@ require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
 const SEEDS_DIR = path.join(__dirname, "..", "seeds");
 const DEMO_SEED = "001_demo_manhattan.sql";
 const REAL_SEED = "002_manhattan_real.sql";
+const REVPASH_SEED = "003_demo_revpash_bookings.sql";
 
 const includeReal = process.argv.includes("--real");
 
@@ -50,6 +51,7 @@ async function main() {
     await client.connect();
 
     await applySeed(client, DEMO_SEED);
+    await applySeed(client, REVPASH_SEED);
     if (includeReal) {
       await applySeed(client, REAL_SEED);
     }
