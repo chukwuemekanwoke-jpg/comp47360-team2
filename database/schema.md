@@ -63,6 +63,7 @@ erDiagram
 | **3.1 / 3.2** Booking | 15 min hold vs ETA | `restaurants.hold_window_minutes`, `bookings.eta_minutes`, `bookings.hold_expires_at`, `bookings.transport_mode` |
 | **4.1** Offers | 900 s TTL, disable accept when expired | `offers.expires_at`, `offers.status` (`pending` → `expired` via app or scheduled job) |
 | **5.2** Dashboard | Campaign `active` → `completed` when quota filled | `campaigns.table_quota`, `campaigns.tables_claimed`, `campaigns.status`; trigger revokes pending `offers` |
+| **5.1** RevPASH | Revenue per available seat hour | `restaurants.opens_at`, `closes_at`, `avg_check_per_cover`; `bookings.party_size`, `seated_at`, `check_amount`, `duration_minutes` |
 
 ### P1 (schema-ready, optional for demo data)
 
@@ -94,6 +95,8 @@ Venue master data for Manhattan prototype.
 - `cuisine`: primary cuisine slug (e.g. `italian`, `thai`) for UI filters and ML features
 - `hold_window_minutes`: default **15** (Story 3.x)
 - `phone`: venue contact number (merchant registration)
+- `opens_at` / `closes_at`: local operating hours (RevPASH denominator)
+- `avg_check_per_cover`: benchmark average spend per cover until POS data exists
 - `busyness_score`: optional 0–1 signal from ML pipeline
 - `manager_user_id`: links B-side dashboard to a user row
 
@@ -117,6 +120,10 @@ Standard or deal-backed reservations.
 
 - On `confirmed` with `campaign_id`, trigger increments `tables_claimed` and may complete campaign
 - `eta_minutes` stored at booking time for audit/demo
+- `party_size`: diner-entered headcount (RevPASH revenue multiplier)
+- `seated_at`: check-in timestamp; falls back to `confirmed_at` when absent
+- `check_amount`: simulated check total (`party_size × avg_check_per_cover × discount`)
+- `duration_minutes`: simulated turn time (default 90 min)
 
 ### `availability_snapshots`
 

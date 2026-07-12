@@ -7,6 +7,8 @@ Two complementary seeds:
 | `001_demo_manhattan.sql` | 15 **fictional** venues, fixed UUIDs | Deterministic API/integration tests, examples in docs |
 | `002_manhattan_real.sql` | ~300 **real** Manhattan venues (generated) | Demo, frontend map, and ML connectivity (shared `restaurant_id` universe) |
 
+After migration `006_add_revpash_fields`, both seeds populate `opens_at`, `closes_at`, and `avg_check_per_cover` for RevPASH.
+
 `001` names are **not** real venues; `002` identity (name/address/coords/cuisine) is
 real (from `ml-pipeline/notebooks/restaurant_clean.csv`), while operational fields
 (capacity, available tables, busyness, hold window, manager, accessibility) are
