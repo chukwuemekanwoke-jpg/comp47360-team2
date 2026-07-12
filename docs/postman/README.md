@@ -22,7 +22,7 @@
 | Folder | Covers |
 |--------|--------|
 | **Infrastructure** | `GET /health`, `GET /api/v1/status` |
-| **C-side** | Register/login → preferences → nearby → book → offers → accept |
+| **C-side** | Register/login → preferences → nearby → book → offers → accept → cancel booking |
 | **B-side: dashboard** | Manager login → bookings → create campaign → active campaign → settings → cancel → logout |
 | **B-side: merchant onboarding** | Register new manager → create restaurant (`POST /restaurants`) |
 

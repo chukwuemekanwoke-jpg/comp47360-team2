@@ -103,6 +103,10 @@ function toBookingJson(row) {
     booking.confirmedAt = row.confirmed_at.toISOString();
   }
 
+  if (row.cancelled_at) {
+    booking.cancelledAt = row.cancelled_at.toISOString();
+  }
+
   if (row.eta_source != null) {
     booking.source = row.eta_source;
   }
