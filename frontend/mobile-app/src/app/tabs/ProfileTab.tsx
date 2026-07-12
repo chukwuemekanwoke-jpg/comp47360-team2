@@ -71,11 +71,11 @@ export default function ProfileScreen() {
             </Text>
 
             <Text className="text-table-cream text-sm font-bold mt-1">
-              {"$".repeat(profile.maxPriceLevel)}
+              {"€".repeat(profile.maxPriceLevel)}
             </Text>
           </View>
 
-          <View className="mb-3">
+          <View>
             <Text className="text-table-gold text-[10px] uppercase">
               Dining Style
             </Text>
@@ -84,16 +84,6 @@ export default function ProfileScreen() {
               {profile.diningStyle
                 .replace("-", " ")
                 .replace(/\b\w/g, (c) => c.toUpperCase())}
-            </Text>
-          </View>
-
-          <View>
-            <Text className="text-table-gold text-[10px] uppercase">
-              Search Radius
-            </Text>
-
-            <Text className="text-table-cream text-sm font-bold mt-1">
-              {profile.radiusKm} km
             </Text>
           </View>
         </View>
@@ -118,18 +108,7 @@ export default function ProfileScreen() {
 
             <View className="flex-1 items-center">
               <Text className="text-2xl font-bold text-table-teal">
-                {profile.radiusKm}
-              </Text>
-              <Text className="text-xs text-table-cream">
-                KM Radius
-              </Text>
-            </View>
-
-            <View className="w-px bg-table-border" />
-
-            <View className="flex-1 items-center">
-              <Text className="text-2xl font-bold text-table-teal">
-                {"$".repeat(profile.maxPriceLevel)}
+                {"€".repeat(profile.maxPriceLevel)}
               </Text>
               <Text className="text-xs text-table-cream">
                 Budget
