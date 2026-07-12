@@ -3,6 +3,7 @@ import { RestaurantSummary } from "@shared/types";
 import { useMemo, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
 import { useGetNearbyRestaurantsQuery } from "@shared/apiSlice";
+import { DISCOVERY_RADIUS_M } from "@shared/constants";
 import { useAppSelector } from "@shared/hooks";
 import BookingModal from "@/components/BookingCheckout";
 import LocationComponent from "@/components/LocationComponent";
@@ -30,7 +31,7 @@ export default function CardListView() {
   const { data, isLoading, error } = useGetNearbyRestaurantsQuery({
     lat,
     lng,
-    radiusM: 150000,
+    radiusM: DISCOVERY_RADIUS_M,
   });
 
   const restaurantsList = data?.restaurants ?? [];
