@@ -1,6 +1,6 @@
 # Tablé API Contract v0 (BE-3)
 
-**Status:** v0.1 · **Implementation:** `backend/api-gateway`  
+**Status:** v0.3 · **Implementation:** `backend/api-gateway`  
 **Database:** [database/schema.md](../database/schema.md) (BE-2)  
 **Architecture:** [docs/adr/ADR-001.md](./adr/ADR-001.md) (BE-4)  
 **Data:** [docs/data-strategy.md](./data-strategy.md) (BE-5)  
@@ -303,7 +303,15 @@ Create consumer after dummy login.
 }
 ```
 
-**Response `200`:** `{ "token": "<jwt>", "user": { ... } }`
+**Response `200`:** `{ "token": "<jwt>", "user": { ... }, "userId": "<uuid>", "restaurantId": "<uuid>|null" }`
+
+#### `POST /api/v1/auth/logout`
+
+**Auth:** Bearer JWT (preferred)  
+
+Invalidates the current token server-side by incrementing `token_version`.
+
+**Response `200`:** `{ "status": "logged_out" }`
 
 ---
 
@@ -618,25 +626,44 @@ Gateway then inserts `offers` with `expiresAt = now() + 900s`. If the ML service
 
 ---
 
-## 6. P0 endpoint checklist
+## 6. Endpoint checklist
+
+### 6.1 Shipped (P0 / P1 — on `integrate`)
 
 | Priority | Method | Path | Story |
 |----------|--------|------|-------|
 | P0 | GET | `/health` | — |
+| P0 | GET | `/api/v1/status` | — |
 | P0 | POST | `/api/v1/users` | 1.1 |
 | P0 | PATCH | `/api/v1/users/me/preferences` | 1.1 |
+| P0 | GET | `/api/v1/users/me` | 1.1 |
 | P0 | GET | `/api/v1/restaurants/nearby` | 2.1 |
 | P0 | GET | `/api/v1/restaurants/:id` | 2.1, 3.x |
 | P0 | GET | `/api/v1/restaurants/:id/eta` | 3.1, 3.2 |
 | P0 | POST | `/api/v1/bookings` | 3.x, 5.2 |
+| P0 | GET | `/api/v1/users/me/bookings` | 3.x |
 | P0 | GET | `/api/v1/users/me/offers` | 4.1 |
 | P0 | POST | `/api/v1/offers/:id/accept` | 4.1, 5.2 |
 | P0 | POST | `/api/v1/restaurants/:id/campaigns` | 5.2 |
+| P0 | GET | `/api/v1/restaurants/:id/campaigns` | 5.2 |
+| P0 | GET | `/api/v1/restaurants/:id/campaigns/active` | 5.2 |
+| P0 | POST | `/api/v1/restaurants/:id/campaigns/:campaignId/cancel` | 5.2 |
 | P0 | GET | `/api/v1/restaurants/:id/bookings` | 5.2 |
+| P0 | POST | `/api/v1/auth/register` | — |
+| P0 | POST | `/api/v1/auth/login` | — |
+| P0 | POST | `/api/v1/auth/logout` | — |
+| P0 | POST | `/api/v1/restaurants` | B-side onboarding |
+| P0 | PATCH | `/api/v1/restaurants/:id/settings` | B-side settings |
+
+### 6.2 Planned (documented, not yet implemented)
+
+| Priority | Method | Path | Story |
+|----------|--------|------|-------|
 | P1 | GET | `/api/v1/restaurants/nearby?neighborhood=` | 2.2 |
 | P1 | POST | `/api/v1/bookings/:id/cancel` | 4.2 |
-| P1 | POST | `/api/v1/auth/register` | — |
-| P1 | POST | `/api/v1/auth/login` | — |
+| P1 | PATCH | `/api/v1/bookings/:id/status` | 5.2 dashboard |
+| P1 | GET | `/api/v1/restaurants/:id/campaigns/:campaignId/offers` | 5.2 live tracker |
+| P1 | GET | `/api/v1/restaurants/:id/revpash` | 5.1 RevPASH |
 
 ---
 
@@ -662,3 +689,4 @@ Shared TypeScript types (`frontend/packages/shared/src/types.ts`) map to API fie
 | v0 | 2026-06-02 | Initial BE-3 contract aligned with schema v1 |
 | v0.1 | 2026-06-29 | Add `EtaResult`/`Booking` `source` field (BE-12 Google Routes API + estimate fallback); ML match `candidates[]` (BE-14) |
 | v0.2 | 2026-07-04 | JWT auth; merchant bookings endpoint; Routes API naming; align client types path |
+| v0.3 | 2026-07-12 | Merchant restaurant create/settings; campaign cancel; refresh §6 endpoint checklist; auth logout |

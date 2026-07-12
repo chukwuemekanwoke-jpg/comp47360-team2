@@ -1,6 +1,6 @@
 # Tablé Integration Strategy
 
-**Status:** Sprint 1–2 · **Owners:** Scrum Master + Backend Lead
+**Status:** Sprint 4 · **Owners:** Scrum Master + Backend Lead
 **Related:** [ADR-001](./adr/ADR-001.md) · [api-contract-v0.md](./api-contract-v0.md) · [openapi-v0.yaml](./openapi-v0.yaml) · [data-strategy.md](./data-strategy.md) · [frontend-strategy.md](./frontend-strategy.md) · [deployment-guide.md](./deployment-guide.md)
 
 ---
@@ -23,23 +23,23 @@ Tablé is a **monolith-first MVP** (ADR-001-B): there is no service mesh to inte
 
 ```mermaid
 flowchart LR
-  WEB[frontend/web-app<br/>Next.js] -->|REST, X-User-Id| GW[backend/api-gateway<br/>Express]
-  MOB[frontend/mobile-app<br/>Expo] -->|REST, X-User-Id| GW
+  WEB[frontend/web-app<br/>React + Vite] -->|REST, Bearer JWT| GW[backend/api-gateway<br/>Express]
+  MOB[frontend/mobile-app<br/>Expo] -->|REST, Bearer JWT| GW
   GW -->|SQL| DB[(PostgreSQL)]
   GW -->|POST /match| ML[ml-pipeline<br/>FastAPI]
-  GW -->|Distance Matrix| GMAPS[(Google Distance Matrix API)]
+  GW -->|Routes API| GMAPS[(Google Routes API)]
   ML -.->|reads historical only| DATASETS[(NYC Open Data /<br/>OpenTable-style CSV)]
 ```
 
 | Integration | Protocol | Contract source of truth | Direction |
 |---|---|---|---|
-| Web ↔ Gateway | REST, JSON, `X-User-Id` header | [api-contract-v0.md](./api-contract-v0.md), [openapi-v0.yaml](./openapi-v0.yaml) | Bidirectional, gateway is authoritative |
-| Mobile ↔ Gateway | REST, JSON, `X-User-Id` header | Same as above | Bidirectional, gateway is authoritative |
+| Web ↔ Gateway | REST, JSON, `Authorization: Bearer <jwt>` (preferred) or interim `X-User-Id` | [api-contract-v0.md](./api-contract-v0.md), [openapi-v0.yaml](./openapi-v0.yaml) | Bidirectional, gateway is authoritative |
+| Mobile ↔ Gateway | REST, JSON, `Authorization: Bearer <jwt>` (preferred) or interim `X-User-Id` | Same as above | Bidirectional, gateway is authoritative |
 | Gateway ↔ PostgreSQL | SQL (`pg` / migrations) | [database/schema.md](../database/schema.md) | Gateway is authoritative; DB has no business logic beyond constraints/triggers |
 | Gateway ↔ ML pipeline | REST, `POST /match` (internal) | api-contract-v0.md §5 | Gateway calls ML; ML never calls gateway or writes to Postgres directly |
-| Gateway ↔ Google Distance Matrix | REST, external | ADR-001-F | Gateway calls Google; gateway is authoritative for `canBook`, not the client |
+| Gateway ↔ Google Routes API | REST, external (`computeRouteMatrix`) | ADR-001-F | Gateway calls Google; gateway is authoritative for `canBook`, not the client |
 
-**Rule:** clients (web, mobile) never call the ML pipeline or Google Distance Matrix directly. The gateway is the single integration point for everything outside the browser/app — this keeps API keys server-side and means there is exactly one contract (api-contract-v0.md) for both frontend leads to build against, instead of two.
+**Rule:** clients (web, mobile) never call the ML pipeline or Google Routes API directly. The gateway is the single integration point for everything outside the browser/app — this keeps API keys server-side and means there is exactly one contract (api-contract-v0.md) for both frontend leads to build against, instead of two.
 
 ---
 
@@ -47,7 +47,7 @@ flowchart LR
 
 | Service | Used for | Status | Owner | Fallback if unavailable |
 |---|---|---|---|---|
-| **Google Distance Matrix API** | ETA guardrail (`GET /api/v1/restaurants/:id/eta`) | Accepted, Sprint 2 (ADR-001-F) | Backend Lead | OSRM / open routing engine; cache ETA ~5 min either way to bound cost |
+| **Google Routes API** (`computeRouteMatrix`) | ETA guardrail (`GET /api/v1/restaurants/:id/eta`) | Accepted (ADR-001-F) | Backend Lead | Haversine estimate in gateway; cache ETA ~5 min either way to bound cost |
 | **NYC Open Data** (inspections, taxi trips) | Restaurant seed + busyness proxy | Accepted (data-strategy.md) | Data & ML Lead | N/A — offline batch download, not a runtime dependency |
 | **OpenAI (or equivalent)** | Dining Copilot conversational UX | Proposed, Sprint 4 (ADR-001-H) | Data & ML Lead | Feature flagged off; core booking flow does not depend on it |
 | **Expo push / `expo-notifications`** | Mobile push for flash deals | Proposed, post-MVP (ADR-001-G) | Mobile Lead | REST inbox polling (MVP default) — push is additive, not load-bearing |
@@ -55,7 +55,7 @@ flowchart LR
 
 **Explicitly out of scope for integration in MVP** (ADR-001-E): OpenTable Partner API, Google Places as primary discovery source. These are not wired into any environment and should not appear in `.env.example` files as required keys.
 
-**Cost control:** the only paid/metered external call in the MVP critical path is Google Distance Matrix. It is called once per restaurant-detail view and cached ~5 minutes server-side — this is an integration constraint, not just a cost optimization, because it bounds how often the gateway needs network access to a third party to answer a request that's otherwise fully local (Postgres + ML).
+**Cost control:** the only paid/metered external call in the MVP critical path is Google Routes API. It is called once per restaurant-detail view and cached ~5 minutes server-side — this is an integration constraint, not just a cost optimization, because it bounds how often the gateway needs network access to a third party to answer a request that's otherwise fully local (Postgres + ML).
 
 ---
 
@@ -69,7 +69,7 @@ Three teams (web, mobile, ML) build against one gateway that a fourth (backend) 
    - An update to `openapi-v0.yaml` and `api-contract-v0.md` in the same PR as the code change
    - A note in the PR description tagging the affected client owner(s)
    - No silent field renames — additive fields are non-breaking and don't need this process
-4. **Auth stub (`X-User-Id`)** is intentionally primitive (ADR-001-A/I) so both clients can integrate against real endpoints in Sprint 1–2 without building OAuth first. Do not let either client build a parallel mock auth scheme — use the stub header so contract testing is real, not simulated twice.
+4. **Auth:** JWT (`Authorization: Bearer`) is the primary client auth mechanism. The interim `X-User-Id` header remains supported for dev/demo and legacy tests until all clients migrate. Do not build parallel mock auth schemes — use the documented contract so integration testing is real.
 
 ---
 
@@ -87,16 +87,16 @@ Per [deployment-guide.md](./deployment-guide.md), `integrate` is where independe
 
 | If this is down/slow | Effect on rest of system | Mitigation |
 |---|---|---|
-| Google Distance Matrix | `canBook` / ETA endpoint fails | OSRM fallback (ADR-001-F); booking flow degrades to "ETA unavailable," not a hard outage |
+| Google Routes API | `canBook` / ETA endpoint fails | Haversine estimate fallback (ADR-001-F); booking flow degrades to estimate-based ETA, not a hard outage |
 | ML pipeline (FastAPI) | New flash-deal matches stop generating | Gateway falls back to heuristic/random match (ADR-001-C, Sprint 2 default) rather than blocking the offers flow |
 | PostgreSQL | Full outage — gateway has no fallback store | Out of scope for MVP; acceptable given single-instance local/Cloud SQL deployment |
 | Web or mobile client | No effect on gateway, ML, or the other client | Confirms the contract-first split is doing its job — clients are integration leaves, not hubs |
 
 ---
 
-## 7. Current integration plan: frontend, backend, mobile (2026-07-03)
+## 7. Historical note: July 2026 merge batch
 
-`integrate` is 61 commits behind `origin/main` — a long stretch of backend/mobile work (ETA routing, real restaurant seed, ML match, bookings endpoints, mobile auth/redux work) landed straight on `main`, bypassing `integrate` entirely. Meanwhile four `feature/*` branches carry real work that hasn't merged anywhere yet. This section is the concrete plan for landing that work, superseding nothing in §5 — it's §5 applied to the current backlog.
+> **Archival:** §7.1–7.3 below describe a one-time July 2026 backlog when `integrate` had diverged from `main`. That batch is complete — `integrate` is now the active integration branch where feature PRs land before promotion to `develop` / `main`. Keep §7 for history only; do not treat the branch table as current work.
 
 ### 7.1 What's actually pending
 
@@ -131,15 +131,15 @@ Per §5 and [deployment-guide.md](./deployment-guide.md), promotion is a deliber
 
 ---
 
-## 8. Sprint 2–3 action items
+## 8. Sprint 4 action items
 
 | Owner | Task |
 |---|---|
-| Backend Lead | Implement `GET /restaurants/:id/eta` with Google Distance Matrix + 5-min cache; document OSRM fallback trigger condition |
-| Backend Lead | Implement `POST /match` proxy to ML pipeline with heuristic fallback when FastAPI unavailable |
-| Data & ML Lead | Confirm `POST /match` request/response shape matches api-contract-v0.md §5 before Sprint 3 model swap |
-| Scrum Master | Add OpenAPI diff check to `integrate` CI once a second regular merger is active |
-| Web + Mobile Leads | Confirm both clients consume `X-User-Id` stub the same way; no parallel mock auth |
+| Backend Lead | Implement `PATCH /bookings/:id/status`, `GET /restaurants/:id/revpash`, `GET /campaigns/:campaignId/offers` (frontend already wired) |
+| Backend Lead | Implement `POST /bookings/:id/cancel` (Story 4.2) |
+| Web Lead | Remove stale "Needs backend" comments in `apiSlice.ts` as routes ship; keep UI fallbacks until RevPASH/offers endpoints exist |
+| Scrum Master | Keep Postman collection (`docs/postman/`) in sync with shipped routes for staging smoke tests |
+| All leads | Route PRs through `integrate`; run five CI checks before promotion |
 
 ---
 
@@ -149,3 +149,4 @@ Per §5 and [deployment-guide.md](./deployment-guide.md), promotion is a deliber
 |---------|------|-------|
 | v0 | 2026-06-24 | Initial integration strategy |
 | v1 | 2026-07-03 | Added §7 current integration plan: pending branch inventory, conflict surface, merge order into `integrate`, and promotion timing for `integrate` → `develop` → `main` |
+| v2 | 2026-07-12 | JWT primary auth; React+Vite web stack; Google Routes API; mark §7 as archival; refresh Sprint 4 action items |

@@ -189,6 +189,10 @@ backend/api-gateway/
 
 Business routes (`/restaurants`, `/bookings`, …) mount under `src/routes/apiV1/`.
 
+## Postman smoke tests
+
+Import [docs/postman/table-integration-journeys.postman_collection.json](../../docs/postman/table-integration-journeys.postman_collection.json) for C-side and B-side journey checks. See [docs/postman/README.md](../../docs/postman/README.md).
+
 ## Related tickets
 
 | Ticket | Status |

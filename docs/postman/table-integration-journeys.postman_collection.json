@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "Table Integration Journeys",
-    "description": "Postman collection for the Tablé C-side signup/preferences/search/book/offer/accept journey and B-side dashboard/campaign/offer journey. Run against a local API gateway with database migrations and demo seeds applied.",
+    "description": "Postman collection for Tablé API smoke journeys: infrastructure health, C-side signup/preferences/search/book/offer/accept, and B-side merchant dashboard/campaign/settings/cancel. Run against a local API gateway (http://localhost:3001) with migrations and demo seeds applied.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -48,9 +48,68 @@
     {
       "key": "offerId",
       "value": ""
+    },
+    {
+      "key": "campaignId",
+      "value": ""
     }
   ],
   "item": [
+    {
+      "name": "Infrastructure",
+      "item": [
+        {
+          "name": "Health check",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('health ok', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().status).to.eql('ok');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "API status",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "status"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('gateway status ok', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().apiVersion).to.eql('v1');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
     {
       "name": "C-side: signup -> preferences -> search -> book -> offer -> accept",
       "item": [
@@ -329,7 +388,7 @@
       ]
     },
     {
-      "name": "B-side: dashboard -> campaign -> offer",
+      "name": "B-side: dashboard -> campaign -> settings -> cancel",
       "item": [
         {
           "name": "Login demo manager",
@@ -435,7 +494,9 @@
                   "pm.test('campaign created', function () {",
                   "  pm.response.to.have.status(201);",
                   "  pm.expect(pm.response.json().status).to.eql('active');",
-                  "});"
+                  "});",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set('campaignId', body.id);"
                 ]
               }
             }
@@ -466,7 +527,233 @@
                   "pm.test('active campaign is returned', function () {",
                   "  pm.response.to.have.status(200);",
                   "  pm.expect(pm.response.json().campaign).to.not.eql(null);",
+                  "});",
+                  "const campaign = pm.response.json().campaign;",
+                  "if (campaign && campaign.id) {",
+                  "  pm.collectionVariables.set('campaignId', campaign.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update restaurant settings",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurants/{{restaurantId}}/settings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "restaurants", "{{restaurantId}}", "settings"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isWheelchairAccessible\": true,\n  \"sensoryFriendly\": false\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('settings updated', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().isWheelchairAccessible).to.eql(true);",
                   "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cancel active campaign",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurants/{{restaurantId}}/campaigns/{{campaignId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "restaurants", "{{restaurantId}}", "campaigns", "{{campaignId}}", "cancel"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('campaign cancelled', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().status).to.eql('cancelled');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Logout manager",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "logout"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('logout succeeds', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().status).to.eql('logged_out');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "B-side: merchant onboarding (new manager)",
+      "item": [
+        {
+          "name": "Register new manager",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"postman.manager@example.com\",\n  \"password\": \"password123\",\n  \"displayName\": \"Postman Manager\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('manager register or login required', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([201, 409]);",
+                  "});",
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  pm.collectionVariables.set('managerToken', body.token);",
+                  "  pm.collectionVariables.set('managerUserId', body.userId);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login new manager if already registered",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"postman.manager@example.com\",\n  \"password\": \"password123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('new manager login succeeds', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "const body = pm.response.json();",
+                  "pm.collectionVariables.set('managerToken', body.token);",
+                  "pm.collectionVariables.set('managerUserId', body.userId);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create owned restaurant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurants",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "restaurants"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Test Bistro\",\n  \"addressLine\": \"100 W 44th St\",\n  \"phone\": \"+1 212-555-0199\",\n  \"latitude\": 40.7589,\n  \"longitude\": -73.9851,\n  \"cuisine\": \"american\",\n  \"neighborhood\": \"Midtown\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('restaurant created', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "  pm.expect(pm.response.json().phone).to.eql('+1 212-555-0199');",
+                  "});",
+                  "pm.collectionVariables.set('restaurantId', pm.response.json().id);"
                 ]
               }
             }
