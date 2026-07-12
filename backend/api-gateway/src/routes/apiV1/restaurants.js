@@ -4,7 +4,7 @@ const requireUser = require("../../middleware/requireUser");
 const requireRestaurantManager = require("../../middleware/requireRestaurantManager");
 const { AppError, isUuid } = require("../../errors");
 const { getPool } = require("../../db/pool");
-const { toRestaurantSummary, toRestaurantDetail } = require("../../utils/serialize");
+const { toRestaurantSummary, toRestaurantDetail, toRevpashJson } = require("../../utils/serialize");
 const {
   parseLatLng,
   parseRadiusM,
@@ -15,6 +15,13 @@ const {
 const { resolveEtaResult } = require("../../services/etaResolver");
 const { getCachedEta, setCachedEta } = require("../../utils/etaCache");
 const { refreshRestaurantBusyness } = require("../../services/busynessService");
+const { getRevpashSummary } = require("../../services/getRevpash");
+const {
+  benchmarkAvgCheck,
+  DEFAULT_CLOSES_AT,
+  DEFAULT_OPENS_AT,
+  parseRevpashWindow,
+} = require("../../utils/revpash");
 const campaignsRouter = require("./campaigns");
 const restaurantBookingsRouter = require("./restaurantBookings");
 
@@ -93,6 +100,7 @@ router.post(
     }
 
     const input = validateCreateRestaurantBody(req.body);
+    const avgCheckPerCover = benchmarkAvgCheck(input.cuisine, input.neighborhood);
 
     const { rows } = await pool.query(
       `INSERT INTO restaurants (
@@ -106,9 +114,12 @@ router.post(
          is_wheelchair_accessible,
          sensory_friendly,
          manager_user_id,
-         available_table_count
+         available_table_count,
+         opens_at,
+         closes_at,
+         avg_check_per_cover
        )
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 0)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 0, $11, $12, $13)
        RETURNING ${RESTAURANT_RETURNING_COLUMNS}`,
       [
         input.name,
@@ -121,6 +132,9 @@ router.post(
         input.isWheelchairAccessible,
         input.sensoryFriendly,
         req.userId,
+        input.opensAt,
+        input.closesAt,
+        avgCheckPerCover,
       ]
     );
 
@@ -261,6 +275,26 @@ router.get(
 
     setCachedEta(restaurantId, lat, lng, transportMode, etaResult);
     res.status(200).json(etaResult);
+  })
+);
+
+router.get(
+  "/:restaurantId/revpash",
+  requireUser,
+  requireRestaurantManager,
+  asyncHandler(async (req, res) => {
+    const pool = getPool();
+    if (!pool) {
+      throw new AppError(500, "INTERNAL_ERROR", "Database is not configured (DATABASE_URL)");
+    }
+
+    const window = parseRevpashWindow(req.query.window);
+    const summary = await getRevpashSummary(pool, {
+      restaurantId: req.restaurantId,
+      window,
+    });
+
+    res.status(200).json(toRevpashJson(summary));
   })
 );
 

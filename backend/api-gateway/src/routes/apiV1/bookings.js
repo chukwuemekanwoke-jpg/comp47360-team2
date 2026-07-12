@@ -4,7 +4,7 @@ const requireUser = require("../../middleware/requireUser");
 const { AppError, isUuid } = require("../../errors");
 const { getPool } = require("../../db/pool");
 const { toBookingJson } = require("../../utils/serialize");
-const { parseBodyLatLng, parseTransportMode } = require("../../utils/validate");
+const { parseBodyLatLng, parseTransportMode, parsePartySize } = require("../../utils/validate");
 const { createBooking } = require("../../services/createBooking");
 const { cancelBooking } = require("../../services/cancelBooking");
 
@@ -25,6 +25,7 @@ router.post(
       userLat,
       userLng,
       offerId = null,
+      partySize: rawPartySize = null,
     } = req.body ?? {};
 
     if (!restaurantId || !isUuid(restaurantId)) {
@@ -36,6 +37,7 @@ router.post(
     }
 
     const transportMode = parseTransportMode(rawTransportMode);
+    const partySize = parsePartySize(rawPartySize);
     const { lat, lng } = parseBodyLatLng(userLat, userLng);
 
     const client = await pool.connect();
@@ -50,6 +52,7 @@ router.post(
         userLat: lat,
         userLng: lng,
         offerId,
+        partySize,
       });
 
       await client.query("COMMIT");

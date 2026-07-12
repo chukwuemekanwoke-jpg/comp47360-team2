@@ -121,6 +121,20 @@ function toRestaurantBookingJson(row) {
   };
 }
 
+function toRevpashJson(summary) {
+  return {
+    restaurantId: summary.restaurantId,
+    window: summary.window,
+    revenue: roundMoney(summary.revenue),
+    availableSeatHours: roundMoney(summary.availableSeatHours),
+    revpash: roundMoney(summary.revpash),
+  };
+}
+
+function roundMoney(value) {
+  return Math.round(Number(value) * 100) / 100;
+}
+
 module.exports = {
   toUserJson,
   toRestaurantSummary,
@@ -129,4 +143,5 @@ module.exports = {
   toOfferInboxItem,
   toBookingJson,
   toRestaurantBookingJson,
+  toRevpashJson,
 };
