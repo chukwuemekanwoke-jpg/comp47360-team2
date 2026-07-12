@@ -1,0 +1,173 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{url}
+
+% ---------------------------------------------------------------------------
+% Placeholder macro for results not yet measured. Every quantitative claim
+% wrapped in \tbd{...} MUST be replaced with a real, measured value before
+% submission. Nothing rendered in red is a real finding.
+% ---------------------------------------------------------------------------
+\newcommand{\tbd}[1]{\textcolor{red}{[TBD: #1]}}
+
+\begin{document}
+
+\title{Table: A Web Application and Big Data Analytics Framework for Spatiotemporal Restaurant Busyness Prediction and Dynamic Yield Management in Manhattan}
+
+\author{\IEEEauthorblockN{Group Team 2}
+\IEEEauthorblockA{\textit{MSc Computer Science (Conversion)} \\
+\textit{University College Dublin}\\
+Dublin, Ireland}}
+
+\maketitle
+
+\begin{abstract}
+Urban diners waste substantial time physically checking restaurant availability, while restaurants simultaneously lose walk-in revenue to perceived busyness and unpredictable operational lulls. This paper presents \textit{Table} (stylised Tabl\'{e}), a two-sided web and mobile marketplace that connects spontaneous diners in Manhattan with restaurants holding immediate table availability. Table ingests exclusively open civic datasets---New York City Taxi and Limousine Commission (TLC) trip records aggregated to hourly taxi-zone drop-off profiles, and New York City Department of Transportation (DOT) pedestrian volume counts from 114 fixed survey locations---to compute a normalised area-busyness factor for any coordinate pair in Manhattan at a given weekday and hour. This factor feeds a busyness-prediction service exposed through a FastAPI inference API, which is consumed by a Node.js API gateway orchestrating geospatial discovery, transit-validated (ETA-guarded) booking, and one-to-one ``flash deal'' matching for lull mitigation. The system is implemented as containerised microservices on Google Cloud Run with PostgreSQL, Redis, and a React/React Native client layer, and is deployed at \url{https://table-team2.web.app} (illustrative deployment URL). We describe the data engineering pipeline, the mathematical formulation of the area-busyness model and the candidate-matching heuristic, and an evaluation protocol covering API latency, prediction quality, and System Usability Scale testing, with measured results to be reported upon completion of the evaluation campaign.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Data Analytics, Web Application, Software Architecture, Spatiotemporal Analysis, Urban Computing, Yield Management, Location-Based Services
+\end{IEEEkeywords}
+
+\section{Introduction}
+
+Dining in a dense urban core such as Manhattan is characterised by a persistent information asymmetry. A diner standing on a street corner at 19:00 on a Friday cannot observe, without physically walking to each venue, which of the dozens of restaurants within reach currently has a free table, how long the wait is likely to be, or whether the surrounding area itself is so congested that the journey is not worth attempting. Conversely, a restaurant experiencing an unexpected mid-afternoon lull---a Sunday 15:00 dip, a rain-induced cancellation cluster---has no low-friction mechanism to attract nearby demand without resorting to public mass discounting, which dilutes brand equity and trains customers to wait for coupons. Existing reservation platforms overwhelmingly optimise for bookings planned days in advance; the walk-in and short-notice segment, which represents a substantial share of urban dining occasions, is served poorly by the current tooling landscape.
+
+\textit{Table} addresses this gap as a two-sided, location-based marketplace. On the consumer side, the application performs geospatial discovery of restaurants within a 1.5\,km radius of the user's live position, filters them to those with a positive available-table count, and---critically---validates every booking attempt against a transit-mode-aware estimated time of arrival (ETA), blocking or warning on reservations the user cannot physically reach within the venue's 15-minute hold window. On the business side, a restaurant manager facing an unexpected lull can trigger the platform's matching engine to push an exclusive, time-boxed flash deal to the single best-suited nearby diner, rather than broadcasting a public discount. The offer expires after 900 seconds and the campaign auto-terminates once the released tables are claimed, closing the operational loop and preventing overbooking.
+
+The analytical core of the platform is a spatiotemporal busyness model built entirely from open civic data. During project scoping we explicitly rejected commercial mobile-location foot-traffic products (SafeGraph, Placer.ai, Veraset) on cost and licensing grounds, and rejected scraping on ethical grounds; the system instead derives an area-level activity signal from two public sources: NYC TLC taxi drop-off records aggregated into hourly, taxi-zone-level demand profiles, and NYC DOT pedestrian volume counts collected at 114 fixed locations across the city in morning, midday, and evening windows. These two independent proxies for human presence are spatially resolved to any restaurant coordinate---by point-in-polygon assignment against the official taxi-zone shapefile and by radius-bounded nearest-neighbour averaging respectively---then normalised and fused into a single area-busyness factor in $[0,1]$. This design decision echoes the methodological posture of Chen \textit{et al.}~\cite{b1}, whose environmental analysis of New York bike sharing likewise derives city-scale behavioural insight from open spatiotemporal trip records rather than proprietary telemetry.
+
+The principal challenges the project confronts are threefold. Technically, the system must serve busyness inference, routing validation, and offer matching at interactive latency from a six-developer academic team's infrastructure budget, which motivated a serverless containerised architecture and aggressive caching of routing calls. Analytically, ground-truth restaurant occupancy is unavailable as open data, so the modelling strategy must remain interpretable and defensible, favouring transparent normalised proxies over opaque deep models trained on unverifiable labels. Societally, a map-centric, time-pressured interface risks excluding mobility-impaired and sensory-sensitive users; Table therefore treats accessibility as a first-class requirement, with accessible-venue tagging, uncrowded-venue recommendation, manual (non-map) search fallback, and interface states designed for readability under WCAG-informed contrast rules. The remainder of this paper reviews the related literature (Section~II), details the software architecture (Section~III), formalises the data pipeline and models (Section~IV), sets out the evaluation protocol and results (Section~V), and concludes with future work (Section~VI).
+
+\section{Literature Review}
+
+Table sits at the intersection of three research strands: urban computing over open spatiotemporal data, revenue and yield management in hospitality, and the software engineering of real-time location-based services.
+
+The urban computing literature establishes that aggregate mobility traces are reliable proxies for localised human activity. Zheng \textit{et al.}~\cite{b2} frame urban computing as the acquisition, integration, and analysis of heterogeneous city data to address urban challenges, and identify taxi trajectories and pedestrian counts as canonical activity sensors---precisely the two signals Table fuses. Cranshaw \textit{et al.}~\cite{b4} demonstrated with the Livehoods project that geotagged activity traces reveal the ``lived'' dynamics of neighbourhoods, diverging from administrative boundaries; Table's use of TLC taxi zones as its spatial unit, refined by hyper-local pedestrian counts, follows the same intuition that activity, not cartography, defines an area's character at a given hour. On the predictive side, Zhang \textit{et al.}~\cite{b3} showed that citywide crowd flows exhibit strong, learnable spatiotemporal regularities, and Toole \textit{et al.}~\cite{b10} established that travel demand can be estimated at city scale from opportunistically collected big data. Donovan and Work~\cite{b6} specifically validated New York TLC taxi records as a longitudinal instrument for measuring city-scale dynamics, lending external credibility to Table's central data source. Kitchin~\cite{b9} provides the critical framing: real-time civic data enables responsive urban services, but systems built on it must remain transparent about provenance and uncertainty---a stance Table operationalises by returning an explicit confidence score proportional to the number of real signals contributing to each prediction.
+
+The methodological template for our data pipeline is Chen \textit{et al.}~\cite{b1}, who analysed the environmental benefits of New York bike sharing by joining open trip records with spatial zoning and temporal profiles. Their proportional treatment of spatial resolution (station/zone level), temporal resolution (hourly and seasonal), and derived indices inspired Table's own pipeline structure: raw civic records are aggregated to a (zone, weekday, hour) demand cube, joined spatially to points of interest, and reduced to interpretable normalised indices rather than end-to-end learned representations.
+
+In hospitality operations research, Kimes~\cite{b5} formalised restaurant revenue management around the metric of revenue per available seat hour (RevPASH) and demonstrated that actively managing off-peak capacity yields measurable revenue gains. Existing commercial platforms, however, implement this insight only partially. Our comparative analysis of nine incumbent systems (OpenTable, Resy, Tock, Eat App, Yelp Reservations, TableIn, Eveve, TableAgent, and TheFork) found that all are architected around planned reservations, host-stand operations, or prepaid event ticketing. OpenTable offers the dominant discovery network but no prediction of walk-in busyness or arrival feasibility; Resy provides flexible inventory release at a price point (\$249--\$899 per month) inaccessible to small independents; Tock's prepayment engine targets events rather than spontaneous local demand; Eat App is operations-heavy with the consumer deal experience peripheral to its value proposition. None of the nine offers ETA-validated booking, area-level busyness prediction, or private one-to-one lull-mitigation offers. Table's contribution relative to this landscape is not a richer operations suite but a different architectural centre of gravity: a dynamic, predictive, open-data-driven matching layer between real-time spare capacity and reachable, compatible demand---evolving past the static dashboard paradigm that Kitchin~\cite{b9} critiques toward a genuinely responsive urban service.
+
+Finally, on the engineering side, Dragoni \textit{et al.}~\cite{b7} survey the microservice architectural style and its fit for small teams requiring independent deployability of heterogeneous runtimes; Table's split of a JavaScript transaction layer from a Python analytics layer is a direct application of this principle. Brooke's System Usability Scale~\cite{b8} anchors our usability evaluation protocol in Section~V.
+
+\section{Methodology}
+
+\subsection{System Overview and Repository Organisation}
+
+Table is developed as a monorepo with four top-level components---\texttt{frontend/} (web and mobile clients plus shared packages), \texttt{backend/api-gateway/} (the transactional service layer), \texttt{ml-pipeline/} (notebooks and the FastAPI inference service), and \texttt{database/} (versioned migrations, seeds, and a local \texttt{docker-compose} harness)---a structure chosen so that a six-developer team can define JSON API contracts once and evolve all consumers in a single review stream. Fig.~\ref{fig:architecture} presents the deployed architecture.
+
+\begin{figure}[htbp]
+\centering
+% Replace with the exported architecture diagram, e.g.:
+% \includegraphics[width=\columnwidth]{architecture.png}
+\fbox{\parbox[c][5.5cm][c]{0.9\columnwidth}{\centering \textit{System architecture diagram: React/Vite web and Expo mobile clients $\rightarrow$ Node.js API gateway (Cloud Run) $\rightarrow$ \{PostgreSQL Cloud SQL, Redis Memorystore, FastAPI ML service (Cloud Run), Google Routes API, Firebase Cloud Messaging\}.}}}
+\caption{Deployed microservice architecture of Table on Google Cloud Platform.}
+\label{fig:architecture}
+\end{figure}
+
+\subsection{Frontend Stack}
+
+The web client is built with React and Vite, chosen over heavier server-rendered frameworks because the application's core surfaces---a live map, a discovery list, a booking flow, and a merchant dashboard---are interaction-dense, per-user views that gain little from server-side rendering while benefiting substantially from Vite's sub-second hot-module-replacement feedback loop during a compressed five-sprint schedule. The mobile client is implemented in React Native via the Expo framework, allowing the same team members, component idioms, and service-wrapper layer to serve both platforms; Expo's managed workflow removes native build-chain maintenance, which a conversion-programme team could not have absorbed. Both clients share typed service wrappers (unit-tested against a mocked \texttt{fetch}) so that every network call site is exercised in continuous integration. The merchant dashboard is skinned with a shared \texttt{table-*} design-token system to keep consumer and business surfaces visually coherent, and includes a RevPASH meter operationalising Kimes's revenue-per-available-seat-hour metric~\cite{b5} for restaurant operators.
+
+\subsection{Backend Service Layer}
+
+The transactional core is a Node.js/Express API gateway exposing versioned REST routes (\texttt{/api/v1}), merchant routes, and health probes. Node.js was selected for this layer because the workload is overwhelmingly I/O-bound orchestration---fanning out to PostgreSQL, Redis, the ML service, and Google's routing APIs---for which an event-loop runtime offers high concurrency without thread management overhead. The gateway is decomposed internally into single-responsibility service modules: \texttt{createBooking} (ETA-guarded reservation writes), \texttt{createCampaignOffers} and \texttt{offerInsert} (flash-deal campaign lifecycle), \texttt{candidateUsers} (pre-filtering of eligible nearby diners), \texttt{etaResolver} and \texttt{googleDistanceMatrix} (routing abstraction), and \texttt{mlBusynessClient}/\texttt{mlMatchClient} (typed clients for the inference service). This decomposition lets the matching model be swapped without touching booking logic, a direct application of the independent-evolvability argument for microservices~\cite{b7}.
+
+Machine learning inference is deliberately isolated in a separate Python FastAPI service (\texttt{ml-pipeline/fastapi-app}) rather than embedded in the gateway. The rationale is threefold: the scientific Python ecosystem (pandas, pyproj, pyshp) is the natural home for the geospatial pipeline; Pydantic request models give the inference API a self-documenting, validated contract (e.g., \texttt{hour\_of\_day} $\in [0,23]$, coordinates range-checked); and an independent container allows the analytics layer to be redeployed, scaled, or replaced with a trained model without a gateway release. The service exposes \texttt{/predict/busyness} for area-conditioned busyness inference and \texttt{/api/v1/match} for flash-deal candidate ranking, and the gateway wires live busyness prediction directly into \texttt{GET /restaurants/:id} so every restaurant detail view carries a current busyness estimate.
+
+\subsection{Data Layer and Normalisation}
+
+Relational state---users, restaurants, bookings, offers, campaigns---resides in PostgreSQL (Google Cloud SQL). The schema is maintained through numbered, reversible migration pairs (\texttt{001\_initial\_schema} through \texttt{005\_add\_restaurant\_phone}, each with a \texttt{.down.sql} counterpart), giving the team auditable schema evolution and tested rollback paths, which the project's operational runbook exercises. The schema is normalised to third normal form: restaurant attributes added later in the project (capacity, cuisine, phone) were introduced as dedicated migrations rather than overloaded columns, and user authentication state (JWT-based) was isolated in its own migration. PostGIS is provisioned as an optional migration (\texttt{002\_postgis\_optional}) so that geospatial predicates can move from application-level haversine filtering into the database when scale demands, without forcing the extension onto every local development environment. Volatile real-time state---live table availability and busyness caches---is held in Redis (Cloud Memorystore), keeping high-churn counters out of the relational write path. Historical spatiotemporal aggregates are prepared offline in the notebook pipeline and shipped with the inference container as static artefacts, a pragmatic choice that eliminates an entire class of runtime data dependencies for the demo deployment.
+
+\subsection{Deployment, Delivery, and Operational Governance}
+
+All services are containerised and deployed to Google Cloud Run, chosen over self-managed Kubernetes because scale-to-zero serverless containers eliminate idle cost and operations burden for a student team while preserving a clean migration path to GKE Autopilot if sustained load ever justifies it. The web client is served through Firebase Hosting with deployment automated in the CI pipeline (\texttt{deploy-staging.yml}). Delivery follows a three-tier branch promotion model---feature branches merge into \texttt{integrate}, which promotes to \texttt{develop} (staging project) and then to \texttt{main} (production project) exclusively via pull request---so that the public demo environment can never receive unreviewed code. Operational risk is governed by a living risk register and a rollback-and-recovery runbook committed to the repository, covering database down-migrations, Cloud Run revision pinning, and Firebase Hosting release rollback. External integrations comprise the Google Maps/Routes APIs for ETA computation (called once per restaurant detail load and cached, to respect a student API budget), Firebase Cloud Messaging for flash-deal push delivery, and a simulated Stripe integration for deposit flows.
+
+\section{Data Analytics and Visualization}
+
+\subsection{Datasets}
+
+Table's analytical layer is built exclusively on open data. Four primary sources are ingested by the notebook pipeline (\texttt{data\_engineering\_v1/v2}):
+
+\begin{itemize}
+\item \textbf{NYC TLC taxi trip records}, aggregated into \texttt{manhattan\_hourly\_demand.csv}: mean drop-off counts per (taxi zone, weekday, hour) cell, serving as the primary area-activity proxy.
+\item \textbf{NYC taxi-zone shapefile} (\texttt{taxi\_zones.zip}), the official TLC polygon geometry used for spatial assignment.
+\item \textbf{NYC DOT pedestrian volume counts} (\texttt{manhattan\_pedestrian\_counts\_raw.csv}): bi-annual counts at 114 fixed locations, with per-location readings in morning (AM), midday (MD), and evening (PM) windows.
+\item \textbf{NYC PLUTO and restaurant metadata} (\texttt{manhattan\_pluto.csv}, \texttt{manhattan\_restaurants.csv}): land-use context and the cleaned restaurant universe, including real neighbourhood, phone, and accessibility attributes that replaced earlier simulated fields.
+\end{itemize}
+
+Supplementary derived tables (cuisine profiles, restaurant supply, popular-times joins against June taxi demand) support the recommendation notebook, and a simulated cohort (\texttt{sim\_users}, \texttt{sim\_orders}, \texttt{sim\_promotions}) provides demo-safe marketplace activity where real transaction data cannot exist for an academic prototype. Commercial mobile-location foot-traffic data was deliberately excluded: it is not available as open data and would require a paid vendor licence, which conflicts with both the project budget and its open-data commitment.
+
+\subsection{Preprocessing and Feature Engineering}
+
+Raw TLC records are filtered to Manhattan zones, timestamp-decomposed into weekday and hour, and aggregated to the (zone, weekday, hour) demand cube. Pedestrian counts are melted from the DOT wide format (columns such as \texttt{may\_07\_am}) into per-location, per-period observations. Restaurant records are cleaned for coordinate validity, deduplicated, and enriched with cuisine and capacity attributes that are persisted via the schema migrations described in Section~III-D. Hours are mapped to pedestrian observation periods by the rule
+\begin{equation}
+\mathrm{period}(h)=\begin{cases}\text{AM} & h < 11\\ \text{MD} & 11 \le h < 16\\ \text{PM} & h \ge 16.\end{cases}
+\end{equation}
+
+\subsection{The Area-Busyness Model}
+
+Given a restaurant at $(\phi,\lambda)$ and a target $(\text{weekday } w, \text{hour } h)$, the inference service computes an area-busyness factor as follows. Coordinates are first projected from WGS84 (EPSG:4326) to the New York State Plane system (EPSG:2263) and assigned to a taxi zone $z$ by ray-casting point-in-polygon evaluation against the TLC shapefile. The zone's expected drop-off intensity $T_{z,w,h}$ is read from the demand cube. Independently, a local foot-traffic estimate is computed by averaging the period-matched counts of all DOT survey locations within a 600\,m great-circle radius (haversine distance on $r=6\,371\,000$\,m), a generous radius chosen deliberately because the DOT network is sparse:
+\begin{equation}
+P_{\phi,\lambda,h} = \frac{1}{|N|}\sum_{i \in N} c_{i,\mathrm{period}(h)},\quad N=\{i : d_i \le 600\,\text{m}\}.
+\end{equation}
+Each available signal is min--max normalised against its global distribution, $\hat{x} = \mathrm{clip}\!\left((x - x_{\min})/(x_{\max}-x_{\min}),\,0,\,1\right)$, and the area factor is their mean:
+\begin{equation}
+f_{\text{area}} = \frac{1}{|S|}\sum_{s \in S}\hat{s}, \qquad
+\mathrm{conf} = \frac{|S|}{2},
+\end{equation}
+where $S \subseteq \{\hat{T}_{z,w,h},\, \hat{P}_{\phi,\lambda,h}\}$ is the set of signals actually resolvable at that location ($f_{\text{area}}=0.5$, an uninformative prior, when $S=\emptyset$). The explicit confidence output---1.0 when both taxi and pedestrian evidence contribute, 0.5 when only one does---propagates data-provenance uncertainty to the client, in line with the transparency norms argued by Kitchin~\cite{b9}. The factor conditions the busyness score returned by \texttt{/predict/busyness} and surfaces directly in \texttt{GET /restaurants/:id}.
+
+\subsection{Flash-Deal Candidate Matching}
+
+When a restaurant triggers a lull-mitigation campaign, the gateway pre-filters eligible diners (opted-in, within range, preference-compatible) and the ML service ranks them by the interpretable baseline heuristic
+\begin{equation}
+\mathrm{score}(u) = 0.6\max\!\left(0,\,1-\tfrac{d_u}{1500}\right) + 0.2\,\mathbb{1}[\text{budget}_u] + 0.1\,\mathbb{1}[\text{diet}_u] + \varepsilon,
+\end{equation}
+with $d_u$ the diner's distance in metres, indicator terms rewarding completed preference profiles, and $\varepsilon \sim U(0, 0.05)$ a small tie-breaking jitter that prevents deterministic starvation among near-identical candidates. The 1\,500\,m normaliser mirrors the discovery radius, so the distance term vanishes exactly at the edge of the reachable range. Consistent with the risk posture recorded in the project plan, this transparent baseline precedes any learned model: it is auditable, degrades predictably, and can be replaced behind the stable \texttt{/api/v1/match} contract once labelled acceptance data accumulates.
+
+\subsection{Visual Insights}
+
+The application and its analytical notebooks surface two families of visualisation. Temporally, hourly demand curves per taxi zone expose the pronounced weekday lunchtime and Friday/Saturday evening peaks, and---of direct commercial relevance---the mid-afternoon troughs that constitute the flash-deal opportunity window. Spatially, choropleth views of $f_{\text{area}}$ over the taxi-zone geometry at a chosen hour reveal the expected activity gradients (Midtown and Lower Manhattan dominating evening drop-offs, residential Upper Manhattan zones peaking differently), and the consumer map view translates this into per-restaurant busyness badges. \tbd{Insert Fig.~2: hourly drop-off profile for three contrasting zones; Fig.~3: choropleth of $f_{\text{area}}$ at Friday 19:00; regenerate from data\_engineering\_v2.ipynb.}
+
+\section{Evaluation and Results}
+
+Consistent with academic integrity requirements, this section reports the evaluation \emph{protocol} in full and marks every quantitative slot with an explicit placeholder; no number below is invented, and every red \texttt{[TBD]} marker will be replaced with measured values from the Sprint 4--5 test campaign.
+
+\subsection{Service Performance}
+
+API latency is benchmarked with scripted load against the staging deployment on Cloud Run, measuring p50/p95/p99 across the three critical paths: restaurant discovery (\texttt{GET /api/v1/restaurants} with geospatial filter), detail-with-prediction (\texttt{GET /restaurants/:id}, which fans out to the ML service), and booking creation (which additionally invokes the cached Routes API ETA check). Current measured values: discovery p95 \tbd{ms}, detail-with-prediction p95 \tbd{ms}, booking p95 \tbd{ms}, ML \texttt{/predict/busyness} standalone p95 \tbd{ms}, cold-start penalty on scale-from-zero \tbd{ms}. Database query plans for the geospatial pre-filter are compared with and without the optional PostGIS index (\texttt{EXPLAIN ANALYZE}), reporting \tbd{query-time reduction} from the spatial index. Routing-call caching is evaluated by API-call volume per 100 user sessions before and after the cache (\tbd{reduction}), the mechanism by which the project stays within its Google Maps budget.
+
+\subsection{Model Quality}
+
+Because true occupancy labels are unavailable as open data, the busyness model is evaluated against two proxy references: (i) rank agreement (Spearman's $\rho$) between $f_{\text{area}}$ and held-out popular-times profiles joined in the notebook pipeline, per zone and hour: $\rho = $ \tbd{value}; and (ii) internal consistency between the taxi and pedestrian signals where both resolve, measured as Pearson correlation of $\hat{T}$ and $\hat{P}$ across the restaurant universe: $r = $ \tbd{value}. The share of Manhattan restaurants for which both signals resolve (confidence 1.0) versus one (0.5) is \tbd{percentages}. The matching heuristic is evaluated in the simulated cohort by offer-acceptance rate of ranked versus random candidate selection (\tbd{uplift}), acknowledging plainly that simulation results demonstrate mechanism, not market validation.
+
+\subsection{Usability and Accessibility}
+
+Usability is assessed with the System Usability Scale~\cite{b8} administered after task-based sessions (onboarding, discovery, ETA-validated booking, offer acceptance) with \tbd{n} participants drawn from the target personas, yielding a mean SUS of \tbd{score}. Accessibility is assessed against the project's EDI requirements through the completed accessibility audit: keyboard-only task completion \tbd{pass rate}, contrast conformance \tbd{result}, and task success for the manual (non-map) search fallback \tbd{result}. Qualitative findings from the Sprint 4 user-feedback round---\tbd{top three usability defects and their resolutions}---are logged against the regression-test suite (Jest for gateway services, pytest for the inference API, OpenAPI contract validation for all responses), which currently comprises \tbd{n} automated tests passing in CI.
+
+\section{Conclusion and Future Work}
+
+This paper presented Table, a two-sided marketplace and analytics framework that reframes urban dining from a planned-reservation problem into a real-time, spatially validated matching problem. Its engineering contribution is a cleanly separated microservice architecture---JavaScript transaction layer, Python analytics layer, versioned relational core---deployable by a small team on serverless infrastructure with auditable promotion, risk, and rollback governance. Its analytical contribution is a fully open-data area-busyness model that fuses TLC taxi demand and DOT pedestrian counts into an interpretable, confidence-scored factor available for any Manhattan coordinate and hour, wired end-to-end into the consumer product surface. Its product contribution is the combination---absent from all nine incumbent platforms surveyed---of predicted busyness, immediate availability, ETA-feasibility guardrails, and private one-to-one lull mitigation.
+
+Three future vectors follow naturally. First, \emph{streaming ingestion}: the current pipeline ships precomputed aggregates with the inference container; migrating to a Pub/Sub--Dataflow--BigQuery streaming architecture would let $f_{\text{area}}$ track same-day anomalies (weather, events, transit disruption) rather than historical norms. Second, \emph{learned prediction}: once the deployed system accumulates labelled outcomes (bookings honoured, offers accepted, dwell times), the transparent heuristics can be superseded behind their stable API contracts by gradient-boosted or temporal deep models in the spirit of Zhang \textit{et al.}~\cite{b3}, with the current baselines retained as auditable fallbacks. Third, \emph{spatial generalisation}: the model's only Manhattan-specific dependencies are the taxi-zone geometry and the DOT count network; porting to any city publishing comparable open mobility data---and quantifying, per Chen \textit{et al.}~\cite{b1}, the congestion and emissions externalities avoided when diners stop circling blocks in search of a table---would test whether open civic data alone can sustain this class of responsive urban service.
+
+\begin{thebibliography}{00}
+\bibitem{b1} Y. Chen, Y. Zhang, D. Coffman, and Z. Mi, ``An environmental benefit analysis of bike sharing in New York City,'' \textit{Cities}, vol. 121, p. 103475, 2022.
+\bibitem{b2} Y. Zheng, L. Capra, O. Wolfson, and H. Yang, ``Urban computing: Concepts, methodologies, and applications,'' \textit{ACM Transactions on Intelligent Systems and Technology}, vol. 5, no. 3, pp. 1--55, 2014.
+\bibitem{b3} J. Zhang, Y. Zheng, and D. Qi, ``Deep spatio-temporal residual networks for citywide crowd flows prediction,'' in \textit{Proc. 31st AAAI Conference on Artificial Intelligence}, San Francisco, CA, USA, 2017, pp. 1655--1661.
+\bibitem{b4} J. Cranshaw, R. Schwartz, J. I. Hong, and N. Sadeh, ``The Livehoods project: Utilizing social media to understand the dynamics of a city,'' in \textit{Proc. 6th International AAAI Conference on Weblogs and Social Media (ICWSM)}, Dublin, Ireland, 2012, pp. 58--65.
+\bibitem{b5} S. E. Kimes, ``Restaurant revenue management: Implementation at Chevys Arrowhead,'' \textit{Cornell Hotel and Restaurant Administration Quarterly}, vol. 45, no. 1, pp. 52--67, 2004.
+\bibitem{b6} B. Donovan and D. B. Work, ``Empirically quantifying city-scale transportation system resilience to extreme events,'' \textit{Transportation Research Part C: Emerging Technologies}, vol. 79, pp. 333--346, 2017.
+\bibitem{b7} N. Dragoni, S. Giallorenzo, A. L. Lafuente, M. Mazzara, F. Montesi, R. Mustafin, and L. Safina, ``Microservices: Yesterday, today, and tomorrow,'' in \textit{Present and Ulterior Software Engineering}, M. Mazzara and B. Meyer, Eds. Cham, Switzerland: Springer, 2017, pp. 195--216.
+\bibitem{b8} J. Brooke, ``SUS: A `quick and dirty' usability scale,'' in \textit{Usability Evaluation in Industry}, P. W. Jordan, B. Thomas, B. A. Weerdmeester, and I. L. McClelland, Eds. London, U.K.: Taylor \& Francis, 1996, pp. 189--194.
+\bibitem{b9} R. Kitchin, ``The real-time city? Big data and smart urbanism,'' \textit{GeoJournal}, vol. 79, no. 1, pp. 1--14, 2014.
+\bibitem{b10} J. L. Toole, S. Colak, B. Sturt, L. P. Alexander, A. Evsukoff, and M. C. Gonz\'{a}lez, ``The path most traveled: Travel demand estimation using big data resources,'' \textit{Transportation Research Part C: Emerging Technologies}, vol. 58, pp. 162--177, 2015.
+\end{thebibliography}
+
+\end{document}
