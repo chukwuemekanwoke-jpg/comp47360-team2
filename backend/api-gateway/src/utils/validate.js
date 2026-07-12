@@ -188,6 +188,25 @@ function validateRestaurantSettingsBody(body) {
   return updates;
 }
 
+const BOOKING_STATUSES = new Set([
+  "pending",
+  "confirmed",
+  "cancelled",
+  "completed",
+  "no_show",
+]);
+
+function parseBookingStatus(value) {
+  if (typeof value !== "string" || !BOOKING_STATUSES.has(value)) {
+    throw new AppError(
+      400,
+      "VALIDATION_ERROR",
+      "status must be one of pending, confirmed, cancelled, completed, no_show"
+    );
+  }
+  return value;
+}
+
 module.exports = {
   BUDGET_TIERS,
   TRANSPORT_MODES,
@@ -204,4 +223,5 @@ module.exports = {
   validateDietaryTags,
   requireNonEmptyString,
   parsePartySize,
+  parseBookingStatus,
 };

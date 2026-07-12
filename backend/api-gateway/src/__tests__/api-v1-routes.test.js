@@ -19,6 +19,10 @@ jest.mock("../services/cancelBooking", () => ({
   cancelBooking: jest.fn(),
 }));
 
+jest.mock("../services/updateBookingStatus", () => ({
+  updateBookingStatus: jest.fn(),
+}));
+
 jest.mock("../services/createCampaignOffers", () => ({
   createCampaignOffers: jest.fn(),
 }));
@@ -34,6 +38,7 @@ jest.mock("../services/getRevpash", () => ({
 const createApp = require("../app");
 const { createBooking } = require("../services/createBooking");
 const { cancelBooking } = require("../services/cancelBooking");
+const { updateBookingStatus } = require("../services/updateBookingStatus");
 const { createCampaignOffers } = require("../services/createCampaignOffers");
 const { callMlBusyness } = require("../services/mlBusynessClient");
 const { getRevpashSummary } = require("../services/getRevpash");
@@ -491,6 +496,39 @@ describe("booking routes", () => {
     expect(cancelBooking).toHaveBeenCalledWith(client, {
       userId: USER_ID,
       bookingId: bookingRow().id,
+    });
+    expect(client.query).toHaveBeenCalledWith("BEGIN");
+    expect(client.query).toHaveBeenCalledWith("COMMIT");
+  });
+
+  it("updates booking status for a restaurant manager", async () => {
+    const client = {
+      query: jest.fn().mockResolvedValue({ rows: [] }),
+      release: jest.fn(),
+    };
+
+    mockPool.query.mockResolvedValueOnce({ rows: [{ id: USER_ID }] });
+    mockPool.connect.mockResolvedValueOnce(client);
+    updateBookingStatus.mockResolvedValueOnce(
+      bookingRow({
+        status: "completed",
+      })
+    );
+
+    const res = await request(app)
+      .patch(`/api/v1/bookings/${bookingRow().id}/status`)
+      .set("X-User-Id", USER_ID)
+      .send({ status: "completed" });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      id: bookingRow().id,
+      status: "completed",
+    });
+    expect(updateBookingStatus).toHaveBeenCalledWith(client, {
+      managerUserId: USER_ID,
+      bookingId: bookingRow().id,
+      status: "completed",
     });
     expect(client.query).toHaveBeenCalledWith("BEGIN");
     expect(client.query).toHaveBeenCalledWith("COMMIT");
