@@ -273,7 +273,6 @@ export const tableApi = createApi({
       invalidatesTags: ['Bookings'],
     }),
 
-    // Pending backend: GET /restaurants/:id/revpash
     getRevpash: builder.query<RevpashSummary, { restaurantId: string; window?: RevpashWindow }>({
       query: ({ restaurantId, window = 'today' }) => ({
         url: `/restaurants/${restaurantId}/revpash`,

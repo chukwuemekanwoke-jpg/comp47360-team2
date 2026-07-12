@@ -27,11 +27,16 @@ jest.mock("../services/mlBusynessClient", () => ({
   callMlBusyness: jest.fn(),
 }));
 
+jest.mock("../services/getRevpash", () => ({
+  getRevpashSummary: jest.fn(),
+}));
+
 const createApp = require("../app");
 const { createBooking } = require("../services/createBooking");
 const { cancelBooking } = require("../services/cancelBooking");
 const { createCampaignOffers } = require("../services/createCampaignOffers");
 const { callMlBusyness } = require("../services/mlBusynessClient");
+const { getRevpashSummary } = require("../services/getRevpash");
 
 const app = createApp();
 
@@ -384,6 +389,36 @@ describe("restaurant routes", () => {
     expect(res.body).toMatchObject({
       isWheelchairAccessible: true,
       sensoryFriendly: true,
+    });
+  });
+
+  it("returns RevPASH summary for a managed restaurant", async () => {
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [{ id: USER_ID, token_version: 0 }] })
+      .mockResolvedValueOnce({ rows: [{ id: RESTAURANT_ID, manager_user_id: USER_ID }] });
+    getRevpashSummary.mockResolvedValueOnce({
+      restaurantId: RESTAURANT_ID,
+      window: "today",
+      revenue: 314.16,
+      availableSeatHours: 88,
+      revpash: 3.57,
+    });
+
+    const res = await request(app)
+      .get(`/api/v1/restaurants/${RESTAURANT_ID}/revpash?window=today`)
+      .set("X-User-Id", USER_ID);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      restaurantId: RESTAURANT_ID,
+      window: "today",
+      revenue: 314.16,
+      availableSeatHours: 88,
+      revpash: 3.57,
+    });
+    expect(getRevpashSummary).toHaveBeenCalledWith(mockPool, {
+      restaurantId: RESTAURANT_ID,
+      window: "today",
     });
   });
 });

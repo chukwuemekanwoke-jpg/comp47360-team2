@@ -290,6 +290,33 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /api/v1/restaurants/{restaurantId}/revpash:
+    get:
+      tags: [Restaurants]
+      summary: RevPASH summary for merchant dashboard (Story 5.1)
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+        - $ref: "#/components/parameters/RestaurantId"
+        - name: window
+          in: query
+          schema:
+            type: string
+            enum: [today, week, month]
+            default: today
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RevpashSummary"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
   /api/v1/restaurants/{restaurantId}/eta:
     get:
       tags: [Restaurants]
@@ -860,6 +887,28 @@ components:
           type: string
           format: uuid
           nullable: true
+        partySize:
+          type: integer
+          minimum: 1
+          maximum: 20
+          description: Party size for RevPASH revenue simulation (defaults to 2).
+
+    RevpashSummary:
+      type: object
+      required: [restaurantId, window, revenue, availableSeatHours, revpash]
+      properties:
+        restaurantId:
+          type: string
+          format: uuid
+        window:
+          type: string
+          enum: [today, week, month]
+        revenue:
+          type: number
+        availableSeatHours:
+          type: number
+        revpash:
+          type: number
 
     Booking:
       type: object

@@ -361,11 +361,35 @@ Create a venue owned by the authenticated manager (`manager_user_id` set server-
   "cuisine": "american",
   "neighborhood": "Midtown",
   "isWheelchairAccessible": false,
-  "sensoryFriendly": false
+  "sensoryFriendly": false,
+  "opensAt": "11:00",
+  "closesAt": "22:00"
 }
 ```
 
+Optional `opensAt` / `closesAt` (`HH:MM`) default to `11:00`–`22:00`. Server seeds `avgCheckPerCover` from cuisine/neighborhood benchmarks.
+
 **Response `201`:** `RestaurantDetail` (new `availableTableCount` defaults to `0`)
+
+#### `GET /api/v1/restaurants/:restaurantId/revpash` (P1 — Story 5.1)
+
+**Auth:** manager Bearer JWT or `X-User-Id`
+
+**Query:** `window=today|week|month` (default `today`)
+
+**Response `200`:**
+
+```json
+{
+  "restaurantId": "uuid",
+  "window": "today",
+  "revenue": 314.16,
+  "availableSeatHours": 88,
+  "revpash": 3.57
+}
+```
+
+Aggregates `restaurant_revpash_hourly` in America/New_York local time.
 
 #### `PATCH /api/v1/restaurants/:restaurantId/settings`
 
@@ -423,11 +447,12 @@ Compute travel time once when opening restaurant page (per user story).
   "transportMode": "walking",
   "userLat": 40.758,
   "userLng": -73.9855,
-  "offerId": null
+  "offerId": null,
+  "partySize": 2
 }
 ```
 
-Include `offerId` when confirming from flash deal flow.
+`partySize` optional (default `2`); server computes simulated `checkAmount` for RevPASH.
 
 **Response `201`:**
 
@@ -655,6 +680,7 @@ Gateway then inserts `offers` with `expiresAt = now() + 900s`. If the ML service
 | P0 | POST | `/api/v1/auth/logout` | — |
 | P0 | POST | `/api/v1/restaurants` | B-side onboarding |
 | P0 | PATCH | `/api/v1/restaurants/:id/settings` | B-side settings |
+| P0 | GET | `/api/v1/restaurants/:id/revpash` | 5.1 RevPASH |
 
 ### 6.2 Planned (documented, not yet implemented)
 
@@ -663,7 +689,6 @@ Gateway then inserts `offers` with `expiresAt = now() + 900s`. If the ML service
 | P1 | GET | `/api/v1/restaurants/nearby?neighborhood=` | 2.2 |
 | P1 | PATCH | `/api/v1/bookings/:id/status` | 5.2 dashboard |
 | P1 | GET | `/api/v1/restaurants/:id/campaigns/:campaignId/offers` | 5.2 live tracker |
-| P1 | GET | `/api/v1/restaurants/:id/revpash` | 5.1 RevPASH |
 
 ---
 
@@ -691,3 +716,4 @@ Shared TypeScript types (`frontend/packages/shared/src/types.ts`) map to API fie
 | v0.2 | 2026-07-04 | JWT auth; merchant bookings endpoint; Routes API naming; align client types path |
 | v0.3 | 2026-07-12 | Merchant restaurant create/settings; campaign cancel; refresh §6 endpoint checklist; auth logout |
 | v0.3.1 | 2026-07-12 | Booking cancel endpoint (Story 4.2) |
+| v0.4 | 2026-07-12 | RevPASH schema, hourly view, GET /revpash, booking partySize |
