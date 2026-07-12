@@ -4,6 +4,12 @@ from typing import Optional, List
 import random
 
 from area_factor import get_area_factor
+from booking_maturity import (
+    BOOKING_WEIGHT_MAX,
+    blend,
+    booking_weight,
+    observed_occupancy,
+)
 
 app = FastAPI(
     title="Tablé Algorithm Inference API",
@@ -30,6 +36,18 @@ class InferenceRequest(BaseModel):
     neighborhood: Optional[str] = Field(None, description="Neighborhood name")
     cuisine: Optional[str] = Field(None, description="Cuisine type")
     distance_meters: Optional[float] = Field(None, ge=0.0, description="Distance from user to restaurant in meters")
+    days_since_onboarding: Optional[float] = Field(
+        None, ge=0.0,
+        description="Days since the merchant was onboarded. With the two booking counts, "
+                    "shifts weight from the location prior onto the venue's own booking "
+                    "history over the first 30 days (see booking_maturity.py).",
+    )
+    recent_bookings_total_30d: Optional[int] = Field(
+        None, ge=0, description="Venue's confirmed/completed bookings in the trailing 30 days (all hours)")
+    recent_bookings_same_bucket_30d: Optional[int] = Field(
+        None, ge=0, description="Of those, bookings landing in the same (day_of_week, hour_of_day±1) bucket")
+    capacity: Optional[int] = Field(
+        None, ge=1, description="Venue's total table capacity, used to normalise observed occupancy")
 
 class InferenceResponse(BaseModel):
     restaurant_id: str
@@ -38,6 +56,8 @@ class InferenceResponse(BaseModel):
     confidence: float = Field(..., ge=0.0, le=1.0, description="Model prediction confidence score")
     taxi_dropoffs_1h: Optional[float] = Field(None, description="Taxi dropoffs used for this prediction (supplied or auto-computed)")
     area_busyness_factor: Optional[float] = Field(None, ge=0.0, le=1.0, description="Combined real-data area signal (taxi + foot traffic), when coordinates were provided")
+    observed_occupancy: Optional[float] = Field(None, ge=0.0, le=1.0, description="Booking-derived occupancy for this (weekday, hour) bucket, when booking history was supplied")
+    booking_weight: Optional[float] = Field(None, ge=0.0, le=1.0, description="Weight the venue's own bookings carried in this prediction (0 at onboarding, up to 0.6 at maturity)")
 
 class MatchCandidate(BaseModel):
     userId: str
@@ -160,6 +180,29 @@ def predict_busyness(restaurant_id: str, request: InferenceRequest):
             predicted_score = min(1.0, predicted_score + density_boost)
             confidence = 0.95
 
+        # Merchant maturation: everything above is the location prior (works
+        # from day 0 with only coordinates). When the gateway supplies the
+        # venue's booking history, shift weight onto observed occupancy over
+        # the first 30 days — capped so area signals always keep >= 40%.
+        occupancy = None
+        weight = None
+        if (
+            request.days_since_onboarding is not None
+            and request.recent_bookings_total_30d is not None
+        ):
+            occupancy = observed_occupancy(
+                request.recent_bookings_same_bucket_30d or 0,
+                request.days_since_onboarding,
+                request.capacity or 8,
+            )
+            weight = booking_weight(
+                request.days_since_onboarding, request.recent_bookings_total_30d
+            )
+            predicted_score = blend(predicted_score, occupancy, weight)
+            # Real transactions are the strongest evidence we have; scale
+            # confidence up with how much of it this prediction used.
+            confidence = min(1.0, confidence + 0.25 * (weight / BOOKING_WEIGHT_MAX))
+
         base_tables = 8
         available_tables = max(0, round(base_tables * (1.0 - predicted_score)))
 
@@ -170,6 +213,8 @@ def predict_busyness(restaurant_id: str, request: InferenceRequest):
             confidence=round(confidence, 4),
             taxi_dropoffs_1h=taxi_dropoffs_1h,
             area_busyness_factor=area_busyness_factor,
+            observed_occupancy=round(occupancy, 4) if occupancy is not None else None,
+            booking_weight=round(weight, 4) if weight is not None else None,
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

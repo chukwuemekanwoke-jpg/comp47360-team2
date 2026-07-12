@@ -124,7 +124,30 @@ router.post(
       ]
     );
 
-    res.status(201).json(toRestaurantDetail(rows[0]));
+    // Onboarding attaches the merchant's location to the prediction system
+    // immediately: run a location-prior busyness score (day-0 merchants have
+    // no booking history, so the ml-service scores purely from area taxi +
+    // foot-traffic signals) and persist it as the initial stored score.
+    const restaurant = rows[0];
+    const prediction = await refreshRestaurantBusyness(pool, {
+      id: restaurant.id,
+      latitude: restaurant.latitude,
+      longitude: restaurant.longitude,
+      availableTableCount: restaurant.available_table_count,
+    });
+    if (prediction) {
+      try {
+        await pool.query(
+          `UPDATE restaurants SET busyness_score = $1, updated_at = NOW() WHERE id = $2`,
+          [prediction.busynessScore, restaurant.id]
+        );
+        restaurant.busyness_score = prediction.busynessScore;
+      } catch (err) {
+        console.warn(`[busyness] failed to persist onboarding score for restaurant ${restaurant.id}: ${err.message}`);
+      }
+    }
+
+    res.status(201).json(toRestaurantDetail(restaurant));
   })
 );
 

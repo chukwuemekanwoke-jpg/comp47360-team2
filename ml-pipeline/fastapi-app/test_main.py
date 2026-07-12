@@ -48,6 +48,8 @@ def test_predict_busyness_returns_stable_prediction(monkeypatch):
         "confidence": 0.95,
         "taxi_dropoffs_1h": 25.0,
         "area_busyness_factor": None,
+        "observed_occupancy": None,
+        "booking_weight": None,
     }
 
 
@@ -74,6 +76,79 @@ def test_predict_busyness_uses_area_factor_when_coordinates_given(monkeypatch):
     assert body["area_busyness_factor"] is not None
     assert 0.0 <= body["area_busyness_factor"] <= 1.0
     assert body["confidence"] > 0.75  # both taxi + pedestrian signals available here
+
+
+def test_newly_onboarded_merchant_scores_purely_from_location(monkeypatch):
+    """Day 0, no bookings: the booking weight must be zero and the score must
+    equal the location prior exactly — onboarding attaches the location and
+    predicts from it alone."""
+    monkeypatch.setattr(main.random, "uniform", lambda _low, _high: 0.0)
+
+    payload = {"hour_of_day": 19, "day_of_week": 5}
+    prior = client.post("/predict/busyness?restaurant_id=r1", json=payload).json()
+
+    cold = client.post(
+        "/predict/busyness?restaurant_id=r1",
+        json={
+            **payload,
+            "days_since_onboarding": 0,
+            "recent_bookings_total_30d": 0,
+            "recent_bookings_same_bucket_30d": 0,
+            "capacity": 10,
+        },
+    ).json()
+
+    assert cold["booking_weight"] == 0.0
+    assert cold["observed_occupancy"] == 0.0
+    assert cold["busyness_score"] == prior["busyness_score"]
+
+
+def test_mature_merchant_blends_toward_observed_bookings(monkeypatch):
+    """Past 30 days with plenty of bookings: weight approaches the 0.6 cap and
+    the score moves toward the venue's own bucket occupancy, while the
+    location prior keeps its guaranteed >= 40% share."""
+    monkeypatch.setattr(main.random, "uniform", lambda _low, _high: 0.0)
+
+    # Prior for hour 19 / day 5 with no coords or taxi data = 0.8.
+    # Bucket is fully booked: 16 bookings / (4 weekday occurrences x 4 tables).
+    response = client.post(
+        "/predict/busyness?restaurant_id=r2",
+        json={
+            "hour_of_day": 19,
+            "day_of_week": 5,
+            "days_since_onboarding": 45,
+            "recent_bookings_total_30d": 120,
+            "recent_bookings_same_bucket_30d": 16,
+            "capacity": 4,
+        },
+    ).json()
+
+    assert response["observed_occupancy"] == 1.0
+    # 0.6 cap x maturity 1.0 x evidence 120/(120+20)
+    assert response["booking_weight"] == 0.5143
+    assert response["busyness_score"] == 0.9029  # 0.8 pulled up toward 1.0
+    assert response["booking_weight"] <= 0.6
+
+
+def test_sparse_booking_history_keeps_score_near_location_prior(monkeypatch):
+    """A 30-day-old venue with only 2 bookings: evidence shrinkage keeps the
+    weight tiny so the noisy own-history barely moves the score."""
+    monkeypatch.setattr(main.random, "uniform", lambda _low, _high: 0.0)
+
+    response = client.post(
+        "/predict/busyness?restaurant_id=r3",
+        json={
+            "hour_of_day": 19,
+            "day_of_week": 5,
+            "days_since_onboarding": 30,
+            "recent_bookings_total_30d": 2,
+            "recent_bookings_same_bucket_30d": 2,
+            "capacity": 4,
+        },
+    ).json()
+
+    assert response["booking_weight"] < 0.06
+    assert abs(response["busyness_score"] - 0.8) < 0.05
 
 
 def test_match_users_orders_candidates_by_score(monkeypatch):

@@ -1,6 +1,6 @@
 # Risk Register — TABL-611
 
-Maintained per TABL-611 (Risk Register - Monitor & Escalate Blockers). Reviewed at each standup; new risks added as identified, mitigation status updated as work lands. Last updated: 2026-07-11.
+Maintained per TABL-611 (Risk Register - Monitor & Escalate Blockers). Reviewed at each standup; new risks added as identified, mitigation status updated as work lands. Last updated: 2026-07-12.
 
 ## Escalate now (Critical / High severity, active blockers)
 
@@ -32,6 +32,8 @@ Maintained per TABL-611 (Risk Register - Monitor & Escalate Blockers). Reviewed 
 | R-13 | `TASKS.md` "Done" entries can be inaccurate relative to actual repo state (see R-03) — undermines trust in the tracker as a status source | Operational | Medium | Medium | Medium | Spot-check other "Done" claims periodically; correct entries once verified | chukwuemekanwoke-jpg | Open — one instance found |
 | R-14 | No confirmed Cloud SQL automated backup on `tabl-db-staging` | Security/Operational | Medium | High | **Critical** | Verify with `gcloud sql instances describe tabl-db-staging --format="value(settings.backupConfiguration)"`; enable via `gcloud sql instances patch` if absent — see `docs/rollback-recovery-runbook.md` | chukwuemekanwoke-jpg | Open — action assigned, not yet checked |
 | R-15 | No verified fast-rollback mechanism; <2 min rollback SLA (TABL-507) not currently achievable via any confirmed path | Operational | Medium | High | High | Documented intended Cloud Run traffic-shift path in `docs/rollback-recovery-runbook.md`; needs GCP Console confirmation of R-04 before it can be drilled and timed for real | chukwuemekanwoke-jpg | Open — blocked on R-04 |
+| R-16 | Booking-maturity blend (added 2026-07-12) reads booking timestamps with `EXTRACT(HOUR ...)` in the **DB server's timezone** while the gateway buckets predictions by its own local clock — if Cloud SQL and Cloud Run run in different timezones (typical default: UTC vs UTC, but unverified), same-hour bucket counts silently shift by the offset | Operational | Medium | Low-Medium | Medium | Verify both services' effective timezones; if they differ, pin the SQL extraction with `AT TIME ZONE` to match the gateway's clock | chukwuemekanwoke-jpg | Open — not started |
+| R-17 | Onboarding busyness seeding makes `POST /restaurants` latency dependent on ml-service availability (adds stats query + ML round-trip inside the request); degradation is graceful (null → skip) but a slow-not-down ml-service delays merchant onboarding by up to `mlBusynessTimeoutMs` | Operational | Low-Medium | Low | Low | Acceptable for MVP scale; consider moving the seed prediction to a fire-and-forget/background pattern if onboarding latency ever matters | chukwuemekanwoke-jpg | Open — accepted for now |
 
 ## Mitigated / Closed
 
@@ -41,3 +43,4 @@ _None yet — register created 2026-07-11._
 
 - **2026-07-11**: Register created from findings surfaced during busyness-prediction wiring work and branch review. 4 items flagged for escalation (R-01, R-02, R-04, R-09). Awaiting: Rui's reply (R-05, R-06), Yang Liu's status (R-09), GCP Console verification (R-03, R-04).
 - **2026-07-11 (TABL-507)**: Wrote `docs/rollback-recovery-runbook.md`. Confirmed `git revert` itself is fast (~200ms, tested on a scratch branch) but found two new Critical/High risks in the process: no confirmed DB backup (R-14) and no verified fast-rollback path to actually hit the ticket's <2 min target (R-15). Both trace back to the same unresolved GCP Console verification as R-03/R-04 — escalating as one bundled ask rather than four separate ones.
+- **2026-07-12**: Implemented merchant busyness maturation — new venues score from location prior (taxi + pedestrian) at onboarding, then blend toward their own confirmed bookings over 30 days (capped at 60% booking weight, shrinkage-damped). Two new risks logged: timezone consistency of the hour-bucket SQL (R-16, needs verification) and onboarding latency coupling to ml-service (R-17, accepted). Note R-06 (duplicated model effort with Rui) is still open — the maturation layer is model-agnostic (blends whatever the prior produces), so it survives a swap to Rui's trained model.

@@ -71,6 +71,16 @@ function restaurantRow(overrides = {}) {
   };
 }
 
+function maturityStatsRow(overrides = {}) {
+  return {
+    days_since_onboarding: 42.5,
+    capacity: 24,
+    total_30d: 18,
+    same_bucket_30d: 3,
+    ...overrides,
+  };
+}
+
 function bookingRow(overrides = {}) {
   return {
     id: "55555555-5555-4555-8555-555555555555",
@@ -199,6 +209,7 @@ describe("restaurant routes", () => {
   it("returns restaurant details with a live busyness prediction", async () => {
     mockPool.query
       .mockResolvedValueOnce({ rows: [restaurantRow()] })
+      .mockResolvedValueOnce({ rows: [maturityStatsRow()] }) // booking-maturity stats
       .mockResolvedValueOnce({ rows: [] }); // availability_snapshots insert
     callMlBusyness.mockResolvedValueOnce({
       busynessScore: 0.72,
@@ -216,6 +227,16 @@ describe("restaurant routes", () => {
       busynessScore: 0.72,
       availableTableCount: 2, // real DB value, not overridden by ml-service's simulated count
     });
+    // Booking-maturity stats flow through to the ml-service call.
+    expect(callMlBusyness).toHaveBeenCalledWith(
+      expect.objectContaining({
+        restaurantId: RESTAURANT_ID,
+        daysSinceOnboarding: 42.5,
+        capacity: 24,
+        recentBookingsTotal30d: 18,
+        recentBookingsSameBucket30d: 3,
+      })
+    );
     expect(mockPool.query).toHaveBeenLastCalledWith(
       expect.stringContaining("INSERT INTO availability_snapshots"),
       [RESTAURANT_ID, 3, 0.72]
@@ -223,7 +244,9 @@ describe("restaurant routes", () => {
   });
 
   it("falls back to the stored busyness score when ml-service is unavailable", async () => {
-    mockPool.query.mockResolvedValueOnce({ rows: [restaurantRow()] });
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [restaurantRow()] })
+      .mockResolvedValueOnce({ rows: [maturityStatsRow()] }); // booking-maturity stats
     callMlBusyness.mockRejectedValueOnce(new Error("connection refused"));
 
     const res = await request(app).get(`/api/v1/restaurants/${RESTAURANT_ID}`);
@@ -233,10 +256,10 @@ describe("restaurant routes", () => {
       id: RESTAURANT_ID,
       busynessScore: 0.35, // stored restaurants.busyness_score, unchanged
     });
-    expect(mockPool.query).toHaveBeenCalledTimes(1); // no snapshot insert attempted
+    expect(mockPool.query).toHaveBeenCalledTimes(2); // no snapshot insert attempted
   });
 
-  it("creates a restaurant for the authenticated manager", async () => {
+  it("creates a restaurant for the authenticated manager and seeds a location-based busyness score", async () => {
     mockPool.query
       .mockResolvedValueOnce({ rows: [{ id: USER_ID, token_version: 0 }] })
       .mockResolvedValueOnce({
@@ -250,7 +273,18 @@ describe("restaurant routes", () => {
             available_table_count: 0,
           }),
         ],
-      });
+      })
+      // Day-0 merchant: no booking history yet.
+      .mockResolvedValueOnce({
+        rows: [maturityStatsRow({ days_since_onboarding: 0, total_30d: 0, same_bucket_30d: 0 })],
+      })
+      .mockResolvedValueOnce({ rows: [] }) // availability_snapshots insert
+      .mockResolvedValueOnce({ rows: [] }); // persist seeded busyness_score
+    callMlBusyness.mockResolvedValueOnce({
+      busynessScore: 0.41,
+      availableTableCount: 5,
+      confidence: 0.85,
+    });
 
     const res = await request(app)
       .post("/api/v1/restaurants")
@@ -272,11 +306,52 @@ describe("restaurant routes", () => {
       phone: "+1 212-555-0199",
       cuisine: "italian",
       availableTableCount: 0,
+      busynessScore: 0.41, // seeded from the onboarding location prediction
     });
-    expect(mockPool.query).toHaveBeenLastCalledWith(
+    expect(mockPool.query).toHaveBeenCalledWith(
       expect.stringContaining("INSERT INTO restaurants"),
       expect.arrayContaining([USER_ID])
     );
+    // Day-0 stats flow through so the ml-service scores from location alone.
+    expect(callMlBusyness).toHaveBeenCalledWith(
+      expect.objectContaining({
+        daysSinceOnboarding: 0,
+        recentBookingsTotal30d: 0,
+        recentBookingsSameBucket30d: 0,
+      })
+    );
+    expect(mockPool.query).toHaveBeenLastCalledWith(
+      expect.stringContaining("UPDATE restaurants SET busyness_score"),
+      [0.41, RESTAURANT_ID]
+    );
+  });
+
+  it("still creates the restaurant when the onboarding prediction is unavailable", async () => {
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [{ id: USER_ID, token_version: 0 }] })
+      .mockResolvedValueOnce({
+        rows: [restaurantRow({ name: "New Venue", available_table_count: 0, busyness_score: null })],
+      })
+      .mockResolvedValueOnce({
+        rows: [maturityStatsRow({ days_since_onboarding: 0, total_30d: 0, same_bucket_30d: 0 })],
+      });
+    callMlBusyness.mockRejectedValueOnce(new Error("connection refused"));
+
+    const res = await request(app)
+      .post("/api/v1/restaurants")
+      .set("X-User-Id", USER_ID)
+      .send({
+        name: "New Venue",
+        addressLine: "100 Main St",
+        phone: "+1 212-555-0199",
+        cuisine: "italian",
+        latitude: 40.73,
+        longitude: -73.99,
+      });
+
+    expect(res.status).toBe(201);
+    // No seeded score: serializer maps a null busyness_score to 0.
+    expect(res.body).toMatchObject({ name: "New Venue", busynessScore: 0 });
   });
 
   it("updates accessibility settings for a managed restaurant", async () => {
