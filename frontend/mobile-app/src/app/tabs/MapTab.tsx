@@ -110,7 +110,7 @@ export default function MapScreen() {
         {/* List toggle overlay */}
         <TouchableOpacity
           className="absolute bottom-3 right-3 bg-table-canvas/80 border border-table-border px-3 py-1.5 rounded-lg"
-          onPress={() => router.push("/card-list-view")}
+          onPress={() => router.push("/tabs/CardTab")}
           activeOpacity={0.8}
         >
           <Text className="text-table-cream text-[10px] font-bold uppercase tracking-widest">
