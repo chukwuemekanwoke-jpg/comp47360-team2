@@ -308,6 +308,7 @@
                   "pm.test('booking confirmed', function () {",
                   "  pm.response.to.have.status(201);",
                   "  pm.expect(pm.response.json().status).to.eql('confirmed');",
+                  "  pm.collectionVariables.set('bookingId', pm.response.json().id);",
                   "});"
                 ]
               }
@@ -379,6 +380,38 @@
                   "pm.test('offer acceptance creates booking', function () {",
                   "  pm.response.to.have.status(200);",
                   "  pm.expect(pm.response.json().booking.status).to.eql('confirmed');",
+                  "  pm.collectionVariables.set('bookingId', pm.response.json().booking.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cancel booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/bookings/{{bookingId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "bookings", "{{bookingId}}", "cancel"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('booking cancelled', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().status).to.eql('cancelled');",
                   "});"
                 ]
               }

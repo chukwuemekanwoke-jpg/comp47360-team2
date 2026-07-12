@@ -61,6 +61,7 @@ Server: `http://localhost:3001`
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
 | POST | `/api/v1/bookings` | JWT or `X-User-Id` | Confirm reservation; decrements table count |
+| POST | `/api/v1/bookings/:bookingId/cancel` | JWT or `X-User-Id` | Cancel booking; restore table count / offer state |
 | GET | `/api/v1/users/me/bookings` | JWT or `X-User-Id` | List the current user's bookings (newest first) |
 | GET | `/api/v1/restaurants/:restaurantId/bookings` | manager JWT or `X-User-Id` | List bookings for a restaurant (newest first) |
 
@@ -125,6 +126,10 @@ curl -X POST http://localhost:3001/api/v1/bookings \
 
 # List my bookings (Demo Diner)
 curl http://localhost:3001/api/v1/users/me/bookings \
+  -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001'
+
+# Cancel booking (replace BOOKING_ID from bookings list or create response)
+curl -X POST http://localhost:3001/api/v1/bookings/BOOKING_ID/cancel \
   -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001'
 
 # B-side: list restaurant bookings (Demo Manager on The Maple Room)
