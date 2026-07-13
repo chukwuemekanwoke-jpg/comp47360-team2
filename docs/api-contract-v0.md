@@ -313,6 +313,26 @@ Invalidates the current token server-side by incrementing `token_version`.
 
 **Response `200`:** `{ "status": "logged_out" }`
 
+#### `POST /api/v1/auth/forgot-password`
+
+**Auth:** none  
+
+**Request:** `{ "email": "alex@example.com" }`
+
+**Response `200`:** `{ "message": "If an account exists for that email, a reset link has been sent." }`  
+Same body whether or not the email is registered (no account enumeration).
+
+MVP: reset link is logged to the API gateway console (`[password-reset]`); configure `WEB_APP_URL` for the link target.
+
+#### `POST /api/v1/auth/reset-password`
+
+**Auth:** none (the emailed token is the credential)  
+
+**Request:** `{ "token": "<from reset link>", "newPassword": "new-secure-password" }`
+
+**Response `200`:** `{ "message": "Password updated successfully." }`  
+**Response `400`:** invalid/expired token or weak password. Clears reset columns and increments `token_version` (invalidates existing JWTs).
+
 ---
 
 ### 4.3 Discovery (Story 2.1)
@@ -690,6 +710,8 @@ Gateway then inserts `offers` with `expiresAt = now() + 900s`. If the ML service
 | P0 | POST | `/api/v1/auth/register` | — |
 | P0 | POST | `/api/v1/auth/login` | — |
 | P0 | POST | `/api/v1/auth/logout` | — |
+| P0 | POST | `/api/v1/auth/forgot-password` | — |
+| P0 | POST | `/api/v1/auth/reset-password` | — |
 | P0 | POST | `/api/v1/restaurants` | B-side onboarding |
 | P0 | PATCH | `/api/v1/restaurants/:id/settings` | B-side settings |
 | P0 | GET | `/api/v1/restaurants/:id/revpash` | 5.1 RevPASH |
@@ -729,3 +751,4 @@ Shared TypeScript types (`frontend/packages/shared/src/types.ts`) map to API fie
 | v0.3.1 | 2026-07-12 | Booking cancel endpoint (Story 4.2) |
 | v0.4 | 2026-07-12 | RevPASH schema, hourly view, GET /revpash, booking partySize |
 | v0.4.1 | 2026-07-12 | Merchant PATCH booking status for dashboard |
+| v0.5 | 2026-07-13 | Password forgot/reset auth endpoints |
