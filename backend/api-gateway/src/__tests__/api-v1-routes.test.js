@@ -618,6 +618,33 @@ describe("campaign routes", () => {
     });
   });
 
+  it("rejects tableQuota above restaurant capacity", async () => {
+    const client = {
+      query: jest
+        .fn()
+        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: [restaurantRow({ capacity: 8 })] }),
+      release: jest.fn(),
+    };
+
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
+      .mockResolvedValueOnce({ rows: [{ id: RESTAURANT_ID, manager_user_id: USER_ID }] });
+    mockPool.connect.mockResolvedValueOnce(client);
+
+    const res = await request(app)
+      .post(`/api/v1/restaurants/${RESTAURANT_ID}/campaigns`)
+      .set("X-User-Id", USER_ID)
+      .send({ tableQuota: 9, discountPercent: 20 });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatchObject({
+      code: "VALIDATION_ERROR",
+      message: "tableQuota cannot exceed restaurant capacity (8)",
+    });
+    expect(createCampaignOffers).not.toHaveBeenCalled();
+  });
+
   it("cancels an active campaign and revokes pending offers", async () => {
     const client = {
       query: jest

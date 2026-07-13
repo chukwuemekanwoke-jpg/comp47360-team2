@@ -55,6 +55,11 @@ export default function MerchantDashboard() {
       return;
     }
 
+    if (restaurant?.capacity != null && tableQuota > restaurant.capacity) {
+      setFormError(`Cannot release more than ${restaurant.capacity} tables (restaurant capacity)`);
+      return;
+    }
+
     try {
       await createCampaign({ restaurantId, tableQuota, discountPercent }).unwrap();
     } catch (err) {
@@ -209,6 +214,7 @@ export default function MerchantDashboard() {
                       id="tableQuota"
                       type="number"
                       min={1}
+                      max={restaurant?.capacity ?? undefined}
                       value={tableQuota}
                       onChange={(e) => setTableQuota(Number(e.target.value))}
                       disabled={!!activeCampaign || isCreatingCampaign}

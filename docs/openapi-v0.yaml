@@ -1116,6 +1116,7 @@ components:
         tableQuota:
           type: integer
           minimum: 1
+          description: Must not exceed the restaurant capacity.
         discountPercent:
           type: integer
           minimum: 10
