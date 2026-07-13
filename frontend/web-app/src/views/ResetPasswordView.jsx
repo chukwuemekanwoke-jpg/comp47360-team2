@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { isValidPassword } from '../utils/validation';
 import { useResetPasswordMutation } from '../../../packages/shared/src/apiSlice.ts';
+import PasswordInput from '../components/PasswordInput';
 
 export default function ResetPasswordView() {
   const [searchParams] = useSearchParams();
@@ -95,15 +96,15 @@ export default function ResetPasswordView() {
                 <label htmlFor="newPassword" className="block text-xs font-mono text-table-textMuted uppercase tracking-widest text-left">
                   New Password
                 </label>
-                <input
+                <PasswordInput
                   id="newPassword"
-                  type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
                   disabled={isSubmitting}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 bg-black/40 border border-zinc-800 rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:ring-2 focus:ring-table-primary/50 focus:border-table-primary transition-all outline-none disabled:opacity-50"
+                  autoComplete="new-password"
+                  inputClassName="w-full px-4 py-3 bg-black/40 border border-zinc-800 rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:ring-2 focus:ring-table-primary/50 focus:border-table-primary transition-all outline-none disabled:opacity-50"
                 />
               </div>
 
@@ -111,15 +112,15 @@ export default function ResetPasswordView() {
                 <label htmlFor="confirmPassword" className="block text-xs font-mono text-table-textMuted uppercase tracking-widest text-left">
                   Re-enter Password
                 </label>
-                <input
+                <PasswordInput
                   id="confirmPassword"
-                  type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   disabled={isSubmitting}
                   placeholder="••••••••"
-                  className="w-full px-4 py-3 bg-black/40 border border-zinc-800 rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:ring-2 focus:ring-table-primary/50 focus:border-table-primary transition-all outline-none disabled:opacity-50"
+                  autoComplete="new-password"
+                  inputClassName="w-full px-4 py-3 bg-black/40 border border-zinc-800 rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:ring-2 focus:ring-table-primary/50 focus:border-table-primary transition-all outline-none disabled:opacity-50"
                 />
               </div>
 

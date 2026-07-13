@@ -3,7 +3,7 @@ import {
   UserProfile, RestaurantSummary, RestaurantDetail, EtaResult,
   Booking, OfferInboxItem, Campaign, TransportMode, BudgetTier, BookingStatus,
   RevpashSummary, RevpashWindow, AuthSession, ManagerOfferItem, CampaignRevpashLift,
-  PasswordResetResult
+  PasswordResetResult, MapsConfig
 } from './types';
 
 // --- CROSS-PLATFORM URL RESOLVER ---
@@ -95,6 +95,25 @@ export const tableApi = createApi({
         body,
       }),
       invalidatesTags: ['User'],
+    }),
+
+    // POST /auth/logout — bumps the user's token_version server-side, which
+    // revokes the current JWT (and any other active session for that user)
+    // rather than just clearing local state.
+    logout: builder.mutation<{ status: string }, void>({
+      query: () => ({
+        url: '/auth/logout',
+        method: 'POST',
+      }),
+      invalidatesTags: ['User', 'Restaurants', 'Bookings', 'Offers', 'Campaigns'],
+    }),
+
+    // Needs GET /config/maps-key on the backend (see handoff spec) — serves
+    // the Google Maps browser key from GCP Secret Manager at runtime, so it
+    // never sits in the frontend build/source control and can be rotated
+    // without a redeploy.
+    getMapsConfig: builder.query<MapsConfig, void>({
+      query: () => '/config/maps-key',
     }),
 
     updatePreferences: builder.mutation<UserProfile, { userId: string; budgetTier: BudgetTier; dietaryTags: string[]; lastLat?: number; lastLng?: number }>({
@@ -319,6 +338,8 @@ export const {
   useCreateUserMutation,
   useRegisterMutation,
   useLoginMutation,
+  useLogoutMutation,
+  useGetMapsConfigQuery,
   useUpdatePreferencesMutation,
   useGetProfileQuery,
   useGetNearbyRestaurantsQuery,

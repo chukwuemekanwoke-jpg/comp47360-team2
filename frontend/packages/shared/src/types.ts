@@ -141,4 +141,13 @@ export interface PasswordResetResult {
   message: string;
 }
 
+// Served at runtime rather than baked into the frontend build, so the key
+// (held in GCP Secret Manager) can be rotated without a redeploy and never
+// sits in source control or a compiled bundle. It's still visible in the
+// browser once used, same as any Maps JS key — the real restriction is the
+// HTTP-referrer allowlist configured on the key itself in GCP Console.
+export interface MapsConfig {
+  apiKey: string;
+}
+
 // -- mobile specific state -- //
