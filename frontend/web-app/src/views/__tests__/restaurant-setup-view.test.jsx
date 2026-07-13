@@ -15,6 +15,7 @@ vi.mock('react-router-dom', () => ({
 
 vi.mock('../../../../packages/shared/src/apiSlice.ts', () => ({
   useCreateRestaurantMutation: () => [createRestaurantMock, { isLoading: false }],
+  useGetMapsConfigQuery: () => ({ data: undefined, isLoading: false, isError: true, error: { status: 404 } }),
 }));
 
 function renderView() {

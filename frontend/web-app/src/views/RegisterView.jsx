@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useRegisterMutation } from '../../../packages/shared/src/apiSlice.ts';
 import { isValidEmail, isValidPassword } from '../utils/validation';
+import PasswordInput from '../components/PasswordInput';
 
 export default function RegisterView() {
   const navigate = useNavigate();
@@ -113,16 +114,15 @@ export default function RegisterView() {
               <label htmlFor="password" className="block text-[11px] font-mono text-table-textMuted uppercase tracking-wide mb-1.5 font-bold">
                 Password
               </label>
-              <input
+              <PasswordInput
                 id="password"
-                type="password"
                 name="password"
                 required
-                minLength={8}
                 value={formData.password}
                 onChange={handleInputChange}
                 placeholder="At least 8 characters"
-                className="w-full bg-table-canvas border border-table-border rounded-xl px-4 py-3 text-sm text-table-text placeholder-table-textSubtle focus:outline-none focus:border-table-primary transition-colors"
+                autoComplete="new-password"
+                inputClassName="w-full bg-table-canvas border border-table-border rounded-xl px-4 py-3 text-sm text-table-text placeholder-table-textSubtle focus:outline-none focus:border-table-primary transition-colors"
                 disabled={isSubmitting}
               />
             </div>
@@ -130,15 +130,15 @@ export default function RegisterView() {
               <label htmlFor="confirmPassword" className="block text-[11px] font-mono text-table-textMuted uppercase tracking-wide mb-1.5 font-bold">
                 Re-enter Password
               </label>
-              <input
+              <PasswordInput
                 id="confirmPassword"
-                type="password"
                 name="confirmPassword"
                 required
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 placeholder="••••••••"
-                className="w-full bg-table-canvas border border-table-border rounded-xl px-4 py-3 text-sm text-table-text placeholder-table-textSubtle focus:outline-none focus:border-table-primary transition-colors"
+                autoComplete="new-password"
+                inputClassName="w-full bg-table-canvas border border-table-border rounded-xl px-4 py-3 text-sm text-table-text placeholder-table-textSubtle focus:outline-none focus:border-table-primary transition-colors"
                 disabled={isSubmitting}
               />
             </div>

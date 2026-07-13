@@ -123,4 +123,31 @@ export interface RevpashSummary {
   revpash: number;
 }
 
+// Per-campaign RevPASH lift comparison — Phase 2 of the RevPASH rollout,
+// blocked on TABL-118 (no schema/route exists yet, see RISK_REGISTER R-09).
+export interface CampaignRevpashLift {
+  campaignId: string;
+  organicRevpash: number;
+  dealRevpash: number;
+  liftPercent: number;
+  offPeak: boolean;
+}
+
+// Password recovery — no reset_token column, email-sending infra, or routes
+// exist anywhere yet (see handoff spec). Both endpoints return this generic
+// shape; the backend intentionally gives the same response whether or not
+// the email matches an account, to avoid leaking which emails are registered.
+export interface PasswordResetResult {
+  message: string;
+}
+
+// Served at runtime rather than baked into the frontend build, so the key
+// (held in GCP Secret Manager) can be rotated without a redeploy and never
+// sits in source control or a compiled bundle. It's still visible in the
+// browser once used, same as any Maps JS key — the real restriction is the
+// HTTP-referrer allowlist configured on the key itself in GCP Console.
+export interface MapsConfig {
+  apiKey: string;
+}
+
 // -- mobile specific state -- //
