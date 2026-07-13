@@ -34,6 +34,7 @@ const config = {
     process.env.JWT_SECRET
     || (process.env.NODE_ENV === "production" ? null : "dev-jwt-secret-change-me"),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || "7d",
+  webAppUrl: process.env.WEB_APP_URL || "http://localhost:5173",
 };
 
 if (!config.jwtSecret) {

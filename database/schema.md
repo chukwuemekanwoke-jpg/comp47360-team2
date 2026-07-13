@@ -83,6 +83,7 @@ Consumer profiles. Auth via JWT (`Authorization: Bearer`); seed data may use fix
 - `email`: unique login identifier (nullable for legacy seed users)
 - `password_hash`: bcrypt hash; null for users without credentials
 - `token_version`: incremented on logout to invalidate outstanding JWTs
+- `password_reset_token_hash` / `password_reset_expires_at`: single-use forgot-password flow
 - `budget_tier`: `TIER_1` \| `TIER_2` \| `TIER_3` (UI labels € / €€ / €€€)
 - `dietary_tags`: PostgreSQL `TEXT[]` for ML features
 
