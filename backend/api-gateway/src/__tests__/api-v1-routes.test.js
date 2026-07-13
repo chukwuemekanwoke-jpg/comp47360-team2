@@ -15,6 +15,14 @@ jest.mock("../services/createBooking", () => ({
   createBooking: jest.fn(),
 }));
 
+jest.mock("../services/cancelBooking", () => ({
+  cancelBooking: jest.fn(),
+}));
+
+jest.mock("../services/updateBookingStatus", () => ({
+  updateBookingStatus: jest.fn(),
+}));
+
 jest.mock("../services/createCampaignOffers", () => ({
   createCampaignOffers: jest.fn(),
 }));
@@ -23,10 +31,17 @@ jest.mock("../services/mlBusynessClient", () => ({
   callMlBusyness: jest.fn(),
 }));
 
+jest.mock("../services/getRevpash", () => ({
+  getRevpashSummary: jest.fn(),
+}));
+
 const createApp = require("../app");
 const { createBooking } = require("../services/createBooking");
+const { cancelBooking } = require("../services/cancelBooking");
+const { updateBookingStatus } = require("../services/updateBookingStatus");
 const { createCampaignOffers } = require("../services/createCampaignOffers");
 const { callMlBusyness } = require("../services/mlBusynessClient");
+const { getRevpashSummary } = require("../services/getRevpash");
 
 const app = createApp();
 
@@ -381,6 +396,36 @@ describe("restaurant routes", () => {
       sensoryFriendly: true,
     });
   });
+
+  it("returns RevPASH summary for a managed restaurant", async () => {
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [{ id: USER_ID, token_version: 0 }] })
+      .mockResolvedValueOnce({ rows: [{ id: RESTAURANT_ID, manager_user_id: USER_ID }] });
+    getRevpashSummary.mockResolvedValueOnce({
+      restaurantId: RESTAURANT_ID,
+      window: "today",
+      revenue: 314.16,
+      availableSeatHours: 88,
+      revpash: 3.57,
+    });
+
+    const res = await request(app)
+      .get(`/api/v1/restaurants/${RESTAURANT_ID}/revpash?window=today`)
+      .set("X-User-Id", USER_ID);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      restaurantId: RESTAURANT_ID,
+      window: "today",
+      revenue: 314.16,
+      availableSeatHours: 88,
+      revpash: 3.57,
+    });
+    expect(getRevpashSummary).toHaveBeenCalledWith(mockPool, {
+      restaurantId: RESTAURANT_ID,
+      window: "today",
+    });
+  });
 });
 
 describe("booking routes", () => {
@@ -421,6 +466,72 @@ describe("booking routes", () => {
     expect(client.query).toHaveBeenCalledWith("BEGIN");
     expect(client.query).toHaveBeenCalledWith("COMMIT");
     expect(client.release).toHaveBeenCalled();
+  });
+
+  it("cancels a booking inside a transaction", async () => {
+    const client = {
+      query: jest.fn().mockResolvedValue({ rows: [] }),
+      release: jest.fn(),
+    };
+
+    mockPool.query.mockResolvedValueOnce({ rows: [{ id: USER_ID }] });
+    mockPool.connect.mockResolvedValueOnce(client);
+    cancelBooking.mockResolvedValueOnce(
+      bookingRow({
+        status: "cancelled",
+        cancelled_at: NOW,
+      })
+    );
+
+    const res = await request(app)
+      .post(`/api/v1/bookings/${bookingRow().id}/cancel`)
+      .set("X-User-Id", USER_ID)
+      .send();
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      id: bookingRow().id,
+      status: "cancelled",
+    });
+    expect(cancelBooking).toHaveBeenCalledWith(client, {
+      userId: USER_ID,
+      bookingId: bookingRow().id,
+    });
+    expect(client.query).toHaveBeenCalledWith("BEGIN");
+    expect(client.query).toHaveBeenCalledWith("COMMIT");
+  });
+
+  it("updates booking status for a restaurant manager", async () => {
+    const client = {
+      query: jest.fn().mockResolvedValue({ rows: [] }),
+      release: jest.fn(),
+    };
+
+    mockPool.query.mockResolvedValueOnce({ rows: [{ id: USER_ID }] });
+    mockPool.connect.mockResolvedValueOnce(client);
+    updateBookingStatus.mockResolvedValueOnce(
+      bookingRow({
+        status: "completed",
+      })
+    );
+
+    const res = await request(app)
+      .patch(`/api/v1/bookings/${bookingRow().id}/status`)
+      .set("X-User-Id", USER_ID)
+      .send({ status: "completed" });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      id: bookingRow().id,
+      status: "completed",
+    });
+    expect(updateBookingStatus).toHaveBeenCalledWith(client, {
+      managerUserId: USER_ID,
+      bookingId: bookingRow().id,
+      status: "completed",
+    });
+    expect(client.query).toHaveBeenCalledWith("BEGIN");
+    expect(client.query).toHaveBeenCalledWith("COMMIT");
   });
 });
 

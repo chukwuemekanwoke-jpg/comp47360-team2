@@ -1,4 +1,10 @@
 const { AppError } = require("../errors");
+const {
+  DEFAULT_CLOSES_AT,
+  DEFAULT_OPENS_AT,
+  parseLocalTime,
+  parsePartySize,
+} = require("./revpash");
 
 const BUDGET_TIERS = new Set(["TIER_1", "TIER_2", "TIER_3"]);
 const TRANSPORT_MODES = new Set(["walking", "driving", "transit", "cycling"]);
@@ -131,7 +137,7 @@ function validateCreateRestaurantBody(body) {
     neighborhood = payload.neighborhood.trim() || null;
   }
 
-  return {
+  const result = {
     name,
     addressLine,
     phone,
@@ -144,7 +150,15 @@ function validateCreateRestaurantBody(body) {
       "isWheelchairAccessible"
     ) ?? false,
     sensoryFriendly: parseOptionalBoolean(payload.sensoryFriendly, "sensoryFriendly") ?? false,
+    opensAt: parseLocalTime(payload.opensAt, "opensAt") ?? DEFAULT_OPENS_AT,
+    closesAt: parseLocalTime(payload.closesAt, "closesAt") ?? DEFAULT_CLOSES_AT,
   };
+
+  if (result.opensAt >= result.closesAt) {
+    throw new AppError(400, "VALIDATION_ERROR", "closesAt must be after opensAt");
+  }
+
+  return result;
 }
 
 function validateRestaurantSettingsBody(body) {
@@ -174,6 +188,25 @@ function validateRestaurantSettingsBody(body) {
   return updates;
 }
 
+const BOOKING_STATUSES = new Set([
+  "pending",
+  "confirmed",
+  "cancelled",
+  "completed",
+  "no_show",
+]);
+
+function parseBookingStatus(value) {
+  if (typeof value !== "string" || !BOOKING_STATUSES.has(value)) {
+    throw new AppError(
+      400,
+      "VALIDATION_ERROR",
+      "status must be one of pending, confirmed, cancelled, completed, no_show"
+    );
+  }
+  return value;
+}
+
 module.exports = {
   BUDGET_TIERS,
   TRANSPORT_MODES,
@@ -189,4 +222,6 @@ module.exports = {
   validateBudgetTier,
   validateDietaryTags,
   requireNonEmptyString,
+  parsePartySize,
+  parseBookingStatus,
 };

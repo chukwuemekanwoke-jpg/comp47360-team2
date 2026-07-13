@@ -26,6 +26,9 @@ function restaurant(overrides = {}) {
     longitude: -73.99,
     hold_window_minutes: 15,
     available_table_count: 2,
+    avg_check_per_cover: 52.8,
+    cuisine: "american",
+    neighborhood: "Midtown",
     ...overrides,
   };
 }
@@ -80,6 +83,24 @@ describe("createBooking", () => {
     expect(client.query).toHaveBeenCalledWith(expect.stringContaining("UPDATE restaurants"), [
       RESTAURANT_ID,
     ]);
+  });
+
+  it("persists party size and simulated check amount for RevPASH", async () => {
+    const client = createClientWithRows([[restaurant()], [booking()]]);
+
+    await createBooking(client, {
+      userId: USER_ID,
+      restaurantId: RESTAURANT_ID,
+      transportMode: "walking",
+      userLat: 40.73,
+      userLng: -73.99,
+      partySize: 4,
+    });
+
+    expect(client.query).toHaveBeenCalledWith(
+      expect.stringContaining("party_size"),
+      expect.arrayContaining([4, 211.2, 90])
+    );
   });
 
   it("rejects booking when no tables are available", async () => {
@@ -140,6 +161,7 @@ describe("createBooking", () => {
           expires_at: new Date("2099-01-01T00:00:00.000Z"),
           campaign_id: CAMPAIGN_ID,
           restaurant_id: RESTAURANT_ID,
+          discount_percent: 20,
         },
       ],
       [booking({ offer_id: OFFER_ID, campaign_id: CAMPAIGN_ID })],

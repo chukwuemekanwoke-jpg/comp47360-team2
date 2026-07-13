@@ -1,5 +1,10 @@
 const { AppError } = require("../errors");
 const { resolveEtaResult } = require("./etaResolver");
+const {
+  benchmarkAvgCheck,
+  computeCheckAmount,
+  DEFAULT_DURATION_MINUTES,
+} = require("../utils/revpash");
 
 const BOOKING_COLUMNS = `
   id, user_id, restaurant_id, offer_id, campaign_id,
@@ -13,9 +18,11 @@ async function createBooking(client, {
   userLat,
   userLng,
   offerId = null,
+  partySize = 2,
 }) {
   const { rows: restaurantRows } = await client.query(
-    `SELECT id, latitude, longitude, hold_window_minutes, available_table_count
+    `SELECT id, latitude, longitude, hold_window_minutes, available_table_count,
+            avg_check_per_cover, cuisine, neighborhood
      FROM restaurants
      WHERE id = $1
      FOR UPDATE`,
@@ -51,10 +58,11 @@ async function createBooking(client, {
 
   let campaignId = null;
   let resolvedOfferId = null;
+  let discountPercent = 0;
 
   if (offerId) {
     const { rows: offerRows } = await client.query(
-      `SELECT o.id, o.status, o.expires_at, o.campaign_id, c.restaurant_id
+      `SELECT o.id, o.status, o.expires_at, o.campaign_id, c.restaurant_id, c.discount_percent
        FROM offers o
        JOIN campaigns c ON c.id = o.campaign_id
        WHERE o.id = $1 AND o.user_id = $2
@@ -82,7 +90,13 @@ async function createBooking(client, {
 
     campaignId = offer.campaign_id;
     resolvedOfferId = offer.id;
+    discountPercent = offer.discount_percent;
   }
+
+  const avgCheckPerCover =
+    Number(restaurant.avg_check_per_cover)
+    || benchmarkAvgCheck(restaurant.cuisine, restaurant.neighborhood);
+  const checkAmount = computeCheckAmount(partySize, avgCheckPerCover, discountPercent);
 
   const { rows: bookingRows } = await client.query(
     `INSERT INTO bookings (
@@ -94,7 +108,11 @@ async function createBooking(client, {
        transport_mode,
        eta_minutes,
        hold_expires_at,
-       confirmed_at
+       confirmed_at,
+       party_size,
+       seated_at,
+       check_amount,
+       duration_minutes
      )
      VALUES (
        $1, $2, $3, $4,
@@ -102,7 +120,11 @@ async function createBooking(client, {
        $5,
        $6,
        NOW() + ($7 * INTERVAL '1 minute'),
-       NOW()
+       NOW(),
+       $8,
+       NOW(),
+       $9,
+       $10
      )
      RETURNING ${BOOKING_COLUMNS}`,
     [
@@ -113,6 +135,9 @@ async function createBooking(client, {
       transportMode,
       etaResult.etaMinutes,
       restaurant.hold_window_minutes,
+      partySize,
+      checkAmount,
+      DEFAULT_DURATION_MINUTES,
     ]
   );
 
