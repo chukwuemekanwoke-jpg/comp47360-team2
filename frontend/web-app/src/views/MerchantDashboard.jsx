@@ -218,7 +218,11 @@ export default function MerchantDashboard() {
                 </div>
               </div>
 
-              <form onSubmit={handleCreateCampaign} className="space-y-4 border-t border-table-border pt-6">
+              {/* noValidate: native browser validation would block onSubmit
+                  before our own styled, consistent error messages ever run —
+                  see LoginView for the same reasoning. Matters here since the
+                  tableQuota field now carries a real max constraint. */}
+              <form onSubmit={handleCreateCampaign} noValidate className="space-y-4 border-t border-table-border pt-6">
                 <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-table-textMuted">
                   Trigger Flash Deal
                 </h3>
