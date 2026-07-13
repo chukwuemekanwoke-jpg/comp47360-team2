@@ -112,6 +112,89 @@ describe("POST /api/v1/auth/login", () => {
   });
 });
 
+describe("POST /api/v1/auth/forgot-password", () => {
+  let logSpy;
+
+  beforeEach(() => {
+    logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    logSpy.mockRestore();
+  });
+
+  it("returns the same acknowledgement for unknown emails", async () => {
+    mockPool.query.mockResolvedValueOnce({ rows: [] });
+
+    const res = await request(app)
+      .post("/api/v1/auth/forgot-password")
+      .send({ email: "missing@example.com" });
+
+    expect(res.status).toBe(200);
+    expect(res.body.message).toMatch(/reset link has been sent/i);
+    expect(mockPool.query).toHaveBeenCalledTimes(1);
+    expect(logSpy).not.toHaveBeenCalled();
+  });
+
+  it("stores a reset token and logs the link for password accounts", async () => {
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [authUserRow()] })
+      .mockResolvedValueOnce({ rows: [] });
+
+    const res = await request(app)
+      .post("/api/v1/auth/forgot-password")
+      .send({ email: "manager@demo.com" });
+
+    expect(res.status).toBe(200);
+    expect(mockPool.query).toHaveBeenLastCalledWith(
+      expect.stringContaining("password_reset_token_hash"),
+      expect.arrayContaining([USER_ID])
+    );
+    expect(logSpy).toHaveBeenCalledWith(
+      expect.stringMatching(/\[password-reset\].*reset-password\?token=/)
+    );
+  });
+});
+
+describe("POST /api/v1/auth/reset-password", () => {
+  it("updates the password and clears the reset token", async () => {
+    const { generateResetToken } = require("../utils/passwordReset");
+    const { rawToken, tokenHash } = generateResetToken();
+
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
+      .mockResolvedValueOnce({ rows: [] });
+
+    const res = await request(app)
+      .post("/api/v1/auth/reset-password")
+      .send({ token: rawToken, newPassword: "newpassword123" });
+
+    expect(res.status).toBe(200);
+    expect(res.body.message).toMatch(/updated successfully/i);
+    expect(mockPool.query).toHaveBeenNthCalledWith(
+      1,
+      expect.stringContaining("password_reset_token_hash = $1"),
+      [tokenHash]
+    );
+    expect(mockPool.query).toHaveBeenLastCalledWith(
+      expect.stringContaining("token_version = token_version + 1"),
+      expect.arrayContaining([USER_ID])
+    );
+  });
+
+  it("returns 400 for an invalid reset token", async () => {
+    mockPool.query.mockResolvedValueOnce({ rows: [] });
+
+    const res = await request(app)
+      .post("/api/v1/auth/reset-password")
+      .send({ token: "not-a-real-token", newPassword: "newpassword123" });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe("VALIDATION_ERROR");
+    expect(res.body.error.message).toMatch(/Invalid or expired/i);
+  });
+});
+
 describe("POST /api/v1/auth/logout", () => {
   it("revokes the JWT by incrementing token_version", async () => {
     const token = signAccessToken({ userId: USER_ID, tokenVersion: 0 });

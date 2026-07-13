@@ -5,12 +5,23 @@ const { AppError } = require("../../errors");
 const { getPool } = require("../../db/pool");
 const { toUserJson } = require("../../utils/serialize");
 const { hashPassword, verifyPassword } = require("../../utils/password");
+const {
+  generateResetToken,
+  hashResetToken,
+  RESET_TOKEN_TTL_MINUTES,
+} = require("../../utils/passwordReset");
 const { signAccessToken } = require("../../utils/jwt");
+const config = require("../../config");
 
 const router = Router();
 
 const USER_COLUMNS =
   "id, display_name, budget_tier, dietary_tags, last_lat, last_lng, created_at, email, token_version";
+
+const PASSWORD_RESET_ACK_MESSAGE =
+  "If an account exists for that email, a reset link has been sent.";
+
+const PASSWORD_RESET_SUCCESS_MESSAGE = "Password updated successfully.";
 
 function normalizeEmail(value) {
   if (typeof value !== "string") {
@@ -149,6 +160,81 @@ router.post(
     }
 
     res.status(200).json({ status: "logged_out" });
+  })
+);
+
+router.post(
+  "/forgot-password",
+  asyncHandler(async (req, res) => {
+    const pool = getPool();
+    if (!pool) {
+      throw new AppError(500, "INTERNAL_ERROR", "Database is not configured (DATABASE_URL)");
+    }
+
+    const email = normalizeEmail(req.body?.email);
+    const user = await findUserByEmail(pool, email);
+
+    if (user?.password_hash) {
+      const { rawToken, tokenHash } = generateResetToken();
+      await pool.query(
+        `UPDATE users
+         SET password_reset_token_hash = $1,
+             password_reset_expires_at = NOW() + ($2 * INTERVAL '1 minute'),
+             updated_at = NOW()
+         WHERE id = $3`,
+        [tokenHash, RESET_TOKEN_TTL_MINUTES, user.id]
+      );
+
+      const resetUrl = `${config.webAppUrl.replace(/\/$/, "")}/reset-password?token=${rawToken}`;
+      console.log(`[password-reset] reset link for ${email}: ${resetUrl}`);
+    }
+
+    res.status(200).json({ message: PASSWORD_RESET_ACK_MESSAGE });
+  })
+);
+
+router.post(
+  "/reset-password",
+  asyncHandler(async (req, res) => {
+    const pool = getPool();
+    if (!pool) {
+      throw new AppError(500, "INTERNAL_ERROR", "Database is not configured (DATABASE_URL)");
+    }
+
+    const rawToken = req.body?.token;
+    if (typeof rawToken !== "string" || rawToken.trim() === "") {
+      throw new AppError(400, "VALIDATION_ERROR", "token is required");
+    }
+
+    const newPassword = validatePassword(req.body?.newPassword);
+    const tokenHash = hashResetToken(rawToken.trim());
+
+    const { rows } = await pool.query(
+      `SELECT id
+       FROM users
+       WHERE password_reset_token_hash = $1
+         AND password_reset_expires_at > NOW()
+         AND password_hash IS NOT NULL`,
+      [tokenHash]
+    );
+
+    if (rows.length === 0) {
+      throw new AppError(400, "VALIDATION_ERROR", "Invalid or expired reset link");
+    }
+
+    const passwordHash = await hashPassword(newPassword);
+    await pool.query(
+      `UPDATE users
+       SET password_hash = $1,
+           password_reset_token_hash = NULL,
+           password_reset_expires_at = NULL,
+           token_version = token_version + 1,
+           updated_at = NOW()
+       WHERE id = $2`,
+      [passwordHash, rows[0].id]
+    );
+
+    res.status(200).json({ message: PASSWORD_RESET_SUCCESS_MESSAGE });
   })
 );
 
