@@ -4,6 +4,9 @@ import { TransportMode } from './types';
 export interface UserLocation {
   lat: number;
   lng: number;
+  // Human-readable source of the fix, e.g. a manually chosen neighbourhood
+  // when GPS is denied (Story 2.2). Absent for real GPS fixes.
+  label?: string;
 }
 
 export interface UserFilters {

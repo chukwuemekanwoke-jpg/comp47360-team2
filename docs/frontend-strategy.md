@@ -28,7 +28,7 @@ To support both mobile and web deployment, the application uses shared page flow
 * **Login/Registration View:** Entry point where users sign in or register to obtain a JWT session.
 * Unauthenticated traffic is blocked from protected application routes.
 
-> **Authentication Strategy:** JWT issued by `POST /api/v1/auth/login` and `POST /api/v1/auth/register`. Clients store the token and send `Authorization: Bearer <jwt>` on protected API calls. The `X-User-Id` header remains supported for dev/demo until all clients migrate. Biometric login (mobile only) is a deferred optional enhancement.
+> **Authentication Strategy:** JWT issued by `POST /api/v1/auth/login` and `POST /api/v1/auth/register`. Clients store the token and send `Authorization: Bearer <jwt>` on protected API calls. The mobile app has migrated: its entry route is a login/registration view that stores the session (userId + JWT) in the shared Redux auth slice, and the tab navigator redirects unauthenticated users back to it. The `X-User-Id` header remains supported for web dev/demo flows until the web app migrates. Biometric login (mobile only) is a deferred optional enhancement.
 
 ### 2.2 Index / Landing Dashboard
 
@@ -63,7 +63,7 @@ To support both mobile and web deployment, the application uses shared page flow
 
 ### 2.3 Business Demand Management Dashboard
 
-> **Conditional Rendering:** B-side dashboard (flash deals, occupancy) for restaurant managers (`isBusiness` / manager role).
+> **Removed from mobile scope (2026-07-12):** the previously planned conditional rendering of a B-side dashboard (flash deals, occupancy) inside the mobile app has been dropped. The merchant experience lives exclusively in the web app (`/merchant`, see §4 Web Stack); the mobile app is consumer-only (C-side).
 
 ---
 
@@ -116,7 +116,8 @@ frontend/mobile-app/
 ├── src/
 │   ├── app/
 │   │   ├── _layout.tsx
-│   │   ├── index.tsx          # onboarding hub
+│   │   ├── index.tsx          # login / registration gate
+│   │   ├── onboarding.tsx     # preference wizard (post-registration)
 │   │   └── tabs/
 │   │       ├── MapTab.native.tsx
 │   │       ├── CardTab.tsx
