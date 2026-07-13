@@ -12,7 +12,7 @@ export default function NotFoundScreen() {
           {"This page doesn't exist — but there are plenty of great restaurants that do."}
         </Text> 
         <Link
-          href="/tabs/map-view"
+          href="/tabs/MapTab"
           className="bg-table-teal rounded-xl px-8 py-4"
         >
           <Text className="text-table-canvas text-sm font-bold uppercase tracking-widest">
