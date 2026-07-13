@@ -1,6 +1,14 @@
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
+import { useAppSelector } from "@shared/hooks";
 
 export default function TabsLayout() {
+  const userId = useAppSelector((state) => state.auth.userId);
+
+  // Authentication gate — unauthenticated traffic goes back to login.
+  if (!userId) {
+    return <Redirect href="/" />;
+  }
+
   return (
     <Tabs
       screenOptions={{
