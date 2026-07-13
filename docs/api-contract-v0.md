@@ -603,7 +603,7 @@ Validates not expired, then returns booking payload or redirects client to `POST
 }
 ```
 
-**Validation:** `discountPercent` 10–50 (Story 5.1).
+**Validation:** `discountPercent` 10–50 (Story 5.1); `tableQuota` must be a positive integer not greater than the restaurant's `capacity`.
 
 **Response `201`:**
 
