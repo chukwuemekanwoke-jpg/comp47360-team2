@@ -32,7 +32,7 @@ flowchart TD
     SHARED -->|"REST /api/v1"| GATEWAY
     GATEWAY -->|"pg pool"| DB
     GATEWAY -->|"POST /api/v1/match"| ML
-    GATEWAY -->|"distance matrix"| MAPS
+    GATEWAY -->|"Routes API"| MAPS
     GHA -.->|"tests"| GATEWAY
     GHA -.->|"tests"| ML
     DOCKER -.->|"containerizes"| GATEWAY
@@ -49,14 +49,14 @@ Node.js/Express REST API — the hub everything else calls.
 | `src/app.js` | wires middleware + `routes/apiV1` |
 | `src/config.js` | reads `.env` — `DATABASE_URL`, `ML_SERVICE_URL`, `GOOGLE_MAPS_API_KEY` |
 | `src/db/pool.js` | Postgres connection pool → depends on **database/** schema |
-| `src/routes/apiV1/{bookings,campaigns,offers,restaurants,restaurantBookings,users,index}.js` | REST endpoints, each delegates to a matching `services/` file |
-| `src/routes/health.js`, `src/routes/merchantRoutes.js` | health check, merchant-only routes |
+| `src/routes/apiV1/{auth,bookings,campaigns,offers,restaurants,restaurantBookings,users,index}.js` | REST endpoints, each delegates to a matching `services/` file |
+| `src/routes/health.js` | health check |
 | `src/services/createBooking.js`, `createCampaignOffers.js`, `offerInsert.js`, `offers.js`, `candidateUsers.js` | business logic, query `db/pool.js` |
 | `src/services/mlMatchClient.js` | calls **ML inference** (`POST {ML_SERVICE_URL}/api/v1/match`) |
 | `src/services/googleDistanceMatrix.js`, `etaResolver.js` | call **Google Routes API** (external), fall back to `utils/geo.js` haversine |
 | `src/middleware/{asyncHandler,errorHandler,notFound,requireUser,requireRestaurantManager}.js` | cross-cutting request handling |
-| `src/utils/{etaCache,geo,serialize,validate}.js` | shared helpers |
-| `src/__tests__/*.test.js` (7 files) | Jest suite, run by `.github/workflows/ci.yml` |
+| `src/utils/{etaCache,geo,jwt,password,serialize,validate}.js` | shared helpers |
+| `src/__tests__/*.test.js` (11 files) | Jest suite, run by `.github/workflows/ci.yml` |
 | `scripts/check-openapi-drift.js` | diffs routes against `docs/openapi-v0.yaml` |
 | `Dockerfile`, `.dockerignore`, `package-lock.json` | Cloud Run prep |
 | `.env.example`, `README.md`, `package.json` | config/docs |
@@ -65,7 +65,7 @@ Node.js/Express REST API — the hub everything else calls.
 
 | File | Role |
 |---|---|
-| `migrations/001*`, `002_postgis_optional.sql`, `003*` (+ `.down.sql`) | schema, consumed by `pool.js` queries |
+| `migrations/001*` … `005_add_restaurant_phone.sql` (+ `.down.sql`) | schema, consumed by `pool.js` queries |
 | `seeds/001_demo_manhattan.sql`, `002_manhattan_real.sql` | seed data |
 | `scripts/{migrate,seed,generate-seed}.js` | migration/seed runners |
 | `docker-compose.yml` | local Postgres+PostGIS container |
@@ -74,7 +74,8 @@ Node.js/Express REST API — the hub everything else calls.
 ### Database schema
 
 Source: `migrations/001_initial_schema.sql` (+ `002_postgis_optional.sql`,
-`003_add_restaurant_capacity_cuisine.sql`) and `schema.md`.
+`003_add_restaurant_capacity_cuisine.sql`, `004_add_user_auth.sql`,
+`005_add_restaurant_phone.sql`) and `schema.md`.
 
 ```mermaid
 erDiagram
@@ -90,6 +91,7 @@ erDiagram
 
   users {
     uuid id PK
+    text email
     budget_tier budget_tier
     text_array dietary_tags
   }
@@ -101,7 +103,9 @@ erDiagram
     int available_table_count
     int capacity
     text cuisine
+    text phone
     int hold_window_minutes
+    uuid manager_user_id FK
   }
 
   campaigns {
@@ -126,23 +130,24 @@ erDiagram
   }
 ```
 
-**`users`** — consumer profiles. `id` (UUID PK), `display_name`, `budget_tier`
+**`users`** — consumer profiles. `id` (UUID PK), `display_name`, `email`,
+`password_hash`, `token_version` (JWT revocation), `budget_tier`
 (enum `TIER_1`/`TIER_2`/`TIER_3` → €/€€/€€€), `dietary_tags` (`TEXT[]`, ML
-feature), `last_lat`/`last_lng`. Auth is JWT-based; seed data can use a fixed
-UUID via an interim `X-User-Id` header.
+feature), `last_lat`/`last_lng`. Auth is JWT-based (`Authorization: Bearer`);
+seed data can use a fixed UUID via an interim `X-User-Id` header.
 
 **`restaurants`** — Manhattan venue master data. `id` (UUID PK), `name`,
 `latitude`/`longitude` (validated -90..90 / -180..180), `neighborhood`,
-`address_line`. `available_table_count` (denormalized "live" count, must be
-`<= capacity`), `capacity` (migration 003), `cuisine` (slug, migration 003).
-`hold_window_minutes` (default 15), `busyness_score` (0–1, ML-fed),
-`is_wheelchair_accessible`, `sensory_friendly`. `manager_user_id` → FK to
-`users` (links a merchant dashboard user to their venue, `ON DELETE SET
-NULL`). Indexes: partial index on `available_table_count > 0`, index on
-`neighborhood`. Migration 002 (optional) adds a PostGIS `GEOGRAPHY(POINT,
-4326)` column + GIST index for `ST_DWithin` radius queries — not applied by
-default; v1 uses plain lat/lng with haversine done in app/SQL (1500m
-discovery radius).
+`address_line`, `phone` (merchant contact, migration 005). `available_table_count`
+(denormalized "live" count, must be `<= capacity`), `capacity` (migration 003),
+`cuisine` (slug, migration 003). `hold_window_minutes` (default 15),
+`busyness_score` (0–1, ML-fed), `is_wheelchair_accessible`, `sensory_friendly`.
+`manager_user_id` → FK to `users` (links a merchant dashboard user to their
+venue, `ON DELETE SET NULL`). Indexes: partial index on
+`available_table_count > 0`, index on `neighborhood`. Migration 002 (optional)
+adds a PostGIS `GEOGRAPHY(POINT, 4326)` column + GIST index for `ST_DWithin`
+radius queries — not applied by default; v1 uses plain lat/lng with haversine
+done in app/SQL (1500m discovery radius).
 
 **`campaigns`** — restaurant-triggered flash-deal runs. `id` (UUID PK),
 `restaurant_id` FK (`ON DELETE CASCADE`), `status` (enum
@@ -239,5 +244,6 @@ and `mobile-app` — not a declared npm dependency, just a monorepo path import.
 | `.github/workflows/ci.yml` | lints/tests all 4 workspaces + `check-openapi-drift.js` |
 | `.github/workflows/deploy-staging.yml` | placeholder deploy job — next GCP task replaces this with real `gcloud run deploy`, targeting the two Dockerfiles above |
 | `docs/openapi-v0.yaml` | contract source of truth for `api-gateway` + `table-shared` |
+| `docs/postman/table-integration-journeys.postman_collection.json` | Postman smoke journeys (C-side + B-side) |
 | `docs/adr/ADR-001.md`, `api-contract-v0.md`, `deployment-guide.md`, `integration-strategy.md`, `data-strategy.md`, `frontend-strategy.md`, `product-spec.md`, `ui-style-guide.md`, `user-stories/*` | planning/reference docs, no runtime dependency |
 | root `package.json` | npm workspaces list tying the 4 packages together; `redocly.yaml` lints the OpenAPI spec |

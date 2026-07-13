@@ -55,12 +55,15 @@ Server: `http://localhost:3001`
 | GET | `/api/v1/restaurants/:restaurantId` | none | Restaurant detail for booking screen |
 | PATCH | `/api/v1/restaurants/:restaurantId/settings` | manager JWT or `X-User-Id` | Update accessibility settings |
 | GET | `/api/v1/restaurants/:restaurantId/eta` | none | Travel time (Google Routes API, BE-12) + `canBook` vs hold window |
+| GET | `/api/v1/restaurants/:restaurantId/revpash` | manager JWT or `X-User-Id` | RevPASH summary (`?window=today\|week\|month`) |
 
 ### Bookings (BE-12, BE-16)
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
-| POST | `/api/v1/bookings` | JWT or `X-User-Id` | Confirm reservation; decrements table count |
+| POST | `/api/v1/bookings` | JWT or `X-User-Id` | Confirm reservation; decrements table count; accepts optional `partySize` |
+| PATCH | `/api/v1/bookings/:bookingId/status` | manager JWT or `X-User-Id` | Update booking status (dashboard) |
+| POST | `/api/v1/bookings/:bookingId/cancel` | JWT or `X-User-Id` | Cancel booking; restore table count / offer state |
 | GET | `/api/v1/users/me/bookings` | JWT or `X-User-Id` | List the current user's bookings (newest first) |
 | GET | `/api/v1/restaurants/:restaurantId/bookings` | manager JWT or `X-User-Id` | List bookings for a restaurant (newest first) |
 
@@ -69,6 +72,7 @@ Server: `http://localhost:3001`
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
 | POST | `/api/v1/restaurants/:restaurantId/campaigns` | manager JWT or `X-User-Id` | Create flash-deal campaign + ML/heuristic offers |
+| POST | `/api/v1/restaurants/:restaurantId/campaigns/:campaignId/cancel` | manager JWT or `X-User-Id` | Cancel active campaign; revoke pending offers |
 | GET | `/api/v1/restaurants/:restaurantId/campaigns` | manager | List campaigns |
 | GET | `/api/v1/restaurants/:restaurantId/campaigns/active` | manager | Active campaign or `null` |
 | GET | `/api/v1/users/me/offers` | JWT or `X-User-Id` | Offer inbox (`?status=pending` optional) |
@@ -126,8 +130,16 @@ curl -X POST http://localhost:3001/api/v1/bookings \
 curl http://localhost:3001/api/v1/users/me/bookings \
   -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001'
 
+# Cancel booking (replace BOOKING_ID from bookings list or create response)
+curl -X POST http://localhost:3001/api/v1/bookings/BOOKING_ID/cancel \
+  -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001'
+
 # B-side: list restaurant bookings (Demo Manager on The Maple Room)
 curl http://localhost:3001/api/v1/restaurants/550e8400-e29b-41d4-a716-446655441001/bookings \
+  -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440002'
+
+# B-side: RevPASH summary (today)
+curl 'http://localhost:3001/api/v1/restaurants/550e8400-e29b-41d4-a716-446655441001/revpash?window=today' \
   -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440002'
 
 # B-side: create campaign (Demo Manager on The Maple Room)
@@ -187,6 +199,10 @@ backend/api-gateway/
 - **BE-5:** [docs/data-strategy.md](../../docs/data-strategy.md)
 
 Business routes (`/restaurants`, `/bookings`, …) mount under `src/routes/apiV1/`.
+
+## Postman smoke tests
+
+Import [docs/postman/table-integration-journeys.postman_collection.json](../../docs/postman/table-integration-journeys.postman_collection.json) for C-side and B-side journey checks. See [docs/postman/README.md](../../docs/postman/README.md).
 
 ## Related tickets
 

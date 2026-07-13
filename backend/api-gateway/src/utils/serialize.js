@@ -103,6 +103,10 @@ function toBookingJson(row) {
     booking.confirmedAt = row.confirmed_at.toISOString();
   }
 
+  if (row.cancelled_at) {
+    booking.cancelledAt = row.cancelled_at.toISOString();
+  }
+
   if (row.eta_source != null) {
     booking.source = row.eta_source;
   }
@@ -117,6 +121,20 @@ function toRestaurantBookingJson(row) {
   };
 }
 
+function toRevpashJson(summary) {
+  return {
+    restaurantId: summary.restaurantId,
+    window: summary.window,
+    revenue: roundMoney(summary.revenue),
+    availableSeatHours: roundMoney(summary.availableSeatHours),
+    revpash: roundMoney(summary.revpash),
+  };
+}
+
+function roundMoney(value) {
+  return Math.round(Number(value) * 100) / 100;
+}
+
 module.exports = {
   toUserJson,
   toRestaurantSummary,
@@ -125,4 +143,5 @@ module.exports = {
   toOfferInboxItem,
   toBookingJson,
   toRestaurantBookingJson,
+  toRevpashJson,
 };

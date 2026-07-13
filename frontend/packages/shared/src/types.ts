@@ -42,8 +42,6 @@ export interface RestaurantSummary {
 export interface RestaurantDetail extends RestaurantSummary {
   addressLine: string;
   holdWindowMinutes: number;
-  // Not on the restaurants table yet — added when POST /restaurants lands
-  // (see pending-backend-handoff memory / handoff spec).
   phone?: string;
 }
 

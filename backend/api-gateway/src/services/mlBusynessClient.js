@@ -1,6 +1,16 @@
 const config = require("../config");
 
-async function callMlBusyness({ restaurantId, hourOfDay, dayOfWeek, latitude, longitude }) {
+async function callMlBusyness({
+  restaurantId,
+  hourOfDay,
+  dayOfWeek,
+  latitude,
+  longitude,
+  daysSinceOnboarding,
+  recentBookingsTotal30d,
+  recentBookingsSameBucket30d,
+  capacity,
+}) {
   const url = `${config.mlServiceUrl}/predict/busyness?restaurant_id=${encodeURIComponent(restaurantId)}`;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), config.mlBusynessTimeoutMs);
@@ -14,6 +24,10 @@ async function callMlBusyness({ restaurantId, hourOfDay, dayOfWeek, latitude, lo
         day_of_week: dayOfWeek,
         latitude,
         longitude,
+        days_since_onboarding: daysSinceOnboarding,
+        recent_bookings_total_30d: recentBookingsTotal30d,
+        recent_bookings_same_bucket_30d: recentBookingsSameBucket30d,
+        capacity,
       }),
       signal: controller.signal,
     });

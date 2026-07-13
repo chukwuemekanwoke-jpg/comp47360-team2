@@ -1,6 +1,6 @@
 # Tablé API Contract v0 (BE-3)
 
-**Status:** v0.1 · **Implementation:** `backend/api-gateway`  
+**Status:** v0.3 · **Implementation:** `backend/api-gateway`  
 **Database:** [database/schema.md](../database/schema.md) (BE-2)  
 **Architecture:** [docs/adr/ADR-001.md](./adr/ADR-001.md) (BE-4)  
 **Data:** [docs/data-strategy.md](./data-strategy.md) (BE-5)  
@@ -303,7 +303,15 @@ Create consumer after dummy login.
 }
 ```
 
-**Response `200`:** `{ "token": "<jwt>", "user": { ... } }`
+**Response `200`:** `{ "token": "<jwt>", "user": { ... }, "userId": "<uuid>", "restaurantId": "<uuid>|null" }`
+
+#### `POST /api/v1/auth/logout`
+
+**Auth:** Bearer JWT (preferred)  
+
+Invalidates the current token server-side by incrementing `token_version`.
+
+**Response `200`:** `{ "status": "logged_out" }`
 
 ---
 
@@ -353,11 +361,35 @@ Create a venue owned by the authenticated manager (`manager_user_id` set server-
   "cuisine": "american",
   "neighborhood": "Midtown",
   "isWheelchairAccessible": false,
-  "sensoryFriendly": false
+  "sensoryFriendly": false,
+  "opensAt": "11:00",
+  "closesAt": "22:00"
 }
 ```
 
+Optional `opensAt` / `closesAt` (`HH:MM`) default to `11:00`–`22:00`. Server seeds `avgCheckPerCover` from cuisine/neighborhood benchmarks.
+
 **Response `201`:** `RestaurantDetail` (new `availableTableCount` defaults to `0`)
+
+#### `GET /api/v1/restaurants/:restaurantId/revpash` (P1 — Story 5.1)
+
+**Auth:** manager Bearer JWT or `X-User-Id`
+
+**Query:** `window=today|week|month` (default `today`)
+
+**Response `200`:**
+
+```json
+{
+  "restaurantId": "uuid",
+  "window": "today",
+  "revenue": 314.16,
+  "availableSeatHours": 88,
+  "revpash": 3.57
+}
+```
+
+Aggregates `restaurant_revpash_hourly` in America/New_York local time.
 
 #### `PATCH /api/v1/restaurants/:restaurantId/settings`
 
@@ -415,11 +447,12 @@ Compute travel time once when opening restaurant page (per user story).
   "transportMode": "walking",
   "userLat": 40.758,
   "userLng": -73.9855,
-  "offerId": null
+  "offerId": null,
+  "partySize": 2
 }
 ```
 
-Include `offerId` when confirming from flash deal flow.
+`partySize` optional (default `2`); server computes simulated `checkAmount` for RevPASH.
 
 **Response `201`:**
 
@@ -465,6 +498,17 @@ Include `offerId` when confirming from flash deal flow.
 **Auth:** manager Bearer JWT or `X-User-Id` (interim)  
 
 **Response `200`:** `{ "bookings": [ ... ] }` — newest first.
+
+#### `PATCH /api/v1/bookings/:bookingId/status` (P1 — Story 5.2)
+
+**Auth:** manager Bearer JWT or `X-User-Id` (interim)  
+
+**Request:** `{ "status": "confirmed" | "cancelled" | "completed" | "no_show" }`
+
+Merchant dashboard transitions: `pending`/`confirmed` → `confirmed`/`completed`/`cancelled`/`no_show`.  
+Releasing a `confirmed` booking to `cancelled` or `no_show` restores table count and offer/campaign state.
+
+**Response `200`:** updated `Booking`
 
 #### `POST /api/v1/bookings/:bookingId/cancel` (P1 — Story 4.2)
 
@@ -567,6 +611,16 @@ On create, the gateway calls the ML match service and inserts `offers` for match
 
 Single active campaign or `null`.
 
+#### `POST /api/v1/restaurants/:restaurantId/campaigns/:campaignId/cancel`
+
+**Auth:** manager  
+
+Cancels an `active` campaign, sets `status: "cancelled"`, and revokes pending offers for that campaign.
+
+**Response `200`:** updated `Campaign`  
+
+**Response `409`:** campaign is not active (already completed or cancelled)
+
 ---
 
 ## 5. ML service (BE-7 / BE-14)
@@ -608,25 +662,44 @@ Gateway then inserts `offers` with `expiresAt = now() + 900s`. If the ML service
 
 ---
 
-## 6. P0 endpoint checklist
+## 6. Endpoint checklist
+
+### 6.1 Shipped (P0 / P1 — on `integrate`)
 
 | Priority | Method | Path | Story |
 |----------|--------|------|-------|
 | P0 | GET | `/health` | — |
+| P0 | GET | `/api/v1/status` | — |
 | P0 | POST | `/api/v1/users` | 1.1 |
 | P0 | PATCH | `/api/v1/users/me/preferences` | 1.1 |
+| P0 | GET | `/api/v1/users/me` | 1.1 |
 | P0 | GET | `/api/v1/restaurants/nearby` | 2.1 |
 | P0 | GET | `/api/v1/restaurants/:id` | 2.1, 3.x |
 | P0 | GET | `/api/v1/restaurants/:id/eta` | 3.1, 3.2 |
 | P0 | POST | `/api/v1/bookings` | 3.x, 5.2 |
+| P0 | POST | `/api/v1/bookings/:id/cancel` | 4.2 |
+| P0 | PATCH | `/api/v1/bookings/:id/status` | 5.2 dashboard |
+| P0 | GET | `/api/v1/users/me/bookings` | 3.x |
 | P0 | GET | `/api/v1/users/me/offers` | 4.1 |
 | P0 | POST | `/api/v1/offers/:id/accept` | 4.1, 5.2 |
 | P0 | POST | `/api/v1/restaurants/:id/campaigns` | 5.2 |
+| P0 | GET | `/api/v1/restaurants/:id/campaigns` | 5.2 |
+| P0 | GET | `/api/v1/restaurants/:id/campaigns/active` | 5.2 |
+| P0 | POST | `/api/v1/restaurants/:id/campaigns/:campaignId/cancel` | 5.2 |
 | P0 | GET | `/api/v1/restaurants/:id/bookings` | 5.2 |
+| P0 | POST | `/api/v1/auth/register` | — |
+| P0 | POST | `/api/v1/auth/login` | — |
+| P0 | POST | `/api/v1/auth/logout` | — |
+| P0 | POST | `/api/v1/restaurants` | B-side onboarding |
+| P0 | PATCH | `/api/v1/restaurants/:id/settings` | B-side settings |
+| P0 | GET | `/api/v1/restaurants/:id/revpash` | 5.1 RevPASH |
+
+### 6.2 Planned (documented, not yet implemented)
+
+| Priority | Method | Path | Story |
+|----------|--------|------|-------|
 | P1 | GET | `/api/v1/restaurants/nearby?neighborhood=` | 2.2 |
-| P1 | POST | `/api/v1/bookings/:id/cancel` | 4.2 |
-| P1 | POST | `/api/v1/auth/register` | — |
-| P1 | POST | `/api/v1/auth/login` | — |
+| P1 | GET | `/api/v1/restaurants/:id/campaigns/:campaignId/offers` | 5.2 live tracker |
 
 ---
 
@@ -652,3 +725,7 @@ Shared TypeScript types (`frontend/packages/shared/src/types.ts`) map to API fie
 | v0 | 2026-06-02 | Initial BE-3 contract aligned with schema v1 |
 | v0.1 | 2026-06-29 | Add `EtaResult`/`Booking` `source` field (BE-12 Google Routes API + estimate fallback); ML match `candidates[]` (BE-14) |
 | v0.2 | 2026-07-04 | JWT auth; merchant bookings endpoint; Routes API naming; align client types path |
+| v0.3 | 2026-07-12 | Merchant restaurant create/settings; campaign cancel; refresh §6 endpoint checklist; auth logout |
+| v0.3.1 | 2026-07-12 | Booking cancel endpoint (Story 4.2) |
+| v0.4 | 2026-07-12 | RevPASH schema, hourly view, GET /revpash, booking partySize |
+| v0.4.1 | 2026-07-12 | Merchant PATCH booking status for dashboard |

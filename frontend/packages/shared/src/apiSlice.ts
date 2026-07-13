@@ -205,9 +205,7 @@ export const tableApi = createApi({
       providesTags: ['Campaigns'],
     }),
 
-    // Needs GET /restaurants/:id/campaigns/:campaignId/offers on the backend
-    // (see handoff spec) — per-offer status for the active campaign's "live
-    // offer tracker" (who got the flash deal, pending/accepted/expired).
+    // Pending backend: GET /restaurants/:id/campaigns/:campaignId/offers
     getCampaignOffers: builder.query<{ offers: ManagerOfferItem[] }, { restaurantId: string; campaignId: string }>({
       query: ({ restaurantId, campaignId }) => `/restaurants/${restaurantId}/campaigns/${campaignId}/offers`,
       providesTags: ['Offers'],
@@ -218,8 +216,6 @@ export const tableApi = createApi({
       providesTags: ['Campaigns'],
     }),
 
-    // Needs POST /restaurants/:id/campaigns/:campaignId/cancel on the backend
-    // (see handoff spec) — manual cancel for an in-progress campaign.
     cancelCampaign: builder.mutation<Campaign, { restaurantId: string; campaignId: string }>({
       query: ({ restaurantId, campaignId }) => ({
         url: `/restaurants/${restaurantId}/campaigns/${campaignId}/cancel`,
@@ -228,9 +224,6 @@ export const tableApi = createApi({
       invalidatesTags: ['Campaigns'],
     }),
 
-    // --- Pending backend support (see handoff spec) ---
-    // Needs POST /restaurants on the backend — creates the restaurant a
-    // freshly-registered manager owns (manager_user_id = the caller).
     createRestaurant: builder.mutation<
       RestaurantDetail,
       {
@@ -253,8 +246,6 @@ export const tableApi = createApi({
       invalidatesTags: ['Restaurants'],
     }),
 
-    // Columns already exist (is_wheelchair_accessible, sensory_friendly);
-    // this just needs the PATCH /restaurants/:id/settings route to exist.
     updateRestaurantSettings: builder.mutation<
       RestaurantDetail,
       { restaurantId: string; isWheelchairAccessible?: boolean; sensoryFriendly?: boolean }
@@ -267,13 +258,11 @@ export const tableApi = createApi({
       invalidatesTags: (_result, _error, arg) => [{ type: 'Restaurants', id: arg.restaurantId }],
     }),
 
-    // Needs GET /restaurants/:id/bookings on the backend (see handoff spec).
     getRestaurantBookings: builder.query<{ bookings: Booking[] }, string>({
       query: (restaurantId: string) => `/restaurants/${restaurantId}/bookings`,
       providesTags: ['Bookings'],
     }),
 
-    // Needs PATCH /bookings/:id/status on the backend (see handoff spec).
     updateBookingStatus: builder.mutation<Booking, { bookingId: string; status: BookingStatus }>({
       query: ({ bookingId, status }) => ({
         url: `/bookings/${bookingId}/status`,
@@ -283,8 +272,6 @@ export const tableApi = createApi({
       invalidatesTags: ['Bookings'],
     }),
 
-    // Needs GET /restaurants/:id/revpash on the backend (see handoff spec) —
-    // revenue per available seat-hour, backed by the restaurant_revpash_hourly view.
     getRevpash: builder.query<RevpashSummary, { restaurantId: string; window?: RevpashWindow }>({
       query: ({ restaurantId, window = 'today' }) => ({
         url: `/restaurants/${restaurantId}/revpash`,
