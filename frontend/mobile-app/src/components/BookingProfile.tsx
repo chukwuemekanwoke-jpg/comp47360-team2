@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { FlatList, View, Text, ActivityIndicator, Alert } from "react-native";
 import { useGetMyBookingsQuery, useCancelBookingMutation } from "@shared/apiSlice"
+import { useAppSelector } from "@shared/hooks";
 import BookingCard from "./BookingCard";
-import { DUMMYID } from "@/context/UserContext";
 
 export default function BookingsProfile() {
+  const userId = useAppSelector((state) => state.auth.userId);
   const { data, isLoading, refetch } = useGetMyBookingsQuery(
-    { userId: DUMMYID ?? "" },
-    { skip: !DUMMYID }
+    { userId: userId ?? "" },
+    { skip: !userId }
   );
   const [cancelBooking] = useCancelBookingMutation();
   
@@ -28,10 +29,11 @@ export default function BookingsProfile() {
           style: "destructive",
           onPress: async () => {
             try {
+              if (!userId) return;
               setCancellingId(bookingId); // Turn on loading indicator for this ID
-              await cancelBooking({ 
-                    bookingId, 
-                    userId: DUMMYID
+              await cancelBooking({
+                    bookingId,
+                    userId
                 }).unwrap();
             } catch (err) {
               console.error("Failed to cancel booking:", err);
@@ -68,8 +70,6 @@ export default function BookingsProfile() {
         renderItem={({ item }) => (
           <BookingCard
             booking={item}
-            restaurantName="Restaurant Details" // Hardcoded fallback or database map lookups
-            restaurantCuisine="Dinner"
             onCancelPress={handleCancelRequest}
             isCancelling={cancellingId === item.id} // Evaluates to true only for the target card
           />

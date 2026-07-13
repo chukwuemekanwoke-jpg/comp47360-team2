@@ -1,11 +1,10 @@
 import React from "react";
 import { Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
 import { Booking, TransportMode } from "@shared/types";
+import { useGetRestaurantDetailQuery } from "@shared/apiSlice";
 
 interface BookingCardProps {
   booking: Booking;
-  restaurantName: string;
-  restaurantCuisine?: string;
   onCancelPress: (bookingId: string, restaurantName: string) => void;
   isCancelling: boolean;
 }
@@ -19,12 +18,16 @@ const TRANSPORT_MAP: Record<TransportMode, { label: string; icon: string }> = {
 
 export default function BookingCard({
   booking: b,
-  restaurantName,
-  restaurantCuisine,
   onCancelPress,
   isCancelling,
 }: BookingCardProps) {
-  
+  // GET /users/me/bookings has no restaurant join — resolve name/cuisine
+  // client-side. RTK Query dedupes and caches per restaurant id.
+  const { data: restaurant } = useGetRestaurantDetailQuery(b.restaurantId);
+  const restaurantName = restaurant?.name ?? "Loading restaurant…";
+  const restaurantCuisine = restaurant?.cuisine;
+  const restaurantNeighborhood = restaurant?.neighborhood;
+
   const getStatusStyles = (status: string) => {
     switch (status.toUpperCase()) {
       case "CONFIRMED":
@@ -54,7 +57,10 @@ export default function BookingCard({
         <View className="flex-1 mr-2">
           <Text className="text-sm font-bold text-table-cream">{restaurantName}</Text>
           {restaurantCuisine && (
-            <Text className="text-xs text-table-gold mt-0.5">{restaurantCuisine}</Text>
+            <Text className="text-xs text-table-gold mt-0.5">
+              {restaurantCuisine}
+              {restaurantNeighborhood ? ` · ${restaurantNeighborhood}` : ""}
+            </Text>
           )}
         </View>
 
