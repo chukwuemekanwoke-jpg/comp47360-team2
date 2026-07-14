@@ -1,6 +1,6 @@
 import RestaurantCard from "@/components/RestaurantCard";
 import { RestaurantSummary } from "@shared/types";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
 import { useGetNearbyRestaurantsQuery } from "@shared/apiSlice";
 import { DISCOVERY_RADIUS_M } from "@shared/constants";
@@ -49,12 +49,17 @@ export default function CardListView() {
     return list;
   }, [data, sortBy, selectedCuisines]);
 
-  // Render restaurant cards
-  const renderCard = ({ item }: { item: RestaurantSummary }) => (
-    <RestaurantCard
-      restaurant={item}
-      onBook={(restaurant) => setSelectedRestaurant(restaurant)}
-    />
+  // Render restaurant cards — stable identities so memoized rows skip
+  // re-rendering when unrelated CardTab state (modal, sort) changes.
+  const handleBook = useCallback(
+    (restaurant: RestaurantSummary) => setSelectedRestaurant(restaurant),
+    []
+  );
+  const renderCard = useCallback(
+    ({ item }: { item: RestaurantSummary }) => (
+      <RestaurantCard restaurant={item} onBook={handleBook} />
+    ),
+    [handleBook]
   );
 
   if (isLoading) {
@@ -122,6 +127,10 @@ export default function CardListView() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 16, paddingBottom: 32 }}
         showsVerticalScrollIndicator={false}
+        initialNumToRender={6}
+        maxToRenderPerBatch={8}
+        windowSize={7}
+        removeClippedSubviews
         ListHeaderComponent={
           <Text className="text-[9px] font-bold uppercase tracking-widest text-table-gold mb-3">
             {sorted.length} restaurants found
