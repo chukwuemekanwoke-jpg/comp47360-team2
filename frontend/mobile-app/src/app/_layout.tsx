@@ -17,6 +17,9 @@ export default function RootLayout() {
             contentStyle: { backgroundColor: '#000000' },
           }}
         >
+          {/* The tab navigator draws its own headers — hide the stack's
+              default header (which would otherwise title this route "tabs"). */}
+          <Stack.Screen name="tabs" options={{ headerShown: false }} />
         </Stack>
       </ProfileProvider>
     </Provider>

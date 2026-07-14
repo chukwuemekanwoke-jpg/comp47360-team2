@@ -37,8 +37,7 @@ export const tableApi = createApi({
       let userId = state.auth?.userId;
 
       // --- HYBRID WEB/MOBILE AUTH LINK PERSISTENCE ---
-      // FIXED: Now matching AuthContext.js exact key
-      if (!userId && typeof window !== 'undefined') {
+      if (!userId && typeof localStorage !== 'undefined') {
         userId = localStorage.getItem('table_user_id');
       }
 
@@ -49,7 +48,7 @@ export const tableApi = createApi({
       // JWT from the redux session (mobile login/register) takes priority;
       // fall back to the web merchant token persisted by AuthContext.js.
       let token = state.auth?.token;
-      if (!token && typeof window !== 'undefined') {
+      if (!token && typeof localStorage !== 'undefined') {
         token = localStorage.getItem('table_merchant_token');
       }
       if (token) {

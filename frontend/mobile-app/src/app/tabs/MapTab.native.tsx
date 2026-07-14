@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
 import MapView, { Marker, Callout } from "react-native-maps";
 import { useRouter } from "expo-router";
@@ -36,8 +37,9 @@ export default function MapScreen() {
   const selectedCuisines = useAppSelector((state) => state.user.filters.cuisines);
 
   const { data, isLoading } = useGetNearbyRestaurantsQuery(
-    { lat: location!.lat, lng: location!.lng, radiusM: DISCOVERY_RADIUS_M },
-    { skip: !location }
+    location
+      ? { lat: location.lat, lng: location.lng, radiusM: DISCOVERY_RADIUS_M }
+      : skipToken
   );
 
   const restaurants = useMemo(() => {
