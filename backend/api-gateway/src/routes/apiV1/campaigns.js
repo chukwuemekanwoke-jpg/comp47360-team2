@@ -66,7 +66,7 @@ router.post(
       await client.query("BEGIN");
 
       const { rows: restaurantRows } = await client.query(
-        `SELECT id, latitude, longitude, manager_user_id
+        `SELECT id, latitude, longitude, manager_user_id, capacity
          FROM restaurants
          WHERE id = $1
          FOR UPDATE`,
@@ -78,6 +78,14 @@ router.post(
       }
 
       const restaurant = restaurantRows[0];
+
+      if (tableQuota > restaurant.capacity) {
+        throw new AppError(
+          400,
+          "VALIDATION_ERROR",
+          `tableQuota cannot exceed restaurant capacity (${restaurant.capacity})`
+        );
+      }
 
       const { rows: campaignRows } = await client.query(
         `INSERT INTO campaigns (restaurant_id, table_quota, discount_percent)

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Modal, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
 import { RestaurantSummary, TransportMode } from "@shared/types";
 import { useCreateBookingMutation, useGetRestaurantEtaQuery } from "@shared/apiSlice";
-import { DUMMYID } from "@/context/UserContext";
+import { useAppSelector } from "@shared/hooks";
 
 interface BookingModalProps {
   isVisible: boolean;
@@ -26,6 +26,7 @@ export default function BookingModal({
 }: BookingModalProps) {
   const [transportMode, setTransportMode] = useState<TransportMode>("walking");
   const [createBooking, { isLoading }] = useCreateBookingMutation();
+  const userId = useAppSelector((state) => state.auth.userId);
 
   const { data: etaResult, isFetching: etaFetching } = useGetRestaurantEtaQuery(
     {
@@ -42,6 +43,10 @@ export default function BookingModal({
   const canBook = etaResult ? etaResult.canBook : true;
 
   const handleConfirmBooking = async () => {
+    if (!userId) {
+      alert("Please sign in before booking a table.");
+      return;
+    }
     try {
       await createBooking({
         restaurantId: restaurant.id,
@@ -49,7 +54,7 @@ export default function BookingModal({
         userLat: userCoordinates.lat,
         userLng: userCoordinates.lng,
         offerId: null,
-        userId: DUMMYID,
+        userId,
       }).unwrap();
 
       alert(`Successfully booked a table at ${restaurant.name}!`);

@@ -2,7 +2,8 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
   UserProfile, RestaurantSummary, RestaurantDetail, EtaResult,
   Booking, OfferInboxItem, Campaign, TransportMode, BudgetTier, BookingStatus,
-  RevpashSummary, RevpashWindow, AuthSession, ManagerOfferItem
+  RevpashSummary, RevpashWindow, AuthSession, ManagerOfferItem, CampaignRevpashLift,
+  PasswordResetResult, MapsConfig
 } from './types';
 
 // --- CROSS-PLATFORM URL RESOLVER ---
@@ -33,27 +34,28 @@ export const tableApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: getBaseUrl(),
     prepareHeaders: (headers, { getState }) => {
-      const state = getState() as { auth?: { userId: string | null } };
+      const state = getState() as { auth?: { userId: string | null; token: string | null } };
       let userId = state.auth?.userId;
-      
+
       // --- HYBRID WEB/MOBILE AUTH LINK PERSISTENCE ---
-      // FIXED: Now matching AuthContext.js exact key
-      if (!userId && typeof window !== 'undefined') {
-        userId = localStorage.getItem('table_user_id'); 
+      if (!userId && typeof localStorage !== 'undefined') {
+        userId = localStorage.getItem('table_user_id');
       }
-      
+
       if (userId) {
         headers.set('X-User-Id', userId);
       }
 
-      // FIXED: Now matching AuthContext.js exact key
-      if (typeof window !== 'undefined') {
-        const token = localStorage.getItem('table_merchant_token');
-        if (token) {
-          headers.set('Authorization', `Bearer ${token}`);
-        }
+      // JWT from the redux session (mobile login/register) takes priority;
+      // fall back to the web merchant token persisted by AuthContext.js.
+      let token = state.auth?.token;
+      if (!token && typeof localStorage !== 'undefined') {
+        token = localStorage.getItem('table_merchant_token');
       }
-      
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+
       return headers;
     },
   }),
@@ -94,6 +96,25 @@ export const tableApi = createApi({
         body,
       }),
       invalidatesTags: ['User'],
+    }),
+
+    // POST /auth/logout — bumps the user's token_version server-side, which
+    // revokes the current JWT (and any other active session for that user)
+    // rather than just clearing local state.
+    logout: builder.mutation<{ status: string }, void>({
+      query: () => ({
+        url: '/auth/logout',
+        method: 'POST',
+      }),
+      invalidatesTags: ['User', 'Restaurants', 'Bookings', 'Offers', 'Campaigns'],
+    }),
+
+    // Needs GET /config/maps-key on the backend (see handoff spec) — serves
+    // the Google Maps browser key from GCP Secret Manager at runtime, so it
+    // never sits in the frontend build/source control and can be rotated
+    // without a redeploy.
+    getMapsConfig: builder.query<MapsConfig, void>({
+      query: () => '/config/maps-key',
     }),
 
     updatePreferences: builder.mutation<UserProfile, { userId: string; budgetTier: BudgetTier; dietaryTags: string[]; lastLat?: number; lastLng?: number }>({
@@ -280,6 +301,36 @@ export const tableApi = createApi({
       providesTags: (_result, _error, arg) => [{ type: 'Restaurants', id: arg.restaurantId }],
     }),
 
+    // Needs GET /restaurants/:id/campaigns/:campaignId/revpash-lift on the
+    // backend (see handoff spec) — Phase 2 of the RevPASH rollout, per-campaign
+    // organic-vs-deal RevPASH comparison. Blocked on TABL-118 (RISK_REGISTER
+    // R-09): no RevPASH schema/route exists anywhere yet, so this always 404s.
+    getCampaignRevpashLift: builder.query<CampaignRevpashLift, { restaurantId: string; campaignId: string }>({
+      query: ({ restaurantId, campaignId }) => `/restaurants/${restaurantId}/campaigns/${campaignId}/revpash-lift`,
+      providesTags: (_result, _error, arg) => [{ type: 'Campaigns', id: arg.campaignId }],
+    }),
+
+    // Needs POST /auth/forgot-password on the backend (see handoff spec) —
+    // generates a reset token and emails a reset link. No reset_token column,
+    // email-sending infra, or route exists anywhere yet.
+    forgotPassword: builder.mutation<PasswordResetResult, { email: string }>({
+      query: (body) => ({
+        url: '/auth/forgot-password',
+        method: 'POST',
+        body,
+      }),
+    }),
+
+    // Needs POST /auth/reset-password on the backend (see handoff spec) —
+    // validates the token from the emailed link and sets a new password.
+    resetPassword: builder.mutation<PasswordResetResult, { token: string; newPassword: string }>({
+      query: (body) => ({
+        url: '/auth/reset-password',
+        method: 'POST',
+        body,
+      }),
+    }),
+
   }),
 });
 
@@ -288,6 +339,8 @@ export const {
   useCreateUserMutation,
   useRegisterMutation,
   useLoginMutation,
+  useLogoutMutation,
+  useGetMapsConfigQuery,
   useUpdatePreferencesMutation,
   useGetProfileQuery,
   useGetNearbyRestaurantsQuery,
@@ -308,4 +361,7 @@ export const {
   useUpdateBookingStatusMutation,
   useGetRevpashQuery,
   useCreateRestaurantMutation,
+  useGetCampaignRevpashLiftQuery,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
 } = tableApi;

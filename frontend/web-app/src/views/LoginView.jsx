@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { isValidEmail } from '../utils/validation';
 import { useLoginMutation } from '../../../packages/shared/src/apiSlice.ts';
+import PasswordInput from '../components/PasswordInput';
 
 export default function LoginView() {
   const navigate = useNavigate();
@@ -81,16 +82,22 @@ export default function LoginView() {
               <label htmlFor="password" className="block text-xs font-mono text-table-textMuted uppercase tracking-widest text-left">
                 Password
               </label>
+              <Link
+                to="/forgot-password"
+                className="text-[11px] font-mono text-table-textSubtle hover:text-table-primary transition-colors"
+              >
+                Forgot password?
+              </Link>
             </div>
-            <input
+            <PasswordInput
               id="password"
-              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               disabled={isSubmitting}
               placeholder="••••••••"
-              className="w-full px-4 py-3 bg-black/40 border border-zinc-800 rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:ring-2 focus:ring-table-primary/50 focus:border-table-primary transition-all outline-none disabled:opacity-50"
+              autoComplete="current-password"
+              inputClassName="w-full px-4 py-3 bg-black/40 border border-zinc-800 rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:ring-2 focus:ring-table-primary/50 focus:border-table-primary transition-all outline-none disabled:opacity-50"
             />
           </div>
 

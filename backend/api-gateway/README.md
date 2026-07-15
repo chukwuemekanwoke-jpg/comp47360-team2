@@ -42,6 +42,9 @@ Server: `http://localhost:3001`
 | POST | `/api/v1/users` | none | Create user (legacy onboarding) |
 | POST | `/api/v1/auth/register` | none | Register; returns JWT |
 | POST | `/api/v1/auth/login` | none | Login; returns JWT |
+| POST | `/api/v1/auth/forgot-password` | none | Request password reset link (logged in dev) |
+| POST | `/api/v1/auth/reset-password` | none | Set new password with reset token |
+| POST | `/api/v1/auth/logout` | Bearer JWT | Invalidate current JWT |
 | POST | `/api/v1/auth/logout` | JWT | Invalidate current token (server-side logout) |
 | GET | `/api/v1/users/me` | JWT or `X-User-Id` | Current user profile |
 | PATCH | `/api/v1/users/me/preferences` | JWT or `X-User-Id` | Update budget, dietary tags, location |
@@ -101,6 +104,16 @@ curl http://localhost:3001/api/v1/users/me/bookings \
 # Logout (invalidates JWT server-side)
 curl -X POST http://localhost:3001/api/v1/auth/logout \
   -H 'Authorization: Bearer TOKEN'
+
+# Forgot password (check server logs for [password-reset] link in dev)
+curl -X POST http://localhost:3001/api/v1/auth/forgot-password \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"manager@demo.com"}'
+
+# Reset password (paste token from log link)
+curl -X POST http://localhost:3001/api/v1/auth/reset-password \
+  -H 'Content-Type: application/json' \
+  -d '{"token":"PASTE_TOKEN","newPassword":"newpassword123"}'
 
 # Demo consumer (after npm run seed in database/)
 curl http://localhost:3001/api/v1/users/me \

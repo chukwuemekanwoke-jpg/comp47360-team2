@@ -2,6 +2,7 @@
   "expo": {
     "name": "Table",
     "slug": "Table",
+    "owner": "comp4table",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -15,6 +16,7 @@
       }
     },
     "android": {
+      "package": "com.milodenn.table",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

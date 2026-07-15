@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { RestaurantSummary } from "@shared/types";
 
@@ -23,7 +24,9 @@ function busynessLabel(score: number) {
   return "Packed";
 }
 
-export default function RestaurantCard({ restaurant: r, onBook }: RestaurantCardProps) {
+// memo: list rows must not re-render when the parent list re-renders
+// (e.g. opening the booking modal) unless their own data changed.
+function RestaurantCard({ restaurant: r, onBook }: RestaurantCardProps) {
   return (
     <View className="bg-table-surface border border-table-border rounded-2xl overflow-hidden mb-3">
       {/* Placeholder header band */}
@@ -107,3 +110,5 @@ export default function RestaurantCard({ restaurant: r, onBook }: RestaurantCard
     </View>
   );
 }
+
+export default memo(RestaurantCard);
