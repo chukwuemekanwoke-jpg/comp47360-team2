@@ -42,6 +42,9 @@ Server: `http://localhost:3001`
 | POST | `/api/v1/users` | none | Create user (legacy onboarding) |
 | POST | `/api/v1/auth/register` | none | Register; returns JWT |
 | POST | `/api/v1/auth/login` | none | Login; returns JWT |
+| POST | `/api/v1/auth/forgot-password` | none | Request password reset link (logged in dev) |
+| POST | `/api/v1/auth/reset-password` | none | Set new password with reset token |
+| POST | `/api/v1/auth/logout` | Bearer JWT | Invalidate current JWT |
 | POST | `/api/v1/auth/logout` | JWT | Invalidate current token (server-side logout) |
 | GET | `/api/v1/users/me` | JWT or `X-User-Id` | Current user profile |
 | PATCH | `/api/v1/users/me/preferences` | JWT or `X-User-Id` | Update budget, dietary tags, location |
@@ -55,12 +58,14 @@ Server: `http://localhost:3001`
 | GET | `/api/v1/restaurants/:restaurantId` | none | Restaurant detail for booking screen |
 | PATCH | `/api/v1/restaurants/:restaurantId/settings` | manager JWT or `X-User-Id` | Update accessibility settings |
 | GET | `/api/v1/restaurants/:restaurantId/eta` | none | Travel time (Google Routes API, BE-12) + `canBook` vs hold window |
+| GET | `/api/v1/restaurants/:restaurantId/revpash` | manager JWT or `X-User-Id` | RevPASH summary (`?window=today\|week\|month`) |
 
 ### Bookings (BE-12, BE-16)
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
-| POST | `/api/v1/bookings` | JWT or `X-User-Id` | Confirm reservation; decrements table count |
+| POST | `/api/v1/bookings` | JWT or `X-User-Id` | Confirm reservation; decrements table count; accepts optional `partySize` |
+| PATCH | `/api/v1/bookings/:bookingId/status` | manager JWT or `X-User-Id` | Update booking status (dashboard) |
 | POST | `/api/v1/bookings/:bookingId/cancel` | JWT or `X-User-Id` | Cancel booking; restore table count / offer state |
 | GET | `/api/v1/users/me/bookings` | JWT or `X-User-Id` | List the current user's bookings (newest first) |
 | GET | `/api/v1/restaurants/:restaurantId/bookings` | manager JWT or `X-User-Id` | List bookings for a restaurant (newest first) |
@@ -100,6 +105,16 @@ curl http://localhost:3001/api/v1/users/me/bookings \
 curl -X POST http://localhost:3001/api/v1/auth/logout \
   -H 'Authorization: Bearer TOKEN'
 
+# Forgot password (check server logs for [password-reset] link in dev)
+curl -X POST http://localhost:3001/api/v1/auth/forgot-password \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"manager@demo.com"}'
+
+# Reset password (paste token from log link)
+curl -X POST http://localhost:3001/api/v1/auth/reset-password \
+  -H 'Content-Type: application/json' \
+  -d '{"token":"PASTE_TOKEN","newPassword":"newpassword123"}'
+
 # Demo consumer (after npm run seed in database/)
 curl http://localhost:3001/api/v1/users/me \
   -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001'
@@ -134,6 +149,10 @@ curl -X POST http://localhost:3001/api/v1/bookings/BOOKING_ID/cancel \
 
 # B-side: list restaurant bookings (Demo Manager on The Maple Room)
 curl http://localhost:3001/api/v1/restaurants/550e8400-e29b-41d4-a716-446655441001/bookings \
+  -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440002'
+
+# B-side: RevPASH summary (today)
+curl 'http://localhost:3001/api/v1/restaurants/550e8400-e29b-41d4-a716-446655441001/revpash?window=today' \
   -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440002'
 
 # B-side: create campaign (Demo Manager on The Maple Room)

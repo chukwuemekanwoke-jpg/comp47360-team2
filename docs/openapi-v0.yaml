@@ -119,6 +119,46 @@ paths:
         "401":
           $ref: "#/components/responses/Unauthorized"
 
+  /api/v1/auth/forgot-password:
+    post:
+      tags: [Auth]
+      summary: Request a password reset link
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthForgotPasswordRequest"
+      responses:
+        "200":
+          description: Acknowledged (same response whether or not the email exists)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthMessageResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+
+  /api/v1/auth/reset-password:
+    post:
+      tags: [Auth]
+      summary: Set a new password using a reset token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthResetPasswordRequest"
+      responses:
+        "200":
+          description: Password updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthMessageResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+
   /api/v1/users:
     post:
       tags: [Users]
@@ -290,6 +330,33 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /api/v1/restaurants/{restaurantId}/revpash:
+    get:
+      tags: [Restaurants]
+      summary: RevPASH summary for merchant dashboard (Story 5.1)
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+        - $ref: "#/components/parameters/RestaurantId"
+        - name: window
+          in: query
+          schema:
+            type: string
+            enum: [today, week, month]
+            default: today
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RevpashSummary"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
   /api/v1/restaurants/{restaurantId}/eta:
     get:
       tags: [Restaurants]
@@ -385,6 +452,40 @@ paths:
       responses:
         "200":
           description: Cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+
+  /api/v1/bookings/{bookingId}/status:
+    patch:
+      tags: [Bookings]
+      summary: Update booking status (merchant dashboard, Story 5.2)
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+        - name: bookingId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingStatusPatch"
+      responses:
+        "200":
+          description: Updated
           content:
             application/json:
               schema:
@@ -720,6 +821,31 @@ components:
           type: string
           minLength: 8
 
+    AuthForgotPasswordRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+
+    AuthResetPasswordRequest:
+      type: object
+      required: [token, newPassword]
+      properties:
+        token:
+          type: string
+        newPassword:
+          type: string
+          minLength: 8
+
+    AuthMessageResponse:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+
     AuthSession:
       type: object
       properties:
@@ -860,6 +986,36 @@ components:
           type: string
           format: uuid
           nullable: true
+        partySize:
+          type: integer
+          minimum: 1
+          maximum: 20
+          description: Party size for RevPASH revenue simulation (defaults to 2).
+
+    BookingStatusPatch:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled, completed, no_show]
+
+    RevpashSummary:
+      type: object
+      required: [restaurantId, window, revenue, availableSeatHours, revpash]
+      properties:
+        restaurantId:
+          type: string
+          format: uuid
+        window:
+          type: string
+          enum: [today, week, month]
+        revenue:
+          type: number
+        availableSeatHours:
+          type: number
+        revpash:
+          type: number
 
     Booking:
       type: object
@@ -960,6 +1116,7 @@ components:
         tableQuota:
           type: integer
           minimum: 1
+          description: Must not exceed the restaurant capacity.
         discountPercent:
           type: integer
           minimum: 10

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import DashboardHeader from '../components/DashboardHeader';
 import OccupancyMeter from '../components/OccupancyMeter';
 import AccessibilityPanel from '../components/AccessibilityPanel';
@@ -15,13 +16,36 @@ import {
   useGetActiveCampaignQuery,
   useCreateCampaignMutation,
   useCancelCampaignMutation,
+  useLogoutMutation,
+  tableApi,
 } from '../../../packages/shared/src/apiSlice.ts';
 
 const MIN_DISCOUNT = 10;
 const MAX_DISCOUNT = 50;
 
 export default function MerchantDashboard() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { restaurantId, logout } = useAuth() || {};
+  const [logoutRequest] = useLogoutMutation();
+
+  const handleLogout = async () => {
+    try {
+      // Revokes the JWT server-side (token_version bump) so the session is
+      // actually dead, not just cleared locally — best-effort: if the token
+      // is already expired/invalid this 401s, which is fine, we're logging
+      // out either way.
+      await logoutRequest().unwrap();
+    } catch {
+      // ignore — proceed with local logout regardless
+    }
+    logout();
+    // Drop every cached query result, not just the tagged ones above — a
+    // different account logging in next shouldn't see a flash of the
+    // previous manager's data before fresh requests land.
+    dispatch(tableApi.util.resetApiState());
+    navigate('/');
+  };
 
   const { data: restaurant, isLoading: isRestaurantLoading } = useGetRestaurantDetailQuery(restaurantId, {
     skip: !restaurantId,
@@ -52,6 +76,11 @@ export default function MerchantDashboard() {
 
     if (!Number.isInteger(tableQuota) || tableQuota <= 0) {
       setFormError('Table quota must be a positive whole number');
+      return;
+    }
+
+    if (restaurant?.capacity != null && tableQuota > restaurant.capacity) {
+      setFormError(`Cannot release more than ${restaurant.capacity} tables (restaurant capacity)`);
       return;
     }
 
@@ -104,7 +133,7 @@ export default function MerchantDashboard() {
       <div className="p-4 sm:p-8 space-y-6 max-w-5xl mx-auto">
         <div className="flex justify-end">
           <button
-            onClick={logout}
+            onClick={handleLogout}
             className="px-4 py-2 bg-table-surface border border-table-danger/40 text-table-danger hover:bg-table-danger/10 rounded-xl font-mono text-[10px] uppercase tracking-wider transition-colors"
           >
             Logout
@@ -189,7 +218,11 @@ export default function MerchantDashboard() {
                 </div>
               </div>
 
-              <form onSubmit={handleCreateCampaign} className="space-y-4 border-t border-table-border pt-6">
+              {/* noValidate: native browser validation would block onSubmit
+                  before our own styled, consistent error messages ever run —
+                  see LoginView for the same reasoning. Matters here since the
+                  tableQuota field now carries a real max constraint. */}
+              <form onSubmit={handleCreateCampaign} noValidate className="space-y-4 border-t border-table-border pt-6">
                 <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-table-textMuted">
                   Trigger Flash Deal
                 </h3>
@@ -209,6 +242,7 @@ export default function MerchantDashboard() {
                       id="tableQuota"
                       type="number"
                       min={1}
+                      max={restaurant?.capacity ?? undefined}
                       value={tableQuota}
                       onChange={(e) => setTableQuota(Number(e.target.value))}
                       disabled={!!activeCampaign || isCreatingCampaign}

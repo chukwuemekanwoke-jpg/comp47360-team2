@@ -495,6 +495,46 @@
           ]
         },
         {
+          "name": "RevPASH summary (today)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{managerToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/restaurants/{{restaurantId}}/revpash?window=today",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "restaurants", "{{restaurantId}}", "revpash"],
+              "query": [
+                {
+                  "key": "window",
+                  "value": "today"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('revpash summary loads', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('revpash');",
+                  "  pm.expect(body).to.have.property('revenue');",
+                  "  pm.expect(body).to.have.property('availableSeatHours');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "Create flash campaign",
           "request": {
             "method": "POST",

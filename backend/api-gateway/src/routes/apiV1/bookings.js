@@ -4,9 +4,10 @@ const requireUser = require("../../middleware/requireUser");
 const { AppError, isUuid } = require("../../errors");
 const { getPool } = require("../../db/pool");
 const { toBookingJson } = require("../../utils/serialize");
-const { parseBodyLatLng, parseTransportMode } = require("../../utils/validate");
+const { parseBodyLatLng, parseTransportMode, parsePartySize, parseBookingStatus } = require("../../utils/validate");
 const { createBooking } = require("../../services/createBooking");
 const { cancelBooking } = require("../../services/cancelBooking");
+const { updateBookingStatus } = require("../../services/updateBookingStatus");
 
 const router = Router();
 
@@ -25,6 +26,7 @@ router.post(
       userLat,
       userLng,
       offerId = null,
+      partySize: rawPartySize = null,
     } = req.body ?? {};
 
     if (!restaurantId || !isUuid(restaurantId)) {
@@ -36,6 +38,7 @@ router.post(
     }
 
     const transportMode = parseTransportMode(rawTransportMode);
+    const partySize = parsePartySize(rawPartySize);
     const { lat, lng } = parseBodyLatLng(userLat, userLng);
 
     const client = await pool.connect();
@@ -50,6 +53,7 @@ router.post(
         userLat: lat,
         userLng: lng,
         offerId,
+        partySize,
       });
 
       await client.query("COMMIT");
@@ -86,6 +90,45 @@ router.post(
       const bookingRow = await cancelBooking(client, {
         userId: req.userId,
         bookingId,
+      });
+
+      await client.query("COMMIT");
+      res.status(200).json(toBookingJson(bookingRow));
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
+    }
+  })
+);
+
+router.patch(
+  "/:bookingId/status",
+  requireUser,
+  asyncHandler(async (req, res) => {
+    const pool = getPool();
+    if (!pool) {
+      throw new AppError(500, "INTERNAL_ERROR", "Database is not configured (DATABASE_URL)");
+    }
+
+    const { bookingId } = req.params;
+    const { status: rawStatus } = req.body ?? {};
+
+    if (!bookingId || !isUuid(bookingId)) {
+      throw new AppError(400, "VALIDATION_ERROR", "bookingId must be a valid UUID");
+    }
+
+    const status = parseBookingStatus(rawStatus);
+    const client = await pool.connect();
+
+    try {
+      await client.query("BEGIN");
+
+      const bookingRow = await updateBookingStatus(client, {
+        managerUserId: req.userId,
+        bookingId,
+        status,
       });
 
       await client.query("COMMIT");

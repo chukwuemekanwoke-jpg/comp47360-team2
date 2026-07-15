@@ -34,7 +34,7 @@ describe('LoginView', () => {
     renderLoginView();
 
     await user.type(screen.getByLabelText(/email address/i), 'not-an-email');
-    await user.type(screen.getByLabelText(/password/i), 'password123');
+    await user.type(screen.getByLabelText(/^password$/i), 'password123');
     await user.click(screen.getByRole('button', { name: /sign in to tablé/i }));
 
     expect(screen.getByText(/enter a valid email address/i)).toBeInTheDocument();
@@ -51,7 +51,7 @@ describe('LoginView', () => {
     renderLoginView();
 
     await user.type(screen.getByLabelText(/email address/i), 'manager@demo.com');
-    await user.type(screen.getByLabelText(/password/i), 'wrong-password');
+    await user.type(screen.getByLabelText(/^password$/i), 'wrong-password');
     await user.click(screen.getByRole('button', { name: /sign in to tablé/i }));
 
     expect(await screen.findByText(/invalid email or password/i)).toBeInTheDocument();
@@ -67,7 +67,7 @@ describe('LoginView', () => {
     renderLoginView();
 
     await user.type(screen.getByLabelText(/email address/i), 'manager@demo.com');
-    await user.type(screen.getByLabelText(/password/i), 'password123');
+    await user.type(screen.getByLabelText(/^password$/i), 'password123');
     await user.click(screen.getByRole('button', { name: /sign in to tablé/i }));
 
     expect(loginMock).toHaveBeenCalledWith({ email: 'manager@demo.com', password: 'password123' });

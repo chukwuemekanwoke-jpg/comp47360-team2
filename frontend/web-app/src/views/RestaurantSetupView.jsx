@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCreateRestaurantMutation } from '../../../packages/shared/src/apiSlice.ts';
 import { isValidLatitude, isValidLongitude, isValidPhone } from '../utils/validation';
+import RestaurantLocationPicker from '../components/RestaurantLocationPicker';
 
 const ACCESSIBILITY_FLAGS = [
   { key: 'isWheelchairAccessible', icon: '♿', label: 'Wheelchair Accessible' },
@@ -31,6 +32,10 @@ export default function RestaurantSetupView() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleLocationChange = ({ latitude, longitude }) => {
+    setFormData((prev) => ({ ...prev, latitude, longitude }));
   };
 
   const handleToggleAccessibility = (key) => {
@@ -158,43 +163,17 @@ export default function RestaurantSetupView() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="latitude" className="block text-[11px] font-mono text-table-textMuted uppercase tracking-wide mb-1.5 font-bold">
-                  Latitude
-                </label>
-                <input
-                  id="latitude"
-                  type="number"
-                  step="any"
-                  name="latitude"
-                  value={formData.latitude}
-                  onChange={handleInputChange}
-                  placeholder="40.7589"
-                  className="w-full bg-table-canvas border border-table-border rounded-xl px-4 py-3 text-sm text-table-text placeholder-table-textSubtle focus:outline-none focus:border-table-primary transition-colors"
-                  disabled={isSubmitting}
-                />
-              </div>
-              <div>
-                <label htmlFor="longitude" className="block text-[11px] font-mono text-table-textMuted uppercase tracking-wide mb-1.5 font-bold">
-                  Longitude
-                </label>
-                <input
-                  id="longitude"
-                  type="number"
-                  step="any"
-                  name="longitude"
-                  value={formData.longitude}
-                  onChange={handleInputChange}
-                  placeholder="-73.9851"
-                  className="w-full bg-table-canvas border border-table-border rounded-xl px-4 py-3 text-sm text-table-text placeholder-table-textSubtle focus:outline-none focus:border-table-primary transition-colors"
-                  disabled={isSubmitting}
-                />
-              </div>
+            <div>
+              <label className="block text-[11px] font-mono text-table-textMuted uppercase tracking-wide mb-1.5 font-bold">
+                Restaurant Location
+              </label>
+              <RestaurantLocationPicker
+                latitude={formData.latitude}
+                longitude={formData.longitude}
+                onChange={handleLocationChange}
+                disabled={isSubmitting}
+              />
             </div>
-            <p className="text-[11px] font-mono text-table-textSubtle -mt-2">
-              Find these by right-clicking your location on Google Maps and copying the coordinates.
-            </p>
 
             <div>
               <label htmlFor="cuisine" className="block text-[11px] font-mono text-table-textMuted uppercase tracking-wide mb-1.5 font-bold">

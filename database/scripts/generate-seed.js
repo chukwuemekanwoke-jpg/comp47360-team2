@@ -182,7 +182,36 @@ function resolveNeighborhood(lat, lng, zip) {
 // ---------------------------------------------------------------------------
 // Simulated operational fields (deterministic per source id)
 // ---------------------------------------------------------------------------
-function simulateOperations(sourceId, placesEntry) {
+function cuisineBenchmarkCheck(cuisine) {
+  switch (cuisine) {
+    case "french":
+      return 85;
+    case "italian":
+      return 68;
+    case "japanese":
+      return 55;
+    case "thai":
+      return 42;
+    case "cafe":
+      return 32;
+    case "american":
+      return 48;
+    default:
+      return 45;
+  }
+}
+
+function neighborhoodPremium(neighborhood) {
+  if (["Midtown", "Midtown East", "Theater District", "Upper East Side"].includes(neighborhood)) {
+    return 1.1;
+  }
+  if (["Hell's Kitchen", "Murray Hill", "Koreatown"].includes(neighborhood)) {
+    return 1.05;
+  }
+  return 1;
+}
+
+function simulateOperations(sourceId, placesEntry, cuisine, neighborhood) {
   const rnd = mulberry32(seedFromString(sourceId));
 
   const capacity = 4 + Math.floor(rnd() * 17); // 4..20
@@ -198,6 +227,11 @@ function simulateOperations(sourceId, placesEntry) {
   const simulatedWheelchair = rnd() < 0.4;
   const sensory = rnd() < 0.25; // no public data source exists for this — stays simulated
 
+  const dinnerOnly = rnd() < 0.2;
+  const opensAt = dinnerOnly ? "17:00" : ["10:00", "11:00", "11:30"][Math.floor(rnd() * 3)];
+  const closesAt = dinnerOnly ? "23:00" : ["21:00", "22:00", "23:00"][Math.floor(rnd() * 3)];
+  const avgCheck = Math.round(cuisineBenchmarkCheck(cuisine) * neighborhoodPremium(neighborhood) * 100) / 100;
+
   // Real values from Places API (New) when enrich-places.js has resolved this
   // restaurant; otherwise fall back to the deterministic simulation so the
   // seed still works without ever running the (paid) enrichment step.
@@ -207,7 +241,18 @@ function simulateOperations(sourceId, placesEntry) {
       : simulatedWheelchair;
   const phone = placesEntry && placesEntry.matched ? placesEntry.phone : null;
 
-  return { capacity, busyness, available, holdWindow, wheelchair, sensory, phone };
+  return {
+    capacity,
+    busyness,
+    available,
+    holdWindow,
+    wheelchair,
+    sensory,
+    phone,
+    opensAt,
+    closesAt,
+    avgCheck,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -251,6 +296,7 @@ INSERT INTO restaurants (
   id, name, latitude, longitude, address_line, neighborhood,
   hold_window_minutes, available_table_count, busyness_score,
   capacity, cuisine, phone,
+  opens_at, closes_at, avg_check_per_cover,
   is_wheelchair_accessible, sensory_friendly, manager_user_id
 )
 VALUES
@@ -272,6 +318,9 @@ VALUES
         r.capacity,
         sqlStr(r.cuisine),
         sqlStr(r.phone),
+        sqlStr(r.opensAt),
+        sqlStr(r.closesAt),
+        r.avgCheck.toFixed(2),
         sqlBool(r.wheelchair),
         sqlBool(r.sensory),
         r.managerId ? sqlStr(r.managerId) : "NULL",
@@ -293,6 +342,9 @@ ON CONFLICT (id) DO UPDATE SET
   capacity = EXCLUDED.capacity,
   cuisine = EXCLUDED.cuisine,
   phone = EXCLUDED.phone,
+  opens_at = EXCLUDED.opens_at,
+  closes_at = EXCLUDED.closes_at,
+  avg_check_per_cover = EXCLUDED.avg_check_per_cover,
   is_wheelchair_accessible = EXCLUDED.is_wheelchair_accessible,
   sensory_friendly = EXCLUDED.sensory_friendly,
   manager_user_id = EXCLUDED.manager_user_id;
@@ -315,20 +367,25 @@ function main() {
   const enrichedCount = pool.filter((r) => placesCache[r.sourceId]?.matched).length;
 
   const records = pool.map((r, index) => {
-    const ops = simulateOperations(r.sourceId, placesCache[r.sourceId]);
+    const slug = cuisineSlug(r.cuisine);
+    const neighborhood = resolveNeighborhood(r.lat, r.lng, r.zipcode);
+    const ops = simulateOperations(r.sourceId, placesCache[r.sourceId], slug, neighborhood);
     return {
       id: uuidv5(r.sourceId, TABLE_NAMESPACE),
       name: titleCase(r.name).replace(/\s{2,}/g, " "),
       lat: r.lat,
       lng: r.lng,
       addressLine: streetFromAddress(r.address),
-      neighborhood: resolveNeighborhood(r.lat, r.lng, r.zipcode),
-      cuisine: cuisineSlug(r.cuisine),
+      neighborhood,
+      cuisine: slug,
       phone: ops.phone,
       holdWindow: ops.holdWindow,
       available: ops.available,
       busyness: ops.busyness,
       capacity: ops.capacity,
+      opensAt: ops.opensAt,
+      closesAt: ops.closesAt,
+      avgCheck: ops.avgCheck,
       wheelchair: ops.wheelchair,
       sensory: ops.sensory,
       // Give the demo manager 2 nearest venues so the B-side flow has data.

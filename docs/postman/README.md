@@ -23,7 +23,7 @@
 |--------|--------|
 | **Infrastructure** | `GET /health`, `GET /api/v1/status` |
 | **C-side** | Register/login → preferences → nearby → book → offers → accept → cancel booking |
-| **B-side: dashboard** | Manager login → bookings → create campaign → active campaign → settings → cancel → logout |
+| **B-side: dashboard** | Manager login → bookings → RevPASH → create campaign → active campaign → settings → cancel → logout |
 | **B-side: merchant onboarding** | Register new manager → create restaurant (`POST /restaurants`) |
 
 ## Variables (auto-set by tests)
@@ -38,6 +38,6 @@
 
 - **Accept pending offer** requires a pending offer in the diner inbox (run a B-side campaign first, or use seeded data).
 - **Cancel campaign** requires `campaignId` from the create/active campaign steps in the same run.
-- Endpoints **not yet in collection** (backend pending): `GET /revpash`, `PATCH /bookings/:id/status`, `GET /campaigns/:id/offers`.
+- Endpoints **not yet in collection** (backend pending): `GET /campaigns/:id/offers`.
 
 Contract reference: [api-contract-v0.md](../api-contract-v0.md), [openapi-v0.yaml](../openapi-v0.yaml).
