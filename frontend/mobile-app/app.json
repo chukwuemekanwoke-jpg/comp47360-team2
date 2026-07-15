@@ -2,6 +2,7 @@
   "expo": {
     "name": "Table",
     "slug": "Table",
+    "owner": "comp4table",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
