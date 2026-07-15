@@ -1,11 +1,31 @@
-import { Text, View} from "react-native";
-import { useProfile } from "@/context/ProfileContext";
+import { Text, View, ActivityIndicator } from "react-native";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { useGetProfileQuery } from "@shared/apiSlice";
+import { useAppSelector } from "@shared/hooks";
 import  BookingsProfile  from "@/components/BookingProfile";
 
-export default function ProfileScreen() {
-  const { profile } = useProfile();
+// Onboarding persists favourite cuisines and dining style together in
+// dietaryTags (see onboarding.tsx) — split them back apart for display.
+const DINING_STYLES = ["casual", "family", "date-night", "business"];
+const TIER_PRICE_LEVEL: Record<string, number> = {
+  TIER_1: 1,
+  TIER_2: 2,
+  TIER_3: 3,
+};
 
-  if (!profile) {
+export default function ProfileScreen() {
+  const userId = useAppSelector((state) => state.auth.userId);
+  const { data: user, isLoading } = useGetProfileQuery(userId ?? skipToken);
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 bg-table-canvas items-center justify-center">
+        <ActivityIndicator color="#00f2fe" />
+      </View>
+    );
+  }
+
+  if (!user) {
     return (
       <View className="flex-1 bg-table-canvas items-center justify-center">
         <Text className="text-table-cream">
@@ -14,6 +34,13 @@ export default function ProfileScreen() {
       </View>
     );
   }
+
+  const profile = {
+    name: user.displayName,
+    favoriteCuisines: user.dietaryTags.filter((t) => !DINING_STYLES.includes(t)),
+    diningStyle: user.dietaryTags.find((t) => DINING_STYLES.includes(t)) ?? "casual",
+    maxPriceLevel: user.budgetTier ? TIER_PRICE_LEVEL[user.budgetTier] : 1,
+  };
 
   return (
     <View className="flex-1 bg-table-canvas">
@@ -71,11 +98,11 @@ export default function ProfileScreen() {
             </Text>
 
             <Text className="text-table-cream text-sm font-bold mt-1">
-              {"$".repeat(profile.maxPriceLevel)}
+              {"€".repeat(profile.maxPriceLevel)}
             </Text>
           </View>
 
-          <View className="mb-3">
+          <View>
             <Text className="text-table-gold text-[10px] uppercase">
               Dining Style
             </Text>
@@ -84,16 +111,6 @@ export default function ProfileScreen() {
               {profile.diningStyle
                 .replace("-", " ")
                 .replace(/\b\w/g, (c) => c.toUpperCase())}
-            </Text>
-          </View>
-
-          <View>
-            <Text className="text-table-gold text-[10px] uppercase">
-              Search Radius
-            </Text>
-
-            <Text className="text-table-cream text-sm font-bold mt-1">
-              {profile.radiusKm} km
             </Text>
           </View>
         </View>
@@ -118,18 +135,7 @@ export default function ProfileScreen() {
 
             <View className="flex-1 items-center">
               <Text className="text-2xl font-bold text-table-teal">
-                {profile.radiusKm}
-              </Text>
-              <Text className="text-xs text-table-cream">
-                KM Radius
-              </Text>
-            </View>
-
-            <View className="w-px bg-table-border" />
-
-            <View className="flex-1 items-center">
-              <Text className="text-2xl font-bold text-table-teal">
-                {"$".repeat(profile.maxPriceLevel)}
+                {"€".repeat(profile.maxPriceLevel)}
               </Text>
               <Text className="text-xs text-table-cream">
                 Budget

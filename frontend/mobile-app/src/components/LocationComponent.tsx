@@ -3,18 +3,20 @@ import { Text, View, TouchableOpacity } from "react-native";
 import * as Location from "expo-location";
 import { useAppDispatch, useAppSelector } from "@shared/hooks";
 import { setLocation as setSharedLocation, setLocationError } from "@shared/userSlice";
+import ManhattanAreaPicker from "./ManhattanAreaPicker";
 
 export default function LocationComponent() {
   const dispatch = useAppDispatch();
   const location = useAppSelector((state) => state.user.location);
   const errorMsg = useAppSelector((state) => state.user.locationError);
   const [loading, setLoading] = useState(true); // Starts as true on mount
+  const [showAreaPicker, setShowAreaPicker] = useState(false);
 
   const fetchLocationData = async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        dispatch(setLocationError("Location denied. Enable it in Settings."));
+        dispatch(setLocationError("Location denied. Choose a Manhattan area below or enable GPS in Settings."));
         return;
       }
       const pos = await Location.getCurrentPositionAsync({});
@@ -31,23 +33,28 @@ export default function LocationComponent() {
     fetchLocationData();
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchLocationData(); 
+    fetchLocationData();
   }, []);
+
+  // GPS denied/failed and no manual area chosen yet → offer the fallback.
+  const needsManualFallback = !loading && !location;
 
   return (
     <View className="gap-3">
-      {errorMsg ? (
-        <View className="flex-row items-start gap-2">
-          <Text className="text-xs text-red-400 flex-1">{errorMsg}</Text>
-        </View>
-      ) : location ? (
+      {location ? (
         <View className="flex-row items-center gap-2">
           <View className="w-2 h-2 rounded-full bg-table-live" />
           <Text className="text-xs text-table-cream font-bold">
-            {location.lat.toFixed(4)}°N, {Math.abs(location.lng).toFixed(4)}°W
+            {location.label
+              ? `${location.label}, Manhattan`
+              : `${location.lat.toFixed(4)}°N, ${Math.abs(location.lng).toFixed(4)}°W`}
           </Text>
+        </View>
+      ) : errorMsg ? (
+        <View className="flex-row items-start gap-2">
+          <Text className="text-xs text-red-400 flex-1">{errorMsg}</Text>
         </View>
       ) : (
         <View className="flex-row items-center gap-2">
@@ -75,6 +82,23 @@ export default function LocationComponent() {
           {loading ? "Locating…" : "↺  Refresh"}
         </Text>
       </TouchableOpacity>
+
+      {(needsManualFallback || location?.label) && (
+        <TouchableOpacity
+          onPress={() => setShowAreaPicker(true)}
+          activeOpacity={0.8}
+          className="py-2.5 rounded-xl items-center border border-table-gold/40"
+        >
+          <Text className="text-xs font-bold uppercase tracking-widest text-table-gold">
+            {location?.label ? "Change Area" : "Choose an Area in Manhattan"}
+          </Text>
+        </TouchableOpacity>
+      )}
+
+      <ManhattanAreaPicker
+        isVisible={showAreaPicker}
+        onClose={() => setShowAreaPicker(false)}
+      />
     </View>
   );
 }
