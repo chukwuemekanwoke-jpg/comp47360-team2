@@ -35,6 +35,7 @@ export default function MapScreen() {
 
   const location = useAppSelector((state) => state.user.location);
   const selectedCuisines = useAppSelector((state) => state.user.filters.cuisines);
+  const theme = useAppSelector((state) => state.settings.theme);
 
   const { data, isLoading } = useGetNearbyRestaurantsQuery(
     location
@@ -111,7 +112,7 @@ export default function MapScreen() {
             latitudeDelta: 0.02,
             longitudeDelta: 0.02,
           }}
-          customMapStyle={darkMapStyle}
+          customMapStyle={theme === "dark" ? darkMapStyle : undefined}
         >
           {restaurants.map((r) => (
             <Marker

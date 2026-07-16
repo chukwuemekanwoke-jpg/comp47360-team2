@@ -8,17 +8,19 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Mirrors the web tailwind.config.js exactly
+        // Resolved from CSS variables so the session theme toggle
+        // (light/dark, see src/theme.ts) can swap the palette at runtime.
+        // The dark values mirror the web tailwind.config.js exactly.
         table: {
-          canvas:      '#000000',  // page background
-          surface:     '#09090b',  // card background (zinc-950)
-          border:      '#27272a',  // zinc-800
-          interactive: '#3f3f46',  // zinc-700 - hover / pressed
-          cream:       '#fbf7f2',  // warm text on dark
-          gold:        '#ebd8c3',  // secondary warm text
-          live:        '#10b981',  // emerald-500 - availability / positive
-          offer:       '#f59e0b',  // amber-500  - flash deals
-          teal:        '#00f2fe',  // brand accent (from web)
+          canvas:      'rgb(var(--table-canvas) / <alpha-value>)',      // page background
+          surface:     'rgb(var(--table-surface) / <alpha-value>)',     // card background
+          border:      'rgb(var(--table-border) / <alpha-value>)',
+          interactive: 'rgb(var(--table-interactive) / <alpha-value>)', // hover / pressed
+          cream:       'rgb(var(--table-cream) / <alpha-value>)',       // primary text
+          gold:        'rgb(var(--table-gold) / <alpha-value>)',        // secondary text
+          live:        'rgb(var(--table-live) / <alpha-value>)',        // availability / positive
+          offer:       'rgb(var(--table-offer) / <alpha-value>)',       // flash deals
+          teal:        'rgb(var(--table-teal) / <alpha-value>)',        // brand accent
         },
       },
     },
