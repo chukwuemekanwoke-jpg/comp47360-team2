@@ -26,6 +26,11 @@ const config = {
   mlMatchTimeoutMs: Number(process.env.ML_MATCH_TIMEOUT_MS) || 5000,
   mlBusynessTimeoutMs: Number(process.env.ML_BUSYNESS_TIMEOUT_MS) || 5000,
   googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || null,
+  // Separate from googleMapsApiKey above: that one is called server-to-server
+  // (Routes API) and must stay unrestricted-by-referrer. This one is handed
+  // to the browser via GET /config/maps-key, so it needs its own key with an
+  // HTTP-referrer restriction — the two can't safely share one key.
+  mapsJsApiKey: process.env.MAPS_JS_API_KEY || null,
   googleRoutesUrl:
     process.env.GOOGLE_ROUTES_URL
     || "https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix",
