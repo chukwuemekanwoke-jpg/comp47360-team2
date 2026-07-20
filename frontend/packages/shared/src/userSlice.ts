@@ -12,6 +12,10 @@ export interface UserLocation {
 export interface UserFilters {
   travelMethods: TransportMode[];
   cuisines: string[];
+  // Free-text search over name/cuisine/neighborhood; empty string = no search.
+  searchQuery: string;
+  // Upper bound on busynessScore (0..1); null = show any busyness.
+  maxBusyness: number | null;
 }
 
 export interface UserState {
@@ -26,6 +30,8 @@ const initialState: UserState = {
   filters: {
     travelMethods: ['walking'],
     cuisines: [],
+    searchQuery: '',
+    maxBusyness: null,
   },
 };
 
@@ -61,8 +67,28 @@ const userSlice = createSlice({
         state.filters.cuisines.push(action.payload);
       }
     },
+    // Replace the whole cuisine selection at once (e.g. tapping a cuisine
+    // tile on the discover page).
+    setCuisines(state, action: PayloadAction<string[]>) {
+      state.filters.cuisines = action.payload;
+    },
+    setSearchQuery(state, action: PayloadAction<string>) {
+      state.filters.searchQuery = action.payload;
+    },
+    setMaxBusyness(state, action: PayloadAction<number | null>) {
+      state.filters.maxBusyness = action.payload;
+    },
   },
 });
 
-export const { setLocation, setLocationError, clearLocation, toggleTravelMethod, toggleCuisine } = userSlice.actions;
+export const {
+  setLocation,
+  setLocationError,
+  clearLocation,
+  toggleTravelMethod,
+  toggleCuisine,
+  setCuisines,
+  setSearchQuery,
+  setMaxBusyness,
+} = userSlice.actions;
 export default userSlice.reducer;
