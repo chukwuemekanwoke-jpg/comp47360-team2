@@ -2,6 +2,7 @@ import { Modal, Switch, Text, TouchableOpacity, View } from "react-native";
 import { useAppDispatch, useAppSelector } from "@shared/hooks";
 import { setLocationEnabled, setTheme } from "@shared/settingsSlice";
 import { clearLocation } from "@shared/userSlice";
+import { navColors } from "@/theme";
 
 interface SettingsModalProps {
   isVisible: boolean;
@@ -14,6 +15,7 @@ export default function SettingsModal({ isVisible, onClose }: SettingsModalProps
   const dispatch = useAppDispatch();
   const locationEnabled = useAppSelector((state) => state.settings.locationEnabled);
   const theme = useAppSelector((state) => state.settings.theme);
+  const colors = navColors[theme];
 
   const handleLocationToggle = (enabled: boolean) => {
     dispatch(setLocationEnabled(enabled));
@@ -49,8 +51,8 @@ export default function SettingsModal({ isVisible, onClose }: SettingsModalProps
             <Switch
               value={locationEnabled}
               onValueChange={handleLocationToggle}
-              trackColor={{ false: "#3f3f46", true: "#00f2fe55" }}
-              thumbColor={locationEnabled ? "#00f2fe" : "#a1a1aa"}
+              trackColor={{ false: colors.interactive, true: colors.teal + "55" }}
+              thumbColor={locationEnabled ? colors.teal : colors.gold}
             />
           </View>
 
@@ -67,8 +69,8 @@ export default function SettingsModal({ isVisible, onClose }: SettingsModalProps
               onValueChange={(on) => {
                 dispatch(setTheme(on ? "light" : "dark"));
               }}
-              trackColor={{ false: "#3f3f46", true: "#00f2fe55" }}
-              thumbColor={theme === "light" ? "#00f2fe" : "#a1a1aa"}
+              trackColor={{ false: colors.interactive, true: colors.teal + "55" }}
+              thumbColor={theme === "light" ? colors.teal : colors.gold}
             />
           </View>
 
