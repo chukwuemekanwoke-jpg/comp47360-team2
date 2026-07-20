@@ -20,6 +20,14 @@ describe("GET /api/v1/status", () => {
   });
 });
 
+describe("GET /api/v1/config/maps-key", () => {
+  it("returns 404 when MAPS_JS_API_KEY is not configured", async () => {
+    const res = await request(app).get("/api/v1/config/maps-key");
+    expect(res.status).toBe(404);
+    expect(res.body.error.code).toBe("NOT_FOUND");
+  });
+});
+
 describe("unknown route", () => {
   it("returns 404", async () => {
     const res = await request(app).get("/api/v1/does-not-exist");
