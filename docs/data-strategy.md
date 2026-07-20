@@ -289,6 +289,66 @@ RevPASH doesn't introduce a new category of data problem.
 
 ---
 
+## 12. Full entity classification — actual vs simulated
+
+§2.3 and §11 classify busyness/availability and RevPASH fields specifically.
+This section extends the same real-vs-simulated lens to every column across
+every table (BE-2 schema), as the single canonical reference — update it
+whenever a migration adds a field or an enrichment script (e.g.
+`enrich-places.js`) actually gets run and flips a column from simulated to
+real in practice.
+
+### `users`
+
+| Column | Classification | Why |
+|---|---|---|
+| `budget_tier`, `dietary_tags` | **Actual** | Typed in by the user at onboarding |
+| `email`, `password_hash` | **Actual** | Real auth credentials |
+| `last_lat` / `last_lng` | **Actual** | Real device/browser location at last use |
+| `token_version`, `password_reset_token_hash` / `password_reset_expires_at` | **Actual** (system-generated, not a business signal) | Auth bookkeeping |
+
+### `restaurants`
+
+| Column | Classification | Why |
+|---|---|---|
+| `name`, `address_line`, `latitude` / `longitude`, `cuisine` | **Actual** | Sourced from the real NYC DOHMH inspection dataset via `generate-seed.js` |
+| `neighborhood` | **Actual** | Resolved from real NYC NTA boundary polygons (`database/scripts/geo/ntaLookup.js`), not a guess |
+| `phone`, `is_wheelchair_accessible` | **Hybrid** | Real wherever `enrich-places.js` has matched a restaurant via Places API (New) — **not yet run as of 2026-07-13**, so every value in production is currently still the deterministic simulated fallback |
+| `opens_at` / `closes_at` | **Actual** | Merchant-entered at registration, or Places-enriched |
+| `capacity` | **Actual** | Merchant-entered once at onboarding (§11) |
+| `avg_check_per_cover` | **Simulated at launch, becomes real over time** | No POS integration; seeded from a cuisine/neighborhood benchmark, intended to be replaced by real `check_amount` averages as bookings accumulate |
+| `hold_window_minutes`, `sensory_friendly`, `manager_user_id` | **Simulated/operational** | No public dataset backs these; deterministically seeded per restaurant |
+| `available_table_count` | **Simulated** | Simulation rule (§2.3) — no live POS/reservation feed exists |
+| `busyness_score` | **Hybrid, split by surface** | **Real** for the merchant detail view (`GET /restaurants/:id`) — computed live from NYC taxi-dropoff + pedestrian-count data via the ml-service. Still the **static seeded** value on the diner-facing `GET /restaurants/nearby` list (known gap — not yet wired, see RISK_REGISTER R-11) |
+
+### `campaigns` / `offers`
+
+All columns — **Actual**. Not derived from any open dataset; real B-side merchant actions (`table_quota`, `discount_percent`) and real system-generated inbox state (`status`, `expires_at`), per §7 ("not from open data").
+
+### `bookings`
+
+| Column | Classification | Why |
+|---|---|---|
+| `user_id`, `restaurant_id`, `status`, `transport_mode`, `hold_expires_at`, `confirmed_at` / `cancelled_at` | **Actual** | Real user actions and system state |
+| `eta_minutes` | **Hybrid** | Actual when the Google Routes API call succeeds (`source: "google"`); haversine `"estimate"` fallback otherwise |
+| `party_size` | **Actual** | Direct diner input (§11) |
+| `seated_at` | **Hybrid** | Real if a host check-in flow fires; falls back to `confirmed_at` as a proxy otherwise (§11) |
+| `check_amount` | **Simulated** | No payment/POS integration — computed as `party_size × avg_check_per_cover × discount` (§11) |
+| `duration_minutes` | **Simulated** | No real turn-time tracking — constant default (90 min) (§11) |
+
+### `availability_snapshots`
+
+| Column | Classification | Why |
+|---|---|---|
+| `available_table_count` | **Simulated** | Snapshot of the simulation rule's output, not real occupancy |
+| `busyness_score` | **Hybrid** | Real ml-service output when written via the merchant-detail busyness pipeline; simulated otherwise |
+
+### `restaurant_revpash_hourly` (view)
+
+**Derived**, not its own data — inherits its ingredients' classification. `total_revenue` is built from `check_amount` (simulated) × real `party_size`, so the RevPASH metric itself is currently a **simulated** number, in the same category as `available_table_count`.
+
+---
+
 ## Changelog
 
 | Version | Date | Notes |
@@ -296,3 +356,4 @@ RevPASH doesn't introduce a new category of data problem.
 | v0 | 2026-06-02 | Initial BE-5 strategy |
 | v1 | 2026-07-04 | Routes API naming; align with ADR-001 rev 4 |
 | v2 | 2026-07-06 | Add §11 RevPASH metric data acquisition (real vs simulated) |
+| v3 | 2026-07-13 | Add §12 full entity classification (actual vs simulated) across every table, consolidating the pattern from §2.3/§7/§11 |

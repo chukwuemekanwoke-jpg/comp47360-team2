@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
 import MapView, { Marker, Callout } from "react-native-maps";
 import { useRouter } from "expo-router";
 import { useAppSelector } from "@shared/hooks";
 import { useGetNearbyRestaurantsQuery } from "@shared/apiSlice";
+import { DISCOVERY_RADIUS_M } from "@shared/constants";
 import { RestaurantSummary } from "@shared/types";
 import PreferenceFilters from "@/components/PreferenceFilters";
 import LocationComponent from "@/components/LocationComponent";
@@ -33,10 +35,12 @@ export default function MapScreen() {
 
   const location = useAppSelector((state) => state.user.location);
   const selectedCuisines = useAppSelector((state) => state.user.filters.cuisines);
+  const theme = useAppSelector((state) => state.settings.theme);
 
   const { data, isLoading } = useGetNearbyRestaurantsQuery(
-    { lat: location!.lat, lng: location!.lng, radiusM: 1500 },
-    { skip: !location }
+    location
+      ? { lat: location.lat, lng: location.lng, radiusM: DISCOVERY_RADIUS_M }
+      : skipToken
   );
 
   const restaurants = useMemo(() => {
@@ -108,7 +112,7 @@ export default function MapScreen() {
             latitudeDelta: 0.02,
             longitudeDelta: 0.02,
           }}
-          customMapStyle={darkMapStyle}
+          customMapStyle={theme === "dark" ? darkMapStyle : undefined}
         >
           {restaurants.map((r) => (
             <Marker

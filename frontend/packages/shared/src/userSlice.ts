@@ -4,6 +4,9 @@ import { TransportMode } from './types';
 export interface UserLocation {
   lat: number;
   lng: number;
+  // Human-readable source of the fix, e.g. a manually chosen neighbourhood
+  // when GPS is denied (Story 2.2). Absent for real GPS fixes.
+  label?: string;
 }
 
 export interface UserFilters {
@@ -37,6 +40,11 @@ const userSlice = createSlice({
     setLocationError(state, action: PayloadAction<string>) {
       state.locationError = action.payload;
     },
+    // Used when the user disables location in settings.
+    clearLocation(state) {
+      state.location = null;
+      state.locationError = null;
+    },
     toggleTravelMethod(state, action: PayloadAction<TransportMode>) {
       const i = state.filters.travelMethods.indexOf(action.payload);
       if (i >= 0) {
@@ -56,5 +64,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { setLocation, setLocationError, toggleTravelMethod, toggleCuisine } = userSlice.actions;
+export const { setLocation, setLocationError, clearLocation, toggleTravelMethod, toggleCuisine } = userSlice.actions;
 export default userSlice.reducer;

@@ -34,6 +34,7 @@ Server: `http://localhost:3001`
 |--------|------|------|---------|
 | GET | `/health` | none | Liveness (BE-1) |
 | GET | `/api/v1/status` | none | Readiness + DB ping |
+| GET | `/api/v1/config/maps-key` | none | Google Maps browser key for the web app's location picker (404 if `MAPS_JS_API_KEY` unset) |
 
 ### Users & onboarding (BE-11)
 

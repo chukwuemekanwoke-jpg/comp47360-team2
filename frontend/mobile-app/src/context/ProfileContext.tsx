@@ -11,7 +11,6 @@ export interface UserProfile {
   favoriteCuisines: string[];
   maxPriceLevel: number;
   diningStyle: string;
-  radiusKm: number;
 }
 
 interface ProfileContextType {

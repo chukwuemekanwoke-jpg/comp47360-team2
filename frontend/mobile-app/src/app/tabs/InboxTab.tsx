@@ -3,6 +3,7 @@ import { FlatList, View, Text, ActivityIndicator, Alert } from "react-native";
 import { useGetOffersInboxQuery, useAcceptOfferMutation } from "@shared/apiSlice";
 import { useAppSelector } from "@shared/hooks";
 import OfferCard from "@/components/OfferCard";
+import SignInPrompt from "@/components/SignInPrompt";
 
 export default function InboxTab() {
   const userId = useAppSelector((state) => state.auth.userId);
@@ -35,13 +36,11 @@ export default function InboxTab() {
     }
   };
 
+  // Guest browsing — offers are matched per-user, so this is a
+  // user-specific route.
   if (!userId) {
     return (
-      <View className="flex-1 bg-table-canvas items-center justify-center px-6">
-        <Text className="text-table-gold text-sm text-center">
-          Complete onboarding to receive personalised flash deals.
-        </Text>
-      </View>
+      <SignInPrompt message="Sign in to receive personalised flash deals from nearby restaurants." />
     );
   }
 

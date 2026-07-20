@@ -34,27 +34,39 @@ export const tableApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: getBaseUrl(),
     prepareHeaders: (headers, { getState }) => {
-      const state = getState() as { auth?: { userId: string | null } };
+      const state = getState() as { auth?: { userId: string | null; token: string | null } };
       let userId = state.auth?.userId;
-      
+
       // --- HYBRID WEB/MOBILE AUTH LINK PERSISTENCE ---
-      // FIXED: Now matching AuthContext.js exact key
-      if (!userId && typeof window !== 'undefined') {
-        userId = localStorage.getItem('table_user_id'); 
+      // React Native's global proxy throws a ReferenceError on access to
+      // browser-only globals like localStorage, even from a `typeof` check —
+      // so this has to be try/caught rather than feature-detected.
+      if (!userId) {
+        try {
+          userId = localStorage.getItem('table_user_id');
+        } catch {
+          // not available on this platform (e.g. React Native)
+        }
       }
-      
+
       if (userId) {
         headers.set('X-User-Id', userId);
       }
 
-      // FIXED: Now matching AuthContext.js exact key
-      if (typeof window !== 'undefined') {
-        const token = localStorage.getItem('table_merchant_token');
-        if (token) {
-          headers.set('Authorization', `Bearer ${token}`);
+      // JWT from the redux session (mobile login/register) takes priority;
+      // fall back to the web merchant token persisted by AuthContext.js.
+      let token = state.auth?.token;
+      if (!token) {
+        try {
+          token = localStorage.getItem('table_merchant_token');
+        } catch {
+          // not available on this platform (e.g. React Native)
         }
       }
-      
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+
       return headers;
     },
   }),

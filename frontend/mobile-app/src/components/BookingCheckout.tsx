@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Modal, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import { router } from "expo-router";
 import { RestaurantSummary, TransportMode } from "@shared/types";
 import { useCreateBookingMutation, useGetRestaurantEtaQuery } from "@shared/apiSlice";
-import { DUMMYID } from "@/context/UserContext";
+import { useAppSelector } from "@shared/hooks";
 
 interface BookingModalProps {
   isVisible: boolean;
@@ -26,6 +27,7 @@ export default function BookingModal({
 }: BookingModalProps) {
   const [transportMode, setTransportMode] = useState<TransportMode>("walking");
   const [createBooking, { isLoading }] = useCreateBookingMutation();
+  const userId = useAppSelector((state) => state.auth.userId);
 
   const { data: etaResult, isFetching: etaFetching } = useGetRestaurantEtaQuery(
     {
@@ -42,6 +44,12 @@ export default function BookingModal({
   const canBook = etaResult ? etaResult.canBook : true;
 
   const handleConfirmBooking = async () => {
+    // Guest browsing — booking requires an account.
+    if (!userId) {
+      onClose();
+      router.replace("/");
+      return;
+    }
     try {
       await createBooking({
         restaurantId: restaurant.id,
@@ -49,7 +57,7 @@ export default function BookingModal({
         userLat: userCoordinates.lat,
         userLng: userCoordinates.lng,
         offerId: null,
-        userId: DUMMYID,
+        userId,
       }).unwrap();
 
       alert(`Successfully booked a table at ${restaurant.name}!`);
@@ -148,20 +156,29 @@ export default function BookingModal({
             </TouchableOpacity>
 
             <TouchableOpacity
-              disabled={isLoading || !canBook || etaFetching}
+              disabled={isLoading || etaFetching || (!canBook && !!userId)}
               onPress={handleConfirmBooking}
               className="flex-1 rounded-xl py-3.5 items-center justify-center flex-row gap-2"
               style={{
-                backgroundColor: canBook && !etaFetching ? "#00f2fe" : "#27272a",
+                backgroundColor:
+                  (canBook || !userId) && !etaFetching ? "#00f2fe" : "#27272a",
               }}
               activeOpacity={0.8}
             >
               {isLoading && <ActivityIndicator color="#0f172a" size="small" />}
               <Text
                 className="text-xs font-bold uppercase tracking-widest"
-                style={{ color: canBook && !etaFetching ? "#09090b" : "#71717a" }}
+                style={{
+                  color: (canBook || !userId) && !etaFetching ? "#09090b" : "#71717a",
+                }}
               >
-                {isLoading ? "Securing…" : !canBook ? "Too Far" : "Confirm Table"}
+                {isLoading
+                  ? "Securing…"
+                  : !userId
+                  ? "Sign In to Book"
+                  : !canBook
+                  ? "Too Far"
+                  : "Confirm Table"}
               </Text>
             </TouchableOpacity>
           </View>

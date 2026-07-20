@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import PreferenceFilters from "../../components/PreferenceFilters";
 import BackendHealthCard from "@/components/BackendHealth";
 import { useGetNearbyRestaurantsQuery } from "@shared/apiSlice";
+import { DISCOVERY_RADIUS_M } from "@shared/constants";
 import { RestaurantSummary } from "@shared/types";
 import { useAppSelector } from "@shared/hooks";
 import LocationComponent from "@/components/LocationComponent";
@@ -41,7 +42,7 @@ export default function MapScreen() {
   const { data } = useGetNearbyRestaurantsQuery({
     lat: latitude,
     lng: longitude,
-    radiusM: 150000
+    radiusM: DISCOVERY_RADIUS_M
   });
 
   const restaurantsList = (data?.restaurants ?? []).filter(
@@ -102,14 +103,14 @@ export default function MapScreen() {
             longitude={longitude}
             restaurantsList={restaurantsList}
             busynessLabel={busynessLabel}
-            onViewDetails={(id) => router.push({ pathname: "/card-list-view", params: { focusId: id } })}
+            onViewDetails={(id) => router.push({ pathname: "/tabs/CardTab", params: { focusId: id } })}
           />
         </Suspense>
 
         {/* List toggle overlay */}
         <TouchableOpacity
           className="absolute bottom-3 right-3 bg-table-canvas/80 border border-table-border px-3 py-1.5 rounded-lg z-[1000]"
-          onPress={() => router.push("/card-list-view")}
+          onPress={() => router.push("/tabs/CardTab")}
           activeOpacity={0.8}
         >
           <Text className="text-table-cream text-[10px] font-bold uppercase tracking-widest">
@@ -129,7 +130,9 @@ export default function MapScreen() {
             <View className="flex-row items-start justify-between mb-2">
               <View className="flex-1 mr-3">
                 <Text className="text-sm font-bold text-table-cream">{r.name}</Text>
-                <Text className="text-xs text-table-gold mt-0.5">{r.cuisine} · {r.distance}</Text>
+                <Text className="text-xs text-table-gold mt-0.5">
+                  {r.cuisine} · {r.distanceMeters < 1000 ? `${Math.round(r.distanceMeters)} m` : `${(r.distanceMeters / 1000).toFixed(1)} km`}
+                </Text>
               </View>
               <View className="px-2 py-1 rounded-lg" style={{ backgroundColor: busynessColor(r.busynessScore) + "18" }}>
                 <Text className="text-[10px] font-bold uppercase tracking-widest" style={{ color: busynessColor(r.busynessScore) }}>
