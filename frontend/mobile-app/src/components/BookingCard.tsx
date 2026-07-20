@@ -1,7 +1,10 @@
 import React from "react";
 import { Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { Booking, TransportMode } from "@shared/types";
 import { useGetRestaurantDetailQuery } from "@shared/apiSlice";
+import { useAppSelector } from "@shared/hooks";
+import { navColors } from "@/theme";
 
 interface BookingCardProps {
   booking: Booking;
@@ -9,11 +12,13 @@ interface BookingCardProps {
   isCancelling: boolean;
 }
 
-const TRANSPORT_MAP: Record<TransportMode, { label: string; icon: string }> = {
-  walking: { label: "Walking", icon: "🚶" },
-  driving: { label: "Driving", icon: "🚗" },
-  transit: { label: "Transit", icon: "🚇" },
-  cycling: { label: "Cycling", icon: "🚴" },
+type IconName = keyof typeof Ionicons.glyphMap;
+
+const TRANSPORT_MAP: Record<TransportMode, { label: string; icon: IconName }> = {
+  walking: { label: "Walking", icon: "walk-outline" },
+  driving: { label: "Driving", icon: "car-outline" },
+  transit: { label: "Transit", icon: "subway-outline" },
+  cycling: { label: "Cycling", icon: "bicycle-outline" },
 };
 
 export default function BookingCard({
@@ -23,6 +28,7 @@ export default function BookingCard({
 }: BookingCardProps) {
   // GET /users/me/bookings has no restaurant join — resolve name/cuisine
   // client-side. RTK Query dedupes and caches per restaurant id.
+  const colors = navColors[useAppSelector((state) => state.settings.theme)];
   const { data: restaurant } = useGetRestaurantDetailQuery(b.restaurantId);
   const restaurantName = restaurant?.name ?? "Loading restaurant…";
   const restaurantCuisine = restaurant?.cuisine;
@@ -42,7 +48,9 @@ export default function BookingCard({
   };
 
   const statusStyle = getStatusStyles(b.status);
-  const transport = TRANSPORT_MAP[b.transportMode] || { label: b.transportMode, icon: "📍" };
+  const transport =
+    TRANSPORT_MAP[b.transportMode] ||
+    ({ label: b.transportMode, icon: "location-outline" } as { label: string; icon: IconName });
 
   const bookingTime = b.confirmedAt ? new Date(b.confirmedAt) : new Date(b.holdExpiresAt);
   const formattedTime = bookingTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -83,7 +91,9 @@ export default function BookingCard({
 
         <View className="flex-1 items-center">
           <Text className="text-[9px] font-bold uppercase tracking-widest text-table-gold mb-1">Transit</Text>
-          <Text className="text-xs font-bold text-table-cream">{transport.icon} {transport.label}</Text>
+          <Text className="text-xs font-bold text-table-cream">
+            <Ionicons name={transport.icon} size={12} color={colors.cream} /> {transport.label}
+          </Text>
         </View>
 
         <View className="w-px bg-table-border" />
