@@ -1,8 +1,11 @@
-import { Text, View, ActivityIndicator } from "react-native";
+import { Text, View, ActivityIndicator, TouchableOpacity, Alert, Platform } from "react-native";
+import { router } from "expo-router";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { useGetProfileQuery } from "@shared/apiSlice";
-import { useAppSelector } from "@shared/hooks";
+import { tableApi, useGetProfileQuery } from "@shared/apiSlice";
+import { clearSession } from "@shared/authSlice";
+import { useAppDispatch, useAppSelector } from "@shared/hooks";
 import  BookingsProfile  from "@/components/BookingProfile";
+import SignInPrompt from "@/components/SignInPrompt";
 
 // Onboarding persists favourite cuisines and dining style together in
 // dietaryTags (see onboarding.tsx) — split them back apart for display.
@@ -14,8 +17,36 @@ const TIER_PRICE_LEVEL: Record<string, number> = {
 };
 
 export default function ProfileScreen() {
+  const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.userId);
   const { data: user, isLoading } = useGetProfileQuery(userId ?? skipToken);
+
+  const signOut = () => {
+    dispatch(clearSession());
+    // Drop cached per-user data (profile, bookings, offers) so the next
+    // account doesn't see the previous user's responses.
+    dispatch(tableApi.util.resetApiState());
+    router.replace("/");
+  };
+
+  const confirmSignOut = () => {
+    // Alert.alert is a no-op on react-native-web.
+    if (Platform.OS === "web") {
+      if (window.confirm("Sign out of Tablé?")) signOut();
+      return;
+    }
+    Alert.alert("Sign Out", "Are you sure you want to sign out?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Sign Out", style: "destructive", onPress: signOut },
+    ]);
+  };
+
+  // Guest browsing — the profile is a user-specific route.
+  if (!userId) {
+    return (
+      <SignInPrompt message="Sign in to view your profile, preferences and bookings." />
+    );
+  }
 
   if (isLoading) {
     return (
@@ -31,6 +62,11 @@ export default function ProfileScreen() {
         <Text className="text-table-cream">
           No profile found.
         </Text>
+        <TouchableOpacity onPress={confirmSignOut} className="mt-4">
+          <Text className="text-table-teal text-sm font-bold">
+            Sign Out
+          </Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -144,6 +180,17 @@ export default function ProfileScreen() {
           </View>
         </View>
         <BookingsProfile/>
+
+        {/* Sign Out */}
+        <TouchableOpacity
+          onPress={confirmSignOut}
+          activeOpacity={0.8}
+          className="border border-table-border rounded-2xl py-3.5 items-center mt-4"
+        >
+          <Text className="text-red-400 text-sm font-bold uppercase tracking-widest">
+            Sign Out
+          </Text>
+        </TouchableOpacity>
 
       </View>
     </View>

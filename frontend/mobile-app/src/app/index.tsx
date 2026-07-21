@@ -169,6 +169,18 @@ export default function AuthScreen() {
               </Text>
             </TouchableOpacity>
           </View>
+
+          {/* Guest browsing — no session is created; user-specific screens
+              (profile, inbox, booking) gate themselves on auth.userId. */}
+          <TouchableOpacity
+            onPress={() => router.replace("/tabs/MapTab")}
+            className="border border-table-border rounded-xl py-3 items-center mt-8"
+            activeOpacity={0.8}
+          >
+            <Text className="text-table-gold text-xs font-bold uppercase tracking-widest">
+              Continue without signing in
+            </Text>
+          </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

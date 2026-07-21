@@ -40,6 +40,11 @@ const userSlice = createSlice({
     setLocationError(state, action: PayloadAction<string>) {
       state.locationError = action.payload;
     },
+    // Used when the user disables location in settings.
+    clearLocation(state) {
+      state.location = null;
+      state.locationError = null;
+    },
     toggleTravelMethod(state, action: PayloadAction<TransportMode>) {
       const i = state.filters.travelMethods.indexOf(action.payload);
       if (i >= 0) {
@@ -59,5 +64,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { setLocation, setLocationError, toggleTravelMethod, toggleCuisine } = userSlice.actions;
+export const { setLocation, setLocationError, clearLocation, toggleTravelMethod, toggleCuisine } = userSlice.actions;
 export default userSlice.reducer;

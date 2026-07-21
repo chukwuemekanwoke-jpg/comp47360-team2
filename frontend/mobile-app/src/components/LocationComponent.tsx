@@ -9,6 +9,7 @@ export default function LocationComponent() {
   const dispatch = useAppDispatch();
   const location = useAppSelector((state) => state.user.location);
   const errorMsg = useAppSelector((state) => state.user.locationError);
+  const locationEnabled = useAppSelector((state) => state.settings.locationEnabled);
   const [loading, setLoading] = useState(true); // Starts as true on mount
   const [showAreaPicker, setShowAreaPicker] = useState(false);
 
@@ -34,9 +35,29 @@ export default function LocationComponent() {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (!locationEnabled) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setLoading(false);
+      return;
+    }
+    // Runs on mount and again whenever location is re-enabled in settings.
+    setLoading(true);
     fetchLocationData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locationEnabled]);
+
+  // Location switched off in the session settings — don't request GPS and
+  // don't offer the manual picker; results fall back to the default area.
+  if (!locationEnabled) {
+    return (
+      <View className="flex-row items-center gap-2">
+        <View className="w-2 h-2 rounded-full bg-table-border" />
+        <Text className="text-xs text-table-gold">
+          Location is turned off in Settings.
+        </Text>
+      </View>
+    );
+  }
 
   // GPS denied/failed and no manual area chosen yet → offer the fallback.
   const needsManualFallback = !loading && !location;

@@ -49,6 +49,7 @@ export default function MerchantDashboard() {
 
   const { data: restaurant, isLoading: isRestaurantLoading } = useGetRestaurantDetailQuery(restaurantId, {
     skip: !restaurantId,
+    pollingInterval: 2000,
   });
 
   const { data: activeCampaignData, isFetching: isCampaignLoading } = useGetActiveCampaignQuery(restaurantId, {
