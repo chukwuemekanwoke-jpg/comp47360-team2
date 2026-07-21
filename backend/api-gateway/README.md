@@ -78,6 +78,7 @@ Server: `http://localhost:3001`
 | POST | `/api/v1/restaurants/:restaurantId/campaigns` | manager JWT or `X-User-Id` | Create flash-deal campaign + ML/heuristic offers |
 | POST | `/api/v1/restaurants/:restaurantId/campaigns/:campaignId/cancel` | manager JWT or `X-User-Id` | Cancel active campaign; revoke pending offers |
 | GET | `/api/v1/restaurants/:restaurantId/campaigns/:campaignId/offers` | manager JWT or `X-User-Id` | List campaign offers for live tracker |
+| GET | `/api/v1/restaurants/:restaurantId/campaigns/:campaignId/revpash-lift` | manager JWT or `X-User-Id` | Organic-vs-deal RevPASH comparison for a campaign |
 | GET | `/api/v1/restaurants/:restaurantId/campaigns` | manager | List campaigns |
 | GET | `/api/v1/restaurants/:restaurantId/campaigns/active` | manager | Active campaign or `null` |
 | GET | `/api/v1/users/me/offers` | JWT or `X-User-Id` | Offer inbox (`?status=pending` optional) |

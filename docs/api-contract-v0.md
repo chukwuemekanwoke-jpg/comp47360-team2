@@ -667,6 +667,32 @@ Returns all offers sent for a campaign, for the merchant live tracker. Expired p
 
 **Response `404`:** campaign not found for this restaurant
 
+#### `GET /api/v1/restaurants/:restaurantId/campaigns/:campaignId/revpash-lift`
+
+**Auth:** manager  
+
+Organic-vs-deal RevPASH comparison for a single campaign (SCRUM-309 / TABL-215 Phase 2), for the `CampaignHistory.jsx` lift badge. See `docs/data-strategy.md` §11/§12 for the real-vs-simulated context underneath RevPASH generally.
+
+**Methodology:**
+- `dealRevpash` — revenue from bookings tied to this campaign, over seat-hours available during its active window (`created_at` → `completed_at`/`cancelled_at`/now).
+- `organicRevpash` — this restaurant's non-campaign bookings in the *same hour-of-day*, over the trailing 30 days before the campaign started (not the campaign's own window, which by definition often has little organic activity — that's usually why a deal ran then).
+- `liftPercent` — percent difference between the two; `0` when there's no organic baseline yet to compare against (rather than an undefined/infinite value).
+- `offPeak` — `true` when that hour's organic baseline sits below the restaurant's median hourly `revpash`.
+
+**Response `200`:**
+
+```json
+{
+  "campaignId": "uuid",
+  "organicRevpash": 2.5,
+  "dealRevpash": 12.5,
+  "liftPercent": 400,
+  "offPeak": true
+}
+```
+
+**Response `404`:** campaign not found for this restaurant
+
 ---
 
 ## 5. ML service (BE-7 / BE-14)
@@ -733,6 +759,7 @@ Gateway then inserts `offers` with `expiresAt = now() + 900s`. If the ML service
 | P0 | GET | `/api/v1/restaurants/:id/campaigns/active` | 5.2 |
 | P0 | POST | `/api/v1/restaurants/:id/campaigns/:campaignId/cancel` | 5.2 |
 | P0 | GET | `/api/v1/restaurants/:id/campaigns/:campaignId/offers` | 5.2 live tracker |
+| P0 | GET | `/api/v1/restaurants/:id/campaigns/:campaignId/revpash-lift` | 5.1 lift badge (SCRUM-309/TABL-215) |
 | P0 | GET | `/api/v1/restaurants/:id/bookings` | 5.2 |
 | P0 | POST | `/api/v1/auth/register` | — |
 | P0 | POST | `/api/v1/auth/login` | — |
