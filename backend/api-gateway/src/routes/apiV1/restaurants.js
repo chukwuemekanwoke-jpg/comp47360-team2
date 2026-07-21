@@ -7,7 +7,7 @@ const { getPool } = require("../../db/pool");
 const { toRestaurantSummary, toRestaurantDetail, toRevpashJson } = require("../../utils/serialize");
 const {
   parseLatLng,
-  parseRadiusM,
+  parseNearbyQuery,
   parseTransportMode,
   validateCreateRestaurantBody,
   validateRestaurantSettingsBody,
@@ -205,8 +205,12 @@ router.get(
       throw new AppError(500, "INTERNAL_ERROR", "Database is not configured (DATABASE_URL)");
     }
 
-    const { lat, lng } = parseLatLng(req.query.lat, req.query.lng);
-    const radiusM = parseRadiusM(req.query.radiusM);
+    const { lat, lng, radiusM } = parseNearbyQuery({
+      lat: req.query.lat,
+      lng: req.query.lng,
+      radiusM: req.query.radiusM,
+      neighborhood: req.query.neighborhood,
+    });
 
     await maybeUpdateUserLocation(pool, req, lat, lng);
 

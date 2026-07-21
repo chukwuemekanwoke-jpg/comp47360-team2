@@ -269,25 +269,32 @@ paths:
   /api/v1/restaurants/nearby:
     get:
       tags: [Restaurants]
-      summary: Nearby available restaurants (Story 2.1)
+      summary: Nearby available restaurants (Story 2.1 / 2.2)
       parameters:
         - name: lat
           in: query
-          required: true
+          required: false
           schema:
             type: number
             format: double
+          description: Required unless `neighborhood` is provided.
         - name: lng
           in: query
-          required: true
+          required: false
           schema:
             type: number
             format: double
+          description: Required unless `neighborhood` is provided.
         - name: radiusM
           in: query
           schema:
             type: integer
             default: 1500
+        - name: neighborhood
+          in: query
+          schema:
+            type: string
+          description: Manhattan neighbourhood name; geocoded when lat/lng omitted (Story 2.2).
       responses:
         "200":
           description: OK
@@ -306,6 +313,8 @@ paths:
                       $ref: "#/components/schemas/RestaurantSummary"
         "400":
           $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/NotFound"
 
   /api/v1/restaurants/{restaurantId}:
     get:
