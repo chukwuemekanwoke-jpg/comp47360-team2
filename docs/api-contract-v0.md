@@ -40,6 +40,17 @@ X-User-Id: 550e8400-e29b-41d4-a716-446655440000
 
 The gateway accepts either `Authorization: Bearer` (preferred) or `X-User-Id` on protected routes.
 
+### 1.2.1 Rate limiting
+
+Sensitive routes are IP-rate-limited (in-memory; suitable for single-instance Cloud Run / local MVP):
+
+| Scope | Default | Routes |
+|-------|---------|--------|
+| Auth | 20 / 15 min | `POST /api/v1/auth/*` (register, login, logout, forgot/reset password) |
+| Writes | 60 / 15 min | `POST /api/v1/bookings`, `POST /api/v1/restaurants/:id/campaigns` |
+
+Exceeded limit → `429` with `error.code = RATE_LIMITED`. Standard `RateLimit-*` headers are included. Override via `RATE_LIMIT_*` env vars (see api-gateway `.env.example`).
+
 | Rule | Detail |
 |------|--------|
 | Missing/invalid auth | `401` on protected routes |
@@ -75,6 +86,7 @@ All non-2xx responses use:
 | 401 | `UNAUTHORIZED` | Missing/invalid auth |
 | 404 | `NOT_FOUND` | Resource missing |
 | 409 | `CONFLICT` | No tables, expired offer, ETA too long |
+| 429 | `RATE_LIMITED` | Too many requests on sensitive routes (auth, booking create, campaign create) |
 | 500 | `INTERNAL_ERROR` | Unexpected server error |
 
 ### 1.5 Product constants
@@ -810,3 +822,4 @@ Shared TypeScript types (`frontend/packages/shared/src/types.ts`) map to API fie
 | v0.5 | 2026-07-13 | Password forgot/reset auth endpoints |
 | v0.5.1 | 2026-07-21 | GET campaign offers for merchant live tracker |
 | v0.5.3 | 2026-07-21 | GET nearby `neighborhood` geocode fallback (Story 2.2) |
+| v0.5.4 | 2026-07-21 | Rate limiting on auth + booking/campaign create (`429 RATE_LIMITED`) |
