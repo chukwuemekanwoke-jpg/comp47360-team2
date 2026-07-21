@@ -669,6 +669,28 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /api/v1/restaurants/{restaurantId}/campaigns/{campaignId}/revpash-lift:
+    get:
+      tags: [Campaigns]
+      summary: Compare organic vs deal RevPASH for a campaign (manager only)
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+        - $ref: "#/components/parameters/RestaurantId"
+        - $ref: "#/components/parameters/CampaignId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignRevpashLift"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
   /api/v1/restaurants/{restaurantId}/campaigns/{campaignId}/cancel:
     post:
       tags: [Campaigns]
@@ -1193,6 +1215,34 @@ components:
           type: integer
           minimum: 10
           maximum: 50
+
+    CampaignRevpashLift:
+      type: object
+      required:
+        - campaignId
+        - organicRevpash
+        - dealRevpash
+        - liftPercent
+        - offPeak
+      properties:
+        campaignId:
+          type: string
+          format: uuid
+        organicRevpash:
+          type: number
+          format: float
+          description: Baseline RevPASH for the same local hour over the prior 30 days.
+        dealRevpash:
+          type: number
+          format: float
+          description: RevPASH during the campaign window from deal-backed bookings.
+        liftPercent:
+          type: number
+          format: float
+          description: Percentage lift of deal RevPASH over organic RevPASH.
+        offPeak:
+          type: boolean
+          description: Whether the campaign started in a local off-peak hour.
 
     Campaign:
       type: object

@@ -27,4 +27,18 @@ describe("revpash utils", () => {
     expect(parseRevpashWindow("week")).toBe("week");
     expect(() => parseRevpashWindow("year")).toThrow(/window/);
   });
+
+  it("detects off-peak local hours and lift percentages", () => {
+    const {
+      isOffPeakLocalHour,
+      computeRevpashLiftPercent,
+      computeRevpash,
+    } = require("../utils/revpash");
+
+    expect(isOffPeakLocalHour(15)).toBe(true);
+    expect(isOffPeakLocalHour(19)).toBe(false);
+    expect(computeRevpash(180, 20)).toBe(9);
+    expect(computeRevpashLiftPercent(3, 9)).toBe(200);
+    expect(computeRevpashLiftPercent(0, 5)).toBe(100);
+  });
 });

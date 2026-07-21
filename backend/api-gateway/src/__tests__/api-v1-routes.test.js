@@ -685,6 +685,38 @@ describe("campaign routes", () => {
     });
   });
 
+  it("returns RevPASH lift for a campaign", async () => {
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
+      .mockResolvedValueOnce({ rows: [{ id: RESTAURANT_ID, manager_user_id: USER_ID }] })
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            campaign_id: CAMPAIGN_ID,
+            campaign_hour: 15,
+            capacity: 10,
+            organic_revenue: "120.00",
+            organic_day_count: 4,
+            deal_revenue: "180.00",
+            campaign_hours: 2,
+          },
+        ],
+      });
+
+    const res = await request(app)
+      .get(`/api/v1/restaurants/${RESTAURANT_ID}/campaigns/${CAMPAIGN_ID}/revpash-lift`)
+      .set("X-User-Id", USER_ID);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      campaignId: CAMPAIGN_ID,
+      organicRevpash: 3,
+      dealRevpash: 9,
+      liftPercent: 200,
+      offPeak: true,
+    });
+  });
+
   it("rejects tableQuota above restaurant capacity", async () => {
     const client = {
       query: jest

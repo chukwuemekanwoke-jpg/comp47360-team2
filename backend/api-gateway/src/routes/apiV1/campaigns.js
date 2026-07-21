@@ -4,10 +4,11 @@ const requireUser = require("../../middleware/requireUser");
 const requireRestaurantManager = require("../../middleware/requireRestaurantManager");
 const { AppError, isUuid } = require("../../errors");
 const { getPool } = require("../../db/pool");
-const { toCampaignJson } = require("../../utils/serialize");
+const { toCampaignJson, toCampaignRevpashLiftJson } = require("../../utils/serialize");
 const { validateCampaignBody } = require("../../utils/validate");
 const { createCampaignOffers } = require("../../services/createCampaignOffers");
 const { getCampaignOffers } = require("../../services/getCampaignOffers");
+const { getCampaignRevpashLift } = require("../../services/getCampaignRevpashLift");
 
 const router = Router({ mergeParams: true });
 
@@ -130,6 +131,25 @@ router.get(
     });
 
     res.status(200).json({ offers });
+  })
+);
+
+router.get(
+  "/:campaignId/revpash-lift",
+  asyncHandler(async (req, res) => {
+    const pool = getPool();
+    const { campaignId } = req.params;
+
+    if (!campaignId || !isUuid(campaignId)) {
+      throw new AppError(400, "VALIDATION_ERROR", "Invalid campaignId format");
+    }
+
+    const lift = await getCampaignRevpashLift(pool, {
+      restaurantId: req.restaurantId,
+      campaignId,
+    });
+
+    res.status(200).json(toCampaignRevpashLiftJson(lift));
   })
 );
 

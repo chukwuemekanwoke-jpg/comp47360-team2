@@ -146,6 +146,16 @@ function toRevpashJson(summary) {
   };
 }
 
+function toCampaignRevpashLiftJson(summary) {
+  return {
+    campaignId: summary.campaignId,
+    organicRevpash: roundMoney(summary.organicRevpash),
+    dealRevpash: roundMoney(summary.dealRevpash),
+    liftPercent: roundMoney(summary.liftPercent),
+    offPeak: summary.offPeak,
+  };
+}
+
 function roundMoney(value) {
   return Math.round(Number(value) * 100) / 100;
 }
@@ -160,4 +170,5 @@ module.exports = {
   toBookingJson,
   toRestaurantBookingJson,
   toRevpashJson,
+  toCampaignRevpashLiftJson,
 };
