@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Modal, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import { RestaurantSummary, TransportMode } from "@shared/types";
 import { useCreateBookingMutation, useGetRestaurantEtaQuery } from "@shared/apiSlice";
 import { useAppSelector } from "@shared/hooks";
+import { navColors } from "@/theme";
 
 interface BookingModalProps {
   isVisible: boolean;
@@ -12,11 +14,15 @@ interface BookingModalProps {
   userCoordinates: { lat: number; lng: number };
 }
 
-const TRANSPORT_OPTIONS: { label: string; value: TransportMode; icon: string }[] = [
-  { label: "Walking",   value: "walking",  icon: "🚶" },
-  { label: "Driving",   value: "driving",  icon: "🚗" },
-  { label: "Transit",   value: "transit",  icon: "🚇" },
-  { label: "Bicycling", value: "cycling",  icon: "🚴" },
+const TRANSPORT_OPTIONS: {
+  label: string;
+  value: TransportMode;
+  icon: keyof typeof Ionicons.glyphMap;
+}[] = [
+  { label: "Walking",   value: "walking",  icon: "walk-outline" },
+  { label: "Driving",   value: "driving",  icon: "car-outline" },
+  { label: "Transit",   value: "transit",  icon: "subway-outline" },
+  { label: "Bicycling", value: "cycling",  icon: "bicycle-outline" },
 ];
 
 export default function BookingModal({
@@ -28,6 +34,7 @@ export default function BookingModal({
   const [transportMode, setTransportMode] = useState<TransportMode>("walking");
   const [createBooking, { isLoading }] = useCreateBookingMutation();
   const userId = useAppSelector((state) => state.auth.userId);
+  const colors = navColors[useAppSelector((state) => state.settings.theme)];
 
   const { data: etaResult, isFetching: etaFetching } = useGetRestaurantEtaQuery(
     {
@@ -99,7 +106,11 @@ export default function BookingModal({
                       : "bg-table-surface border-table-border"
                   }`}
                 >
-                  <Text className="text-lg">{option.icon}</Text>
+                  <Ionicons
+                    name={option.icon}
+                    size={18}
+                    color={isSelected ? colors.teal : colors.cream}
+                  />
                   <Text className={`text-xs font-semibold ${isSelected ? "text-table-teal" : "text-table-cream"}`}>
                     {option.label}
                   </Text>
@@ -138,7 +149,7 @@ export default function BookingModal({
               </Text>
             ) : (
               <Text className="text-[11px] text-table-cream/70 leading-relaxed">
-                ⚠️ You hold one of{" "}
+                <Ionicons name="alert-circle-outline" size={12} color={colors.gold} /> You hold one of{" "}
                 <Text className="font-bold text-table-teal">{restaurant.availableTableCount} tables</Text>
                 . Please arrive promptly.
               </Text>

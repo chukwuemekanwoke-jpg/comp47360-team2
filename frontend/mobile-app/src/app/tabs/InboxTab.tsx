@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { FlatList, View, Text, ActivityIndicator, Alert } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useGetOffersInboxQuery, useAcceptOfferMutation } from "@shared/apiSlice";
 import { useAppSelector } from "@shared/hooks";
 import OfferCard from "@/components/OfferCard";
 import SignInPrompt from "@/components/SignInPrompt";
+import { navColors } from "@/theme";
 
 export default function InboxTab() {
   const userId = useAppSelector((state) => state.auth.userId);
+  const colors = navColors[useAppSelector((state) => state.settings.theme)];
 
   // Polling stands in for push notifications for now — a push received here
   // would call `refetch()` (or dispatch tableApi's cache invalidation) instead
@@ -83,7 +86,7 @@ export default function InboxTab() {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View className="items-center mt-16 px-6">
-            <Text style={{ fontSize: 36, marginBottom: 12 }}>⚡</Text>
+            <Ionicons name="flash-outline" size={36} color={colors.gold} style={{ marginBottom: 12 }} />
             <Text className="text-table-cream text-sm font-bold text-center mb-2">
               No offers right now
             </Text>
