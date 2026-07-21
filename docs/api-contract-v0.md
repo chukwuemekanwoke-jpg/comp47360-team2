@@ -671,16 +671,22 @@ Returns all offers sent for a campaign, for the merchant live tracker. Expired p
 
 **Auth:** manager  
 
-Compares organic RevPASH (same local hour over the prior 30 days, non-campaign bookings) with deal RevPASH (campaign-backed bookings during the campaign window).
+Organic-vs-deal RevPASH comparison for a single campaign (SCRUM-309 / TABL-215 Phase 2), for the `CampaignHistory.jsx` lift badge. See `docs/data-strategy.md` §11/§12 for the real-vs-simulated context underneath RevPASH generally.
+
+**Methodology:**
+- `dealRevpash` — revenue from bookings tied to this campaign, over seat-hours available during its active window (`created_at` → `completed_at`/`cancelled_at`/now).
+- `organicRevpash` — this restaurant's non-campaign bookings in the *same hour-of-day*, over the trailing 30 days before the campaign started (not the campaign's own window, which by definition often has little organic activity — that's usually why a deal ran then).
+- `liftPercent` — percent difference between the two; `0` when there's no organic baseline yet to compare against (rather than an undefined/infinite value).
+- `offPeak` — `true` when that hour's organic baseline sits below the restaurant's median hourly `revpash`.
 
 **Response `200`:**
 
 ```json
 {
   "campaignId": "uuid",
-  "organicRevpash": 3.0,
-  "dealRevpash": 9.0,
-  "liftPercent": 200,
+  "organicRevpash": 2.5,
+  "dealRevpash": 12.5,
+  "liftPercent": 400,
   "offPeak": true
 }
 ```
@@ -753,7 +759,7 @@ Gateway then inserts `offers` with `expiresAt = now() + 900s`. If the ML service
 | P0 | GET | `/api/v1/restaurants/:id/campaigns/active` | 5.2 |
 | P0 | POST | `/api/v1/restaurants/:id/campaigns/:campaignId/cancel` | 5.2 |
 | P0 | GET | `/api/v1/restaurants/:id/campaigns/:campaignId/offers` | 5.2 live tracker |
-| P0 | GET | `/api/v1/restaurants/:id/campaigns/:campaignId/revpash-lift` | 5.1 RevPASH lift |
+| P0 | GET | `/api/v1/restaurants/:id/campaigns/:campaignId/revpash-lift` | 5.1 lift badge (SCRUM-309/TABL-215) |
 | P0 | GET | `/api/v1/restaurants/:id/bookings` | 5.2 |
 | P0 | POST | `/api/v1/auth/register` | — |
 | P0 | POST | `/api/v1/auth/login` | — |
@@ -800,4 +806,3 @@ Shared TypeScript types (`frontend/packages/shared/src/types.ts`) map to API fie
 | v0.4.1 | 2026-07-12 | Merchant PATCH booking status for dashboard |
 | v0.5 | 2026-07-13 | Password forgot/reset auth endpoints |
 | v0.5.1 | 2026-07-21 | GET campaign offers for merchant live tracker |
-| v0.5.2 | 2026-07-21 | GET campaign RevPASH lift comparison for merchant history |

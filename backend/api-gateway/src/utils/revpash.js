@@ -84,36 +84,6 @@ function parseRevpashWindow(value) {
   return window;
 }
 
-function isOffPeakLocalHour(hour) {
-  const normalized = Number(hour);
-  if (!Number.isFinite(normalized)) {
-    return false;
-  }
-
-  // Typical lull windows: late morning, mid-afternoon, or after 9pm local.
-  return (normalized >= 14 && normalized < 17) || normalized >= 21 || normalized < 11;
-}
-
-function computeRevpashLiftPercent(organicRevpash, dealRevpash) {
-  const organic = Number(organicRevpash);
-  const deal = Number(dealRevpash);
-
-  if (organic <= 0) {
-    return deal > 0 ? 100 : 0;
-  }
-
-  return Math.round(((deal - organic) / organic) * 10000) / 100;
-}
-
-function computeRevpash(revenue, seatHours) {
-  const hours = Number(seatHours);
-  if (!Number.isFinite(hours) || hours <= 0) {
-    return 0;
-  }
-
-  return Math.round((Number(revenue) / hours) * 100) / 100;
-}
-
 module.exports = {
   REVPASH_WINDOWS,
   DEFAULT_PARTY_SIZE,
@@ -125,7 +95,4 @@ module.exports = {
   parsePartySize,
   parseLocalTime,
   parseRevpashWindow,
-  isOffPeakLocalHour,
-  computeRevpashLiftPercent,
-  computeRevpash,
 };

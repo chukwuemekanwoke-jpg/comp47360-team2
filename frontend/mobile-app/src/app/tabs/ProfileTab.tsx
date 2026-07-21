@@ -1,25 +1,28 @@
+import { useState } from "react";
 import { Text, View, ActivityIndicator, TouchableOpacity, Alert, Platform } from "react-native";
 import { router } from "expo-router";
 import { skipToken } from "@reduxjs/toolkit/query";
+import { Ionicons } from "@expo/vector-icons";
 import { tableApi, useGetProfileQuery } from "@shared/apiSlice";
 import { clearSession } from "@shared/authSlice";
 import { useAppDispatch, useAppSelector } from "@shared/hooks";
-import  BookingsProfile  from "@/components/BookingProfile";
+import BookingsProfile from "@/components/BookingProfile";
+import EditPreferencesModal from "@/components/EditPreferencesModal";
+import {
+  DiningStyle,
+  DINING_STYLES,
+  TIER_PRICE_LEVEL,
+  formatDiningStyle,
+} from "@/components/PreferenceEditor";
 import SignInPrompt from "@/components/SignInPrompt";
-
-// Onboarding persists favourite cuisines and dining style together in
-// dietaryTags (see onboarding.tsx) — split them back apart for display.
-const DINING_STYLES = ["casual", "family", "date-night", "business"];
-const TIER_PRICE_LEVEL: Record<string, number> = {
-  TIER_1: 1,
-  TIER_2: 2,
-  TIER_3: 3,
-};
+import { navColors } from "@/theme";
 
 export default function ProfileScreen() {
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.userId);
+  const colors = navColors[useAppSelector((state) => state.settings.theme)];
   const { data: user, isLoading } = useGetProfileQuery(userId ?? skipToken);
+  const [editingPreferences, setEditingPreferences] = useState(false);
 
   const signOut = () => {
     dispatch(clearSession());
@@ -51,7 +54,7 @@ export default function ProfileScreen() {
   if (isLoading) {
     return (
       <View className="flex-1 bg-table-canvas items-center justify-center">
-        <ActivityIndicator color="#00f2fe" />
+        <ActivityIndicator color={colors.teal} />
       </View>
     );
   }
@@ -71,45 +74,65 @@ export default function ProfileScreen() {
     );
   }
 
+  // Onboarding persists favourite cuisines and dining style together in
+  // dietaryTags (see PreferenceEditor) — split them back apart for display.
   const profile = {
     name: user.displayName,
-    favoriteCuisines: user.dietaryTags.filter((t) => !DINING_STYLES.includes(t)),
-    diningStyle: user.dietaryTags.find((t) => DINING_STYLES.includes(t)) ?? "casual",
+    favoriteCuisines: user.dietaryTags.filter((t) => !DINING_STYLES.includes(t as DiningStyle)),
+    diningStyle: (user.dietaryTags.find((t) =>
+      DINING_STYLES.includes(t as DiningStyle)
+    ) ?? "casual") as DiningStyle,
     maxPriceLevel: user.budgetTier ? TIER_PRICE_LEVEL[user.budgetTier] : 1,
   };
 
-  return (
-    <View className="flex-1 bg-table-canvas">
-      <View className="flex-1 px-6 py-8">
-
-        {/* Header */}
-        <View className="items-center mb-8">
-          <View
-            className="w-20 h-20 rounded-full items-center justify-center mb-4 border border-table-border"
-            style={{ backgroundColor: "#90b7a8" }}
-          >
-            <Text style={{ fontSize: 32 }}>
-              {profile.name.charAt(0).toUpperCase()}
-            </Text>
-          </View>
-
-          <Text className="text-xl font-bold text-table-cream">
-            {profile.name}
-          </Text>
-
-          <Text className="text-xs text-table-gold mt-1">
-            Tablé Member
+  // Everything above the bookings list scrolls with it — BookingsProfile's
+  // FlatList is the single page scroller.
+  const profileHeader = (
+    <View>
+      {/* Header */}
+      <View className="items-center mb-8 mt-4">
+        <View
+          className="w-20 h-20 rounded-full items-center justify-center mb-4 border border-table-border"
+          style={{ backgroundColor: "#90b7a8" }}
+        >
+          <Text style={{ fontSize: 32 }}>
+            {profile.name.charAt(0).toUpperCase()}
           </Text>
         </View>
 
-        {/* Preferences */}
-        <View className="bg-table-surface border border-table-border rounded-2xl p-4 mb-4">
-          <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold mb-3">
+        <Text className="text-xl font-bold text-table-cream">
+          {profile.name}
+        </Text>
+
+        <Text className="text-xs text-table-gold mt-1">
+          Tablé Member
+        </Text>
+      </View>
+
+      {/* Preferences */}
+      <View className="bg-table-surface border border-table-border rounded-2xl p-4 mb-4">
+        <View className="flex-row items-center justify-between mb-3">
+          <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold">
             Favourite Cuisines
           </Text>
+          <TouchableOpacity
+            onPress={() => setEditingPreferences(true)}
+            activeOpacity={0.7}
+            className="flex-row items-center gap-1"
+            hitSlop={8}
+          >
+            <Ionicons name="pencil" size={11} color={colors.teal} />
+            <Text className="text-[9px] font-bold uppercase tracking-widest text-table-teal">
+              Edit
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-          <View className="flex-row flex-wrap gap-2">
-            {profile.favoriteCuisines.map((cuisine) => (
+        <View className="flex-row flex-wrap gap-2">
+          {profile.favoriteCuisines.length === 0 ? (
+            <Text className="text-xs text-table-gold">No cuisines picked yet.</Text>
+          ) : (
+            profile.favoriteCuisines.map((cuisine) => (
               <View
                 key={cuisine}
                 className="px-3 py-2 rounded-xl border border-table-border"
@@ -118,81 +141,98 @@ export default function ProfileScreen() {
                   {cuisine}
                 </Text>
               </View>
-            ))}
-          </View>
+            ))
+          )}
         </View>
+      </View>
 
-        {/* Dining Preferences */}
-        <View className="bg-table-surface border border-table-border rounded-2xl p-4 mb-4">
-          <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold mb-3">
-            Dining Preferences
+      {/* Dining Preferences */}
+      <View className="bg-table-surface border border-table-border rounded-2xl p-4 mb-4">
+        <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold mb-3">
+          Dining Preferences
+        </Text>
+
+        <View className="mb-3">
+          <Text className="text-table-gold text-[10px] uppercase">
+            Budget
           </Text>
 
-          <View className="mb-3">
-            <Text className="text-table-gold text-[10px] uppercase">
-              Budget
-            </Text>
+          <Text className="text-table-cream text-sm font-bold mt-1">
+            {"€".repeat(profile.maxPriceLevel)}
+          </Text>
+        </View>
 
-            <Text className="text-table-cream text-sm font-bold mt-1">
+        <View>
+          <Text className="text-table-gold text-[10px] uppercase">
+            Dining Style
+          </Text>
+
+          <Text className="text-table-cream text-sm font-bold mt-1">
+            {formatDiningStyle(profile.diningStyle)}
+          </Text>
+        </View>
+      </View>
+
+      {/* Stats */}
+      <View className="bg-table-surface border border-table-border rounded-2xl p-4 mb-4">
+        <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold mb-3">
+          Account Summary
+        </Text>
+
+        <View className="flex-row">
+          <View className="flex-1 items-center">
+            <Text className="text-2xl font-bold text-table-teal">
+              {profile.favoriteCuisines.length}
+            </Text>
+            <Text className="text-xs text-table-cream">
+              Cuisines
+            </Text>
+          </View>
+
+          <View className="w-px bg-table-border" />
+
+          <View className="flex-1 items-center">
+            <Text className="text-2xl font-bold text-table-teal">
               {"€".repeat(profile.maxPriceLevel)}
             </Text>
-          </View>
-
-          <View>
-            <Text className="text-table-gold text-[10px] uppercase">
-              Dining Style
-            </Text>
-
-            <Text className="text-table-cream text-sm font-bold mt-1">
-              {profile.diningStyle
-                .replace("-", " ")
-                .replace(/\b\w/g, (c) => c.toUpperCase())}
+            <Text className="text-xs text-table-cream">
+              Budget
             </Text>
           </View>
         </View>
-
-        {/* Stats */}
-        <View className="bg-table-surface border border-table-border rounded-2xl p-4">
-          <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold mb-3">
-            Account Summary
-          </Text>
-
-          <View className="flex-row">
-            <View className="flex-1 items-center">
-              <Text className="text-2xl font-bold text-table-teal">
-                {profile.favoriteCuisines.length}
-              </Text>
-              <Text className="text-xs text-table-cream">
-                Cuisines
-              </Text>
-            </View>
-
-            <View className="w-px bg-table-border" />
-
-            <View className="flex-1 items-center">
-              <Text className="text-2xl font-bold text-table-teal">
-                {"€".repeat(profile.maxPriceLevel)}
-              </Text>
-              <Text className="text-xs text-table-cream">
-                Budget
-              </Text>
-            </View>
-          </View>
-        </View>
-        <BookingsProfile/>
-
-        {/* Sign Out */}
-        <TouchableOpacity
-          onPress={confirmSignOut}
-          activeOpacity={0.8}
-          className="border border-table-border rounded-2xl py-3.5 items-center mt-4"
-        >
-          <Text className="text-red-400 text-sm font-bold uppercase tracking-widest">
-            Sign Out
-          </Text>
-        </TouchableOpacity>
-
       </View>
+    </View>
+  );
+
+  const profileFooter = (
+    <TouchableOpacity
+      onPress={confirmSignOut}
+      activeOpacity={0.8}
+      className="border border-table-border rounded-2xl py-3.5 items-center mt-4"
+    >
+      <Text className="text-red-400 text-sm font-bold uppercase tracking-widest">
+        Sign Out
+      </Text>
+    </TouchableOpacity>
+  );
+
+  return (
+    <View className="flex-1 bg-table-canvas">
+      <BookingsProfile
+        ListHeaderComponent={profileHeader}
+        ListFooterComponent={profileFooter}
+      />
+
+      {/* Mounted per-open so the pickers prefill from the latest profile */}
+      {editingPreferences && (
+        <EditPreferencesModal
+          isVisible={editingPreferences}
+          onClose={() => setEditingPreferences(false)}
+          initialCuisines={profile.favoriteCuisines}
+          initialPriceLevel={profile.maxPriceLevel}
+          initialDiningStyle={profile.diningStyle}
+        />
+      )}
     </View>
   );
 }

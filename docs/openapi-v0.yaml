@@ -672,7 +672,7 @@ paths:
   /api/v1/restaurants/{restaurantId}/campaigns/{campaignId}/revpash-lift:
     get:
       tags: [Campaigns]
-      summary: Compare organic vs deal RevPASH for a campaign (manager only)
+      summary: Organic-vs-deal RevPASH comparison for a campaign (SCRUM-309 / TABL-215)
       parameters:
         - $ref: "#/components/parameters/UserIdHeader"
         - $ref: "#/components/parameters/RestaurantId"
@@ -1088,6 +1088,26 @@ components:
         revpash:
           type: number
 
+    CampaignRevpashLift:
+      type: object
+      required: [campaignId, organicRevpash, dealRevpash, liftPercent, offPeak]
+      properties:
+        campaignId:
+          type: string
+          format: uuid
+        organicRevpash:
+          type: number
+          description: Trailing 30-day baseline RevPASH for this restaurant at the campaign's hour-of-day, excluding any campaign-linked bookings.
+        dealRevpash:
+          type: number
+          description: RevPASH from bookings tied to this campaign, over seat-hours available during its active window.
+        liftPercent:
+          type: number
+          description: Percent difference between dealRevpash and organicRevpash; 0 when there's no organic baseline to compare against.
+        offPeak:
+          type: boolean
+          description: True when the campaign's hour sits below the restaurant's median hourly revpash.
+
     Booking:
       type: object
       properties:
@@ -1215,34 +1235,6 @@ components:
           type: integer
           minimum: 10
           maximum: 50
-
-    CampaignRevpashLift:
-      type: object
-      required:
-        - campaignId
-        - organicRevpash
-        - dealRevpash
-        - liftPercent
-        - offPeak
-      properties:
-        campaignId:
-          type: string
-          format: uuid
-        organicRevpash:
-          type: number
-          format: float
-          description: Baseline RevPASH for the same local hour over the prior 30 days.
-        dealRevpash:
-          type: number
-          format: float
-          description: RevPASH during the campaign window from deal-backed bookings.
-        liftPercent:
-          type: number
-          format: float
-          description: Percentage lift of deal RevPASH over organic RevPASH.
-        offPeak:
-          type: boolean
-          description: Whether the campaign started in a local off-peak hour.
 
     Campaign:
       type: object

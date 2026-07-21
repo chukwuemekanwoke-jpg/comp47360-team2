@@ -35,6 +35,10 @@ jest.mock("../services/getRevpash", () => ({
   getRevpashSummary: jest.fn(),
 }));
 
+jest.mock("../services/getCampaignRevpashLift", () => ({
+  getCampaignRevpashLift: jest.fn(),
+}));
+
 const createApp = require("../app");
 const { createBooking } = require("../services/createBooking");
 const { cancelBooking } = require("../services/cancelBooking");
@@ -42,6 +46,7 @@ const { updateBookingStatus } = require("../services/updateBookingStatus");
 const { createCampaignOffers } = require("../services/createCampaignOffers");
 const { callMlBusyness } = require("../services/mlBusynessClient");
 const { getRevpashSummary } = require("../services/getRevpash");
+const { getCampaignRevpashLift } = require("../services/getCampaignRevpashLift");
 
 const app = createApp();
 
@@ -688,20 +693,14 @@ describe("campaign routes", () => {
   it("returns RevPASH lift for a campaign", async () => {
     mockPool.query
       .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
-      .mockResolvedValueOnce({ rows: [{ id: RESTAURANT_ID, manager_user_id: USER_ID }] })
-      .mockResolvedValueOnce({
-        rows: [
-          {
-            campaign_id: CAMPAIGN_ID,
-            campaign_hour: 15,
-            capacity: 10,
-            organic_revenue: "120.00",
-            organic_day_count: 4,
-            deal_revenue: "180.00",
-            campaign_hours: 2,
-          },
-        ],
-      });
+      .mockResolvedValueOnce({ rows: [{ id: RESTAURANT_ID, manager_user_id: USER_ID }] });
+    getCampaignRevpashLift.mockResolvedValueOnce({
+      campaignId: CAMPAIGN_ID,
+      organicRevpash: 2.5,
+      dealRevpash: 12.5,
+      liftPercent: 400,
+      offPeak: true,
+    });
 
     const res = await request(app)
       .get(`/api/v1/restaurants/${RESTAURANT_ID}/campaigns/${CAMPAIGN_ID}/revpash-lift`)
@@ -710,10 +709,14 @@ describe("campaign routes", () => {
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
       campaignId: CAMPAIGN_ID,
-      organicRevpash: 3,
-      dealRevpash: 9,
-      liftPercent: 200,
+      organicRevpash: 2.5,
+      dealRevpash: 12.5,
+      liftPercent: 400,
       offPeak: true,
+    });
+    expect(getCampaignRevpashLift).toHaveBeenCalledWith(mockPool, {
+      restaurantId: RESTAURANT_ID,
+      campaignId: CAMPAIGN_ID,
     });
   });
 

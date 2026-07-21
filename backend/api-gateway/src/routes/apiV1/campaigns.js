@@ -4,7 +4,7 @@ const requireUser = require("../../middleware/requireUser");
 const requireRestaurantManager = require("../../middleware/requireRestaurantManager");
 const { AppError, isUuid } = require("../../errors");
 const { getPool } = require("../../db/pool");
-const { toCampaignJson, toCampaignRevpashLiftJson } = require("../../utils/serialize");
+const { toCampaignJson } = require("../../utils/serialize");
 const { validateCampaignBody } = require("../../utils/validate");
 const { createCampaignOffers } = require("../../services/createCampaignOffers");
 const { getCampaignOffers } = require("../../services/getCampaignOffers");
@@ -149,7 +149,7 @@ router.get(
       campaignId,
     });
 
-    res.status(200).json(toCampaignRevpashLiftJson(lift));
+    res.status(200).json(lift);
   })
 );
 

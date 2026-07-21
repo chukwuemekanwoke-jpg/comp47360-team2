@@ -24,11 +24,7 @@ To run the application locally:
 ### 1. Install the required NPM packages
 ```bash
 # From the repo root
-<<<<<<<< HEAD:frontend/README.md
-cd ./frontend
-========
 cd ./frontend/mobile-app
->>>>>>>> fbaabb14956aa2e7f62602c5a2c7892e7b85ab53:frontend/mobile-app/README.md
 npm install
 ```
 
