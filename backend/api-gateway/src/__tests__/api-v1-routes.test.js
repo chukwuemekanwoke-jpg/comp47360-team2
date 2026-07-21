@@ -35,6 +35,10 @@ jest.mock("../services/getRevpash", () => ({
   getRevpashSummary: jest.fn(),
 }));
 
+jest.mock("../services/getCampaignRevpashLift", () => ({
+  getCampaignRevpashLift: jest.fn(),
+}));
+
 const createApp = require("../app");
 const { createBooking } = require("../services/createBooking");
 const { cancelBooking } = require("../services/cancelBooking");
@@ -42,6 +46,7 @@ const { updateBookingStatus } = require("../services/updateBookingStatus");
 const { createCampaignOffers } = require("../services/createCampaignOffers");
 const { callMlBusyness } = require("../services/mlBusynessClient");
 const { getRevpashSummary } = require("../services/getRevpash");
+const { getCampaignRevpashLift } = require("../services/getCampaignRevpashLift");
 
 const app = createApp();
 
@@ -682,6 +687,36 @@ describe("campaign routes", () => {
     expect(res.body.error).toMatchObject({
       code: "NOT_FOUND",
       message: "Campaign not found",
+    });
+  });
+
+  it("returns RevPASH lift for a campaign", async () => {
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
+      .mockResolvedValueOnce({ rows: [{ id: RESTAURANT_ID, manager_user_id: USER_ID }] });
+    getCampaignRevpashLift.mockResolvedValueOnce({
+      campaignId: CAMPAIGN_ID,
+      organicRevpash: 2.5,
+      dealRevpash: 12.5,
+      liftPercent: 400,
+      offPeak: true,
+    });
+
+    const res = await request(app)
+      .get(`/api/v1/restaurants/${RESTAURANT_ID}/campaigns/${CAMPAIGN_ID}/revpash-lift`)
+      .set("X-User-Id", USER_ID);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      campaignId: CAMPAIGN_ID,
+      organicRevpash: 2.5,
+      dealRevpash: 12.5,
+      liftPercent: 400,
+      offPeak: true,
+    });
+    expect(getCampaignRevpashLift).toHaveBeenCalledWith(mockPool, {
+      restaurantId: RESTAURANT_ID,
+      campaignId: CAMPAIGN_ID,
     });
   });
 

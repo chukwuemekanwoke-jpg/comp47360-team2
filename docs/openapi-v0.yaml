@@ -669,6 +669,28 @@ paths:
         "404":
           $ref: "#/components/responses/NotFound"
 
+  /api/v1/restaurants/{restaurantId}/campaigns/{campaignId}/revpash-lift:
+    get:
+      tags: [Campaigns]
+      summary: Organic-vs-deal RevPASH comparison for a campaign (SCRUM-309 / TABL-215)
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+        - $ref: "#/components/parameters/RestaurantId"
+        - $ref: "#/components/parameters/CampaignId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CampaignRevpashLift"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
   /api/v1/restaurants/{restaurantId}/campaigns/{campaignId}/cancel:
     post:
       tags: [Campaigns]
@@ -1065,6 +1087,26 @@ components:
           type: number
         revpash:
           type: number
+
+    CampaignRevpashLift:
+      type: object
+      required: [campaignId, organicRevpash, dealRevpash, liftPercent, offPeak]
+      properties:
+        campaignId:
+          type: string
+          format: uuid
+        organicRevpash:
+          type: number
+          description: Trailing 30-day baseline RevPASH for this restaurant at the campaign's hour-of-day, excluding any campaign-linked bookings.
+        dealRevpash:
+          type: number
+          description: RevPASH from bookings tied to this campaign, over seat-hours available during its active window.
+        liftPercent:
+          type: number
+          description: Percent difference between dealRevpash and organicRevpash; 0 when there's no organic baseline to compare against.
+        offPeak:
+          type: boolean
+          description: True when the campaign's hour sits below the restaurant's median hourly revpash.
 
     Booking:
       type: object
