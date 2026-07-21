@@ -86,6 +86,21 @@ function toOfferInboxItem(row, now = new Date()) {
   };
 }
 
+function toManagerOfferItem(row, now = new Date()) {
+  const expiresAt = new Date(row.expires_at);
+  const secondsRemaining = Math.max(0, Math.floor((expiresAt.getTime() - now.getTime()) / 1000));
+
+  return {
+    id: row.id,
+    campaignId: row.campaign_id,
+    userDisplayName: row.user_display_name,
+    status: row.status,
+    expiresAt: expiresAt.toISOString(),
+    secondsRemaining,
+    acceptedAt: row.accepted_at ? new Date(row.accepted_at).toISOString() : null,
+  };
+}
+
 function toBookingJson(row) {
   const booking = {
     id: row.id,
@@ -141,6 +156,7 @@ module.exports = {
   toRestaurantDetail,
   toCampaignJson,
   toOfferInboxItem,
+  toManagerOfferItem,
   toBookingJson,
   toRestaurantBookingJson,
   toRevpashJson,
