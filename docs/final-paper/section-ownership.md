@@ -25,7 +25,7 @@ Status: first draft created from the synchronized repository on 2026-07-09. The 
 - CI status and test counts from the final branch.
 - Model or heuristic evaluation numbers from notebooks, including busyness error if available and recommendation/promotional metrics if using simulated data.
 - User testing notes: participant count, task completion rate, time on task, qualitative feedback.
-- Confirmation of what is implemented versus planned for GenAI Dining Copilot, push notifications, manual search fallback, and production deployment.
+- Confirmation of what is implemented versus planned for push notifications, manual search fallback, and production deployment.
 
 ## Circulation Plan
 

@@ -49,11 +49,10 @@ flowchart LR
 |---|---|---|---|---|
 | **Google Routes API** (`computeRouteMatrix`) | ETA guardrail (`GET /api/v1/restaurants/:id/eta`) | Accepted (ADR-001-F) | Backend Lead | Haversine estimate in gateway; cache ETA ~5 min either way to bound cost |
 | **NYC Open Data** (inspections, taxi trips) | Restaurant seed + busyness proxy | Accepted (data-strategy.md) | Data & ML Lead | N/A — offline batch download, not a runtime dependency |
-| **OpenAI (or equivalent)** | Dining Copilot conversational UX | Proposed, Sprint 4 (ADR-001-H) | Data & ML Lead | Feature flagged off; core booking flow does not depend on it |
 | **Expo push / `expo-notifications`** | Mobile push for flash deals | Proposed, post-MVP (ADR-001-G) | Mobile Lead | REST inbox polling (MVP default) — push is additive, not load-bearing |
 | **Firebase** | Push delivery infra if Expo push insufficient | Deferred (Phase 2) | Mobile Lead | Same as above |
 
-**Explicitly out of scope for integration in MVP** (ADR-001-E): OpenTable Partner API, Google Places as primary discovery source. These are not wired into any environment and should not appear in `.env.example` files as required keys.
+**Explicitly out of scope for integration in MVP** (ADR-001-E): OpenTable Partner API, Google Places as primary discovery source, generative AI / Dining Copilot (ADR-001-H withdrawn). These are not wired into any environment and should not appear in `.env.example` files as required keys.
 
 **Cost control:** the only paid/metered external call in the MVP critical path is Google Routes API. It is called once per restaurant-detail view and cached ~5 minutes server-side — this is an integration constraint, not just a cost optimization, because it bounds how often the gateway needs network access to a third party to answer a request that's otherwise fully local (Postgres + ML).
 
