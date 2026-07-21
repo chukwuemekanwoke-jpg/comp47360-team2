@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
 import MapView, { Marker, Callout, Region } from "react-native-maps";
@@ -28,6 +28,7 @@ function formatDistance(meters: number): string {
 export default function MapScreen() {
   const router = useRouter();
   const [selectedRestaurant, setSelectedRestaurant] = useState<RestaurantSummary | null>(null);
+  const mapRef = useRef<MapView>(null);
 
   const location = useAppSelector((state) => state.user.location);
   const filters = useAppSelector((state) => state.user.filters);
@@ -66,6 +67,17 @@ export default function MapScreen() {
 
   const zoomedOut = effectiveViewport.zoom < FULL_DETAIL_ZOOM;
 
+  // initialRegion only applies once, at mount — when a real GPS fix lands
+  // after that (the common case, since location resolves asynchronously),
+  // animate the camera to it instead of leaving the map on the fallback.
+  useEffect(() => {
+    if (!location) return;
+    mapRef.current?.animateToRegion(
+      { latitude: location.lat, longitude: location.lng, latitudeDelta: 0.02, longitudeDelta: 0.02 },
+      500
+    );
+  }, [location]);
+
   return (
     <View className="flex-1 bg-table-canvas">
 
@@ -93,6 +105,7 @@ export default function MapScreen() {
           // Keyed by theme so the map fully reloads when light mode is
           // toggled — customMapStyle doesn't reliably re-apply in place.
           key={theme}
+          ref={mapRef}
           style={{ flex: 1 }}
           initialRegion={initialRegion}
           onRegionChangeComplete={(region: Region) => setViewport(regionToViewport(region))}
