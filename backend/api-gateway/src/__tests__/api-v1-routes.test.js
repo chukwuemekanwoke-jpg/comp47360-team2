@@ -35,6 +35,10 @@ jest.mock("../services/getRevpash", () => ({
   getRevpashSummary: jest.fn(),
 }));
 
+jest.mock("../services/getCampaignRevpashLift", () => ({
+  getCampaignRevpashLift: jest.fn(),
+}));
+
 const createApp = require("../app");
 const { createBooking } = require("../services/createBooking");
 const { cancelBooking } = require("../services/cancelBooking");
@@ -42,6 +46,7 @@ const { updateBookingStatus } = require("../services/updateBookingStatus");
 const { createCampaignOffers } = require("../services/createCampaignOffers");
 const { callMlBusyness } = require("../services/mlBusynessClient");
 const { getRevpashSummary } = require("../services/getRevpash");
+const { getCampaignRevpashLift } = require("../services/getCampaignRevpashLift");
 
 const app = createApp();
 
@@ -615,6 +620,103 @@ describe("campaign routes", () => {
       campaignId: CAMPAIGN_ID,
       restaurant: expect.objectContaining({ id: RESTAURANT_ID }),
       tableQuota: 3,
+    });
+  });
+
+  it("lists offers for a campaign", async () => {
+    const expiresAt = new Date("2026-06-30T12:10:00.000Z");
+    const acceptedAt = new Date("2026-06-30T12:05:00.000Z");
+
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
+      .mockResolvedValueOnce({ rows: [{ id: RESTAURANT_ID, manager_user_id: USER_ID }] })
+      .mockResolvedValueOnce({ rows: [{ id: CAMPAIGN_ID }] })
+      .mockResolvedValueOnce({ rows: [] })
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            id: OFFER_ID,
+            campaign_id: CAMPAIGN_ID,
+            status: "pending",
+            expires_at: expiresAt,
+            accepted_at: null,
+            user_display_name: "Ava",
+          },
+          {
+            id: "66666666-6666-4666-8666-666666666666",
+            campaign_id: CAMPAIGN_ID,
+            status: "accepted",
+            expires_at: expiresAt,
+            accepted_at: acceptedAt,
+            user_display_name: "Ben",
+          },
+        ],
+      });
+
+    const res = await request(app)
+      .get(`/api/v1/restaurants/${RESTAURANT_ID}/campaigns/${CAMPAIGN_ID}/offers`)
+      .set("X-User-Id", USER_ID);
+
+    expect(res.status).toBe(200);
+    expect(res.body.offers).toHaveLength(2);
+    expect(res.body.offers[0]).toMatchObject({
+      id: OFFER_ID,
+      campaignId: CAMPAIGN_ID,
+      userDisplayName: "Ava",
+      status: "pending",
+      acceptedAt: null,
+    });
+    expect(res.body.offers[1]).toMatchObject({
+      userDisplayName: "Ben",
+      status: "accepted",
+      acceptedAt: acceptedAt.toISOString(),
+    });
+  });
+
+  it("returns 404 when listing offers for an unknown campaign", async () => {
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
+      .mockResolvedValueOnce({ rows: [{ id: RESTAURANT_ID, manager_user_id: USER_ID }] })
+      .mockResolvedValueOnce({ rows: [] });
+
+    const res = await request(app)
+      .get(`/api/v1/restaurants/${RESTAURANT_ID}/campaigns/${CAMPAIGN_ID}/offers`)
+      .set("X-User-Id", USER_ID);
+
+    expect(res.status).toBe(404);
+    expect(res.body.error).toMatchObject({
+      code: "NOT_FOUND",
+      message: "Campaign not found",
+    });
+  });
+
+  it("returns RevPASH lift for a campaign", async () => {
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
+      .mockResolvedValueOnce({ rows: [{ id: RESTAURANT_ID, manager_user_id: USER_ID }] });
+    getCampaignRevpashLift.mockResolvedValueOnce({
+      campaignId: CAMPAIGN_ID,
+      organicRevpash: 2.5,
+      dealRevpash: 12.5,
+      liftPercent: 400,
+      offPeak: true,
+    });
+
+    const res = await request(app)
+      .get(`/api/v1/restaurants/${RESTAURANT_ID}/campaigns/${CAMPAIGN_ID}/revpash-lift`)
+      .set("X-User-Id", USER_ID);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      campaignId: CAMPAIGN_ID,
+      organicRevpash: 2.5,
+      dealRevpash: 12.5,
+      liftPercent: 400,
+      offPeak: true,
+    });
+    expect(getCampaignRevpashLift).toHaveBeenCalledWith(mockPool, {
+      restaurantId: RESTAURANT_ID,
+      campaignId: CAMPAIGN_ID,
     });
   });
 

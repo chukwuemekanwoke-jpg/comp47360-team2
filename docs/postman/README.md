@@ -38,6 +38,6 @@
 
 - **Accept pending offer** requires a pending offer in the diner inbox (run a B-side campaign first, or use seeded data).
 - **Cancel campaign** requires `campaignId` from the create/active campaign steps in the same run.
-- Endpoints **not yet in collection** (backend pending): `GET /campaigns/:id/offers`.
+- Endpoints **not yet in collection** (backend pending): none for campaign offers (shipped 2026-07-21).
 
 Contract reference: [api-contract-v0.md](../api-contract-v0.md), [openapi-v0.yaml](../openapi-v0.yaml).
