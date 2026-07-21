@@ -2,6 +2,7 @@ export * from './constants';
 export * from './types';
 export * from './apiSlice';
 export * from './userSlice';
+export * from './restaurantFilters';
 export * from './authSlice';
 export * from './settingsSlice';
 export * from './hooks';

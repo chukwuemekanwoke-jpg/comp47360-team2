@@ -37,25 +37,34 @@ export const navColors: Record<
     canvas: string;
     surface: string;
     border: string;
+    interactive: string;
     cream: string;
     gold: string;
     teal: string;
+    offer: string;
+    live: string;
   }
 > = {
   dark: {
     canvas: "#000000",
     surface: "#09090b",
     border: "#27272a",
+    interactive: "#3f3f46",
     cream: "#fbf7f2",
     gold: "#a1a1aa",
     teal: "#00f2fe",
+    offer: "#f59e0b",
+    live: "#10b981",
   },
   light: {
     canvas: "#f6f3ee",
     surface: "#ffffff",
     border: "#e4e0d8",
+    interactive: "#d6d1c6",
     cream: "#1c1917",
     gold: "#8a7357",
     teal: "#0891b2",
+    offer: "#d97706",
+    live: "#059669",
   },
 };

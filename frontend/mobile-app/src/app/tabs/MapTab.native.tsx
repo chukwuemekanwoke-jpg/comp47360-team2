@@ -1,27 +1,24 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
-import MapView, { Marker, Callout } from "react-native-maps";
+import MapView, { Marker, Callout, Region } from "react-native-maps";
+import {
+  FULL_DETAIL_ZOOM,
+  MapBounds,
+  regionToViewport,
+  selectMapMarkers,
+} from "@/lib/mapDisplay";
 import { useRouter } from "expo-router";
 import { useAppSelector } from "@shared/hooks";
 import { useGetNearbyRestaurantsQuery } from "@shared/apiSlice";
 import { DISCOVERY_RADIUS_M } from "@shared/constants";
+import { applyRestaurantFilters, busynessColor, busynessLabel } from "@shared/restaurantFilters";
 import { RestaurantSummary } from "@shared/types";
-import PreferenceFilters from "@/components/PreferenceFilters";
+import CollapsibleFilters from "@/components/CollapsibleFilters";
 import LocationComponent from "@/components/LocationComponent";
 import BookingModal from "@/components/BookingCheckout";
-
-function busynessColor(score: number) {
-  if (score < 0.4) return "#10b981";
-  if (score < 0.7) return "#f59e0b";
-  return "#ef4444";
-}
-
-function busynessLabel(score: number) {
-  if (score < 0.4) return "Quiet";
-  if (score < 0.7) return "Busy";
-  return "Packed";
-}
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { navColors } from "@/theme";
 
 function formatDistance(meters: number): string {
   if (meters < 1000) return `${Math.round(meters)} m`;
@@ -30,12 +27,13 @@ function formatDistance(meters: number): string {
 
 export default function MapScreen() {
   const router = useRouter();
-  const [showFilters, setShowFilters] = useState(false);
   const [selectedRestaurant, setSelectedRestaurant] = useState<RestaurantSummary | null>(null);
+  const mapRef = useRef<MapView>(null);
 
   const location = useAppSelector((state) => state.user.location);
-  const selectedCuisines = useAppSelector((state) => state.user.filters.cuisines);
+  const filters = useAppSelector((state) => state.user.filters);
   const theme = useAppSelector((state) => state.settings.theme);
+  const colors = navColors[theme];
 
   const { data, isLoading } = useGetNearbyRestaurantsQuery(
     location
@@ -43,87 +41,89 @@ export default function MapScreen() {
       : skipToken
   );
 
-  const restaurants = useMemo(() => {
-    const all = data?.restaurants ?? [];
-    if (selectedCuisines.length === 0) return all;
-    return all.filter((r) => selectedCuisines.includes(r.cuisine.toLowerCase()));
-  }, [data, selectedCuisines]);
+  // Shared search/cuisine/busyness pipeline over the cached response.
+  const restaurants = useMemo(
+    () => applyRestaurantFilters(data?.restaurants ?? [], filters),
+    [data, filters]
+  );
 
   const mapCenter = location
     ? { latitude: location.lat, longitude: location.lng }
     : { latitude: 40.7589, longitude: -73.9851 };
 
+  const initialRegion = { ...mapCenter, latitudeDelta: 0.02, longitudeDelta: 0.02 };
+
+  // Current map extent + approximate zoom, updated as the user pans/zooms.
+  const [viewport, setViewport] = useState<{ bounds: MapBounds; zoom: number } | null>(null);
+  const effectiveViewport = viewport ?? regionToViewport(initialRegion);
+
+  // Client-side selection over the cached list — zoomed out shows only the
+  // top picks, zoomed in shows everything in view with top picks highlighted.
+  // Panning/zooming never re-queries the backend.
+  const markers = useMemo(
+    () => selectMapMarkers(restaurants, effectiveViewport.bounds, effectiveViewport.zoom),
+    [restaurants, effectiveViewport.bounds, effectiveViewport.zoom]
+  );
+
+  const zoomedOut = effectiveViewport.zoom < FULL_DETAIL_ZOOM;
+
+  // initialRegion only applies once, at mount — when a real GPS fix lands
+  // after that (the common case, since location resolves asynchronously),
+  // animate the camera to it instead of leaving the map on the fallback.
+  useEffect(() => {
+    if (!location) return;
+    mapRef.current?.animateToRegion(
+      { latitude: location.lat, longitude: location.lng, latitudeDelta: 0.02, longitudeDelta: 0.02 },
+      500
+    );
+  }, [location]);
+
   return (
     <View className="flex-1 bg-table-canvas">
 
       {/* Header card */}
-      <View className="mx-4 mt-4 bg-table-surface border border-table-border rounded-2xl px-4 py-3 flex-row items-center justify-between">
-        <View>
-          <Text className="text-sm font-bold text-table-cream">Live Restaurant Map</Text>
-          <View className="flex-row items-center gap-1.5 mt-0.5">
-            <View className="w-1.5 h-1.5 rounded-full bg-table-teal" />
-            <Text className="text-[9px] font-bold uppercase tracking-widest text-table-teal">
-              Real-time feed
-            </Text>
-          </View>
-        </View>
-        <TouchableOpacity
-          onPress={() => setShowFilters((v) => !v)}
-          className={`px-3 py-1.5 rounded-lg border ${
-            showFilters
-              ? "bg-table-teal/10 border-table-teal/30"
-              : "bg-table-interactive border-table-border"
-          }`}
-          activeOpacity={0.7}
-        >
-          <Text className={`text-[10px] font-bold uppercase tracking-widest ${
-            showFilters ? "text-table-teal" : "text-table-cream"
-          }`}>
-            Filters
+      <View className="mx-4 mt-4 bg-table-surface border border-table-border rounded-2xl px-4 py-3">
+        <Text className="text-sm font-bold text-table-cream">Live Restaurant Map</Text>
+        <View className="flex-row items-center gap-1.5 mt-0.5">
+          <View className="w-1.5 h-1.5 rounded-full bg-table-teal" />
+          <Text className="text-[9px] font-bold uppercase tracking-widest text-table-teal">
+            Real-time feed
           </Text>
-        </TouchableOpacity>
+        </View>
       </View>
 
-      {/* Filters panel */}
-      {showFilters && (
-        <View className="mx-4 mt-3 bg-table-surface border border-table-border rounded-2xl p-4">
-          <PreferenceFilters />
-          <View className="mt-3 border-t border-table-border pt-3">
-            <LocationComponent />
-          </View>
-          <TouchableOpacity
-            className="mt-3 bg-table-teal rounded-xl py-2.5 items-center"
-            onPress={() => setShowFilters(false)}
-            activeOpacity={0.8}
-          >
-            <Text className="text-table-canvas text-xs font-bold uppercase tracking-widest">
-              Apply
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      {/* Search + collapsible filters */}
+      <View className="mx-4 mt-3">
+        <CollapsibleFilters>
+          <LocationComponent />
+        </CollapsibleFilters>
+      </View>
 
       {/* Map */}
       <View className="mx-4 mt-3 rounded-2xl overflow-hidden border border-table-border" style={{ height: 240 }}>
         <MapView
+          // Keyed by theme so the map fully reloads when light mode is
+          // toggled — customMapStyle doesn't reliably re-apply in place.
+          key={theme}
+          ref={mapRef}
           style={{ flex: 1 }}
-          region={{
-            ...mapCenter,
-            latitudeDelta: 0.02,
-            longitudeDelta: 0.02,
-          }}
+          initialRegion={initialRegion}
+          onRegionChangeComplete={(region: Region) => setViewport(regionToViewport(region))}
           customMapStyle={theme === "dark" ? darkMapStyle : undefined}
         >
-          {restaurants.map((r) => (
+          {markers.map(({ restaurant: r, highlighted }) => (
             <Marker
               key={r.id}
               coordinate={{ latitude: r.latitude, longitude: r.longitude }}
-              pinColor={busynessColor(r.busynessScore)}
+              pinColor={highlighted ? "#f5b014" : busynessColor(r.busynessScore)}
+              zIndex={highlighted ? 10 : 0}
               onCalloutPress={() => setSelectedRestaurant(r)}
             >
               <Callout tooltip={false}>
                 <View style={{ width: 150, padding: 8 }}>
-                  <Text style={{ fontWeight: "700", fontSize: 13 }}>{r.name}</Text>
+                  <Text style={{ fontWeight: "700", fontSize: 13 }}>
+                    {highlighted ? "★ " : ""}{r.name}
+                  </Text>
                   <Text style={{ fontSize: 11, color: "#71717a", marginTop: 2 }}>{r.cuisine}</Text>
                   <Text style={{ fontSize: 11, marginTop: 4 }}>
                     {busynessLabel(r.busynessScore)} · {r.availableTableCount} free
@@ -136,6 +136,15 @@ export default function MapScreen() {
             </Marker>
           ))}
         </MapView>
+
+        {/* Hint that more spots appear as you zoom in */}
+        {zoomedOut && restaurants.length > markers.length && (
+          <View className="absolute top-2 self-center bg-table-canvas/80 border border-table-border px-3 py-1 rounded-full">
+            <Text className="text-table-cream text-[9px] font-bold uppercase tracking-widest">
+              Top picks · Zoom in for more
+            </Text>
+          </View>
+        )}
 
         {/* Loading overlay */}
         {isLoading && (
@@ -166,9 +175,9 @@ export default function MapScreen() {
         </View>
       )}
 
-      {/* Nearby list */}
+      {/* Nearby list — mirrors exactly what the map is showing */}
       <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold mx-4 mt-5 mb-2">
-        {restaurants.length > 0 ? `${restaurants.length} Nearby` : "Nearby"}
+        {markers.length > 0 ? `${markers.length} On the map` : "On the map"}
       </Text>
 
       <ScrollView
@@ -176,26 +185,28 @@ export default function MapScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 24 }}
       >
-        {isLoading && restaurants.length === 0 && (
+        {isLoading && markers.length === 0 && (
           <View className="items-center py-8">
             <ActivityIndicator color="#00f2fe" />
           </View>
         )}
 
-        {!isLoading && restaurants.length === 0 && location && (
+        {!isLoading && markers.length === 0 && location && (
           <Text className="text-table-gold text-xs text-center py-8">
-            No available restaurants within range.
+            No restaurants in this map area. Pan or zoom out to see more.
           </Text>
         )}
 
-        {restaurants.map((r) => (
+        {markers.map(({ restaurant: r, highlighted }) => (
           <View
             key={r.id}
             className="bg-table-surface border border-table-border rounded-2xl p-4 mb-3"
           >
             <View className="flex-row items-start justify-between mb-2">
               <View className="flex-1 mr-3">
-                <Text className="text-sm font-bold text-table-cream">{r.name}</Text>
+                <Text className="text-sm font-bold text-table-cream">
+                  {highlighted ? "★ " : ""}{r.name}
+                </Text>
                 <Text className="text-xs text-table-gold mt-0.5">
                   {r.cuisine} · {formatDistance(r.distanceMeters)}
                 </Text>
@@ -216,7 +227,8 @@ export default function MapScreen() {
             <View className="flex-row items-center justify-between border-t border-table-border pt-2 mt-1">
               <View className="flex-row gap-4">
                 <Text className="text-xs text-table-gold">
-                  🪑 <Text className="text-table-live font-bold">{r.availableTableCount} free</Text>
+                  <MaterialCommunityIcons name="seat-outline" size={12} color={colors.gold} />{" "}
+                  <Text className="text-table-live font-bold">{r.availableTableCount} free</Text>
                 </Text>
               </View>
               <TouchableOpacity

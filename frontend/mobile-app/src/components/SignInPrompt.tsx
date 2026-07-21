@@ -1,5 +1,8 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { useAppSelector } from "@shared/hooks";
+import { navColors } from "@/theme";
 
 interface SignInPromptProps {
   message: string;
@@ -7,9 +10,10 @@ interface SignInPromptProps {
 
 // Shown in place of user-specific screens when browsing as a guest.
 export default function SignInPrompt({ message }: SignInPromptProps) {
+  const colors = navColors[useAppSelector((state) => state.settings.theme)];
   return (
     <View className="flex-1 bg-table-canvas items-center justify-center px-6">
-      <Text style={{ fontSize: 36, marginBottom: 12 }}>🔒</Text>
+      <Ionicons name="lock-closed-outline" size={36} color={colors.gold} style={{ marginBottom: 12 }} />
       <Text className="text-table-cream text-sm font-bold text-center mb-2">
         Sign in required
       </Text>

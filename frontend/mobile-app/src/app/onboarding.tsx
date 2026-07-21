@@ -10,22 +10,10 @@ import { Redirect, Stack, router } from "expo-router";
 import { useProfile } from "@/context/ProfileContext";
 import { useUpdatePreferencesMutation } from "@shared/apiSlice";
 import { useAppSelector } from "@shared/hooks";
-
-type DiningStyle =
-  | "casual"
-  | "family"
-  | "date-night"
-  | "business";
-
-type BudgetTier = "TIER_1" | "TIER_2" | "TIER_3";
-
-const CUISINES = [
-  "Italian",
-  "Indian",
-  "Japanese",
-  "Mexican",
-  "Thai",
-];
+import PreferenceEditor, {
+  DiningStyle,
+  priceLevelToBudgetTier,
+} from "@/components/PreferenceEditor";
 
 export default function OnboardingScreen() {
   const { setProfile } = useProfile();
@@ -55,17 +43,11 @@ export default function OnboardingScreen() {
     );
   };
 
-  function mapPriceToBudgetTier(level: number): BudgetTier {
-    if (level <= 1) return "TIER_1";
-    if (level === 2) return "TIER_2";
-    return "TIER_3";
-  }
-
   const finishOnboarding = async () => {
     try {
       await triggerUpdatePreferences({
         userId,
-        budgetTier: mapPriceToBudgetTier(maxPriceLevel),
+        budgetTier: priceLevelToBudgetTier(maxPriceLevel),
         dietaryTags: [...favoriteCuisines, diningStyle],
         // Only send coordinates when we have a real device fix — no
         // hardcoded fallback, the map handles missing location itself.
@@ -100,123 +82,16 @@ export default function OnboardingScreen() {
             Welcome{displayName ? `, ${displayName}` : ""}
           </Text>
 
-          {/* STEP 1 */}
-          {step === 0 && (
-            <>
-              <Text className="text-lg font-bold text-table-cream mb-4">
-                Favourite cuisines
-              </Text>
-
-              <View className="flex-row flex-wrap gap-2">
-                {CUISINES.map((cuisine) => {
-                  const selected =
-                    favoriteCuisines.includes(cuisine);
-
-                  return (
-                    <TouchableOpacity
-                      key={cuisine}
-                      onPress={() => toggleCuisine(cuisine)}
-                      className={`px-4 py-3 rounded-xl border ${
-                        selected
-                          ? "border-table-teal"
-                          : "border-table-border"
-                      }`}
-                      style={
-                        selected
-                          ? { backgroundColor: "#00f2fe18" }
-                          : undefined
-                      }
-                    >
-                      <Text
-                        className={
-                          selected
-                            ? "text-table-teal font-bold"
-                            : "text-table-cream"
-                        }
-                      >
-                        {cuisine}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </>
-          )}
-
-          {/* STEP 2 */}
-          {step === 1 && (
-            <>
-              <Text className="text-lg font-bold text-table-cream mb-4">
-                Preferred price range
-              </Text>
-
-              <View className="flex-row gap-3">
-                {[1, 2, 3].map((level) => (
-                  <TouchableOpacity
-                    key={level}
-                    onPress={() => setMaxPriceLevel(level)}
-                    className={`px-5 py-4 rounded-xl border ${
-                      maxPriceLevel === level
-                        ? "border-table-teal"
-                        : "border-table-border"
-                    }`}
-                  >
-                    <Text
-                      className={
-                        maxPriceLevel === level
-                          ? "text-table-teal font-bold"
-                          : "text-table-cream"
-                      }
-                    >
-                      {"€".repeat(level)}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </>
-          )}
-
-          {/* STEP 3 */}
-          {step === 2 && (
-            <>
-              <Text className="text-lg font-bold text-table-cream mb-4">
-                Dining style
-              </Text>
-
-              {[
-                "casual",
-                "family",
-                "date-night",
-                "business",
-              ].map((style) => (
-                <TouchableOpacity
-                  key={style}
-                  onPress={() =>
-                    setDiningStyle(style as DiningStyle)
-                  }
-                  className={`p-4 rounded-xl border mb-3 ${
-                    diningStyle === style
-                      ? "border-table-teal"
-                      : "border-table-border"
-                  }`}
-                >
-                  <Text
-                    className={
-                      diningStyle === style
-                        ? "text-table-teal font-bold"
-                        : "text-table-cream"
-                    }
-                  >
-                    {style
-                      .replace("-", " ")
-                      .replace(/\b\w/g, (c) =>
-                        c.toUpperCase()
-                      )}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </>
-          )}
+          {/* One picker per step — same editor the profile page uses */}
+          <PreferenceEditor
+            favoriteCuisines={favoriteCuisines}
+            maxPriceLevel={maxPriceLevel}
+            diningStyle={diningStyle}
+            onToggleCuisine={toggleCuisine}
+            onSetPriceLevel={setMaxPriceLevel}
+            onSetDiningStyle={setDiningStyle}
+            sections={step === 0 ? ["cuisines"] : step === 1 ? ["price"] : ["style"]}
+          />
         </View>
 
         {/* Navigation */}
