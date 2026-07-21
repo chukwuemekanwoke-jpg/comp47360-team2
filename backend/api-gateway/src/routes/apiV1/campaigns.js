@@ -2,6 +2,7 @@ const { Router } = require("express");
 const asyncHandler = require("../../middleware/asyncHandler");
 const requireUser = require("../../middleware/requireUser");
 const requireRestaurantManager = require("../../middleware/requireRestaurantManager");
+const { writeRateLimiter } = require("../../middleware/rateLimit");
 const { AppError, isUuid } = require("../../errors");
 const { getPool } = require("../../db/pool");
 const { toCampaignJson } = require("../../utils/serialize");
@@ -58,6 +59,7 @@ router.get(
 
 router.post(
   "/",
+  writeRateLimiter,
   asyncHandler(async (req, res) => {
     const pool = getPool();
     const { tableQuota, discountPercent } = validateCampaignBody(req.body);

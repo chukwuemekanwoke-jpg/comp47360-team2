@@ -40,6 +40,17 @@ const config = {
     || (process.env.NODE_ENV === "production" ? null : "dev-jwt-secret-change-me"),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || "7d",
   webAppUrl: process.env.WEB_APP_URL || "http://localhost:5173",
+  // Rate limiting (sensitive routes). Off by default in test so suites stay stable;
+  // set RATE_LIMIT_ENABLED=true/false to override.
+  rateLimitEnabled: (() => {
+    if (process.env.RATE_LIMIT_ENABLED === "true") return true;
+    if (process.env.RATE_LIMIT_ENABLED === "false") return false;
+    return (process.env.NODE_ENV || "development") !== "test";
+  })(),
+  rateLimitAuthWindowMs: Number(process.env.RATE_LIMIT_AUTH_WINDOW_MS) || 15 * 60 * 1000,
+  rateLimitAuthMax: Number(process.env.RATE_LIMIT_AUTH_MAX) || 20,
+  rateLimitWriteWindowMs: Number(process.env.RATE_LIMIT_WRITE_WINDOW_MS) || 15 * 60 * 1000,
+  rateLimitWriteMax: Number(process.env.RATE_LIMIT_WRITE_MAX) || 60,
 };
 
 if (!config.jwtSecret) {
