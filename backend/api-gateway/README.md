@@ -54,7 +54,7 @@ Server: `http://localhost:3001`
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
-| GET | `/api/v1/restaurants/nearby` | optional `X-User-Id` | Restaurants within radius (`availableTableCount > 0`) |
+| GET | `/api/v1/restaurants/nearby` | optional `X-User-Id` | Restaurants within radius (`availableTableCount > 0`); optional `neighborhood` geocode fallback |
 | POST | `/api/v1/restaurants` | JWT or `X-User-Id` | Create restaurant (`manager_user_id` = caller) |
 | GET | `/api/v1/restaurants/:restaurantId` | none | Restaurant detail for booking screen |
 | PATCH | `/api/v1/restaurants/:restaurantId/settings` | manager JWT or `X-User-Id` | Update accessibility settings |
@@ -129,6 +129,9 @@ curl -X PATCH http://localhost:3001/api/v1/users/me/preferences \
 
 # Nearby discovery (Times Square demo origin)
 curl 'http://localhost:3001/api/v1/restaurants/nearby?lat=40.7589&lng=-73.9851'
+
+# GPS denied — geocode a Manhattan neighbourhood instead of lat/lng
+curl 'http://localhost:3001/api/v1/restaurants/nearby?neighborhood=Midtown'
 
 # Restaurant detail (replace with id from nearby response)
 curl http://localhost:3001/api/v1/restaurants/550e8400-e29b-41d4-a716-446655441001

@@ -347,9 +347,10 @@ Returns restaurants within radius with `availableTableCount > 0`.
 
 | Param | Required | Default | Description |
 |-------|----------|---------|-------------|
-| `lat` | yes | — | WGS84 latitude |
-| `lng` | yes | — | WGS84 longitude |
+| `lat` | yes* | — | WGS84 latitude (*optional when `neighborhood` is provided) |
+| `lng` | yes* | — | WGS84 longitude (*optional when `neighborhood` is provided) |
 | `radiusM` | no | `1500` | Metres |
+| `neighborhood` | no | — | Manhattan neighbourhood name; geocoded server-side when `lat`/`lng` omitted (Story 2.2) |
 
 **Response `200`:**
 
@@ -361,7 +362,7 @@ Returns restaurants within radius with `availableTableCount > 0`.
 }
 ```
 
-**P1 extension:** `neighborhood=Manhattan` when GPS denied (Story 2.2) — geocode then same response shape.
+When `neighborhood` is supplied without `lat`/`lng`, the gateway resolves a Manhattan centroid and runs the same radius query (Story 2.2 GPS-denied fallback). Unknown neighbourhood names return **404**.
 
 #### `POST /api/v1/restaurants`
 
@@ -745,7 +746,7 @@ Gateway then inserts `offers` with `expiresAt = now() + 900s`. If the ML service
 | P0 | POST | `/api/v1/users` | 1.1 |
 | P0 | PATCH | `/api/v1/users/me/preferences` | 1.1 |
 | P0 | GET | `/api/v1/users/me` | 1.1 |
-| P0 | GET | `/api/v1/restaurants/nearby` | 2.1 |
+| P0 | GET | `/api/v1/restaurants/nearby` | 2.1, 2.2 |
 | P0 | GET | `/api/v1/restaurants/:id` | 2.1, 3.x |
 | P0 | GET | `/api/v1/restaurants/:id/eta` | 3.1, 3.2 |
 | P0 | POST | `/api/v1/bookings` | 3.x, 5.2 |
@@ -774,7 +775,9 @@ Gateway then inserts `offers` with `expiresAt = now() + 900s`. If the ML service
 
 | Priority | Method | Path | Story |
 |----------|--------|------|-------|
-| P1 | GET | `/api/v1/restaurants/nearby?neighborhood=` | 2.2 |
+| — | — | — | — |
+
+*(No pending P1 routes at v0.5.3.)*
 
 ---
 
@@ -806,3 +809,4 @@ Shared TypeScript types (`frontend/packages/shared/src/types.ts`) map to API fie
 | v0.4.1 | 2026-07-12 | Merchant PATCH booking status for dashboard |
 | v0.5 | 2026-07-13 | Password forgot/reset auth endpoints |
 | v0.5.1 | 2026-07-21 | GET campaign offers for merchant live tracker |
+| v0.5.3 | 2026-07-21 | GET nearby `neighborhood` geocode fallback (Story 2.2) |
