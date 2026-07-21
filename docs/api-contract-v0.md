@@ -641,6 +641,32 @@ Cancels an `active` campaign, sets `status: "cancelled"`, and revokes pending of
 
 **Response `409`:** campaign is not active (already completed or cancelled)
 
+#### `GET /api/v1/restaurants/:restaurantId/campaigns/:campaignId/offers`
+
+**Auth:** manager  
+
+Returns all offers sent for a campaign, for the merchant live tracker. Expired pending offers are marked `expired` before the response is built.
+
+**Response `200`:**
+
+```json
+{
+  "offers": [
+    {
+      "id": "uuid",
+      "campaignId": "uuid",
+      "userDisplayName": "Ava",
+      "status": "pending",
+      "expiresAt": "2026-06-02T11:15:00.000Z",
+      "secondsRemaining": 742,
+      "acceptedAt": null
+    }
+  ]
+}
+```
+
+**Response `404`:** campaign not found for this restaurant
+
 ---
 
 ## 5. ML service (BE-7 / BE-14)
@@ -706,6 +732,7 @@ Gateway then inserts `offers` with `expiresAt = now() + 900s`. If the ML service
 | P0 | GET | `/api/v1/restaurants/:id/campaigns` | 5.2 |
 | P0 | GET | `/api/v1/restaurants/:id/campaigns/active` | 5.2 |
 | P0 | POST | `/api/v1/restaurants/:id/campaigns/:campaignId/cancel` | 5.2 |
+| P0 | GET | `/api/v1/restaurants/:id/campaigns/:campaignId/offers` | 5.2 live tracker |
 | P0 | GET | `/api/v1/restaurants/:id/bookings` | 5.2 |
 | P0 | POST | `/api/v1/auth/register` | — |
 | P0 | POST | `/api/v1/auth/login` | — |
@@ -721,7 +748,6 @@ Gateway then inserts `offers` with `expiresAt = now() + 900s`. If the ML service
 | Priority | Method | Path | Story |
 |----------|--------|------|-------|
 | P1 | GET | `/api/v1/restaurants/nearby?neighborhood=` | 2.2 |
-| P1 | GET | `/api/v1/restaurants/:id/campaigns/:campaignId/offers` | 5.2 live tracker |
 
 ---
 
@@ -752,3 +778,4 @@ Shared TypeScript types (`frontend/packages/shared/src/types.ts`) map to API fie
 | v0.4 | 2026-07-12 | RevPASH schema, hourly view, GET /revpash, booking partySize |
 | v0.4.1 | 2026-07-12 | Merchant PATCH booking status for dashboard |
 | v0.5 | 2026-07-13 | Password forgot/reset auth endpoints |
+| v0.5.1 | 2026-07-21 | GET campaign offers for merchant live tracker |

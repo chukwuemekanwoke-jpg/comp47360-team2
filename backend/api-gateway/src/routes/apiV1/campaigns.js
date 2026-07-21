@@ -7,6 +7,7 @@ const { getPool } = require("../../db/pool");
 const { toCampaignJson } = require("../../utils/serialize");
 const { validateCampaignBody } = require("../../utils/validate");
 const { createCampaignOffers } = require("../../services/createCampaignOffers");
+const { getCampaignOffers } = require("../../services/getCampaignOffers");
 
 const router = Router({ mergeParams: true });
 
@@ -110,6 +111,25 @@ router.post(
     } finally {
       client.release();
     }
+  })
+);
+
+router.get(
+  "/:campaignId/offers",
+  asyncHandler(async (req, res) => {
+    const pool = getPool();
+    const { campaignId } = req.params;
+
+    if (!campaignId || !isUuid(campaignId)) {
+      throw new AppError(400, "VALIDATION_ERROR", "Invalid campaignId format");
+    }
+
+    const offers = await getCampaignOffers(pool, {
+      restaurantId: req.restaurantId,
+      campaignId,
+    });
+
+    res.status(200).json({ offers });
   })
 );
 

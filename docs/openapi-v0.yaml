@@ -642,6 +642,33 @@ paths:
         "401":
           $ref: "#/components/responses/Unauthorized"
 
+  /api/v1/restaurants/{restaurantId}/campaigns/{campaignId}/offers:
+    get:
+      tags: [Campaigns]
+      summary: List offers for a campaign (manager live tracker)
+      parameters:
+        - $ref: "#/components/parameters/UserIdHeader"
+        - $ref: "#/components/parameters/RestaurantId"
+        - $ref: "#/components/parameters/CampaignId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  offers:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ManagerOfferItem"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
   /api/v1/restaurants/{restaurantId}/campaigns/{campaignId}/cancel:
     post:
       tags: [Campaigns]
@@ -1092,6 +1119,29 @@ components:
             userDisplayName:
               type: string
               description: Display name of the diner who placed the booking.
+
+    ManagerOfferItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        campaignId:
+          type: string
+          format: uuid
+        userDisplayName:
+          type: string
+        status:
+          $ref: "#/components/schemas/OfferStatus"
+        expiresAt:
+          type: string
+          format: date-time
+        secondsRemaining:
+          type: integer
+        acceptedAt:
+          type: string
+          format: date-time
+          nullable: true
 
     OfferInboxItem:
       type: object

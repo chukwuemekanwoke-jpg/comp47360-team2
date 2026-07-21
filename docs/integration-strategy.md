@@ -134,7 +134,7 @@ Per §5 and [deployment-guide.md](./deployment-guide.md), promotion is a deliber
 
 | Owner | Task |
 |---|---|
-| Backend Lead | Implement `PATCH /bookings/:id/status`, `GET /restaurants/:id/revpash`, `GET /campaigns/:campaignId/offers` (frontend already wired) |
+| Backend Lead | Implement `PATCH /bookings/:id/status`, `GET /restaurants/:id/revpash`, ~~`GET /campaigns/:campaignId/offers`~~ (shipped) |
 | Backend Lead | Implement `POST /bookings/:id/cancel` (Story 4.2) |
 | Web Lead | Remove stale "Needs backend" comments in `apiSlice.ts` as routes ship; keep UI fallbacks until RevPASH/offers endpoints exist |
 | Scrum Master | Keep Postman collection (`docs/postman/`) in sync with shipped routes for staging smoke tests |
