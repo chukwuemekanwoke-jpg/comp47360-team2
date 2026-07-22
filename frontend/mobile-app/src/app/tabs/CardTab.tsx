@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useGetNearbyRestaurantsQuery } from "@shared/apiSlice";
@@ -47,10 +48,20 @@ export default function CardListView() {
   const lat = reduxLocation?.lat ?? FALLBACK_LAT;
   const lng = reduxLocation?.lng ?? FALLBACK_LNG;
 
-  const { data, isLoading, error } = useGetNearbyRestaurantsQuery(
+  const { data, isLoading, error, refetch } = useGetNearbyRestaurantsQuery(
     { lat, lng, radiusM: DISCOVERY_RADIUS_M },
     { pollingInterval: SEAT_AVAILABILITY_POLL_MS }
   );
+
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refetch();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetch]);
 
   const restaurantsList = useMemo(() => data?.restaurants ?? [], [data]);
 
@@ -155,6 +166,14 @@ export default function CardListView() {
         removeClippedSubviews
         onScroll={handleScroll}
         scrollEventThrottle={100}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#00f2fe"
+            colors={["#00f2fe"]}
+          />
+        }
         ListHeaderComponent={
           <Text className="text-[9px] font-bold uppercase tracking-widest text-table-gold mb-3">
             {sorted.length} restaurants found

@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { skipToken } from "@reduxjs/toolkit/query";
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, RefreshControl } from "react-native";
 import MapView, { Marker, Callout, Region } from "react-native-maps";
 import {
   FULL_DETAIL_ZOOM,
@@ -35,12 +35,22 @@ export default function MapScreen() {
   const theme = useAppSelector((state) => state.settings.theme);
   const colors = navColors[theme];
 
-  const { data, isLoading } = useGetNearbyRestaurantsQuery(
+  const { data, isLoading, refetch } = useGetNearbyRestaurantsQuery(
     location
       ? { lat: location.lat, lng: location.lng, radiusM: DISCOVERY_RADIUS_M }
       : skipToken,
     { pollingInterval: SEAT_AVAILABILITY_POLL_MS }
   );
+
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refetch();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetch]);
 
   // Shared search/cuisine/busyness pipeline over the cached response.
   const restaurants = useMemo(
@@ -185,6 +195,14 @@ export default function MapScreen() {
         className="px-4"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 24 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#00f2fe"
+            colors={["#00f2fe"]}
+          />
+        }
       >
         {isLoading && markers.length === 0 && (
           <View className="items-center py-8">
