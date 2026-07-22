@@ -172,6 +172,37 @@ Notes on the script:
 
   **Follow-ups, not blockers**: booking creation (`POST /bookings`) wasn't load-tested (write-rate-limiter ceiling on `integrate`, not yet on `develop`); no stress test was run beyond 30 VUs to find an actual breaking point.
 
+- **2026-07-22 — second run, 100 VUs (the ticket's stated target), bottleneck found.** Reopened TABL-604 after confirming the full ticket asks for 100 concurrent users, not 30. Re-ran with stages ramping 0→25→100 over 4 minutes, tightened the `nearby`/`revpash` thresholds to the ticket's actual `<200ms` target. 9,860 completed diner journeys, ~122.6 req/s peak, **zero failed requests** — but two routes missed the latency target:
+
+  | Route | p95 @ 30 VUs | p95 @ 100 VUs | Target | Result |
+  |---|---|---|---|---|
+  | `nearby` | 82.7ms | 364.0ms | <200ms | ✗ Fails |
+  | `revpash` | 55.4ms | 227.5ms | <200ms | ✗ Fails |
+  | `eta` | 39.2ms | 293.1ms | <3500ms | ✓ (7.5× worse, but within its own bar) |
+  | Error rate | 0.00% | 0.00% | <1% | ✓ |
+
+  **Root cause, confirmed against Cloud SQL Insights for the test window (13:59–14:03 UTC):**
+
+  ![CPU utilisation](assets/perf-test-cpu-utilisation.png)
+
+  CPU utilisation peaked at only ~20% during the 100-VU run — nowhere near saturated. Compute was not the constraint.
+
+  ![Connections per database](assets/perf-test-connections-per-database.png)
+
+  Connections per database spiked to ~19 at exactly the moment of the 100-VU run (flat at 1–2 for the rest of the graph). `backend/api-gateway/src/db/pool.js` creates `new Pool({ connectionString: config.databaseUrl })` with **no `max` set** — node-postgres defaults to 10 connections per pool. Cloud Run's `api-gateway` config (`containerConcurrency: 80`, `maxScale: 20`) has far more headroom than this load needed, so it almost certainly never scaled past a single instance — meaning that single instance's 10-connection default pool is the actual ceiling, not Cloud Run itself.
+
+  ![Wait event types](assets/perf-test-wait-event-types.png)
+
+  Wait events, which oscillate between 1–2 throughout the whole graph, spike to 3 at the same moment — consistent with queries queueing for a free connection rather than the database itself struggling.
+
+  ![Data transfer in/out bytes](assets/perf-test-data-transfer.png)
+
+  Data transfer confirms the timing (a clear spike right at the run), unremarkable in volume — this rules out network throughput as a factor.
+
+  **Conclusion**: the bottleneck is the unconfigured default connection pool size in `pool.js`, not Cloud Run capacity, CPU, or network. The app degrades gracefully under this (zero errors), but misses the ticket's `<200ms` target at 100 concurrent users purely on pool contention.
+
+  **Decision (2026-07-22): left as-is for now** — documenting the finding and root cause is sufficient for this pass. Fixing it (setting an explicit `max` on the `Pool` in `pool.js`, e.g. 20–30) is a follow-up code change, not a testing-doc change, and would need its own verification pass once made.
+
 ## Open Questions / Risks
 
 - **`/eta` cost under load:** this route calls the real Google Routes API when not cached. Repeated load-test iterations against the same restaurant/coordinates will mostly hit the in-process ETA cache (`getCachedEta`/`setCachedEta`), which is good for cost but means this test may not accurately measure the *uncached* Google Routes API latency path. If that path specifically needs testing, vary `lat`/`lng` slightly per iteration to force cache misses — but that increases real API spend, so keep iteration counts low if doing so.
