@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useGetNearbyRestaurantsQuery } from "@shared/apiSlice";
-import { DISCOVERY_RADIUS_M } from "@shared/constants";
+import { DISCOVERY_RADIUS_M, SEAT_AVAILABILITY_POLL_MS } from "@shared/constants";
 import { applyRestaurantFilters } from "@shared/restaurantFilters";
 import { useAppSelector } from "@shared/hooks";
 import BookingModal from "@/components/BookingCheckout";
@@ -47,11 +47,10 @@ export default function CardListView() {
   const lat = reduxLocation?.lat ?? FALLBACK_LAT;
   const lng = reduxLocation?.lng ?? FALLBACK_LNG;
 
-  const { data, isLoading, error } = useGetNearbyRestaurantsQuery({
-    lat,
-    lng,
-    radiusM: DISCOVERY_RADIUS_M,
-  });
+  const { data, isLoading, error } = useGetNearbyRestaurantsQuery(
+    { lat, lng, radiusM: DISCOVERY_RADIUS_M },
+    { pollingInterval: SEAT_AVAILABILITY_POLL_MS }
+  );
 
   const restaurantsList = useMemo(() => data?.restaurants ?? [], [data]);
 

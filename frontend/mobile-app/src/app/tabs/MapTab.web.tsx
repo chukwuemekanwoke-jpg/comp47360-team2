@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import BackendHealthCard from "@/components/BackendHealth";
 import CollapsibleFilters from "@/components/CollapsibleFilters";
 import { useGetNearbyRestaurantsQuery } from "@shared/apiSlice";
-import { DISCOVERY_RADIUS_M } from "@shared/constants";
+import { DISCOVERY_RADIUS_M, SEAT_AVAILABILITY_POLL_MS } from "@shared/constants";
 import { applyRestaurantFilters, busynessColor, busynessLabel } from "@shared/restaurantFilters";
 import { RestaurantSummary } from "@shared/types";
 import { useAppSelector } from "@shared/hooks";
@@ -30,11 +30,14 @@ export default function MapScreen() {
   const latitude = userLocation?.lat ?? DEFAULT_LATITUDE;
   const longitude = userLocation?.lng ?? DEFAULT_LONGITUDE;
 
-  const { data } = useGetNearbyRestaurantsQuery({
-    lat: latitude,
-    lng: longitude,
-    radiusM: DISCOVERY_RADIUS_M
-  });
+  const { data } = useGetNearbyRestaurantsQuery(
+    {
+      lat: latitude,
+      lng: longitude,
+      radiusM: DISCOVERY_RADIUS_M
+    },
+    { pollingInterval: SEAT_AVAILABILITY_POLL_MS }
+  );
 
   // Shared search/cuisine/busyness pipeline over the cached response.
   const restaurantsList = useMemo(

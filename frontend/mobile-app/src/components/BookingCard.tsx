@@ -5,6 +5,7 @@ import { Booking, TransportMode } from "@shared/types";
 import { useGetRestaurantDetailQuery } from "@shared/apiSlice";
 import { useAppSelector } from "@shared/hooks";
 import { navColors } from "@/theme";
+import { TRAVEL_METHODS } from "@shared/constants";
 
 interface BookingCardProps {
   booking: Booking;
@@ -13,13 +14,6 @@ interface BookingCardProps {
 }
 
 type IconName = keyof typeof Ionicons.glyphMap;
-
-const TRANSPORT_MAP: Record<TransportMode, { label: string; icon: IconName }> = {
-  walking: { label: "Walking", icon: "walk-outline" },
-  driving: { label: "Driving", icon: "car-outline" },
-  transit: { label: "Transit", icon: "subway-outline" },
-  cycling: { label: "Cycling", icon: "bicycle-outline" },
-};
 
 export default function BookingCard({
   booking: b,
@@ -48,9 +42,10 @@ export default function BookingCard({
   };
 
   const statusStyle = getStatusStyles(b.status);
-  const transport =
-    TRANSPORT_MAP[b.transportMode] ||
-    ({ label: b.transportMode, icon: "location-outline" } as { label: string; icon: IconName });
+  const travelMethod = TRAVEL_METHODS.find((t) => t.mode === b.transportMode);
+  const transport: { label: string; icon: IconName } = travelMethod
+    ? { label: travelMethod.label, icon: travelMethod.icon as IconName }
+    : { label: b.transportMode, icon: "location-outline" };
 
   const bookingTime = b.confirmedAt ? new Date(b.confirmedAt) : new Date(b.holdExpiresAt);
   const formattedTime = bookingTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
