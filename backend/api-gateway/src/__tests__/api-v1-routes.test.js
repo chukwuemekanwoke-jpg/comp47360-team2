@@ -191,6 +191,15 @@ describe("users routes", () => {
   });
 
   it("returns bookings for the signed-in user", async () => {
+    const client = {
+      query: jest
+        .fn()
+        .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [] }) // lapseExpiredBookings SELECT
+        .mockResolvedValueOnce({ rows: [] }), // COMMIT
+      release: jest.fn(),
+    };
+    mockPool.connect.mockResolvedValueOnce(client);
     mockPool.query
       .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
       .mockResolvedValueOnce({ rows: [bookingRow()] });

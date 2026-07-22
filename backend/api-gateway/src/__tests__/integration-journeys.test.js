@@ -188,6 +188,101 @@ class JourneyDatabase {
       return Promise.resolve({ rows: restaurant ? [restaurant] : [] });
     }
 
+    if (text.includes("hold_expires_at <= NOW()") && text.includes("FOR UPDATE")) {
+      const expired = this.bookings.filter((booking) => {
+        if (booking.status !== "pending" && booking.status !== "confirmed") return false;
+        if (new Date(booking.hold_expires_at) > NOW) return false;
+        if (text.includes("user_id = $1") && booking.user_id !== params[0]) return false;
+        if (
+          text.includes("restaurant_id = $1")
+          && !text.includes("user_id")
+          && booking.restaurant_id !== params[0]
+        ) {
+          return false;
+        }
+        if (
+          text.includes("user_id = $1")
+          && text.includes("restaurant_id = $2")
+          && (booking.user_id !== params[0] || booking.restaurant_id !== params[1])
+        ) {
+          return false;
+        }
+        return true;
+      });
+      return Promise.resolve({ rows: expired });
+    }
+
+    if (
+      text.includes("SELECT id FROM bookings")
+      && text.includes("status IN ('pending', 'confirmed')")
+    ) {
+      const active = this.bookings.find(
+        (booking) =>
+          booking.user_id === params[0]
+          && (booking.status === "pending" || booking.status === "confirmed")
+      );
+      return Promise.resolve({ rows: active ? [{ id: active.id }] : [] });
+    }
+
+    if (text.includes("DELETE FROM bookings") && text.includes("OFFSET $2")) {
+      const keep = Number(params[1]);
+      const userBookings = this.bookings
+        .filter((booking) => booking.user_id === params[0])
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      const dropIds = new Set(userBookings.slice(keep).map((booking) => booking.id));
+      const before = this.bookings.length;
+      this.bookings = this.bookings.filter((booking) => !dropIds.has(booking.id));
+      return Promise.resolve({ rows: [], rowCount: before - this.bookings.length });
+    }
+
+    if (
+      text.includes("FROM bookings")
+      && text.includes("WHERE id = $1 AND user_id = $2")
+      && text.includes("FOR UPDATE")
+    ) {
+      const booking = this.bookings.find(
+        (row) => row.id === params[0] && row.user_id === params[1]
+      );
+      return Promise.resolve({ rows: booking ? [booking] : [] });
+    }
+
+    if (
+      text.includes("UPDATE bookings")
+      && text.includes("status = 'cancelled'")
+      && text.includes("RETURNING")
+    ) {
+      const booking = this.bookings.find((row) => row.id === params[0]);
+      if (booking) {
+        booking.status = "cancelled";
+        booking.cancelled_at = NOW;
+      }
+      return Promise.resolve({ rows: booking ? [booking] : [] });
+    }
+
+    if (
+      text.includes("UPDATE bookings")
+      && text.includes("status = 'cancelled'")
+      && !text.includes("RETURNING")
+    ) {
+      const booking = this.bookings.find((row) => row.id === params[0]);
+      if (booking) {
+        booking.status = "cancelled";
+        booking.cancelled_at = NOW;
+      }
+      return Promise.resolve({ rows: [] });
+    }
+
+    if (text.includes("SET available_table_count = LEAST(available_table_count + 1, capacity)")) {
+      const restaurant = this.restaurants.get(params[0]);
+      if (restaurant) {
+        restaurant.available_table_count = Math.min(
+          restaurant.available_table_count + 1,
+          restaurant.capacity ?? restaurant.available_table_count + 1
+        );
+      }
+      return Promise.resolve({ rows: [] });
+    }
+
     if (text.includes("INSERT INTO bookings")) {
       const [
         userId,
@@ -436,6 +531,15 @@ describe("integrated C-side and B-side API journeys", () => {
       status: "confirmed",
       etaMinutes: 8,
     });
+
+    // Rule 1: only one active booking — cancel before accepting a flash-deal offer.
+    const cancelled = await request(app)
+      .post(`/api/v1/bookings/${DIRECT_BOOKING_ID}/cancel`)
+      .set("Authorization", `Bearer ${customerToken}`)
+      .send();
+
+    expect(cancelled.status).toBe(200);
+    expect(cancelled.body.status).toBe("cancelled");
 
     await request(app)
       .post(`/api/v1/restaurants/${RESTAURANT_ID}/campaigns`)

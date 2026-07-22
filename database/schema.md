@@ -125,6 +125,9 @@ Standard or deal-backed reservations.
 - `seated_at`: check-in timestamp; falls back to `confirmed_at` when absent
 - `check_amount`: simulated check total (`party_size × avg_check_per_cover × discount`)
 - `duration_minutes`: simulated turn time (default 90 min)
+- **One active booking per user:** unique partial index `idx_bookings_one_active_per_user` on `user_id` where `status IN ('pending', 'confirmed')` (migration `009`)
+- **Hold timeout:** API lazily cancels `pending`/`confirmed` rows when `hold_expires_at <= now` (no cron in MVP)
+- **History cap:** API keeps the newest 5 booking rows per user after each create
 
 ### `availability_snapshots`
 

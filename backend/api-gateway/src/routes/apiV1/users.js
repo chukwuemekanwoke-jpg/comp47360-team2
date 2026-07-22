@@ -10,6 +10,7 @@ const {
   requireNonEmptyString,
 } = require("../../utils/validate");
 const { expirePendingOffers } = require("../../services/offers");
+const { lapseExpiredBookings } = require("../../services/bookingLifecycle");
 
 const router = Router();
 
@@ -104,6 +105,19 @@ router.get(
   requireUser,
   asyncHandler(async (req, res) => {
     const pool = getPool();
+    const client = await pool.connect();
+
+    try {
+      await client.query("BEGIN");
+      await lapseExpiredBookings(client, { userId: req.userId });
+      await client.query("COMMIT");
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
+    }
+
     const { rows } = await pool.query(
       `SELECT ${BOOKING_COLUMNS}
        FROM bookings

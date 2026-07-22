@@ -9,12 +9,13 @@ const USER_ID = "11111111-1111-4111-8111-111111111111";
 const RESTAURANT_ID = "22222222-2222-4222-8222-222222222222";
 const OFFER_ID = "33333333-3333-4333-8333-333333333333";
 const CAMPAIGN_ID = "44444444-4444-4444-8444-444444444444";
+const EXISTING_BOOKING_ID = "66666666-6666-4666-8666-666666666666";
 
 function createClientWithRows(rowSets) {
   return {
     query: jest.fn().mockImplementation(() => {
       const rows = rowSets.shift() ?? [];
-      return Promise.resolve({ rows });
+      return Promise.resolve({ rows, rowCount: rows.length });
     }),
   };
 }
@@ -49,6 +50,11 @@ function booking(overrides = {}) {
   };
 }
 
+/** Empty lapse + empty active-booking check before the restaurant lock. */
+function lifecyclePrelude() {
+  return [[], []];
+}
+
 beforeEach(() => {
   jest.clearAllMocks();
   resolveEtaResult.mockResolvedValue({
@@ -64,7 +70,13 @@ beforeEach(() => {
 
 describe("createBooking", () => {
   it("creates a booking, decrements inventory, and carries ETA source", async () => {
-    const client = createClientWithRows([[restaurant()], [booking()]]);
+    const client = createClientWithRows([
+      ...lifecyclePrelude(),
+      [restaurant()],
+      [booking()],
+      [],
+      [],
+    ]);
 
     const result = await createBooking(client, {
       userId: USER_ID,
@@ -86,7 +98,13 @@ describe("createBooking", () => {
   });
 
   it("persists party size and simulated check amount for RevPASH", async () => {
-    const client = createClientWithRows([[restaurant()], [booking()]]);
+    const client = createClientWithRows([
+      ...lifecyclePrelude(),
+      [restaurant()],
+      [booking()],
+      [],
+      [],
+    ]);
 
     await createBooking(client, {
       userId: USER_ID,
@@ -104,7 +122,10 @@ describe("createBooking", () => {
   });
 
   it("rejects booking when no tables are available", async () => {
-    const client = createClientWithRows([[restaurant({ available_table_count: 0 })]]);
+    const client = createClientWithRows([
+      ...lifecyclePrelude(),
+      [restaurant({ available_table_count: 0 })],
+    ]);
 
     await expect(
       createBooking(client, {
@@ -131,7 +152,7 @@ describe("createBooking", () => {
       source: "google",
       message: "You are too far to guarantee this table.",
     });
-    const client = createClientWithRows([[restaurant()]]);
+    const client = createClientWithRows([...lifecyclePrelude(), [restaurant()]]);
 
     await expect(
       createBooking(client, {
@@ -151,8 +172,28 @@ describe("createBooking", () => {
     });
   });
 
+  it("rejects booking when the user already has an active booking", async () => {
+    const client = createClientWithRows([[], [{ id: EXISTING_BOOKING_ID }]]);
+
+    await expect(
+      createBooking(client, {
+        userId: USER_ID,
+        restaurantId: RESTAURANT_ID,
+        transportMode: "walking",
+        userLat: 40.73,
+        userLng: -73.99,
+      })
+    ).rejects.toMatchObject({
+      statusCode: 409,
+      code: "CONFLICT",
+      message: "User already has an active booking",
+      details: { bookingId: EXISTING_BOOKING_ID },
+    });
+  });
+
   it("marks a valid offer as accepted when booking uses a pending offer", async () => {
     const client = createClientWithRows([
+      ...lifecyclePrelude(),
       [restaurant()],
       [
         {
@@ -165,6 +206,9 @@ describe("createBooking", () => {
         },
       ],
       [booking({ offer_id: OFFER_ID, campaign_id: CAMPAIGN_ID })],
+      [],
+      [],
+      [],
     ]);
 
     const result = await createBooking(client, {

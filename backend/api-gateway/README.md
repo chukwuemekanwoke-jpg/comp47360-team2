@@ -76,7 +76,7 @@ Exceeded → `429` `{ "error": { "code": "RATE_LIMITED", ... } }` plus standard 
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
-| POST | `/api/v1/bookings` | JWT or `X-User-Id` | Confirm reservation; decrements table count; accepts optional `partySize` (rate-limited) |
+| POST | `/api/v1/bookings` | JWT or `X-User-Id` | Confirm reservation; one active booking per user; hold timeout + keep last 5; optional `partySize` (rate-limited) |
 | PATCH | `/api/v1/bookings/:bookingId/status` | manager JWT or `X-User-Id` | Update booking status (dashboard) |
 | POST | `/api/v1/bookings/:bookingId/cancel` | JWT or `X-User-Id` | Cancel booking; restore table count / offer state |
 | GET | `/api/v1/users/me/bookings` | JWT or `X-User-Id` | List the current user's bookings (newest first) |
