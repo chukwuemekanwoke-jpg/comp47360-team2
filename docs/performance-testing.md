@@ -1,11 +1,11 @@
 # Performance Testing: Load & Latency (TABL-604)
 
 **Owner:** chukwuemekanwoke-jpg | **Frequency:** Before final demo/submission; re-run after any change to `api-gateway`, `ml-service`, or Cloud Run/Cloud SQL sizing
-**Last Updated:** 2026-07-22 | **Last Run:** Never — this document defines the plan and script; execution is the next step (see [How to Run](#how-to-run) below)
+**Last Updated:** 2026-07-22 | **Last Run:** 2026-07-22 — passed, see [Results Log](#results-log)
 
 ## Status against the ticket
 
-TABL-604 asks for load & latency testing of the application. Honest status as of 2026-07-22: no load-testing tool, script, or CI job exists anywhere in this repo yet — this document and the script below are the starting point, not a report of results already gathered.
+TABL-604 asks for load & latency testing of the application. As of 2026-07-22: the plan and script below were run once against staging (0→30 VUs, ~2.5 min), passed all thresholds with zero errors — see [Results Log](#results-log). This covers the diner journey's read paths (`nearby`/`eta`/`revpash`); booking creation and higher-concurrency stress beyond 30 VUs are not yet covered and would be natural follow-ups, not blockers for closing this ticket.
 
 ## Goals / SLOs
 
@@ -157,7 +157,20 @@ Notes on the script:
 
 *(Append one entry per run — date, k6 summary highlights, any threshold failures, any follow-up actions.)*
 
-- No runs yet.
+- **2026-07-22 — first run, passed.** Ran against live staging (`https://api-gateway-pkzkrctrya-ew.a.run.app`), 0→30 VUs over ~2.5 min (30s ramp, 1m hold at 10, 30s push to 30, 30s ramp down), 1,583 completed diner journeys, ~31.5 req/s peak.
+
+  | Route | p95 | Threshold |
+  |---|---|---|
+  | `nearby` | 82.7ms | < 500ms ✓ |
+  | `eta` | 39.2ms | < 3500ms ✓ |
+  | `revpash` | 55.4ms | < 500ms ✓ |
+  | Error rate | 0.00% | < 1% ✓ |
+
+  All thresholds passed, zero failed requests. Staging shows no sign of strain at 30 concurrent VUs — this run doesn't find a ceiling, just confirms the app is well within target at this load.
+
+  **First attempt failed on a script bug, not a system bug**: assumed `/revpash` returns 403 for a non-manager (actual code returns 401 — see `requireRestaurantManager.js`) and used an invalid `window=7d` (valid values are `today`/`week`/`month`). Fixed by registering a dedicated test restaurant (`Perf Test Restaurant`, `6428f03c-af44-4314-8a70-1032f03a0500`) owned by the test account (`perf-test-2026-07-22@example.com`) so `revpash` exercises its real success path. Both the test account and restaurant are left in place in staging (harmless, reusable for the next run).
+
+  **Follow-ups, not blockers**: booking creation (`POST /bookings`) wasn't load-tested (write-rate-limiter ceiling on `integrate`, not yet on `develop`); no stress test was run beyond 30 VUs to find an actual breaking point.
 
 ## Open Questions / Risks
 
