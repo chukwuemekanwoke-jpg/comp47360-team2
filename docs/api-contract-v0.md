@@ -511,24 +511,37 @@ Compute travel time once when opening restaurant page (per user story).
 
 | Condition | HTTP | `code` |
 |-----------|------|--------|
+| User already has an active (`pending`/`confirmed`) booking | 409 | `CONFLICT` |
 | ETA exceeds hold window | 409 | `CONFLICT` |
 | `availableTableCount === 0` | 409 | `CONFLICT` |
 | Invalid/expired offer | 409 | `CONFLICT` |
+
+**Lifecycle rules (demo):**
+
+1. **One active booking per user** — a second `POST /bookings` (or offer accept) fails until the current booking is `completed`, `cancelled`, or `no_show`. Enforced in the API and via unique partial index `idx_bookings_one_active_per_user`.
+2. **Hold timeout** — `pending`/`confirmed` bookings with `holdExpiresAt <= now` are lazily cancelled (table inventory restored) on create and when listing bookings.
+3. **History cap** — after each successful create, only the newest **5** bookings per user are retained.
 
 **Side effects (server):**
 
 - Decrement `restaurants.availableTableCount` by 1.
 - If `offerId` set: mark offer `accepted`, link booking; may complete campaign (DB trigger).
+- Lapse any expired active bookings for the user, then reject if one remains active.
+- Prune older booking rows beyond the newest 5 for the user.
 
 #### `GET /api/v1/users/me/bookings`
 
 **Auth:** Bearer JWT or `X-User-Id` (interim)  
+
+Lapses expired holds for the caller before returning results.
 
 **Response `200`:** `{ "bookings": [ ... ] }`
 
 #### `GET /api/v1/restaurants/:restaurantId/bookings`
 
 **Auth:** manager Bearer JWT or `X-User-Id` (interim)  
+
+Lapses expired holds for this restaurant before returning results.
 
 **Response `200`:** `{ "bookings": [ ... ] }` — newest first.
 
@@ -823,3 +836,4 @@ Shared TypeScript types (`frontend/packages/shared/src/types.ts`) map to API fie
 | v0.5.1 | 2026-07-21 | GET campaign offers for merchant live tracker |
 | v0.5.3 | 2026-07-21 | GET nearby `neighborhood` geocode fallback (Story 2.2) |
 | v0.5.4 | 2026-07-21 | Rate limiting on auth + booking/campaign create (`429 RATE_LIMITED`) |
+| v0.5.5 | 2026-07-22 | Booking lifecycle: one active per user, hold timeout lapse, keep last 5 |

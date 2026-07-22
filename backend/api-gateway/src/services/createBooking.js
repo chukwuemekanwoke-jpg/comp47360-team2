@@ -1,6 +1,11 @@
 const { AppError } = require("../errors");
 const { resolveEtaResult } = require("./etaResolver");
 const {
+  lapseExpiredBookings,
+  assertNoActiveBooking,
+  pruneUserBookings,
+} = require("./bookingLifecycle");
+const {
   benchmarkAvgCheck,
   computeCheckAmount,
   DEFAULT_DURATION_MINUTES,
@@ -20,6 +25,11 @@ async function createBooking(client, {
   offerId = null,
   partySize = 2,
 }) {
+  // Lapse timed-out holds for this user before the active-booking check so a
+  // stale reservation cannot block a legitimate new booking (rules 1 + 2).
+  await lapseExpiredBookings(client, { userId });
+  await assertNoActiveBooking(client, userId);
+
   const { rows: restaurantRows } = await client.query(
     `SELECT id, latitude, longitude, hold_window_minutes, available_table_count,
             avg_check_per_cover, cuisine, neighborhood
@@ -98,48 +108,57 @@ async function createBooking(client, {
     || benchmarkAvgCheck(restaurant.cuisine, restaurant.neighborhood);
   const checkAmount = computeCheckAmount(partySize, avgCheckPerCover, discountPercent);
 
-  const { rows: bookingRows } = await client.query(
-    `INSERT INTO bookings (
-       user_id,
-       restaurant_id,
-       offer_id,
-       campaign_id,
-       status,
-       transport_mode,
-       eta_minutes,
-       hold_expires_at,
-       confirmed_at,
-       party_size,
-       seated_at,
-       check_amount,
-       duration_minutes
-     )
-     VALUES (
-       $1, $2, $3, $4,
-       'confirmed',
-       $5,
-       $6,
-       NOW() + ($7 * INTERVAL '1 minute'),
-       NOW(),
-       $8,
-       NOW(),
-       $9,
-       $10
-     )
-     RETURNING ${BOOKING_COLUMNS}`,
-    [
-      userId,
-      restaurantId,
-      resolvedOfferId,
-      campaignId,
-      transportMode,
-      etaResult.etaMinutes,
-      restaurant.hold_window_minutes,
-      partySize,
-      checkAmount,
-      DEFAULT_DURATION_MINUTES,
-    ]
-  );
+  let bookingRows;
+  try {
+    ({ rows: bookingRows } = await client.query(
+      `INSERT INTO bookings (
+         user_id,
+         restaurant_id,
+         offer_id,
+         campaign_id,
+         status,
+         transport_mode,
+         eta_minutes,
+         hold_expires_at,
+         confirmed_at,
+         party_size,
+         seated_at,
+         check_amount,
+         duration_minutes
+       )
+       VALUES (
+         $1, $2, $3, $4,
+         'confirmed',
+         $5,
+         $6,
+         NOW() + ($7 * INTERVAL '1 minute'),
+         NOW(),
+         $8,
+         NOW(),
+         $9,
+         $10
+       )
+       RETURNING ${BOOKING_COLUMNS}`,
+      [
+        userId,
+        restaurantId,
+        resolvedOfferId,
+        campaignId,
+        transportMode,
+        etaResult.etaMinutes,
+        restaurant.hold_window_minutes,
+        partySize,
+        checkAmount,
+        DEFAULT_DURATION_MINUTES,
+      ]
+    ));
+  } catch (err) {
+    // Race-safe fallback for idx_bookings_one_active_per_user
+    if (err && err.code === "23505") {
+      throw new AppError(409, "CONFLICT", "User already has an active booking");
+    }
+    throw err;
+  }
 
   await client.query(
     `UPDATE restaurants
@@ -156,6 +175,9 @@ async function createBooking(client, {
       [resolvedOfferId]
     );
   }
+
+  // Drop older history so each user keeps only the newest N rows (rule 3).
+  await pruneUserBookings(client, userId);
 
   return { ...bookingRows[0], eta_source: etaResult.source };
 }

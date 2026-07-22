@@ -456,6 +456,10 @@ paths:
     post:
       tags: [Bookings]
       summary: Create booking
+      description: >
+        Creates a confirmed booking. Rejects with 409 if the user already has an
+        active (pending/confirmed) booking. Expired holds are lapsed first.
+        After insert, only the newest 5 bookings for the user are retained.
       parameters:
         - $ref: "#/components/parameters/UserIdHeader"
       requestBody:
