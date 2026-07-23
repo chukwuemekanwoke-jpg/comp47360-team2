@@ -123,8 +123,7 @@ export default function LoginView() {
             <button
               type="submit"
               disabled={isSubmitting}
-              style={{ boxShadow: '0 10px 25px -5px color-mix(in srgb, var(--table-primary) 45%, transparent)' }}
-              className="w-full py-3.5 bg-table-primary text-table-canvas font-mono font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-table-primaryHover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3.5 bg-table-primary text-table-canvas font-mono font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-table-primaryHover transition-colors shadow-lg shadow-table-primary/40 disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Signing in...' : 'Sign In to Tablé'}
             </button>
