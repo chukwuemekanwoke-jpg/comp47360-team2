@@ -1,6 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import MerchantDashboard from './views/MerchantDashboard';
+import MerchantLayout from './views/merchant/MerchantLayout';
+import OverviewView from './views/merchant/OverviewView';
+import TablesView from './views/merchant/TablesView';
+import SettingsView from './views/merchant/SettingsView';
 import LoginView from './views/LoginView';
 import RegisterView from './views/RegisterView';
 import RestaurantSetupView from './views/RestaurantSetupView';
@@ -36,7 +39,11 @@ function App() {
               <Route path="/register/restaurant" element={<RestaurantSetupView />} />
               <Route path="/forgot-password" element={<ForgotPasswordView />} />
               <Route path="/reset-password" element={<ResetPasswordView />} />
-              <Route path="/merchant" element={<MerchantDashboard />} />
+              <Route path="/merchant" element={<MerchantLayout />}>
+                <Route index element={<OverviewView />} />
+                <Route path="tables" element={<TablesView />} />
+                <Route path="settings" element={<SettingsView />} />
+              </Route>
             </Routes>
           </main>
 
