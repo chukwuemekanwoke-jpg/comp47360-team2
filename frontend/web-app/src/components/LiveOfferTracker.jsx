@@ -41,10 +41,8 @@ export default function LiveOfferTracker({ restaurantId, campaignId }) {
       {isLoading ? (
         <p className="text-xs text-table-textSubtle font-mono">Loading offers...</p>
       ) : isError ? (
-        <p role={error?.status === 404 ? undefined : 'alert'} className="text-xs text-table-textSubtle font-mono">
-          {error?.status === 404
-            ? 'Not available yet — pending backend support (GET /restaurants/:id/campaigns/:campaignId/offers).'
-            : error?.data?.error?.message || 'Failed to load offers.'}
+        <p role="alert" className="text-xs text-table-danger font-mono">
+          {error?.data?.error?.message || 'Failed to load offers.'}
         </p>
       ) : offers.length === 0 ? (
         <p className="text-xs text-table-textSubtle font-mono">No offers sent for this campaign yet.</p>

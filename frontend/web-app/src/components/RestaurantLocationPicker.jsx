@@ -135,7 +135,7 @@ function GoogleMapPicker({ apiKey, latitude, longitude, onChange, disabled }) {
 }
 
 export default function RestaurantLocationPicker({ latitude, longitude, onChange, disabled }) {
-  const { data, isLoading, isError, error } = useGetMapsConfigQuery();
+  const { data, isLoading, isError } = useGetMapsConfigQuery();
 
   if (isLoading) {
     return (
@@ -149,9 +149,7 @@ export default function RestaurantLocationPicker({ latitude, longitude, onChange
     return (
       <div className="space-y-3">
         <p className="text-xs font-mono text-table-textSubtle bg-table-canvas border border-table-border rounded-xl p-3">
-          {error?.status === 404
-            ? 'Map picker not available yet — pending backend support (GET /config/maps-key, see handoff spec). Enter coordinates manually for now.'
-            : 'Map picker unavailable right now. Enter coordinates manually for now.'}
+          Map picker unavailable right now. Enter coordinates manually for now.
         </p>
         <ManualCoordinateFallback latitude={latitude} longitude={longitude} onChange={onChange} disabled={disabled} />
       </div>

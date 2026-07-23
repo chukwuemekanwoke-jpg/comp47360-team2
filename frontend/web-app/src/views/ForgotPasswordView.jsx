@@ -26,11 +26,7 @@ export default function ForgotPasswordView() {
       // email matches an account, to avoid leaking who has one.
       setSubmitted(true);
     } catch (err) {
-      setError(
-        err?.status === 404
-          ? 'Password recovery is not available yet — pending backend support.'
-          : err?.data?.error?.message || 'Failed to send reset instructions.'
-      );
+      setError(err?.data?.error?.message || 'Failed to send reset instructions.');
     }
   };
 

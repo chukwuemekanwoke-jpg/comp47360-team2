@@ -97,14 +97,7 @@ export default function MerchantDashboard() {
     try {
       await cancelCampaign({ restaurantId, campaignId: activeCampaign.id }).unwrap();
     } catch (err) {
-      // 404 means the route doesn't exist yet, not a real error from the
-      // request itself — the generic Express "Route not found" message
-      // isn't useful to show.
-      setCancelError(
-        err?.status === 404
-          ? 'Could not cancel yet — pending backend support.'
-          : err?.data?.error?.message || 'Failed to cancel campaign.'
-      );
+      setCancelError(err?.data?.error?.message || 'Failed to cancel campaign.');
     }
   };
 

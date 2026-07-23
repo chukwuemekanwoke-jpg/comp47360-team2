@@ -25,7 +25,14 @@ export default function BusynessMeter({ busynessScore }) {
 
       {hasScore ? (
         <>
-          <div className="w-full h-3 bg-table-canvas border border-table-border rounded-full overflow-hidden">
+          <div
+            className="w-full h-3 bg-table-canvas border border-table-border rounded-full overflow-hidden"
+            role="progressbar"
+            aria-valuenow={percentage}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label="Predicted busyness"
+          >
             <div
               className={`h-full ${colorClass} transition-all duration-700 ease-in-out`}
               style={{ width: `${percentage}%` }}
