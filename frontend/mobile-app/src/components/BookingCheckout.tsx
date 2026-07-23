@@ -6,6 +6,7 @@ import { RestaurantSummary, TransportMode } from "@shared/types";
 import { useCreateBookingMutation, useGetRestaurantEtaQuery } from "@shared/apiSlice";
 import { useAppSelector } from "@shared/hooks";
 import { navColors } from "@/theme";
+import { TRAVEL_METHODS } from "@shared/constants";
 
 interface BookingModalProps {
   isVisible: boolean;
@@ -14,16 +15,14 @@ interface BookingModalProps {
   userCoordinates: { lat: number; lng: number };
 }
 
-const TRANSPORT_OPTIONS: {
-  label: string;
-  value: TransportMode;
-  icon: keyof typeof Ionicons.glyphMap;
-}[] = [
-  { label: "Walking",   value: "walking",  icon: "walk-outline" },
-  { label: "Driving",   value: "driving",  icon: "car-outline" },
-  { label: "Transit",   value: "transit",  icon: "subway-outline" },
-  { label: "Bicycling", value: "cycling",  icon: "bicycle-outline" },
-];
+type IconName = keyof typeof Ionicons.glyphMap;
+
+const TRANSPORT_OPTIONS: { label: string; value: TransportMode; icon: IconName }[] =
+  TRAVEL_METHODS.map(({ label, mode, icon }) => ({
+    label,
+    value: mode,
+    icon: icon as IconName,
+  }));
 
 export default function BookingModal({
   isVisible,
