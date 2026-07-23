@@ -83,13 +83,7 @@ export default function RestaurantSetupView() {
       setSession({ userId, token: authToken, restaurantId: restaurant.id });
       navigate('/merchant');
     } catch (err) {
-      // 404 means the route doesn't exist yet, not a real validation error —
-      // the generic Express "Route not found" message isn't useful to show.
-      setError(
-        err?.status === 404
-          ? 'Could not create your restaurant yet — pending backend support.'
-          : err?.data?.error?.message || 'Failed to create your restaurant.'
-      );
+      setError(err?.data?.error?.message || 'Failed to create your restaurant.');
     }
   };
 

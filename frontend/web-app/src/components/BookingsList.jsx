@@ -33,14 +33,7 @@ export default function BookingsList({ restaurantId }) {
     try {
       await updateStatus({ bookingId, status }).unwrap();
     } catch (err) {
-      // 404 means the route doesn't exist yet, not a real error from the
-      // request itself — the generic Express "Route not found" message
-      // isn't useful to show.
-      setActionError(
-        err?.status === 404
-          ? 'Could not update yet — pending backend support.'
-          : err?.data?.error?.message || 'Failed to update booking.'
-      );
+      setActionError(err?.data?.error?.message || 'Failed to update booking.');
     }
   };
 
@@ -60,9 +53,7 @@ export default function BookingsList({ restaurantId }) {
         <p className="text-xs text-table-textSubtle font-mono">Loading reservations...</p>
       ) : error ? (
         <p role="alert" className="text-xs text-table-danger font-mono">
-          {error?.status === 404
-            ? 'Not available yet — pending backend support (GET /restaurants/:id/bookings).'
-            : error?.data?.error?.message || 'Failed to load reservations.'}
+          {error?.data?.error?.message || 'Failed to load reservations.'}
         </p>
       ) : bookings.length === 0 ? (
         <p className="text-xs text-table-textSubtle font-mono">No reservations yet.</p>
