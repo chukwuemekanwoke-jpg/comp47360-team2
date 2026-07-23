@@ -14,7 +14,10 @@ export default function RevpashMeter({ restaurantId }) {
   return (
     <div className="bg-table-surface border border-table-border rounded-2xl p-6 shadow-xl w-full">
       <div className="mb-4">
-        <h3 className="text-xs font-bold font-mono tracking-wider text-table-text uppercase">
+        <h3 className="flex items-center gap-2 text-xs font-bold font-mono tracking-wider text-table-text uppercase">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--table-primary)" strokeWidth="2" strokeLinecap="round" className="w-3.5 h-3.5" aria-hidden="true">
+            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
           RevPASH
         </h3>
         <p className="text-[11px] font-mono text-table-textSubtle mt-1">
@@ -30,7 +33,10 @@ export default function RevpashMeter({ restaurantId }) {
         </p>
       ) : (
         <>
-          <div className="text-2xl font-mono font-black text-table-primary tracking-wider">
+          <div
+            className="text-2xl font-mono font-black text-table-primary tracking-wider"
+            style={{ textShadow: '0 0 18px color-mix(in srgb, var(--table-primary) 40%, transparent)' }}
+          >
             {formatCurrency(data?.revpash)}
             <span className="text-sm font-normal text-table-textSubtle"> /seat-hr</span>
           </div>

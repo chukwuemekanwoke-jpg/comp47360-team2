@@ -178,6 +178,7 @@ export default function OverviewView() {
             <button
               type="submit"
               disabled={!!activeCampaign || isCreatingCampaign}
+              style={!activeCampaign && !isCreatingCampaign ? { boxShadow: '0 10px 25px -5px color-mix(in srgb, var(--table-offer) 45%, transparent)' } : undefined}
               className="w-full py-3 bg-table-offer hover:bg-table-offer/90 text-table-canvas font-bold font-mono text-xs rounded-xl transition-all uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {activeCampaign
