@@ -73,6 +73,7 @@ export default function AccessibilityPanel({ restaurantId, restaurant }) {
               className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                 values[key] ? 'bg-table-primary' : 'bg-table-interactive'
               }`}
+              style={values[key] ? { boxShadow: '0 0 10px color-mix(in srgb, var(--table-primary) 55%, transparent)' } : undefined}
             >
               <span
                 className={`inline-block h-3.5 w-3.5 transform rounded-full bg-table-canvas transition-transform ${
