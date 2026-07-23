@@ -22,6 +22,7 @@ const TRANSPORT_GLYPHS = {
 export default function BookingsList({ restaurantId }) {
   const { data, isLoading, error } = useGetRestaurantBookingsQuery(restaurantId, {
     skip: !restaurantId,
+    pollingInterval: 2000,
   });
   const [updateStatus] = useUpdateBookingStatusMutation();
   const [actionError, setActionError] = useState('');
