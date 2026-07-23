@@ -23,7 +23,7 @@ export default function OccupancyMeter({ available, capacity }) {
 
       <div className="flex items-center gap-6">
         <div className="relative w-24 h-24 flex items-center justify-center shrink-0">
-          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 80 80">
+          <svg aria-hidden="true" className="w-full h-full transform -rotate-90" viewBox="0 0 80 80">
             <circle
               cx="40"
               cy="40"
