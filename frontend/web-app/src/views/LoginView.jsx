@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { isValidEmail } from '../utils/validation';
 import { useLoginMutation } from '../../../packages/shared/src/apiSlice.ts';
 import PasswordInput from '../components/PasswordInput';
+import BrandMark from '../components/BrandMark';
 
 export default function LoginView() {
   const navigate = useNavigate();
@@ -33,11 +34,37 @@ export default function LoginView() {
   };
 
   return (
-    <div className="h-[calc(100svh-73px)] w-full flex items-center justify-center bg-table-canvas relative">
-      <div className="relative z-10 w-full max-w-md p-10 bg-table-surface border border-table-border rounded-2xl">
-        <div className="text-center mb-10 space-y-2">
-          <h1 className="text-4xl font-display font-black text-table-primary tracking-tight">Tablé</h1>
-          <p className="text-table-textSubtle font-mono text-[11px] uppercase tracking-[0.2em]">Secure User Access</p>
+    <div className="h-[calc(100svh-73px)] w-full flex items-center justify-center bg-table-canvas relative overflow-hidden">
+      {/* Ambient scene: a faint grid (masked to a center vignette) plus two
+          soft glow blobs — replaces the old stock photo with something that
+          still has depth, but stays in the operational/technical register
+          the rest of the app uses instead of a lifestyle photo. */}
+      <div
+        className="absolute inset-0 opacity-40 pointer-events-none"
+        style={{
+          backgroundImage:
+            'linear-gradient(var(--table-border) 1px, transparent 1px), linear-gradient(90deg, var(--table-border) 1px, transparent 1px)',
+          backgroundSize: '34px 34px',
+          maskImage: 'radial-gradient(circle at 50% 40%, black, transparent 70%)',
+          WebkitMaskImage: 'radial-gradient(circle at 50% 40%, black, transparent 70%)',
+        }}
+      />
+      <div
+        className="absolute w-[420px] h-[420px] rounded-full blur-3xl opacity-20 -top-32 -left-24 pointer-events-none"
+        style={{ background: 'var(--table-primary)' }}
+      />
+      <div
+        className="absolute w-[360px] h-[360px] rounded-full blur-3xl opacity-15 -bottom-28 -right-16 pointer-events-none"
+        style={{ background: 'var(--table-offer)' }}
+      />
+
+      <div className="relative z-10 w-full max-w-md p-10 bg-table-surface/95 border border-table-border rounded-2xl backdrop-blur-sm shadow-2xl">
+        <div className="flex flex-col items-center gap-3 mb-10">
+          <BrandMark size={40} />
+          <div className="text-center space-y-1">
+            <h1 className="text-2xl font-display font-black text-table-text tracking-tight">Tablé</h1>
+            <p className="text-table-textSubtle font-mono text-[11px] uppercase tracking-[0.2em]">Secure Access</p>
+          </div>
         </div>
 
         {/* Informative Error Banner Alert UI */}
@@ -96,6 +123,7 @@ export default function LoginView() {
             <button
               type="submit"
               disabled={isSubmitting}
+              style={{ boxShadow: '0 10px 25px -5px color-mix(in srgb, var(--table-primary) 45%, transparent)' }}
               className="w-full py-3.5 bg-table-primary text-table-canvas font-mono font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-table-primaryHover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Signing in...' : 'Sign In to Tablé'}
