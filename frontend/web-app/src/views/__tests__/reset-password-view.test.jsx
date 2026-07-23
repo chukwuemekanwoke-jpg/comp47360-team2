@@ -67,7 +67,7 @@ describe('ResetPasswordView', () => {
     expect(resetPasswordMock).not.toHaveBeenCalled();
   });
 
-  it('shows the pending-backend message on a 404', async () => {
+  it('shows the generic failure message on an error without a message', async () => {
     resetPasswordMock.mockReturnValue({
       unwrap: () => Promise.reject({ status: 404 }),
     });
@@ -78,7 +78,7 @@ describe('ResetPasswordView', () => {
     await user.type(screen.getByLabelText(/re-enter password/i), 'password123');
     await user.click(screen.getByRole('button', { name: /reset password/i }));
 
-    expect(await screen.findByText(/pending backend support/i)).toBeInTheDocument();
+    expect(await screen.findByText(/failed to reset your password/i)).toBeInTheDocument();
   });
 
   it('shows a success message and calls the API with the token on success', async () => {

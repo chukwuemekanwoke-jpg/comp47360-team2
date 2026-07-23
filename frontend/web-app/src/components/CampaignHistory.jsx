@@ -33,9 +33,7 @@ function CampaignRevpashLiftBadge({ restaurantId, campaignId }) {
   if (isError) {
     return (
       <p className="text-[11px] text-table-textSubtle font-mono italic">
-        {error?.status === 404
-          ? 'RevPASH lift pending backend support (TABL-118).'
-          : error?.data?.error?.message || 'Failed to load RevPASH lift.'}
+        {error?.data?.error?.message || 'Failed to load RevPASH lift.'}
       </p>
     );
   }

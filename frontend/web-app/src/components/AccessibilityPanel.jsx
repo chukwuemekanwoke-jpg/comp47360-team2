@@ -35,13 +35,7 @@ export default function AccessibilityPanel({ restaurantId, restaurant }) {
     try {
       await updateSettings({ restaurantId, ...values }).unwrap();
     } catch (err) {
-      // 404 means the route doesn't exist yet, not a real validation error —
-      // the generic Express "Route not found" message isn't useful to show.
-      setError(
-        err?.status === 404
-          ? 'Could not save yet — pending backend support.'
-          : err?.data?.error?.message || 'Failed to save settings.'
-      );
+      setError(err?.data?.error?.message || 'Failed to save settings.');
     }
   };
 

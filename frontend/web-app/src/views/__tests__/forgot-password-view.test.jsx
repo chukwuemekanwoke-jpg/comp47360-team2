@@ -37,7 +37,7 @@ describe('ForgotPasswordView', () => {
     expect(forgotPasswordMock).not.toHaveBeenCalled();
   });
 
-  it('shows the pending-backend message on a 404', async () => {
+  it('shows the generic failure message on an error without a message', async () => {
     forgotPasswordMock.mockReturnValue({
       unwrap: () => Promise.reject({ status: 404 }),
     });
@@ -47,7 +47,7 @@ describe('ForgotPasswordView', () => {
     await user.type(screen.getByLabelText(/email address/i), 'manager@demo.com');
     await user.click(screen.getByRole('button', { name: /send reset link/i }));
 
-    expect(await screen.findByText(/pending backend support/i)).toBeInTheDocument();
+    expect(await screen.findByText(/failed to send reset instructions/i)).toBeInTheDocument();
   });
 
   it('shows the generic success message on a real success', async () => {

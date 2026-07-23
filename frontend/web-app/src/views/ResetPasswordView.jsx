@@ -33,11 +33,7 @@ export default function ResetPasswordView() {
       await resetPassword({ token, newPassword }).unwrap();
       setSubmitted(true);
     } catch (err) {
-      setError(
-        err?.status === 404
-          ? 'Password recovery is not available yet — pending backend support.'
-          : err?.data?.error?.message || 'Failed to reset your password.'
-      );
+      setError(err?.data?.error?.message || 'Failed to reset your password.');
     }
   };
 
