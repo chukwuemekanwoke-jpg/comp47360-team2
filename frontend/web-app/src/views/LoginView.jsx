@@ -33,25 +33,16 @@ export default function LoginView() {
   };
 
   return (
-    <div 
-      className="h-[calc(100svh-73px)] w-full flex items-center justify-center bg-table-canvas relative overflow-hidden"
-      style={{
-        backgroundImage: `url('https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=2000&auto=format&fit=crop')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-[2px]"></div>
-
-      <div className="relative z-10 w-full max-w-md p-10 bg-table-surface/80 border border-table-border/80 rounded-2xl shadow-2xl backdrop-blur-md">
+    <div className="h-[calc(100svh-73px)] w-full flex items-center justify-center bg-table-canvas relative">
+      <div className="relative z-10 w-full max-w-md p-10 bg-table-surface border border-table-border rounded-2xl">
         <div className="text-center mb-10 space-y-2">
-          <h1 className="text-5xl font-serif font-bold text-table-primary tracking-tighter">Tablé</h1>
-          <p className="text-table-textMuted font-sans text-sm tracking-wide">Secure User Access</p>
+          <h1 className="text-4xl font-display font-black text-table-primary tracking-tight">Tablé</h1>
+          <p className="text-table-textSubtle font-mono text-[11px] uppercase tracking-[0.2em]">Secure User Access</p>
         </div>
 
         {/* Informative Error Banner Alert UI */}
         {error && (
-          <div role="alert" className="mb-6 p-4 bg-red-950/45 border border-red-500/30 text-red-400 rounded-xl text-xs font-mono leading-relaxed text-left">
+          <div role="alert" className="mb-6 p-4 bg-table-danger/10 border border-table-danger/30 text-table-danger rounded-xl text-xs font-mono leading-relaxed text-left">
             ⚠️ {error}
           </div>
         )}
@@ -73,7 +64,7 @@ export default function LoginView() {
               required
               disabled={isSubmitting}
               placeholder="your.name@provider.com"
-              className="w-full px-4 py-3 bg-black/40 border border-zinc-800 rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:ring-2 focus:ring-table-primary/50 focus:border-table-primary transition-all outline-none disabled:opacity-50"
+              className="w-full px-4 py-3 bg-table-canvas border border-table-border rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:outline-none focus:border-table-offer transition-colors disabled:opacity-50"
             />
           </div>
 
@@ -97,7 +88,7 @@ export default function LoginView() {
               disabled={isSubmitting}
               placeholder="••••••••"
               autoComplete="current-password"
-              inputClassName="w-full px-4 py-3 bg-black/40 border border-zinc-800 rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:ring-2 focus:ring-table-primary/50 focus:border-table-primary transition-all outline-none disabled:opacity-50"
+              inputClassName="w-full px-4 py-3 bg-table-canvas border border-table-border rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:outline-none focus:border-table-offer transition-colors disabled:opacity-50"
             />
           </div>
 
@@ -105,14 +96,14 @@ export default function LoginView() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3.5 bg-table-primary text-table-canvas font-sans font-bold rounded-xl hover:bg-table-primaryHover transition-all duration-300 shadow-lg shadow-table-primary/10 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3.5 bg-table-primary text-table-canvas font-mono font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-table-primaryHover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Signing in...' : 'Sign In to Tablé'}
             </button>
           </div>
         </form>
 
-        <div className="mt-8 pt-6 border-t border-table-border/80 text-center">
+        <div className="mt-8 pt-6 border-t border-table-border text-center">
           <Link
             to="/register"
             className="text-xs font-mono font-bold text-table-primary hover:text-table-primaryHover transition-colors uppercase tracking-wider"
