@@ -4,25 +4,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { useAppDispatch, useAppSelector } from "@shared/hooks";
 import { toggleTravelMethod, toggleCuisine, setMaxBusyness } from "@shared/userSlice";
 import { BUSYNESS_QUIET_MAX, BUSYNESS_BUSY_MAX } from "@shared/restaurantFilters";
+import { CUISINES } from "@shared/constants";
 import { TransportMode } from "@shared/types";
 import { navColors } from "@/theme";
+import { TRAVEL_METHODS } from "@shared/constants";
 
 type IconName = keyof typeof Ionicons.glyphMap;
-
-const TRAVEL_METHODS: { label: string; icon: IconName; mode: TransportMode }[] = [
-  { label: "Walking", icon: "walk-outline", mode: "walking" },
-  { label: "Driving", icon: "car-outline", mode: "driving" },
-  { label: "Transit", icon: "subway-outline", mode: "transit" },
-];
-
-const CUISINES = [
-  "Italian",
-  "Indian",
-  "Vietnamese",
-  "Japanese",
-  "Mexican",
-  "Thai",
-];
 
 const BUSYNESS_OPTIONS: { label: string; icon: IconName; max: number | null }[] = [
   { label: "Quiet",    icon: "volume-low-outline", max: BUSYNESS_QUIET_MAX },
@@ -85,7 +72,7 @@ export default function PreferenceFilters() {
           <Chip
             key={label}
             label={label}
-            icon={icon}
+            icon={icon as IconName}
             active={selectedTravel.includes(mode)}
             onPress={() => toggleTravel(mode)}
             accentColor={colors.teal}

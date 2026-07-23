@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useGetNearbyRestaurantsQuery } from "@shared/apiSlice";
-import { DISCOVERY_RADIUS_M } from "@shared/constants";
+import { DISCOVERY_RADIUS_M, SEAT_AVAILABILITY_POLL_MS } from "@shared/constants";
 import { busynessColor, busynessLabel } from "@shared/restaurantFilters";
 import { RestaurantSummary } from "@shared/types";
 import { useAppDispatch, useAppSelector } from "@shared/hooks";
@@ -44,11 +44,10 @@ export default function DiscoverScreen() {
 
   // Same cached query the map and list use — browsing here costs no
   // additional backend requests.
-  const { data, isLoading } = useGetNearbyRestaurantsQuery({
-    lat,
-    lng,
-    radiusM: DISCOVERY_RADIUS_M,
-  });
+  const { data, isLoading } = useGetNearbyRestaurantsQuery(
+    { lat, lng, radiusM: DISCOVERY_RADIUS_M },
+    { pollingInterval: SEAT_AVAILABILITY_POLL_MS }
+  );
 
   const restaurants = useMemo(() => data?.restaurants ?? [], [data]);
 

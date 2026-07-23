@@ -265,7 +265,7 @@ class ContractDatabase {
         },
       ],
     ]);
-    this.bookings = [bookingRow()];
+    this.bookings = [bookingRow({ status: "completed" })];
   }
 
   connect() {
@@ -374,6 +374,67 @@ class ContractDatabase {
     if (text.includes("FROM restaurants WHERE id = $1 FOR UPDATE")) {
       const restaurant = this.restaurants.get(params[0]);
       return Promise.resolve({ rows: restaurant ? [restaurant] : [] });
+    }
+
+    if (text.includes("hold_expires_at <= NOW()") && text.includes("FOR UPDATE")) {
+      return Promise.resolve({ rows: [] });
+    }
+
+    if (
+      text.includes("SELECT id FROM bookings")
+      && text.includes("status IN ('pending', 'confirmed')")
+    ) {
+      const active = this.bookings.find(
+        (booking) =>
+          booking.user_id === params[0]
+          && (booking.status === "pending" || booking.status === "confirmed")
+      );
+      return Promise.resolve({ rows: active ? [{ id: active.id }] : [] });
+    }
+
+    if (text.includes("DELETE FROM bookings") && text.includes("OFFSET $2")) {
+      return Promise.resolve({ rows: [], rowCount: 0 });
+    }
+
+    if (
+      text.includes("FROM bookings")
+      && text.includes("WHERE id = $1 AND user_id = $2")
+      && text.includes("FOR UPDATE")
+    ) {
+      const booking = this.bookings.find(
+        (row) => row.id === params[0] && row.user_id === params[1]
+      );
+      return Promise.resolve({ rows: booking ? [booking] : [] });
+    }
+
+    if (
+      text.includes("UPDATE bookings")
+      && text.includes("status = 'cancelled'")
+      && text.includes("RETURNING")
+    ) {
+      const booking = this.bookings.find((row) => row.id === params[0]);
+      if (booking) {
+        booking.status = "cancelled";
+        booking.cancelled_at = NOW;
+      }
+      return Promise.resolve({ rows: booking ? [booking] : [] });
+    }
+
+    if (
+      text.includes("UPDATE bookings")
+      && text.includes("status = 'cancelled'")
+      && !text.includes("RETURNING")
+    ) {
+      const booking = this.bookings.find((row) => row.id === params[0]);
+      if (booking) {
+        booking.status = "cancelled";
+        booking.cancelled_at = NOW;
+      }
+      return Promise.resolve({ rows: [] });
+    }
+
+    if (text.includes("SET available_table_count = LEAST(available_table_count + 1, capacity)")) {
+      return Promise.resolve({ rows: [] });
     }
 
     if (text.includes("INSERT INTO bookings")) {
@@ -642,6 +703,13 @@ describe("OpenAPI contract validation", () => {
       method: "GET",
       path: "/api/v1/users/me/bookings",
       specPath: "/api/v1/users/me/bookings",
+      status: 200,
+      headers: { Authorization: `Bearer ${customerToken}` },
+    });
+    await expectContract({
+      method: "POST",
+      path: `/api/v1/bookings/${BOOKING_ID}/cancel`,
+      specPath: "/api/v1/bookings/{bookingId}/cancel",
       status: 200,
       headers: { Authorization: `Bearer ${customerToken}` },
     });

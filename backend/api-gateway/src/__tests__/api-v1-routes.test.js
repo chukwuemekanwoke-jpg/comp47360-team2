@@ -191,6 +191,15 @@ describe("users routes", () => {
   });
 
   it("returns bookings for the signed-in user", async () => {
+    const client = {
+      query: jest
+        .fn()
+        .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [] }) // lapseExpiredBookings SELECT
+        .mockResolvedValueOnce({ rows: [] }), // COMMIT
+      release: jest.fn(),
+    };
+    mockPool.connect.mockResolvedValueOnce(client);
     mockPool.query
       .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
       .mockResolvedValueOnce({ rows: [bookingRow()] });
@@ -223,6 +232,26 @@ describe("restaurant routes", () => {
       name: "Mercer Room",
       availableTableCount: 2,
       distanceMeters: 450,
+    });
+  });
+
+  it("geocodes neighborhood when lat/lng are omitted", async () => {
+    mockPool.query.mockResolvedValueOnce({ rows: [restaurantRow()] });
+
+    const res = await request(app).get("/api/v1/restaurants/nearby?neighborhood=Manhattan");
+
+    expect(res.status).toBe(200);
+    expect(res.body.origin).toEqual({ lat: 40.7831, lng: -73.9712 });
+    expect(res.body.radiusM).toBe(1500);
+  });
+
+  it("returns 404 for an unknown neighborhood lookup", async () => {
+    const res = await request(app).get("/api/v1/restaurants/nearby?neighborhood=Queens");
+
+    expect(res.status).toBe(404);
+    expect(res.body.error).toMatchObject({
+      code: "NOT_FOUND",
+      message: "Unknown neighborhood: Queens",
     });
   });
 

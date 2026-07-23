@@ -1,4 +1,5 @@
 const { AppError } = require("../errors");
+const { resolveNeighborhoodCentroid } = require("./neighborhoodCentroids");
 const {
   DEFAULT_CLOSES_AT,
   DEFAULT_OPENS_AT,
@@ -49,6 +50,64 @@ function parseRadiusM(value) {
   }
 
   return parsed;
+}
+
+function parseOptionalNeighborhood(value) {
+  if (value === undefined || value === null || value === "") {
+    return null;
+  }
+
+  if (typeof value !== "string") {
+    throw new AppError(400, "VALIDATION_ERROR", "neighborhood must be a string");
+  }
+
+  const neighborhood = value.trim();
+  if (!neighborhood) {
+    throw new AppError(400, "VALIDATION_ERROR", "neighborhood must not be empty");
+  }
+
+  return neighborhood;
+}
+
+function hasCoordinate(value) {
+  return value !== undefined && value !== null && value !== "";
+}
+
+function parseNearbyQuery({ lat, lng, radiusM, neighborhood }) {
+  const parsedRadiusM = parseRadiusM(radiusM);
+  const parsedNeighborhood = parseOptionalNeighborhood(neighborhood);
+  const hasLat = hasCoordinate(lat);
+  const hasLng = hasCoordinate(lng);
+
+  if (parsedNeighborhood && !hasLat && !hasLng) {
+    const origin = resolveNeighborhoodCentroid(parsedNeighborhood);
+    if (!origin) {
+      throw new AppError(404, "NOT_FOUND", `Unknown neighborhood: ${parsedNeighborhood}`);
+    }
+
+    return {
+      lat: origin.lat,
+      lng: origin.lng,
+      radiusM: parsedRadiusM,
+      neighborhood: parsedNeighborhood,
+      geocoded: true,
+    };
+  }
+
+  if (!hasLat || !hasLng) {
+    throw new AppError(
+      400,
+      "VALIDATION_ERROR",
+      "lat and lng are required unless neighborhood is provided"
+    );
+  }
+
+  return {
+    ...parseLatLng(lat, lng),
+    radiusM: parsedRadiusM,
+    neighborhood: parsedNeighborhood,
+    geocoded: false,
+  };
 }
 
 function validateBudgetTier(value) {
@@ -214,6 +273,8 @@ module.exports = {
   DEFAULT_TRANSPORT_MODE,
   parseLatLng,
   parseRadiusM,
+  parseOptionalNeighborhood,
+  parseNearbyQuery,
   parseTransportMode,
   parseBodyLatLng,
   validateCampaignBody,

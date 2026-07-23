@@ -26,6 +26,17 @@ npm run dev
 
 Server: `http://localhost:3001`
 
+## Rate limiting
+
+IP-based limits on sensitive routes (in-memory; fine for single-instance Cloud Run / local MVP):
+
+| Scope | Default | Routes |
+|-------|---------|--------|
+| Auth | 20 / 15 min | `POST /api/v1/auth/*` |
+| Writes | 60 / 15 min | `POST /bookings`, `POST /restaurants/:id/campaigns` |
+
+Exceeded → `429` `{ "error": { "code": "RATE_LIMITED", ... } }` plus standard `RateLimit-*` headers. Tunable via `RATE_LIMIT_*` in `.env` (see `.env.example`). Off automatically under `NODE_ENV=test`.
+
 ## Endpoints
 
 ### Infrastructure (BE-8)
@@ -41,10 +52,10 @@ Server: `http://localhost:3001`
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
 | POST | `/api/v1/users` | none | Create user (legacy onboarding) |
-| POST | `/api/v1/auth/register` | none | Register; returns JWT |
-| POST | `/api/v1/auth/login` | none | Login; returns JWT |
-| POST | `/api/v1/auth/forgot-password` | none | Request password reset link (logged in dev) |
-| POST | `/api/v1/auth/reset-password` | none | Set new password with reset token |
+| POST | `/api/v1/auth/register` | none | Register; returns JWT (rate-limited) |
+| POST | `/api/v1/auth/login` | none | Login; returns JWT (rate-limited) |
+| POST | `/api/v1/auth/forgot-password` | none | Request password reset link (logged in dev; rate-limited) |
+| POST | `/api/v1/auth/reset-password` | none | Set new password with reset token (rate-limited) |
 | POST | `/api/v1/auth/logout` | Bearer JWT | Invalidate current JWT |
 | POST | `/api/v1/auth/logout` | JWT | Invalidate current token (server-side logout) |
 | GET | `/api/v1/users/me` | JWT or `X-User-Id` | Current user profile |
@@ -54,7 +65,7 @@ Server: `http://localhost:3001`
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
-| GET | `/api/v1/restaurants/nearby` | optional `X-User-Id` | Restaurants within radius (`availableTableCount > 0`) |
+| GET | `/api/v1/restaurants/nearby` | optional `X-User-Id` | Restaurants within radius (`availableTableCount > 0`); optional `neighborhood` geocode fallback |
 | POST | `/api/v1/restaurants` | JWT or `X-User-Id` | Create restaurant (`manager_user_id` = caller) |
 | GET | `/api/v1/restaurants/:restaurantId` | none | Restaurant detail for booking screen |
 | PATCH | `/api/v1/restaurants/:restaurantId/settings` | manager JWT or `X-User-Id` | Update accessibility settings |
@@ -65,7 +76,7 @@ Server: `http://localhost:3001`
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
-| POST | `/api/v1/bookings` | JWT or `X-User-Id` | Confirm reservation; decrements table count; accepts optional `partySize` |
+| POST | `/api/v1/bookings` | JWT or `X-User-Id` | Confirm reservation; one active booking per user; hold timeout + keep last 5; optional `partySize` (rate-limited) |
 | PATCH | `/api/v1/bookings/:bookingId/status` | manager JWT or `X-User-Id` | Update booking status (dashboard) |
 | POST | `/api/v1/bookings/:bookingId/cancel` | JWT or `X-User-Id` | Cancel booking; restore table count / offer state |
 | GET | `/api/v1/users/me/bookings` | JWT or `X-User-Id` | List the current user's bookings (newest first) |
@@ -75,7 +86,7 @@ Server: `http://localhost:3001`
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
-| POST | `/api/v1/restaurants/:restaurantId/campaigns` | manager JWT or `X-User-Id` | Create flash-deal campaign + ML/heuristic offers |
+| POST | `/api/v1/restaurants/:restaurantId/campaigns` | manager JWT or `X-User-Id` | Create flash-deal campaign + ML/heuristic offers (rate-limited) |
 | POST | `/api/v1/restaurants/:restaurantId/campaigns/:campaignId/cancel` | manager JWT or `X-User-Id` | Cancel active campaign; revoke pending offers |
 | GET | `/api/v1/restaurants/:restaurantId/campaigns/:campaignId/offers` | manager JWT or `X-User-Id` | List campaign offers for live tracker |
 | GET | `/api/v1/restaurants/:restaurantId/campaigns/:campaignId/revpash-lift` | manager JWT or `X-User-Id` | Organic-vs-deal RevPASH comparison for a campaign |
@@ -129,6 +140,9 @@ curl -X PATCH http://localhost:3001/api/v1/users/me/preferences \
 
 # Nearby discovery (Times Square demo origin)
 curl 'http://localhost:3001/api/v1/restaurants/nearby?lat=40.7589&lng=-73.9851'
+
+# GPS denied — geocode a Manhattan neighbourhood instead of lat/lng
+curl 'http://localhost:3001/api/v1/restaurants/nearby?neighborhood=Midtown'
 
 # Restaurant detail (replace with id from nearby response)
 curl http://localhost:3001/api/v1/restaurants/550e8400-e29b-41d4-a716-446655441001

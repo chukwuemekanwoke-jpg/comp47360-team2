@@ -99,6 +99,8 @@ paths:
                 $ref: "#/components/schemas/AuthSession"
         "409":
           $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/RateLimited"
 
   /api/v1/auth/login:
     post:
@@ -119,6 +121,8 @@ paths:
                 $ref: "#/components/schemas/AuthSession"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimited"
 
   /api/v1/auth/logout:
     post:
@@ -140,6 +144,8 @@ paths:
                     example: logged_out
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimited"
 
   /api/v1/auth/forgot-password:
     post:
@@ -160,6 +166,8 @@ paths:
                 $ref: "#/components/schemas/AuthMessageResponse"
         "400":
           $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimited"
 
   /api/v1/auth/reset-password:
     post:
@@ -180,6 +188,8 @@ paths:
                 $ref: "#/components/schemas/AuthMessageResponse"
         "400":
           $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimited"
 
   /api/v1/users:
     post:
@@ -269,25 +279,32 @@ paths:
   /api/v1/restaurants/nearby:
     get:
       tags: [Restaurants]
-      summary: Nearby available restaurants (Story 2.1)
+      summary: Nearby available restaurants (Story 2.1 / 2.2)
       parameters:
         - name: lat
           in: query
-          required: true
+          required: false
           schema:
             type: number
             format: double
+          description: Required unless `neighborhood` is provided.
         - name: lng
           in: query
-          required: true
+          required: false
           schema:
             type: number
             format: double
+          description: Required unless `neighborhood` is provided.
         - name: radiusM
           in: query
           schema:
             type: integer
             default: 1500
+        - name: neighborhood
+          in: query
+          schema:
+            type: string
+          description: Manhattan neighbourhood name; geocoded when lat/lng omitted (Story 2.2).
       responses:
         "200":
           description: OK
@@ -306,6 +323,8 @@ paths:
                       $ref: "#/components/schemas/RestaurantSummary"
         "400":
           $ref: "#/components/responses/ValidationError"
+        "404":
+          $ref: "#/components/responses/NotFound"
 
   /api/v1/restaurants/{restaurantId}:
     get:
@@ -437,6 +456,10 @@ paths:
     post:
       tags: [Bookings]
       summary: Create booking
+      description: >
+        Creates a confirmed booking. Rejects with 409 if the user already has an
+        active (pending/confirmed) booking. Expired holds are lapsed first.
+        After insert, only the newest 5 bookings for the user are retained.
       parameters:
         - $ref: "#/components/parameters/UserIdHeader"
       requestBody:
@@ -458,6 +481,8 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "409":
           $ref: "#/components/responses/Conflict"
+        "429":
+          $ref: "#/components/responses/RateLimited"
 
   /api/v1/bookings/{bookingId}/cancel:
     post:
@@ -641,6 +666,8 @@ paths:
           $ref: "#/components/responses/ValidationError"
         "401":
           $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/RateLimited"
 
   /api/v1/restaurants/{restaurantId}/campaigns/{campaignId}/offers:
     get:
@@ -794,6 +821,12 @@ components:
             $ref: "#/components/schemas/ErrorEnvelope"
     Conflict:
       description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorEnvelope"
+    RateLimited:
+      description: Too many requests on a rate-limited route
       content:
         application/json:
           schema:

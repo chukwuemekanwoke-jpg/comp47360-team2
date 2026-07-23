@@ -4,6 +4,7 @@ const requireUser = require("../../middleware/requireUser");
 const requireRestaurantManager = require("../../middleware/requireRestaurantManager");
 const { getPool } = require("../../db/pool");
 const { toRestaurantBookingJson } = require("../../utils/serialize");
+const { lapseExpiredBookings } = require("../../services/bookingLifecycle");
 
 const router = Router({ mergeParams: true });
 
@@ -28,6 +29,19 @@ router.get(
   "/",
   asyncHandler(async (req, res) => {
     const pool = getPool();
+    const client = await pool.connect();
+
+    try {
+      await client.query("BEGIN");
+      await lapseExpiredBookings(client, { restaurantId: req.restaurantId });
+      await client.query("COMMIT");
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
+    }
+
     const { rows } = await pool.query(
       `SELECT ${BOOKING_COLUMNS}
        FROM bookings b

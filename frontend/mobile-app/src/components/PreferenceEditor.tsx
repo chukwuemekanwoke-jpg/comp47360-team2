@@ -1,13 +1,13 @@
 import { Text, TouchableOpacity, View } from "react-native";
 import { useAppSelector } from "@shared/hooks";
 import { navColors } from "@/theme";
+import { CUISINES } from "@shared/constants";
 
 // Single source of truth for the onboarding/profile preference vocabulary.
 // dietaryTags on the backend stores cuisines and the dining style together.
 export type DiningStyle = "casual" | "family" | "date-night" | "business";
 export type BudgetTier = "TIER_1" | "TIER_2" | "TIER_3";
 
-export const PREFERENCE_CUISINES = ["Italian", "Indian", "Japanese", "Mexican", "Thai"];
 export const DINING_STYLES: DiningStyle[] = ["casual", "family", "date-night", "business"];
 
 export function priceLevelToBudgetTier(level: number): BudgetTier {
@@ -61,7 +61,7 @@ export default function PreferenceEditor({
             Favourite cuisines
           </Text>
           <View className="flex-row flex-wrap gap-2">
-            {PREFERENCE_CUISINES.map((cuisine) => {
+            {CUISINES.map((cuisine) => {
               const selected = favoriteCuisines.includes(cuisine);
               return (
                 <TouchableOpacity

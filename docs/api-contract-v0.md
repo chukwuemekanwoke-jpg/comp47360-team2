@@ -40,6 +40,17 @@ X-User-Id: 550e8400-e29b-41d4-a716-446655440000
 
 The gateway accepts either `Authorization: Bearer` (preferred) or `X-User-Id` on protected routes.
 
+### 1.2.1 Rate limiting
+
+Sensitive routes are IP-rate-limited (in-memory; suitable for single-instance Cloud Run / local MVP):
+
+| Scope | Default | Routes |
+|-------|---------|--------|
+| Auth | 20 / 15 min | `POST /api/v1/auth/*` (register, login, logout, forgot/reset password) |
+| Writes | 60 / 15 min | `POST /api/v1/bookings`, `POST /api/v1/restaurants/:id/campaigns` |
+
+Exceeded limit → `429` with `error.code = RATE_LIMITED`. Standard `RateLimit-*` headers are included. Override via `RATE_LIMIT_*` env vars (see api-gateway `.env.example`).
+
 | Rule | Detail |
 |------|--------|
 | Missing/invalid auth | `401` on protected routes |
@@ -75,6 +86,7 @@ All non-2xx responses use:
 | 401 | `UNAUTHORIZED` | Missing/invalid auth |
 | 404 | `NOT_FOUND` | Resource missing |
 | 409 | `CONFLICT` | No tables, expired offer, ETA too long |
+| 429 | `RATE_LIMITED` | Too many requests on sensitive routes (auth, booking create, campaign create) |
 | 500 | `INTERNAL_ERROR` | Unexpected server error |
 
 ### 1.5 Product constants
@@ -347,9 +359,10 @@ Returns restaurants within radius with `availableTableCount > 0`.
 
 | Param | Required | Default | Description |
 |-------|----------|---------|-------------|
-| `lat` | yes | — | WGS84 latitude |
-| `lng` | yes | — | WGS84 longitude |
+| `lat` | yes* | — | WGS84 latitude (*optional when `neighborhood` is provided) |
+| `lng` | yes* | — | WGS84 longitude (*optional when `neighborhood` is provided) |
 | `radiusM` | no | `1500` | Metres |
+| `neighborhood` | no | — | Manhattan neighbourhood name; geocoded server-side when `lat`/`lng` omitted (Story 2.2) |
 
 **Response `200`:**
 
@@ -361,7 +374,7 @@ Returns restaurants within radius with `availableTableCount > 0`.
 }
 ```
 
-**P1 extension:** `neighborhood=Manhattan` when GPS denied (Story 2.2) — geocode then same response shape.
+When `neighborhood` is supplied without `lat`/`lng`, the gateway resolves a Manhattan centroid and runs the same radius query (Story 2.2 GPS-denied fallback). Unknown neighbourhood names return **404**.
 
 #### `POST /api/v1/restaurants`
 
@@ -498,24 +511,37 @@ Compute travel time once when opening restaurant page (per user story).
 
 | Condition | HTTP | `code` |
 |-----------|------|--------|
+| User already has an active (`pending`/`confirmed`) booking | 409 | `CONFLICT` |
 | ETA exceeds hold window | 409 | `CONFLICT` |
 | `availableTableCount === 0` | 409 | `CONFLICT` |
 | Invalid/expired offer | 409 | `CONFLICT` |
+
+**Lifecycle rules (demo):**
+
+1. **One active booking per user** — a second `POST /bookings` (or offer accept) fails until the current booking is `completed`, `cancelled`, or `no_show`. Enforced in the API and via unique partial index `idx_bookings_one_active_per_user`.
+2. **Hold timeout** — `pending`/`confirmed` bookings with `holdExpiresAt <= now` are lazily cancelled (table inventory restored) on create and when listing bookings.
+3. **History cap** — after each successful create, only the newest **5** bookings per user are retained.
 
 **Side effects (server):**
 
 - Decrement `restaurants.availableTableCount` by 1.
 - If `offerId` set: mark offer `accepted`, link booking; may complete campaign (DB trigger).
+- Lapse any expired active bookings for the user, then reject if one remains active.
+- Prune older booking rows beyond the newest 5 for the user.
 
 #### `GET /api/v1/users/me/bookings`
 
 **Auth:** Bearer JWT or `X-User-Id` (interim)  
+
+Lapses expired holds for the caller before returning results.
 
 **Response `200`:** `{ "bookings": [ ... ] }`
 
 #### `GET /api/v1/restaurants/:restaurantId/bookings`
 
 **Auth:** manager Bearer JWT or `X-User-Id` (interim)  
+
+Lapses expired holds for this restaurant before returning results.
 
 **Response `200`:** `{ "bookings": [ ... ] }` — newest first.
 
@@ -745,7 +771,7 @@ Gateway then inserts `offers` with `expiresAt = now() + 900s`. If the ML service
 | P0 | POST | `/api/v1/users` | 1.1 |
 | P0 | PATCH | `/api/v1/users/me/preferences` | 1.1 |
 | P0 | GET | `/api/v1/users/me` | 1.1 |
-| P0 | GET | `/api/v1/restaurants/nearby` | 2.1 |
+| P0 | GET | `/api/v1/restaurants/nearby` | 2.1, 2.2 |
 | P0 | GET | `/api/v1/restaurants/:id` | 2.1, 3.x |
 | P0 | GET | `/api/v1/restaurants/:id/eta` | 3.1, 3.2 |
 | P0 | POST | `/api/v1/bookings` | 3.x, 5.2 |
@@ -774,7 +800,9 @@ Gateway then inserts `offers` with `expiresAt = now() + 900s`. If the ML service
 
 | Priority | Method | Path | Story |
 |----------|--------|------|-------|
-| P1 | GET | `/api/v1/restaurants/nearby?neighborhood=` | 2.2 |
+| — | — | — | — |
+
+*(No pending P1 routes at v0.5.3.)*
 
 ---
 
@@ -806,3 +834,6 @@ Shared TypeScript types (`frontend/packages/shared/src/types.ts`) map to API fie
 | v0.4.1 | 2026-07-12 | Merchant PATCH booking status for dashboard |
 | v0.5 | 2026-07-13 | Password forgot/reset auth endpoints |
 | v0.5.1 | 2026-07-21 | GET campaign offers for merchant live tracker |
+| v0.5.3 | 2026-07-21 | GET nearby `neighborhood` geocode fallback (Story 2.2) |
+| v0.5.4 | 2026-07-21 | Rate limiting on auth + booking/campaign create (`429 RATE_LIMITED`) |
+| v0.5.5 | 2026-07-22 | Booking lifecycle: one active per user, hold timeout lapse, keep last 5 |

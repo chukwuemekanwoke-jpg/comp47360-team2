@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const asyncHandler = require("../../middleware/asyncHandler");
 const requireUser = require("../../middleware/requireUser");
+const { authRateLimiter } = require("../../middleware/rateLimit");
 const { AppError } = require("../../errors");
 const { getPool } = require("../../db/pool");
 const { toUserJson } = require("../../utils/serialize");
@@ -14,6 +15,8 @@ const { signAccessToken } = require("../../utils/jwt");
 const config = require("../../config");
 
 const router = Router();
+
+router.use(authRateLimiter);
 
 const USER_COLUMNS =
   "id, display_name, budget_tier, dietary_tags, last_lat, last_lng, created_at, email, token_version";

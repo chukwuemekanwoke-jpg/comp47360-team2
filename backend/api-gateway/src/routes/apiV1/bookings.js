@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const asyncHandler = require("../../middleware/asyncHandler");
 const requireUser = require("../../middleware/requireUser");
+const { writeRateLimiter } = require("../../middleware/rateLimit");
 const { AppError, isUuid } = require("../../errors");
 const { getPool } = require("../../db/pool");
 const { toBookingJson } = require("../../utils/serialize");
@@ -13,6 +14,7 @@ const router = Router();
 
 router.post(
   "/",
+  writeRateLimiter,
   requireUser,
   asyncHandler(async (req, res) => {
     const pool = getPool();
