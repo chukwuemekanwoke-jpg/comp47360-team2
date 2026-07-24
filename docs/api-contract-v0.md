@@ -96,6 +96,7 @@ All non-2xx responses use:
 | Discovery radius | `1500` m | 2.1 |
 | Reservation hold window | `15` min (per restaurant, default) | 3.1, 3.2 |
 | Flash deal TTL | `900` s from offer `createdAt` | 4.1 |
+| Campaign TTL | `900` s from campaign `createdAt` (same as offer; lazy expiry) | 5.2 |
 | Campaign discount | `10`–`50` % | 5.1 |
 
 ---
@@ -645,7 +646,7 @@ Validates not expired, then returns booking payload or redirects client to `POST
 }
 ```
 
-On create, the gateway calls the ML match service and inserts `offers` for matched users (`expiresAt = now + 900s`).
+On create, the gateway sets `campaign.expiresAt = now + 900s` (same TTL as offers), calls the ML match service, and inserts `offers` for matched users (`expiresAt = now + 900s`). Overdue active campaigns are lazily marked `expired` (pending offers revoked) when campaigns or offers are read.
 
 #### `GET /api/v1/restaurants/:restaurantId/campaigns`
 

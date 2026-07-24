@@ -107,6 +107,8 @@ Restaurant-triggered lull-mitigation runs.
 
 - `table_quota` / `tables_claimed`: when claimed ≥ quota → `completed` (DB trigger)
 - `discount_percent`: enforced **10–50** at DB level
+- `expires_at`: campaign TTL (MVP **900 s** / 15 min from create — same as offer TTL)
+- `status`: `active` → `completed` (quota), `cancelled` (manager), or `expired` (TTL; lazy on read)
 
 ### `offers`
 

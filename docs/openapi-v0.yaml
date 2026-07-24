@@ -1289,3 +1289,11 @@ components:
         createdAt:
           type: string
           format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+          description: Campaign TTL end (MVP same as offer TTL, 900 seconds from create).
+        secondsRemaining:
+          type: integer
+          nullable: true
+          description: Seconds until campaign expires; 0 when expired or past TTL.

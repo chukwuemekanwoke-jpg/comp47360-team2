@@ -2,7 +2,7 @@
 export type BudgetTier = 'TIER_1' | 'TIER_2' | 'TIER_3';
 export type TransportMode = 'walking' | 'driving' | 'transit' | 'cycling';
 export type OfferStatus = 'pending' | 'accepted' | 'expired' | 'revoked';
-export type CampaignStatus = 'active' | 'completed' | 'cancelled';
+export type CampaignStatus = 'active' | 'completed' | 'cancelled' | 'expired';
 export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'no_show';
 
 // --- SHARED DOMAIN TYPES ---
@@ -90,6 +90,8 @@ export interface Campaign {
   tablesClaimed: number;
   discountPercent: number;
   createdAt: string;
+  expiresAt?: string | null;
+  secondsRemaining?: number | null;
 }
 
 export interface AuthSession {

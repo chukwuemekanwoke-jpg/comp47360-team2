@@ -1,4 +1,6 @@
+/** Shared 15-minute TTL for flash-deal offers and lull-mitigation campaigns. */
 const FLASH_DEAL_TTL_SECONDS = 900;
+const CAMPAIGN_TTL_SECONDS = FLASH_DEAL_TTL_SECONDS;
 const MATCH_RADIUS_M = 1500;
 
 const HAVERSINE_SQL = `
@@ -54,6 +56,7 @@ function toMlCandidates(rows) {
 
 module.exports = {
   FLASH_DEAL_TTL_SECONDS,
+  CAMPAIGN_TTL_SECONDS,
   MATCH_RADIUS_M,
   findNearbyCandidates,
   toMlCandidates,

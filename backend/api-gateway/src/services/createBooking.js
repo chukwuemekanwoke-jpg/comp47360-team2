@@ -72,7 +72,8 @@ async function createBooking(client, {
 
   if (offerId) {
     const { rows: offerRows } = await client.query(
-      `SELECT o.id, o.status, o.expires_at, o.campaign_id, c.restaurant_id, c.discount_percent
+      `SELECT o.id, o.status, o.expires_at, o.campaign_id,
+              c.restaurant_id, c.discount_percent, c.status AS campaign_status, c.expires_at AS campaign_expires_at
        FROM offers o
        JOIN campaigns c ON c.id = o.campaign_id
        WHERE o.id = $1 AND o.user_id = $2
@@ -92,6 +93,10 @@ async function createBooking(client, {
 
     if (new Date(offer.expires_at) <= new Date()) {
       throw new AppError(409, "CONFLICT", "Offer has expired");
+    }
+
+    if (offer.campaign_status !== "active" || new Date(offer.campaign_expires_at) <= new Date()) {
+      throw new AppError(409, "CONFLICT", "Campaign is no longer active");
     }
 
     if (offer.restaurant_id !== restaurantId) {

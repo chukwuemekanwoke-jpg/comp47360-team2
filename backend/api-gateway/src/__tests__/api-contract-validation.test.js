@@ -234,6 +234,7 @@ function campaignRow(overrides = {}) {
     tables_claimed: 0,
     discount_percent: 20,
     created_at: NOW,
+    expires_at: OFFER_EXPIRY,
     ...overrides,
   };
 }
@@ -495,9 +496,24 @@ class ContractDatabase {
             expires_at: offer.expires_at,
             campaign_id: offer.campaign_id,
             restaurant_id: campaign.restaurant_id,
+            discount_percent: campaign.discount_percent,
+            campaign_status: campaign.status,
+            campaign_expires_at: campaign.expires_at,
           },
         ],
       });
+    }
+
+    if (text.includes("UPDATE campaigns") && text.includes("status = 'expired'")) {
+      return Promise.resolve({ rows: [] });
+    }
+
+    if (text.includes("UPDATE offers") && text.includes("status = 'revoked'")) {
+      return Promise.resolve({ rows: [] });
+    }
+
+    if (text.includes("FROM campaigns") && text.includes("status = 'active'") && text.includes("FOR UPDATE")) {
+      return Promise.resolve({ rows: [] });
     }
 
     if (text.includes("UPDATE offers SET status = 'accepted'")) {
@@ -563,8 +579,15 @@ class ContractDatabase {
       return Promise.resolve({ rows: [{ id: OFFER_ID }] });
     }
 
+    if (text.includes("UPDATE offers SET status = 'expired'")) {
+      return Promise.resolve({ rows: [] });
+    }
+
     if (text.includes("FROM campaigns WHERE restaurant_id = $1 AND status = 'active'")) {
-      return Promise.resolve({ rows: [this.campaigns.get(CAMPAIGN_ID)] });
+      const campaign = this.campaigns.get(CAMPAIGN_ID);
+      return Promise.resolve({
+        rows: campaign && campaign.status === "active" ? [campaign] : [],
+      });
     }
 
     if (text.includes("FROM campaigns WHERE restaurant_id = $1")) {
