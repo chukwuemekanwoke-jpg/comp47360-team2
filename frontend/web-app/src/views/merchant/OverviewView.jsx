@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import BusynessMeter from '../../components/BusynessMeter';
 import RevpashMeter from '../../components/RevpashMeter';
+import OccupancyMeter from '../../components/OccupancyMeter';
 import CampaignHistory from '../../components/CampaignHistory';
 import LiveOfferTracker from '../../components/LiveOfferTracker';
+import BookingsList from '../../components/BookingsList';
 import {
   useGetActiveCampaignQuery,
   useCreateCampaignMutation,
@@ -29,6 +31,24 @@ export default function OverviewView() {
   const [discountPercent, setDiscountPercent] = useState(15);
   const [formError, setFormError] = useState('');
   const [cancelError, setCancelError] = useState('');
+
+  // Ticks every second so the campaign countdown moves smoothly between the
+  // 5s activeCampaign poll, same pattern as LiveOfferTracker's offer countdowns.
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const campaignSecondsRemaining = activeCampaign?.expiresAt
+    ? Math.max(0, Math.round((new Date(activeCampaign.expiresAt).getTime() - now) / 1000))
+    : null;
+
+  function formatTimeLeft(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }
 
   const handleCreateCampaign = async (e) => {
     e.preventDefault();
@@ -77,10 +97,12 @@ export default function OverviewView() {
       <div className="space-y-6">
         {restaurant && (
           <>
+            <OccupancyMeter available={restaurant.availableTableCount} capacity={restaurant.capacity} />
             <BusynessMeter busynessScore={restaurant.busynessScore} />
             <RevpashMeter restaurantId={restaurantId} />
           </>
         )}
+        <BookingsList restaurantId={restaurantId} />
       </div>
 
       <div className="space-y-6">
@@ -104,6 +126,14 @@ export default function OverviewView() {
                     <dd className="text-table-text">{activeCampaign.discountPercent}%</dd>
                     <dt className="text-table-textSubtle">Tables Claimed</dt>
                     <dd className="text-table-text">{activeCampaign.tablesClaimed} / {activeCampaign.tableQuota}</dd>
+                    {campaignSecondsRemaining !== null && (
+                      <>
+                        <dt className="text-table-textSubtle">Time Left</dt>
+                        <dd className="text-table-offer font-bold tracking-wider">
+                          {formatTimeLeft(campaignSecondsRemaining)}
+                        </dd>
+                      </>
+                    )}
                   </dl>
 
                   {cancelError && (

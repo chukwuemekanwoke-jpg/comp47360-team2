@@ -31,6 +31,7 @@ const VALID = {
   phone: '(212) 555-0100',
   latitude: '40.7589',
   longitude: '-73.9851',
+  addressLine: '123 Manhattan Ave, New York, NY',
   cuisine: 'Italian',
 };
 
@@ -38,6 +39,7 @@ async function fillForm(user, overrides = {}) {
   const values = { ...VALID, ...overrides };
   await user.type(screen.getByLabelText(/restaurant name/i), values.name);
   await user.type(screen.getByLabelText(/^phone$/i), values.phone);
+  if (values.addressLine) await user.type(screen.getByLabelText(/^address$/i), values.addressLine);
   if (values.latitude) await user.type(screen.getByLabelText(/latitude/i), values.latitude);
   if (values.longitude) await user.type(screen.getByLabelText(/longitude/i), values.longitude);
   await user.type(screen.getByLabelText(/^cuisine$/i), values.cuisine);
@@ -80,6 +82,16 @@ describe('RestaurantSetupView validation', () => {
     expect(createRestaurantMock).not.toHaveBeenCalled();
   });
 
+  it('rejects a missing address instead of calling the API with a blank one', async () => {
+    const user = userEvent.setup();
+    renderView();
+
+    await fillForm(user, { addressLine: '' });
+
+    expect(screen.getByText(/search an address or drop a pin/i)).toBeInTheDocument();
+    expect(createRestaurantMock).not.toHaveBeenCalled();
+  });
+
   it('submits when every field is valid', async () => {
     const user = userEvent.setup();
     renderView();
@@ -92,6 +104,7 @@ describe('RestaurantSetupView validation', () => {
         phone: '(212) 555-0100',
         latitude: 40.7589,
         longitude: -73.9851,
+        addressLine: '123 Manhattan Ave, New York, NY',
         cuisine: 'Italian',
       })
     );
