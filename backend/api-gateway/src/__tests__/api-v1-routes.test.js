@@ -127,6 +127,7 @@ function campaignRow(overrides = {}) {
     tables_claimed: 0,
     discount_percent: 20,
     created_at: NOW,
+    expires_at: new Date("2099-01-01T00:15:00.000Z"),
     ...overrides,
   };
 }
@@ -574,7 +575,8 @@ describe("offer routes", () => {
     const client = {
       query: jest
         .fn()
-        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [] }) // expire overdue campaigns
         .mockResolvedValueOnce({
           rows: [
             {
@@ -586,7 +588,7 @@ describe("offer routes", () => {
           ],
         })
         .mockResolvedValueOnce({ rows: [{ last_lat: "40.73", last_lng: "-73.99" }] })
-        .mockResolvedValueOnce({ rows: [] }),
+        .mockResolvedValueOnce({ rows: [] }), // COMMIT
       release: jest.fn(),
     };
 
@@ -621,10 +623,12 @@ describe("campaign routes", () => {
     const client = {
       query: jest
         .fn()
-        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [] }) // expire overdue
         .mockResolvedValueOnce({ rows: [restaurantRow()] })
+        .mockResolvedValueOnce({ rows: [] }) // no active campaign
         .mockResolvedValueOnce({ rows: [campaignRow()] })
-        .mockResolvedValueOnce({ rows: [] }),
+        .mockResolvedValueOnce({ rows: [] }), // COMMIT
       release: jest.fn(),
     };
 
@@ -644,7 +648,9 @@ describe("campaign routes", () => {
       restaurantId: RESTAURANT_ID,
       tableQuota: 3,
       discountPercent: 20,
+      status: "active",
     });
+    expect(res.body.expiresAt).toBeTruthy();
     expect(createCampaignOffers).toHaveBeenCalledWith(client, {
       campaignId: CAMPAIGN_ID,
       restaurant: expect.objectContaining({ id: RESTAURANT_ID }),
@@ -659,6 +665,7 @@ describe("campaign routes", () => {
     mockPool.query
       .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
       .mockResolvedValueOnce({ rows: [{ id: RESTAURANT_ID, manager_user_id: USER_ID }] })
+      .mockResolvedValueOnce({ rows: [] }) // expire overdue campaigns
       .mockResolvedValueOnce({ rows: [{ id: CAMPAIGN_ID }] })
       .mockResolvedValueOnce({ rows: [] })
       .mockResolvedValueOnce({
@@ -706,6 +713,7 @@ describe("campaign routes", () => {
     mockPool.query
       .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
       .mockResolvedValueOnce({ rows: [{ id: RESTAURANT_ID, manager_user_id: USER_ID }] })
+      .mockResolvedValueOnce({ rows: [] }) // expire overdue
       .mockResolvedValueOnce({ rows: [] });
 
     const res = await request(app)
@@ -753,7 +761,8 @@ describe("campaign routes", () => {
     const client = {
       query: jest
         .fn()
-        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [] }) // expire
         .mockResolvedValueOnce({ rows: [restaurantRow({ capacity: 8 })] }),
       release: jest.fn(),
     };
@@ -780,15 +789,16 @@ describe("campaign routes", () => {
     const client = {
       query: jest
         .fn()
-        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [] }) // expire
         .mockResolvedValueOnce({
           rows: [campaignRow({ status: "active" })],
         })
         .mockResolvedValueOnce({
           rows: [campaignRow({ status: "cancelled" })],
         })
-        .mockResolvedValueOnce({ rows: [] })
-        .mockResolvedValueOnce({ rows: [] }),
+        .mockResolvedValueOnce({ rows: [] }) // revoke offers
+        .mockResolvedValueOnce({ rows: [] }), // COMMIT
       release: jest.fn(),
     };
 

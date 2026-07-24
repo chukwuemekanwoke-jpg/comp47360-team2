@@ -81,6 +81,7 @@ function campaignRow(overrides = {}) {
     tables_claimed: 0,
     discount_percent: 20,
     created_at: NOW,
+    expires_at: OFFER_EXPIRY,
     ...overrides,
   };
 }
@@ -345,9 +346,27 @@ class JourneyDatabase {
             expires_at: offer.expires_at,
             campaign_id: offer.campaign_id,
             restaurant_id: campaign.restaurant_id,
+            discount_percent: campaign.discount_percent,
+            campaign_status: campaign.status,
+            campaign_expires_at: campaign.expires_at,
           },
         ],
       });
+    }
+
+    if (text.includes("UPDATE campaigns") && text.includes("status = 'expired'")) {
+      const expired = [];
+      for (const campaign of this.campaigns.values()) {
+        if (campaign.status === "active" && new Date(campaign.expires_at) <= NOW) {
+          campaign.status = "expired";
+          expired.push({ id: campaign.id });
+        }
+      }
+      return Promise.resolve({ rows: expired });
+    }
+
+    if (text.includes("UPDATE offers") && text.includes("status = 'revoked'") && text.includes("ANY")) {
+      return Promise.resolve({ rows: [] });
     }
 
     if (text.includes("INSERT INTO campaigns")) {
@@ -359,6 +378,13 @@ class JourneyDatabase {
       });
       this.campaigns.set(CAMPAIGN_ID, row);
       return Promise.resolve({ rows: [row] });
+    }
+
+    if (text.includes("FROM campaigns") && text.includes("status = 'active'") && text.includes("FOR UPDATE")) {
+      const campaign = [...this.campaigns.values()].find(
+        (row) => row.restaurant_id === params[0] && row.status === "active"
+      );
+      return Promise.resolve({ rows: campaign ? [{ id: campaign.id }] : [] });
     }
 
     if (text.includes("WITH nearby_users")) {

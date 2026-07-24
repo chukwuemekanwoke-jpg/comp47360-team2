@@ -24,7 +24,7 @@ async function releaseConfirmedBooking(client, booking) {
       `UPDATE campaigns
        SET tables_claimed = GREATEST(tables_claimed - 1, 0)
        WHERE id = $1
-       RETURNING table_quota, tables_claimed, status`,
+       RETURNING table_quota, tables_claimed, status, expires_at`,
       [booking.campaign_id]
     );
 
@@ -32,7 +32,8 @@ async function releaseConfirmedBooking(client, booking) {
     if (
       campaign &&
       campaign.status === "completed" &&
-      campaign.tables_claimed < campaign.table_quota
+      campaign.tables_claimed < campaign.table_quota &&
+      new Date(campaign.expires_at) > new Date()
     ) {
       await client.query(
         `UPDATE campaigns

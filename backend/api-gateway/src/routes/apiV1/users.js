@@ -10,6 +10,7 @@ const {
   requireNonEmptyString,
 } = require("../../utils/validate");
 const { expirePendingOffers } = require("../../services/offers");
+const { expireOverdueCampaigns } = require("../../services/expireCampaigns");
 const { lapseExpiredBookings } = require("../../services/bookingLifecycle");
 
 const router = Router();
@@ -66,6 +67,7 @@ router.get(
       throw new AppError(400, "VALIDATION_ERROR", "status filter must be pending when provided");
     }
 
+    await expireOverdueCampaigns(pool);
     await expirePendingOffers(pool, req.userId);
 
     const params = [req.userId];

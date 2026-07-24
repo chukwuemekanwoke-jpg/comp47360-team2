@@ -271,7 +271,7 @@ When a manager creates a campaign, the gateway:
 
 1. Queries nearby diners in Postgres (1.5 km radius)
 2. Calls FastAPI `POST {ML_SERVICE_URL}/api/v1/match` with `campaignId`, `restaurantId`, `candidateLimit`, and `candidates[]`
-3. Inserts `offers` for returned `matchedUserIds` (900s TTL)
+3. Inserts `offers` for returned `matchedUserIds` (900s TTL; campaign itself also expires after 900s)
 4. Falls back to nearest-distance matching if ML is unreachable
 
 Start the ML service before testing campaigns:

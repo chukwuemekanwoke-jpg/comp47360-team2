@@ -56,7 +56,12 @@ function toRestaurantDetail(row) {
   return detail;
 }
 
-function toCampaignJson(row) {
+function toCampaignJson(row, now = new Date()) {
+  const expiresAt = row.expires_at ? new Date(row.expires_at) : null;
+  const secondsRemaining = expiresAt
+    ? Math.max(0, Math.floor((expiresAt.getTime() - now.getTime()) / 1000))
+    : null;
+
   return {
     id: row.id,
     restaurantId: row.restaurant_id,
@@ -65,6 +70,8 @@ function toCampaignJson(row) {
     tablesClaimed: row.tables_claimed,
     discountPercent: row.discount_percent,
     createdAt: row.created_at.toISOString(),
+    expiresAt: expiresAt ? expiresAt.toISOString() : null,
+    secondsRemaining,
   };
 }
 
