@@ -16,6 +16,7 @@ const { resolveEtaResult } = require("../../services/etaResolver");
 const { getCachedEta, setCachedEta } = require("../../utils/etaCache");
 const { refreshRestaurantBusyness } = require("../../services/busynessService");
 const { getRevpashSummary } = require("../../services/getRevpash");
+const config = require("../../config");
 const {
   benchmarkAvgCheck,
   DEFAULT_CLOSES_AT,
@@ -74,6 +75,14 @@ const RESTAURANT_RETURNING_COLUMNS = `
 `;
 
 async function maybeUpdateUserLocation(pool, req, lat, lng) {
+  // This guest endpoint has no JWT middleware. Only preserve the legacy
+  // X-User-Id location update in explicitly-enabled local/demo environments;
+  // otherwise an arbitrary UUID could be used to overwrite another user's
+  // matching location.
+  if (!config.allowLegacyUserHeader) {
+    return;
+  }
+
   const userId = req.header("X-User-Id");
   if (!userId || !isUuid(userId)) {
     return;
