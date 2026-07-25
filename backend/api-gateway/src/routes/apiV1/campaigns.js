@@ -11,7 +11,6 @@ const { createCampaignOffers } = require("../../services/createCampaignOffers");
 const { getCampaignOffers } = require("../../services/getCampaignOffers");
 const { getCampaignRevpashLift } = require("../../services/getCampaignRevpashLift");
 const { expireOverdueCampaigns } = require("../../services/expireCampaigns");
-const { CAMPAIGN_TTL_SECONDS } = require("../../services/candidateUsers");
 
 const router = Router({ mergeParams: true });
 
@@ -69,7 +68,7 @@ router.post(
   writeRateLimiter,
   asyncHandler(async (req, res) => {
     const pool = getPool();
-    const { tableQuota, discountPercent } = validateCampaignBody(req.body);
+    const { tableQuota, discountPercent, ttlSeconds } = validateCampaignBody(req.body);
 
     const client = await pool.connect();
 
@@ -121,7 +120,7 @@ router.post(
         `INSERT INTO campaigns (restaurant_id, table_quota, discount_percent, expires_at)
          VALUES ($1, $2, $3, NOW() + ($4 * INTERVAL '1 second'))
          RETURNING ${CAMPAIGN_COLUMNS}`,
-        [req.restaurantId, tableQuota, discountPercent, CAMPAIGN_TTL_SECONDS]
+        [req.restaurantId, tableQuota, discountPercent, ttlSeconds]
       );
 
       const campaign = campaignRows[0];
@@ -130,6 +129,7 @@ router.post(
         campaignId: campaign.id,
         restaurant,
         tableQuota,
+        ttlSeconds,
       });
 
       await client.query("COMMIT");

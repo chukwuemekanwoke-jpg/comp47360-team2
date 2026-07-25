@@ -1,5 +1,10 @@
-/** Shared 15-minute TTL for flash-deal offers and lull-mitigation campaigns. */
-const FLASH_DEAL_TTL_SECONDS = 900;
+/** Default / bounds for the single manager-set flash-deal TTL (minutes). */
+const DEFAULT_FLASH_DEAL_TTL_MINUTES = 15;
+const MIN_FLASH_DEAL_TTL_MINUTES = 10;
+const MAX_FLASH_DEAL_TTL_MINUTES = 60;
+
+/** Shared TTL used when callers omit an explicit value (seconds). */
+const FLASH_DEAL_TTL_SECONDS = DEFAULT_FLASH_DEAL_TTL_MINUTES * 60;
 const CAMPAIGN_TTL_SECONDS = FLASH_DEAL_TTL_SECONDS;
 const MATCH_RADIUS_M = 1500;
 
@@ -55,6 +60,9 @@ function toMlCandidates(rows) {
 }
 
 module.exports = {
+  DEFAULT_FLASH_DEAL_TTL_MINUTES,
+  MIN_FLASH_DEAL_TTL_MINUTES,
+  MAX_FLASH_DEAL_TTL_MINUTES,
   FLASH_DEAL_TTL_SECONDS,
   CAMPAIGN_TTL_SECONDS,
   MATCH_RADIUS_M,

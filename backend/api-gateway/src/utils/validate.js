@@ -6,6 +6,11 @@ const {
   parseLocalTime,
   parsePartySize,
 } = require("./revpash");
+const {
+  DEFAULT_FLASH_DEAL_TTL_MINUTES,
+  MIN_FLASH_DEAL_TTL_MINUTES,
+  MAX_FLASH_DEAL_TTL_MINUTES,
+} = require("../services/candidateUsers");
 
 const BUDGET_TIERS = new Set(["TIER_1", "TIER_2", "TIER_3"]);
 const TRANSPORT_MODES = new Set(["walking", "driving", "transit", "cycling"]);
@@ -153,7 +158,7 @@ function parseBodyLatLng(userLat, userLng) {
 }
 
 function validateCampaignBody(body) {
-  const { tableQuota, discountPercent } = body ?? {};
+  const { tableQuota, discountPercent, ttlMinutes } = body ?? {};
 
   if (!Number.isInteger(tableQuota) || tableQuota <= 0) {
     throw new AppError(400, "VALIDATION_ERROR", "tableQuota must be a positive integer");
@@ -167,7 +172,28 @@ function validateCampaignBody(body) {
     );
   }
 
-  return { tableQuota, discountPercent };
+  let resolvedTtlMinutes = DEFAULT_FLASH_DEAL_TTL_MINUTES;
+  if (ttlMinutes !== undefined && ttlMinutes !== null) {
+    if (
+      !Number.isInteger(ttlMinutes)
+      || ttlMinutes < MIN_FLASH_DEAL_TTL_MINUTES
+      || ttlMinutes > MAX_FLASH_DEAL_TTL_MINUTES
+    ) {
+      throw new AppError(
+        400,
+        "VALIDATION_ERROR",
+        `ttlMinutes must be an integer between ${MIN_FLASH_DEAL_TTL_MINUTES} and ${MAX_FLASH_DEAL_TTL_MINUTES}`
+      );
+    }
+    resolvedTtlMinutes = ttlMinutes;
+  }
+
+  return {
+    tableQuota,
+    discountPercent,
+    ttlMinutes: resolvedTtlMinutes,
+    ttlSeconds: resolvedTtlMinutes * 60,
+  };
 }
 
 function parseOptionalBoolean(value, fieldName) {

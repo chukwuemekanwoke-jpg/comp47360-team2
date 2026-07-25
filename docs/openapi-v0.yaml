@@ -1268,6 +1268,14 @@ components:
           type: integer
           minimum: 10
           maximum: 50
+        ttlMinutes:
+          type: integer
+          minimum: 10
+          maximum: 60
+          default: 15
+          description: >
+            Single shared TTL for the campaign and its offers (minutes).
+            Defaults to 15 when omitted.
 
     Campaign:
       type: object

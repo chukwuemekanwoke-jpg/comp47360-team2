@@ -655,7 +655,47 @@ describe("campaign routes", () => {
       campaignId: CAMPAIGN_ID,
       restaurant: expect.objectContaining({ id: RESTAURANT_ID }),
       tableQuota: 3,
+      ttlSeconds: 900,
     });
+  });
+
+  it("creates a campaign with a manager-selected shared TTL", async () => {
+    const client = {
+      query: jest
+        .fn()
+        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: [restaurantRow()] })
+        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({
+          rows: [campaignRow({ expires_at: new Date("2099-01-01T00:30:00.000Z") })],
+        })
+        .mockResolvedValueOnce({ rows: [] }),
+      release: jest.fn(),
+    };
+
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
+      .mockResolvedValueOnce({ rows: [{ id: RESTAURANT_ID, manager_user_id: USER_ID }] });
+    mockPool.connect.mockResolvedValueOnce(client);
+    createCampaignOffers.mockResolvedValueOnce(["offer-1"]);
+
+    const res = await request(app)
+      .post(`/api/v1/restaurants/${RESTAURANT_ID}/campaigns`)
+      .set("X-User-Id", USER_ID)
+      .send({ tableQuota: 3, discountPercent: 20, ttlMinutes: 30 });
+
+    expect(res.status).toBe(201);
+    expect(createCampaignOffers).toHaveBeenCalledWith(client, {
+      campaignId: CAMPAIGN_ID,
+      restaurant: expect.objectContaining({ id: RESTAURANT_ID }),
+      tableQuota: 3,
+      ttlSeconds: 1800,
+    });
+    expect(client.query).toHaveBeenCalledWith(
+      expect.stringContaining("INSERT INTO campaigns"),
+      [RESTAURANT_ID, 3, 20, 1800]
+    );
   });
 
   it("lists offers for a campaign", async () => {
