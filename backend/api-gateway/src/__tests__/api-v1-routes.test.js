@@ -47,6 +47,7 @@ const { createCampaignOffers } = require("../services/createCampaignOffers");
 const { callMlBusyness } = require("../services/mlBusynessClient");
 const { getRevpashSummary } = require("../services/getRevpash");
 const { getCampaignRevpashLift } = require("../services/getCampaignRevpashLift");
+const config = require("../config");
 
 const app = createApp();
 
@@ -234,6 +235,27 @@ describe("restaurant routes", () => {
       availableTableCount: 2,
       distanceMeters: 450,
     });
+  });
+
+  it("does not trust X-User-Id to update location when legacy auth is disabled", async () => {
+    const previous = config.allowLegacyUserHeader;
+    config.allowLegacyUserHeader = false;
+    mockPool.query.mockResolvedValueOnce({ rows: [restaurantRow()] });
+
+    try {
+      const res = await request(app)
+        .get("/api/v1/restaurants/nearby?lat=40.73&lng=-73.99")
+        .set("X-User-Id", USER_ID);
+
+      expect(res.status).toBe(200);
+      expect(mockPool.query).toHaveBeenCalledTimes(1);
+      expect(mockPool.query).not.toHaveBeenCalledWith(
+        expect.stringContaining("UPDATE users"),
+        expect.any(Array)
+      );
+    } finally {
+      config.allowLegacyUserHeader = previous;
+    }
   });
 
   it("geocodes neighborhood when lat/lng are omitted", async () => {

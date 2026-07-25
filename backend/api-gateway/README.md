@@ -26,13 +26,20 @@ npm run dev
 
 Server: `http://localhost:3001`
 
-## Rate limiting
+## Authentication and rate limiting
 
-IP-based limits on sensitive routes (in-memory; fine for single-instance Cloud Run / local MVP):
+Protected routes require a JWT Bearer token in production. The legacy
+`X-User-Id` header is available by default only in development/test for local
+demo compatibility. Keep `ALLOW_LEGACY_USER_HEADER=false` in deployed
+environments; it may be explicitly set to `true` only for a controlled demo.
+
+Sensitive-route limits are in-memory (fine for single-instance Cloud Run /
+local MVP). Auth keys combine endpoint, client IP, and a hashed email or reset
+token, so unrelated users behind one carrier/NAT IP do not share one budget:
 
 | Scope | Default | Routes |
 |-------|---------|--------|
-| Auth | 20 / 15 min | `POST /api/v1/auth/*` |
+| Auth | 20 / 15 min per endpoint + IP + identity | `POST /api/v1/auth/*` |
 | Writes | 60 / 15 min | `POST /bookings`, `POST /restaurants/:id/campaigns` |
 
 Exceeded → `429` `{ "error": { "code": "RATE_LIMITED", ... } }` plus standard `RateLimit-*` headers. Tunable via `RATE_LIMIT_*` in `.env` (see `.env.example`). Off automatically under `NODE_ENV=test`.

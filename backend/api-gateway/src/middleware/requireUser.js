@@ -1,6 +1,7 @@
 const { AppError, isUuid } = require("../errors");
 const { getPool } = require("../db/pool");
 const { verifyAccessToken } = require("../utils/jwt");
+const config = require("../config");
 
 function parseBearerToken(req) {
   const header = req.header("Authorization");
@@ -25,6 +26,12 @@ async function requireUser(req, _res, next) {
   const bearer = parseBearerToken(req);
 
   if (!bearer) {
+    if (!config.allowLegacyUserHeader) {
+      return next(
+        new AppError(401, "UNAUTHORIZED", "Missing Authorization Bearer token")
+      );
+    }
+
     const userId = req.header("X-User-Id");
     if (!userId) {
       return next(
