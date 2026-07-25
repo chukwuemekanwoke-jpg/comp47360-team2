@@ -1,8 +1,13 @@
-const { findNearbyCandidates, toMlCandidates } = require("./candidateUsers");
+const { findNearbyCandidates, toMlCandidates, FLASH_DEAL_TTL_SECONDS } = require("./candidateUsers");
 const { insertOffersForUsers } = require("./offerInsert");
 const { callMlMatch } = require("./mlMatchClient");
 
-async function createCampaignOffers(client, { campaignId, restaurant, tableQuota }) {
+async function createCampaignOffers(client, {
+  campaignId,
+  restaurant,
+  tableQuota,
+  ttlSeconds = FLASH_DEAL_TTL_SECONDS,
+}) {
   const candidateLimit = Math.max(tableQuota, 1);
   const fetchLimit = Math.max(candidateLimit, 10);
 
@@ -32,6 +37,7 @@ async function createCampaignOffers(client, { campaignId, restaurant, tableQuota
     return insertOffersForUsers(client, {
       campaignId,
       userIds: match.matchedUserIds,
+      ttlSeconds,
     });
   } catch (err) {
     console.warn(`[BE-14] ML match unavailable, using distance fallback: ${err.message}`);
@@ -43,6 +49,7 @@ async function createCampaignOffers(client, { campaignId, restaurant, tableQuota
     return insertOffersForUsers(client, {
       campaignId,
       userIds: fallbackUserIds,
+      ttlSeconds,
     });
   }
 }
