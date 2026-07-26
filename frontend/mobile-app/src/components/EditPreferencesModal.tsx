@@ -47,7 +47,8 @@ export default function EditPreferencesModal({
       await triggerUpdatePreferences({
         userId,
         budgetTier: priceLevelToBudgetTier(maxPriceLevel),
-        dietaryTags: [...favoriteCuisines, diningStyle],
+        preferredCuisines: favoriteCuisines,
+        diningStyles: [diningStyle],
       }).unwrap();
       onClose();
     } catch (error) {

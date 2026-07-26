@@ -25,10 +25,11 @@ async function findNearbyCandidates(client, { restaurant, limit }) {
     `WITH nearby_users AS (
        SELECT
          u.id,
-         u.budget_tier,
-         u.dietary_tags,
+         p.budget_tier,
+         p.dietary_restrictions AS dietary_tags,
          ${HAVERSINE_SQL} AS distance_meters
        FROM users u
+       JOIN user_preferences p ON p.user_id = u.id
        WHERE u.last_lat IS NOT NULL
          AND u.last_lng IS NOT NULL
          AND u.id IS DISTINCT FROM $4

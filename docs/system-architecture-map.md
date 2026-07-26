@@ -82,6 +82,7 @@ erDiagram
   users ||--o{ bookings : places
   users ||--o{ offers : receives
   users ||--o{ restaurants : manages
+  users ||--|| user_preferences : has
   restaurants ||--o{ campaigns : runs
   restaurants ||--o{ bookings : hosts
   restaurants ||--o{ availability_snapshots : logs
@@ -92,8 +93,14 @@ erDiagram
   users {
     uuid id PK
     text email
+  }
+
+  user_preferences {
+    uuid user_id PK,FK
     budget_tier budget_tier
-    text_array dietary_tags
+    text_array dietary_restrictions
+    text_array preferred_cuisines
+    text_array dining_styles
   }
 
   restaurants {
@@ -130,11 +137,14 @@ erDiagram
   }
 ```
 
-**`users`** — consumer profiles. `id` (UUID PK), `display_name`, `email`,
-`password_hash`, `token_version` (JWT revocation), `budget_tier`
-(enum `TIER_1`/`TIER_2`/`TIER_3` → €/€€/€€€), `dietary_tags` (`TEXT[]`, ML
-feature), `last_lat`/`last_lng`. Auth is JWT-based (`Authorization: Bearer`);
+**`users`** — account/profile identity. `id` (UUID PK), `display_name`, `email`,
+`password_hash`, `token_version` (JWT revocation), and `last_lat`/`last_lng`.
+Auth is JWT-based (`Authorization: Bearer`);
 seed data can use a fixed UUID via an interim `X-User-Id` header.
+
+**`user_preferences`** — one-to-one categorized consumer preferences:
+`budget_tier` (enum `TIER_1`/`TIER_2`/`TIER_3` → €/€€/€€€),
+`dietary_restrictions`, `preferred_cuisines`, and `dining_styles` (`TEXT[]`).
 
 **`restaurants`** — Manhattan venue master data. `id` (UUID PK), `name`,
 `latitude`/`longitude` (validated -90..90 / -180..180), `neighborhood`,

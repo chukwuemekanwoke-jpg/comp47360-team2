@@ -66,7 +66,7 @@ Exceeded → `429` `{ "error": { "code": "RATE_LIMITED", ... } }` plus standard 
 | POST | `/api/v1/auth/logout` | Bearer JWT | Invalidate current JWT |
 | POST | `/api/v1/auth/logout` | JWT | Invalidate current token (server-side logout) |
 | GET | `/api/v1/users/me` | JWT or `X-User-Id` | Current user profile |
-| PATCH | `/api/v1/users/me/preferences` | JWT or `X-User-Id` | Update budget, dietary tags, location |
+| PATCH | `/api/v1/users/me/preferences` | JWT or `X-User-Id` | Update categorized preferences and/or location |
 
 ### Discovery (BE-11)
 
@@ -143,7 +143,7 @@ curl http://localhost:3001/api/v1/users/me \
 curl -X PATCH http://localhost:3001/api/v1/users/me/preferences \
   -H 'Content-Type: application/json' \
   -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001' \
-  -d '{"budgetTier":"TIER_2","dietaryTags":["vegan"],"lastLat":40.7589,"lastLng":-73.9851}'
+  -d '{"budgetTier":"TIER_2","dietaryTags":["vegan"],"preferredCuisines":["Japanese"],"diningStyles":["casual"],"lastLat":40.7589,"lastLng":-73.9851}'
 
 # Nearby discovery (Times Square demo origin)
 curl 'http://localhost:3001/api/v1/restaurants/nearby?lat=40.7589&lng=-73.9851'

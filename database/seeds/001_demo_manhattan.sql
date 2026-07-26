@@ -38,6 +38,30 @@ ON CONFLICT (id) DO UPDATE SET
   email = EXCLUDED.email,
   password_hash = EXCLUDED.password_hash;
 
+INSERT INTO user_preferences (
+  user_id, budget_tier, dietary_restrictions, preferred_cuisines, dining_styles
+)
+VALUES
+  (
+    '550e8400-e29b-41d4-a716-446655440001',
+    'TIER_2',
+    ARRAY['vegan'],
+    '{}',
+    '{}'
+  ),
+  (
+    '550e8400-e29b-41d4-a716-446655440002',
+    NULL,
+    '{}',
+    '{}',
+    '{}'
+  )
+ON CONFLICT (user_id) DO UPDATE SET
+  budget_tier = EXCLUDED.budget_tier,
+  dietary_restrictions = EXCLUDED.dietary_restrictions,
+  preferred_cuisines = EXCLUDED.preferred_cuisines,
+  dining_styles = EXCLUDED.dining_styles;
+
 -- ---------------------------------------------------------------------------
 -- Demo restaurants (Manhattan — fictional names, realistic coordinates)
 -- available_table_count = 0 rows are intentional (Story 2.1 filter test)

@@ -9,6 +9,7 @@ erDiagram
   users ||--o{ bookings : places
   users ||--o{ offers : receives
   users ||--o{ restaurants : manages
+  users ||--|| user_preferences : has
   restaurants ||--o{ campaigns : runs
   restaurants ||--o{ bookings : hosts
   restaurants ||--o{ availability_snapshots : logs
@@ -18,8 +19,16 @@ erDiagram
 
   users {
     uuid id PK
+    text email
+    text display_name
+  }
+
+  user_preferences {
+    uuid user_id PK,FK
     budget_tier budget_tier
-    text_array dietary_tags
+    text_array dietary_restrictions
+    text_array preferred_cuisines
+    text_array dining_styles
   }
 
   restaurants {
@@ -58,7 +67,7 @@ erDiagram
 
 | Story | Requirement | Tables / columns |
 |-------|-------------|----------------|
-| **1.1** Onboarding | Budget tier + dietary tags → PostgreSQL for ML | `users.budget_tier`, `users.dietary_tags` |
+| **1.1** Onboarding | Categorized preferences → PostgreSQL for ML | `user_preferences.budget_tier`, `dietary_restrictions`, `preferred_cuisines`, `dining_styles` |
 | **2.1** Discovery | Within 1.5 km, `available_table_count > 0` | `restaurants.latitude`, `restaurants.longitude`, `restaurants.available_table_count`; query uses haversine (app/SQL) — see README |
 | **3.1 / 3.2** Booking | 15 min hold vs ETA | `restaurants.hold_window_minutes`, `bookings.eta_minutes`, `bookings.hold_expires_at`, `bookings.transport_mode` |
 | **4.1** Offers | 900 s TTL, disable accept when expired | `offers.expires_at`, `offers.status` (`pending` → `expired` via app or scheduled job) |
@@ -84,8 +93,16 @@ Consumer profiles. Auth via JWT (`Authorization: Bearer`); seed data may use fix
 - `password_hash`: bcrypt hash; null for users without credentials
 - `token_version`: incremented on logout to invalidate outstanding JWTs
 - `password_reset_token_hash` / `password_reset_expires_at`: single-use forgot-password flow
+- `budget_tier` / `dietary_tags`: temporary compatibility mirror retained by migration 011 for rollback
+
+### `user_preferences`
+
+One-to-one categorized preference record keyed by `user_id`.
+
 - `budget_tier`: `TIER_1` \| `TIER_2` \| `TIER_3` (UI labels € / €€ / €€€)
-- `dietary_tags`: PostgreSQL `TEXT[]` for ML features
+- `dietary_restrictions`: requirements such as vegan, halal, or gluten-free
+- `preferred_cuisines`: explicit cuisine choices used by onboarding/matching
+- `dining_styles`: casual, family, date-night, or business contexts
 
 ### `restaurants`
 
@@ -164,7 +181,8 @@ Radius constant for discovery: **1500 metres** (product spec).
 
 Columns likely used as model features:
 
-- `users`: `budget_tier`, `dietary_tags`, `last_lat`, `last_lng`
+- `user_preferences`: `budget_tier`, `dietary_restrictions`, `preferred_cuisines`, `dining_styles`
+- `users`: `last_lat`, `last_lng`
 - `restaurants`: `busyness_score`, `neighborhood`, EDI flags
 - `availability_snapshots`: time-series busyness for training
 

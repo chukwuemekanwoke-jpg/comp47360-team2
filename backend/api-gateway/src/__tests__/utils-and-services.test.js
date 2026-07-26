@@ -258,6 +258,9 @@ describe("cache and offer helper services", () => {
       "manager-1",
       2,
     ]);
+    expect(client.query.mock.calls[0][0]).toContain(
+      "JOIN user_preferences p ON p.user_id = u.id"
+    );
     expect(toMlCandidates(rows)).toEqual([
       {
         userId: "user-1",

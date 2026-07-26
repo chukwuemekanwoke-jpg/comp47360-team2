@@ -22,6 +22,14 @@ VALUES
   ('550e8400-e29b-41d4-a716-446655440002', 'Demo Manager', NULL, '{}', NULL, NULL)
 ON CONFLICT (id) DO NOTHING;
 
+INSERT INTO user_preferences (
+  user_id, budget_tier, dietary_restrictions, preferred_cuisines, dining_styles
+)
+VALUES
+  ('550e8400-e29b-41d4-a716-446655440001', 'TIER_2', ARRAY['vegan'], '{}', '{}'),
+  ('550e8400-e29b-41d4-a716-446655440002', NULL, '{}', '{}', '{}')
+ON CONFLICT (user_id) DO NOTHING;
+
 INSERT INTO restaurants (
   id, name, latitude, longitude, address_line, neighborhood,
   hold_window_minutes, available_table_count, busyness_score,
