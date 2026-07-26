@@ -61,6 +61,17 @@ erDiagram
     int eta_minutes
     timestamptz hold_expires_at
   }
+
+  historical_taxi_demand {
+    smallint source_year PK
+    smallint taxi_zone_id PK
+    smallint month PK
+    smallint weekday PK
+    smallint hour PK
+    int dropoff_count
+    bigint passenger_count_sum
+    float avg_trip_distance
+  }
 ```
 
 ## P0 user story mapping
@@ -73,6 +84,7 @@ erDiagram
 | **4.1** Offers | 900 s TTL, disable accept when expired | `offers.expires_at`, `offers.status` (`pending` → `expired` via app or scheduled job) |
 | **5.2** Dashboard | Campaign `active` → `completed` when quota filled | `campaigns.table_quota`, `campaigns.tables_claimed`, `campaigns.status`; trigger revokes pending `offers` |
 | **5.1** RevPASH | Revenue per available seat hour | `restaurants.opens_at`, `closes_at`, `avg_check_per_cover`; `bookings.party_size`, `seated_at`, `check_amount`, `duration_minutes` |
+| Historical traffic proxy | Store yearly taxi-demand aggregates for model features | `historical_taxi_demand.source_year`, `taxi_zone_id`, `month`, `weekday`, `hour`, `dropoff_count` |
 
 ### P1 (schema-ready, optional for demo data)
 
@@ -152,6 +164,16 @@ Standard or deal-backed reservations.
 
 Append-only history for simulated availability (see [docs/data-strategy.md](../docs/data-strategy.md)).
 
+### `historical_taxi_demand`
+
+Static taxi drop-off aggregates for ML proxy features. The composite primary key
+enforces one row per source year, taxi zone, month, weekday, and hour.
+
+- `weekday`: Pandas convention, Monday `0` through Sunday `6`
+- `dropoff_count` / `passenger_count_sum`: non-negative aggregate counts
+- `avg_trip_distance`: nullable non-negative mean distance in miles
+- Migration 012 creates only the schema; importing source data is a separate operation
+
 ### `restaurant_revpash_hourly` (view)
 
 Hourly RevPASH buckets in **America/New_York** local time.
@@ -185,5 +207,6 @@ Columns likely used as model features:
 - `users`: `last_lat`, `last_lng`
 - `restaurants`: `busyness_score`, `neighborhood`, EDI flags
 - `availability_snapshots`: time-series busyness for training
+- `historical_taxi_demand`: static zone/time taxi-demand proxy features
 
 Matching output creates `offers` rows for a `campaign_id` + `user_id`.
