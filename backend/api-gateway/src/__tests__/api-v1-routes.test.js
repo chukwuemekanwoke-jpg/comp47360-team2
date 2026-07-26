@@ -63,6 +63,8 @@ function userRow(overrides = {}) {
     display_name: "Yuhao",
     budget_tier: null,
     dietary_tags: [],
+    preferred_cuisines: [],
+    dining_styles: [],
     last_lat: null,
     last_lng: null,
     created_at: NOW,
@@ -160,18 +162,27 @@ describe("users routes", () => {
   });
 
   it("updates preferences and returns normalized coordinates", async () => {
-    mockPool.query
-      .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
-      .mockResolvedValueOnce({
-        rows: [
-          userRow({
-            budget_tier: "TIER_2",
-            dietary_tags: ["vegetarian"],
-            last_lat: "40.73",
-            last_lng: "-73.99",
-          }),
-        ],
-      });
+    const updatedUser = userRow({
+      budget_tier: "TIER_2",
+      dietary_tags: ["vegetarian"],
+      preferred_cuisines: ["Japanese"],
+      dining_styles: ["casual"],
+      last_lat: "40.73",
+      last_lng: "-73.99",
+    });
+    const client = {
+      query: jest
+        .fn()
+        .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [] }) // defensive preference INSERT
+        .mockResolvedValueOnce({ rows: [] }) // preference UPDATE
+        .mockResolvedValueOnce({ rows: [] }) // location UPDATE
+        .mockResolvedValueOnce({ rows: [updatedUser] }) // joined profile SELECT
+        .mockResolvedValueOnce({ rows: [] }), // COMMIT
+      release: jest.fn(),
+    };
+    mockPool.query.mockResolvedValueOnce({ rows: [{ id: USER_ID }] });
+    mockPool.connect.mockResolvedValueOnce(client);
 
     const res = await request(app)
       .patch("/api/v1/users/me/preferences")
@@ -179,6 +190,8 @@ describe("users routes", () => {
       .send({
         budgetTier: "TIER_2",
         dietaryTags: ["vegetarian"],
+        preferredCuisines: ["Japanese"],
+        diningStyles: ["casual"],
         lastLat: 40.73,
         lastLng: -73.99,
       });
@@ -187,9 +200,16 @@ describe("users routes", () => {
     expect(res.body).toMatchObject({
       budgetTier: "TIER_2",
       dietaryTags: ["vegetarian"],
+      preferredCuisines: ["Japanese"],
+      diningStyles: ["casual"],
       lastLat: 40.73,
       lastLng: -73.99,
     });
+    expect(client.query).toHaveBeenCalledWith(
+      expect.stringContaining("UPDATE user_preferences"),
+      ["TIER_2", ["vegetarian"], ["Japanese"], ["casual"], USER_ID]
+    );
+    expect(client.release).toHaveBeenCalled();
   });
 
   it("returns bookings for the signed-in user", async () => {

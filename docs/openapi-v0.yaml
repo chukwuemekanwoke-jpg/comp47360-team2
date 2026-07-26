@@ -893,6 +893,14 @@ components:
           type: array
           items:
             type: string
+        preferredCuisines:
+          type: array
+          items:
+            type: string
+        diningStyles:
+          type: array
+          items:
+            type: string
         createdAt:
           type: string
           format: date-time
@@ -967,11 +975,19 @@ components:
 
     UserPreferences:
       type: object
-      required: [budgetTier, dietaryTags]
+      minProperties: 1
       properties:
         budgetTier:
           $ref: "#/components/schemas/BudgetTier"
         dietaryTags:
+          type: array
+          items:
+            type: string
+        preferredCuisines:
+          type: array
+          items:
+            type: string
+        diningStyles:
           type: array
           items:
             type: string

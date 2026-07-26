@@ -4,6 +4,8 @@ function toUserJson(row) {
     displayName: row.display_name,
     budgetTier: row.budget_tier,
     dietaryTags: row.dietary_tags ?? [],
+    preferredCuisines: row.preferred_cuisines ?? [],
+    diningStyles: row.dining_styles ?? [],
     createdAt: row.created_at.toISOString(),
   };
 

@@ -128,8 +128,19 @@ export const tableApi = createApi({
       query: () => '/config/maps-key',
     }),
 
-    updatePreferences: builder.mutation<UserProfile, { userId: string; budgetTier: BudgetTier; dietaryTags: string[]; lastLat?: number; lastLng?: number }>({
-      query: ({ userId, ...body }: { userId: string; budgetTier: BudgetTier; dietaryTags: string[]; lastLat?: number; lastLng?: number }) => ({
+    updatePreferences: builder.mutation<
+      UserProfile,
+      {
+        userId: string;
+        budgetTier?: BudgetTier;
+        dietaryTags?: string[];
+        preferredCuisines?: string[];
+        diningStyles?: string[];
+        lastLat?: number;
+        lastLng?: number;
+      }
+    >({
+      query: ({ userId, ...body }) => ({
         url: '/users/me/preferences',
         method: 'PATCH',
         body,

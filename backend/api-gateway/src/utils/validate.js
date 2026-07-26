@@ -125,10 +125,29 @@ function validateBudgetTier(value) {
   }
 }
 
-function validateDietaryTags(value) {
-  if (!Array.isArray(value) || !value.every((tag) => typeof tag === "string")) {
-    throw new AppError(400, "VALIDATION_ERROR", "dietaryTags must be an array of strings");
+function validateStringArray(value, fieldName) {
+  if (
+    !Array.isArray(value)
+    || !value.every((item) => typeof item === "string" && item.trim() !== "")
+  ) {
+    throw new AppError(
+      400,
+      "VALIDATION_ERROR",
+      `${fieldName} must be an array of non-empty strings`
+    );
   }
+}
+
+function validateDietaryTags(value) {
+  validateStringArray(value, "dietaryTags");
+}
+
+function validatePreferredCuisines(value) {
+  validateStringArray(value, "preferredCuisines");
+}
+
+function validateDiningStyles(value) {
+  validateStringArray(value, "diningStyles");
 }
 
 function requireNonEmptyString(value, fieldName) {
@@ -308,6 +327,8 @@ module.exports = {
   validateRestaurantSettingsBody,
   validateBudgetTier,
   validateDietaryTags,
+  validatePreferredCuisines,
+  validateDiningStyles,
   requireNonEmptyString,
   parsePartySize,
   parseBookingStatus,

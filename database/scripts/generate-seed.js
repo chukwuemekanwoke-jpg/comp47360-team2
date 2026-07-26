@@ -292,6 +292,14 @@ VALUES
   ('${DEMO_MANAGER_ID}', 'Demo Manager', NULL, '{}', NULL, NULL)
 ON CONFLICT (id) DO NOTHING;
 
+INSERT INTO user_preferences (
+  user_id, budget_tier, dietary_restrictions, preferred_cuisines, dining_styles
+)
+VALUES
+  ('${DEMO_DINER_ID}', 'TIER_2', ARRAY['vegan'], '{}', '{}'),
+  ('${DEMO_MANAGER_ID}', NULL, '{}', '{}', '{}')
+ON CONFLICT (user_id) DO NOTHING;
+
 INSERT INTO restaurants (
   id, name, latitude, longitude, address_line, neighborhood,
   hold_window_minutes, available_table_count, busyness_score,

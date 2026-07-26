@@ -74,14 +74,18 @@ export default function ProfileScreen() {
     );
   }
 
-  // Onboarding persists favourite cuisines and dining style together in
-  // dietaryTags (see PreferenceEditor) — split them back apart for display.
+  // Prefer the categorized fields introduced with user_preferences. The
+  // dietaryTags fallback keeps the profile readable during a rolling deploy.
+  const legacyCuisines = user.dietaryTags.filter(
+    (tag) => !DINING_STYLES.includes(tag as DiningStyle)
+  );
+  const legacyDiningStyle = user.dietaryTags.find((tag) =>
+    DINING_STYLES.includes(tag as DiningStyle)
+  );
   const profile = {
     name: user.displayName,
-    favoriteCuisines: user.dietaryTags.filter((t) => !DINING_STYLES.includes(t as DiningStyle)),
-    diningStyle: (user.dietaryTags.find((t) =>
-      DINING_STYLES.includes(t as DiningStyle)
-    ) ?? "casual") as DiningStyle,
+    favoriteCuisines: user.preferredCuisines ?? legacyCuisines,
+    diningStyle: (user.diningStyles?.[0] ?? legacyDiningStyle ?? "casual") as DiningStyle,
     maxPriceLevel: user.budgetTier ? TIER_PRICE_LEVEL[user.budgetTier] : 1,
   };
 

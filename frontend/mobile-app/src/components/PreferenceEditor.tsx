@@ -4,7 +4,7 @@ import { navColors } from "@/theme";
 import { CUISINES } from "@shared/constants";
 
 // Single source of truth for the onboarding/profile preference vocabulary.
-// dietaryTags on the backend stores cuisines and the dining style together.
+// Cuisines and dining styles are persisted in their own categorized fields.
 export type DiningStyle = "casual" | "family" | "date-night" | "business";
 export type BudgetTier = "TIER_1" | "TIER_2" | "TIER_3";
 

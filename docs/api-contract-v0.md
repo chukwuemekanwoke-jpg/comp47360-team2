@@ -255,6 +255,8 @@ Create consumer after dummy login.
   "displayName": "Alex",
   "budgetTier": null,
   "dietaryTags": [],
+  "preferredCuisines": [],
+  "diningStyles": [],
   "createdAt": "2026-06-02T10:00:00.000Z"
 }
 ```
@@ -268,7 +270,9 @@ Create consumer after dummy login.
 ```json
 {
   "budgetTier": "TIER_2",
-  "dietaryTags": ["vegan", "halal"],
+  "dietaryTags": ["vegan"],
+  "preferredCuisines": ["Italian", "Japanese"],
+  "diningStyles": ["casual"],
   "lastLat": 40.758,
   "lastLng": -73.9855
 }
@@ -278,8 +282,11 @@ Create consumer after dummy login.
 
 **Validation:**
 
-- `budgetTier`: required for onboarding complete; one of `TIER_1` | `TIER_2` | `TIER_3`
-- `dietaryTags`: array of strings; use `[]` or `["none"]` for no restriction
+- At least one field must be provided; partial preference updates are supported.
+- `budgetTier`: one of `TIER_1` | `TIER_2` | `TIER_3`
+- `dietaryTags`: dietary restrictions such as `vegan`, `halal`, or `gluten-free`
+- `preferredCuisines`: categorized cuisine preferences
+- `diningStyles`: dining contexts such as `casual`, `family`, `date-night`, or `business`
 
 #### `GET /api/v1/users/me`
 
