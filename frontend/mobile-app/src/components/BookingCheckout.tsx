@@ -8,6 +8,7 @@ import { RestaurantSummary, TransportMode } from "@shared/types";
 import { useCreateBookingMutation, useGetRestaurantEtaQuery } from "@shared/apiSlice";
 import { useAppSelector } from "@shared/hooks";
 import { navColors } from "@/theme";
+import { formatCuisine } from "@/lib/cuisineImages";
 import { TRAVEL_METHODS } from "@shared/constants";
 
 interface BookingModalProps {
@@ -82,7 +83,9 @@ export default function BookingModal({
       <View className="mb-5">
         <Text className="text-lg font-bold text-table-cream">Confirm Booking</Text>
         <Text className="text-sm text-table-gold mt-1">{restaurant.name}</Text>
-        <Text className="text-xs text-table-cream/60 mt-0.5">{restaurant.cuisine} Cuisine</Text>
+        <Text className="text-xs text-table-cream/60 mt-0.5">
+          {formatCuisine(restaurant.cuisine)} Cuisine
+        </Text>
       </View>
 
       <Text className="text-xs font-bold uppercase tracking-widest text-table-gold mb-3">

@@ -5,16 +5,13 @@ import { RestaurantSummary } from "@shared/types";
 import { busynessColor, busynessLabel } from "@shared/restaurantFilters";
 import { useAppSelector } from "@shared/hooks";
 import { cuisineImage, formatCuisine } from "@/lib/cuisineImages";
+import { formatDistance } from "@/lib/format";
+import RatingBadge from "@/components/RatingBadge";
 import { navColors } from "@/theme";
 
 interface RestaurantCardProps {
   restaurant: RestaurantSummary;
   onBook?: (restaurant: RestaurantSummary) => void;
-}
-
-function formatDistance(meters: number): string {
-  if (meters < 1000) return `${Math.round(meters)} m`;
-  return `${(meters / 1000).toFixed(1)} km`;
 }
 
 // memo: list rows must not re-render when the parent list re-renders
@@ -61,6 +58,8 @@ function RestaurantCard({ restaurant: r, onBook }: RestaurantCardProps) {
             <Text className="text-sm font-bold text-table-cream">{r.name}</Text>
             <Text className="text-xs text-table-gold mt-0.5">{formatCuisine(r.cuisine)}</Text>
           </View>
+
+          <RatingBadge rating={r.rating} reviews={r.reviews} />
         </View>
 
         {/* Stats */}

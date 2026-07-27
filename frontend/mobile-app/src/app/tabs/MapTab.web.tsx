@@ -1,4 +1,4 @@
-import React, { useMemo, useState, lazy, Suspense } from "react"; // Added lazy & Suspense
+import React, { useCallback, useMemo, useState, lazy, Suspense } from "react"; // Added lazy & Suspense
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import BackendHealthCard from "@/components/BackendHealth";
@@ -11,7 +11,10 @@ import { applyRestaurantFilters, busynessColor, busynessLabel } from "@shared/re
 import { RestaurantSummary } from "@shared/types";
 import { useAppSelector } from "@shared/hooks";
 import LocationComponent from "@/components/LocationComponent";
-import { MapMarkerEntry } from "@/lib/mapDisplay";
+import RatingBadge from "@/components/RatingBadge";
+import { MapFocus, MapMarkerEntry } from "@/lib/mapDisplay";
+import { formatCuisine } from "@/lib/cuisineImages";
+import { formatDistance } from "@/lib/format";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { navColors } from "@/theme";
 
@@ -67,6 +70,21 @@ export default function MapScreen() {
     visibleMarkers ??
     restaurantsList.map((r: RestaurantSummary) => ({ restaurant: r, highlighted: false }));
 
+  // Tapping a row in the nearby list drives the leaflet camera to that
+  // restaurant. The id is tracked purely so the tapped row can show it's the
+  // focused one — the list is long enough that the map moving is easy to miss.
+  const [focus, setFocus] = useState<MapFocus | null>(null);
+  const [focusedId, setFocusedId] = useState<string | null>(null);
+
+  const focusOnMap = useCallback((r: RestaurantSummary) => {
+    setFocusedId(r.id);
+    setFocus((prev) => ({
+      latitude: r.latitude,
+      longitude: r.longitude,
+      token: (prev?.token ?? 0) + 1,
+    }));
+  }, []);
+
   return (
     <View className="flex-1 bg-table-canvas">
       {/* ── Search + filter toggle — the panel itself overlays the screen ── */}
@@ -108,6 +126,7 @@ export default function MapScreen() {
               userLocation={userLocation}
               onViewDetails={(id) => router.push({ pathname: "/tabs/CardTab", params: { focusId: id } })}
               onVisibleRestaurantsChange={setVisibleMarkers}
+              focus={focus}
             />
           </Suspense>
 
@@ -138,14 +157,23 @@ export default function MapScreen() {
               </Text>
             )}
             {nearbyList.map(({ restaurant: r, highlighted }: MapMarkerEntry) => (
-              <View key={r.id} className="bg-table-surface border border-table-border rounded-2xl p-4 mb-3">
+              <TouchableOpacity
+                key={r.id}
+                onPress={() => focusOnMap(r)}
+                activeOpacity={0.85}
+                accessibilityRole="button"
+                accessibilityLabel={`Show ${r.name} on the map`}
+                className={`bg-table-surface border rounded-2xl p-4 mb-3 ${
+                  focusedId === r.id ? "border-table-teal" : "border-table-border"
+                }`}
+              >
                 <View className="flex-row items-start justify-between mb-2">
                   <View className="flex-1 mr-3">
                     <Text className="text-sm font-bold text-table-cream">
                       {highlighted ? "★ " : ""}{r.name}
                     </Text>
                     <Text className="text-xs text-table-gold mt-0.5">
-                      {r.cuisine} · {r.distanceMeters < 1000 ? `${Math.round(r.distanceMeters)} m` : `${(r.distanceMeters / 1000).toFixed(1)} km`}
+                      {formatCuisine(r.cuisine)} · {formatDistance(r.distanceMeters)}
                     </Text>
                   </View>
                   <View className="px-2 py-1 rounded-lg" style={{ backgroundColor: hexToRgba(busynessColor(r.busynessScore), 0.1) }}>
@@ -156,11 +184,12 @@ export default function MapScreen() {
                 </View>
 
                 <View className="flex-row items-center justify-between border-t border-table-border pt-2 mt-1">
-                  <View className="flex-row gap-4">
+                  <View className="flex-row items-center gap-4">
                     <Text className="text-xs text-table-gold">
                       <MaterialCommunityIcons name="seat-outline" size={12} color={colors.gold} />{" "}
                       <Text className="text-table-live font-bold">{r.availableTableCount} free</Text>
                     </Text>
+                    <RatingBadge rating={r.rating} reviews={r.reviews} />
                   </View>
                   <TouchableOpacity
                     onPress={() => setSelectedRestaurant(r)}
@@ -172,7 +201,7 @@ export default function MapScreen() {
                     </Text>
                   </TouchableOpacity>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
             <BackendHealthCard/>
           </ScrollView>

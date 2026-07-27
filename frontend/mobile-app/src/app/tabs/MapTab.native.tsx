@@ -3,6 +3,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, RefreshControl } from "react-native";
 import MapView, { Marker, Callout, Region } from "react-native-maps";
 import {
+  FOCUS_DELTA,
   FULL_DETAIL_ZOOM,
   MapBounds,
   regionToViewport,
@@ -17,14 +18,12 @@ import { RestaurantSummary } from "@shared/types";
 import FilterBar, { FilterSheet } from "@/components/FilterBar";
 import DraggableSheet from "@/components/DraggableSheet";
 import LocationComponent from "@/components/LocationComponent";
+import RatingBadge from "@/components/RatingBadge";
+import { formatCuisine } from "@/lib/cuisineImages";
+import { formatDistance, formatRating } from "@/lib/format";
 import BookingModal from "@/components/BookingCheckout";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { navColors } from "@/theme";
-
-function formatDistance(meters: number): string {
-  if (meters < 1000) return `${Math.round(meters)} m`;
-  return `${(meters / 1000).toFixed(1)} km`;
-}
 
 export default function MapScreen() {
   const router = useRouter();
@@ -80,6 +79,24 @@ export default function MapScreen() {
   );
 
   const zoomedOut = effectiveViewport.zoom < FULL_DETAIL_ZOOM;
+
+  // Tapping a row in the nearby list drives the camera to that restaurant.
+  // The id is tracked purely so the tapped row can show it's the focused one —
+  // the list is long enough that the map moving on its own is easy to miss.
+  const [focusedId, setFocusedId] = useState<string | null>(null);
+
+  const focusOnMap = useCallback((r: RestaurantSummary) => {
+    setFocusedId(r.id);
+    mapRef.current?.animateToRegion(
+      {
+        latitude: r.latitude,
+        longitude: r.longitude,
+        latitudeDelta: FOCUS_DELTA,
+        longitudeDelta: FOCUS_DELTA,
+      },
+      400
+    );
+  }, []);
 
   // initialRegion only applies once, at mount — when a real GPS fix lands
   // after that (the common case, since location resolves asynchronously),
@@ -197,7 +214,19 @@ export default function MapScreen() {
                     <Text style={{ fontWeight: "700", fontSize: 13 }}>
                       {highlighted ? "★ " : ""}{r.name}
                     </Text>
-                    <Text style={{ fontSize: 11, color: "#71717a", marginTop: 2 }}>{r.cuisine}</Text>
+                    <Text style={{ fontSize: 11, color: "#71717a", marginTop: 2 }}>
+                      {formatCuisine(r.cuisine)}
+                    </Text>
+                    {/* Plain "★" rather than <RatingBadge>: the callout is
+                        rasterised by react-native-maps, which renders icon
+                        fonts blank on Android. Colours are hardcoded here for
+                        the same reason the rest of this callout is — it sits
+                        on the map's own surface, not the themed canvas. */}
+                    {r.rating != null && (
+                      <Text style={{ fontSize: 11, color: "#b45309", marginTop: 2, fontWeight: "600" }}>
+                        {formatRating(r.rating, r.reviews)}
+                      </Text>
+                    )}
                     <Text style={{ fontSize: 11, marginTop: 4 }}>
                       {busynessLabel(r.busynessScore)} · {r.availableTableCount} free
                     </Text>
@@ -272,9 +301,15 @@ export default function MapScreen() {
             )}
 
             {markers.map(({ restaurant: r, highlighted }) => (
-              <View
+              <TouchableOpacity
                 key={r.id}
-                className="bg-table-surface border border-table-border rounded-2xl p-4 mb-3"
+                onPress={() => focusOnMap(r)}
+                activeOpacity={0.85}
+                accessibilityRole="button"
+                accessibilityLabel={`Show ${r.name} on the map`}
+                className={`bg-table-surface border rounded-2xl p-4 mb-3 ${
+                  focusedId === r.id ? "border-table-teal" : "border-table-border"
+                }`}
               >
                 <View className="flex-row items-start justify-between mb-2">
                   <View className="flex-1 mr-3">
@@ -282,7 +317,7 @@ export default function MapScreen() {
                       {highlighted ? "★ " : ""}{r.name}
                     </Text>
                     <Text className="text-xs text-table-gold mt-0.5">
-                      {r.cuisine} · {formatDistance(r.distanceMeters)}
+                      {formatCuisine(r.cuisine)} · {formatDistance(r.distanceMeters)}
                     </Text>
                   </View>
                   <View
@@ -299,11 +334,12 @@ export default function MapScreen() {
                 </View>
 
                 <View className="flex-row items-center justify-between border-t border-table-border pt-2 mt-1">
-                  <View className="flex-row gap-4">
+                  <View className="flex-row items-center gap-4">
                     <Text className="text-xs text-table-gold">
                       <MaterialCommunityIcons name="seat-outline" size={12} color={colors.gold} />{" "}
                       <Text className="text-table-live font-bold">{r.availableTableCount} free</Text>
                     </Text>
+                    <RatingBadge rating={r.rating} reviews={r.reviews} />
                   </View>
                   <TouchableOpacity
                     onPress={() => setSelectedRestaurant(r)}
@@ -315,7 +351,7 @@ export default function MapScreen() {
                     </Text>
                   </TouchableOpacity>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </ScrollView>
         </DraggableSheet>

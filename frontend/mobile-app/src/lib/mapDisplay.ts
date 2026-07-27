@@ -23,6 +23,16 @@ export interface MapMarkerEntry {
   highlighted: boolean;
 }
 
+// A request to recentre the map, raised by tapping a row in the nearby list.
+export interface MapFocus {
+  latitude: number;
+  longitude: number;
+  token: number;
+}
+
+// Span to zoom to when focusing one restaurant (~900m)
+export const FOCUS_DELTA = 0.008;
+
 // Heuristic for "most desirable": plenty of free tables and not slammed.
 export function desirabilityScore(r: RestaurantSummary): number {
   const availability = Math.min(Math.max(r.availableTableCount, 0), 10) / 10;
