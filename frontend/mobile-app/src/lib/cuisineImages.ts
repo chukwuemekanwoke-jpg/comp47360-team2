@@ -37,8 +37,12 @@ export function cuisineImage(cuisine: string): ImageSourcePropType {
   return CUISINE_IMAGES[cuisine.trim().toLowerCase()] ?? GENERIC_IMAGE;
 }
 
-// Backend cuisine keys like "bakery_products" aren't fit for display —
-// swap underscores for spaces (title-casing is left to the caller's styles).
+// Backend cuisine keys like "bakery_products" aren't fit for display — swap
+// underscores for spaces and title-case each word ("Bakery Products"). Callers
+// that style the text uppercase (photo bands, chips) are unaffected, since the
+// CSS transform wins over the casing applied here.
 export function formatCuisine(cuisine: string): string {
-  return cuisine.replace(/_/g, " ");
+  return cuisine
+    .replace(/_/g, " ")
+    .replace(/\S+/g, (word) => word[0].toUpperCase() + word.slice(1).toLowerCase());
 }
