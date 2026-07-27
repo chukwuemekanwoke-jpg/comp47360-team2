@@ -160,7 +160,7 @@ export default function MapScreen() {
         {/* Loading overlay */}
         {isLoading && (
           <View className="absolute inset-0 items-center justify-center bg-table-canvas/60">
-            <ActivityIndicator color="#00f2fe" />
+            <ActivityIndicator color={colors.teal} />
           </View>
         )}
 
@@ -199,14 +199,14 @@ export default function MapScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#00f2fe"
-            colors={["#00f2fe"]}
+            tintColor={colors.teal}
+            colors={[colors.teal]}
           />
         }
       >
         {isLoading && markers.length === 0 && (
           <View className="items-center py-8">
-            <ActivityIndicator color="#00f2fe" />
+            <ActivityIndicator color={colors.teal} />
           </View>
         )}
 

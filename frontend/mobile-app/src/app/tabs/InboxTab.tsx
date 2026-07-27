@@ -58,7 +58,7 @@ export default function InboxTab() {
   if (isLoading && offers.length === 0) {
     return (
       <View className="flex-1 bg-table-canvas items-center justify-center">
-        <ActivityIndicator size="large" color="#00f2fe" />
+        <ActivityIndicator size="large" color={colors.teal} />
       </View>
     );
   }

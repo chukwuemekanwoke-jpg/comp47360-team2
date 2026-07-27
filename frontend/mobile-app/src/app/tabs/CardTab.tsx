@@ -170,8 +170,8 @@ export default function CardListView() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#00f2fe"
-            colors={["#00f2fe"]}
+            tintColor={colors.teal}
+            colors={[colors.teal]}
           />
         }
         ListHeaderComponent={
