@@ -17,7 +17,7 @@ import { DISCOVERY_RADIUS_M, SEAT_AVAILABILITY_POLL_MS } from "@shared/constants
 import { applyRestaurantFilters } from "@shared/restaurantFilters";
 import { useAppSelector } from "@shared/hooks";
 import BookingModal from "@/components/BookingCheckout";
-import CollapsibleFilters from "@/components/CollapsibleFilters";
+import FilterBar, { FilterSheet } from "@/components/FilterBar";
 import LocationComponent from "@/components/LocationComponent";
 import { navColors } from "@/theme";
 
@@ -40,6 +40,8 @@ export default function CardListView() {
   const [sortBy, setSortBy] = useState<SortOption>("relevance");
   const [selectedRestaurant, setSelectedRestaurant] = useState<RestaurantSummary | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filtersTop, setFiltersTop] = useState(0);
   const listRef = useRef<FlatList<RestaurantSummary>>(null);
 
   const reduxLocation = useAppSelector((state) => state.user.location);
@@ -111,9 +113,14 @@ export default function CardListView() {
   }
   return (
     <View className="flex-1 bg-table-canvas">
-      {/* Search + collapsible filters + sort bar */}
-      <View className="px-4 py-3 bg-table-surface border-b border-table-border">
-        <CollapsibleFilters />
+      {/* Search + filter toggle + sort bar — the filter panel overlays below */}
+      <View
+        className="px-4 py-3 bg-table-surface border-b border-table-border"
+        onLayout={(e) =>
+          setFiltersTop(e.nativeEvent.layout.y + e.nativeEvent.layout.height + 12)
+        }
+      >
+        <FilterBar active={filtersOpen} onToggle={() => setFiltersOpen((v) => !v)} />
 
         <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold mb-2 mt-3">
           Sort by
@@ -204,6 +211,12 @@ export default function CardListView() {
           <Ionicons name="chevron-up" size={22} color={colors.teal} />
         </TouchableOpacity>
       )}
+
+      <FilterSheet
+        isVisible={filtersOpen}
+        top={filtersTop}
+        onClose={() => setFiltersOpen(false)}
+      />
 
       {/* The Booking Sheet */}
       <BookingModal

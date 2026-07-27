@@ -14,7 +14,7 @@ import { useGetNearbyRestaurantsQuery } from "@shared/apiSlice";
 import { DISCOVERY_RADIUS_M, SEAT_AVAILABILITY_POLL_MS } from "@shared/constants";
 import { applyRestaurantFilters, busynessColor, busynessLabel } from "@shared/restaurantFilters";
 import { RestaurantSummary } from "@shared/types";
-import CollapsibleFilters from "@/components/CollapsibleFilters";
+import FilterBar, { FilterSheet } from "@/components/FilterBar";
 import DraggableSheet from "@/components/DraggableSheet";
 import LocationComponent from "@/components/LocationComponent";
 import BookingModal from "@/components/BookingCheckout";
@@ -29,6 +29,8 @@ function formatDistance(meters: number): string {
 export default function MapScreen() {
   const router = useRouter();
   const [selectedRestaurant, setSelectedRestaurant] = useState<RestaurantSummary | null>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filtersTop, setFiltersTop] = useState(0);
   const mapRef = useRef<MapView>(null);
 
   const location = useAppSelector((state) => state.user.location);
@@ -93,11 +95,14 @@ export default function MapScreen() {
   return (
     <View className="flex-1 bg-table-canvas">
 
-      {/* Search + collapsible filters */}
-      <View className="mx-4 mt-4">
-        <CollapsibleFilters>
-          <LocationComponent />
-        </CollapsibleFilters>
+      {/* Search + filter toggle — the panel itself overlays the screen below */}
+      <View
+        className="mx-4 mt-4"
+        onLayout={(e) =>
+          setFiltersTop(e.nativeEvent.layout.y + e.nativeEvent.layout.height + 12)
+        }
+      >
+        <FilterBar active={filtersOpen} onToggle={() => setFiltersOpen((v) => !v)} />
       </View>
 
       {/* No location prompt */}
@@ -259,6 +264,14 @@ export default function MapScreen() {
           </ScrollView>
         </DraggableSheet>
       </View>
+
+      <FilterSheet
+        isVisible={filtersOpen}
+        top={filtersTop}
+        onClose={() => setFiltersOpen(false)}
+      >
+        <LocationComponent />
+      </FilterSheet>
 
       {/* Booking modal */}
       <BookingModal
