@@ -128,6 +128,8 @@ Venue master data for Manhattan prototype.
 - `opens_at` / `closes_at`: local operating hours (RevPASH denominator)
 - `avg_check_per_cover`: benchmark average spend per cover until POS data exists
 - `busyness_score`: optional 0–1 signal from ML pipeline
+- `rating`: nullable external aggregate score constrained to 0.0–5.0
+- `reviews`: nullable non-negative external aggregate review count
 - `manager_user_id`: links B-side dashboard to a user row
 
 ### `campaigns`

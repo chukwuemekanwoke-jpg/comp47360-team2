@@ -199,6 +199,8 @@ function restaurantRow(overrides = {}) {
     capacity: 24,
     cuisine: "Omakase",
     busyness_score: 0.35,
+    rating: 4.7,
+    reviews: 362,
     is_wheelchair_accessible: true,
     sensory_friendly: false,
     address_line: "12 Mercer Street",
