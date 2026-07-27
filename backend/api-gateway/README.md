@@ -26,13 +26,20 @@ npm run dev
 
 Server: `http://localhost:3001`
 
-## Rate limiting
+## Authentication and rate limiting
 
-IP-based limits on sensitive routes (in-memory; fine for single-instance Cloud Run / local MVP):
+Protected routes require a JWT Bearer token in production. The legacy
+`X-User-Id` header is available by default only in development/test for local
+demo compatibility. Keep `ALLOW_LEGACY_USER_HEADER=false` in deployed
+environments; it may be explicitly set to `true` only for a controlled demo.
+
+Sensitive-route limits are in-memory (fine for single-instance Cloud Run /
+local MVP). Auth keys combine endpoint, client IP, and a hashed email or reset
+token, so unrelated users behind one carrier/NAT IP do not share one budget:
 
 | Scope | Default | Routes |
 |-------|---------|--------|
-| Auth | 20 / 15 min | `POST /api/v1/auth/*` |
+| Auth | 20 / 15 min per endpoint + IP + identity | `POST /api/v1/auth/*` |
 | Writes | 60 / 15 min | `POST /bookings`, `POST /restaurants/:id/campaigns` |
 
 Exceeded → `429` `{ "error": { "code": "RATE_LIMITED", ... } }` plus standard `RateLimit-*` headers. Tunable via `RATE_LIMIT_*` in `.env` (see `.env.example`). Off automatically under `NODE_ENV=test`.
@@ -59,7 +66,7 @@ Exceeded → `429` `{ "error": { "code": "RATE_LIMITED", ... } }` plus standard 
 | POST | `/api/v1/auth/logout` | Bearer JWT | Invalidate current JWT |
 | POST | `/api/v1/auth/logout` | JWT | Invalidate current token (server-side logout) |
 | GET | `/api/v1/users/me` | JWT or `X-User-Id` | Current user profile |
-| PATCH | `/api/v1/users/me/preferences` | JWT or `X-User-Id` | Update budget, dietary tags, location |
+| PATCH | `/api/v1/users/me/preferences` | JWT or `X-User-Id` | Update categorized preferences and/or location |
 
 ### Discovery (BE-11)
 
@@ -136,7 +143,7 @@ curl http://localhost:3001/api/v1/users/me \
 curl -X PATCH http://localhost:3001/api/v1/users/me/preferences \
   -H 'Content-Type: application/json' \
   -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001' \
-  -d '{"budgetTier":"TIER_2","dietaryTags":["vegan"],"lastLat":40.7589,"lastLng":-73.9851}'
+  -d '{"budgetTier":"TIER_2","dietaryTags":["vegan"],"preferredCuisines":["Japanese"],"diningStyles":["casual"],"lastLat":40.7589,"lastLng":-73.9851}'
 
 # Nearby discovery (Times Square demo origin)
 curl 'http://localhost:3001/api/v1/restaurants/nearby?lat=40.7589&lng=-73.9851'
@@ -271,7 +278,7 @@ When a manager creates a campaign, the gateway:
 
 1. Queries nearby diners in Postgres (1.5 km radius)
 2. Calls FastAPI `POST {ML_SERVICE_URL}/api/v1/match` with `campaignId`, `restaurantId`, `candidateLimit`, and `candidates[]`
-3. Inserts `offers` for returned `matchedUserIds` (900s TTL; campaign itself also expires after 900s)
+3. Inserts `offers` for returned `matchedUserIds` using the manager-selected `ttlMinutes` (default 15; same TTL as the campaign)
 4. Falls back to nearest-distance matching if ML is unreachable
 
 Start the ML service before testing campaigns:

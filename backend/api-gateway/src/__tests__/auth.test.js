@@ -95,6 +95,7 @@ describe("POST /api/v1/auth/login", () => {
     expect(res.body.userId).toBe(USER_ID);
     expect(res.body.restaurantId).toBe(RESTAURANT_ID);
     expect(res.body.token).toEqual(expect.any(String));
+    expect(mockPool.query.mock.calls[0][0]).toContain("JOIN user_preferences");
   });
 
   it("returns 401 for invalid password", async () => {

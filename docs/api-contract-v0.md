@@ -95,8 +95,8 @@ All non-2xx responses use:
 |----------|-------|-------|
 | Discovery radius | `1500` m | 2.1 |
 | Reservation hold window | `15` min (per restaurant, default) | 3.1, 3.2 |
-| Flash deal TTL | `900` s from offer `createdAt` | 4.1 |
-| Campaign TTL | `900` s from campaign `createdAt` (same as offer; lazy expiry) | 5.2 |
+| Flash deal TTL | Manager-set `ttlMinutes` (default `15`, range 10–60); same value for campaign + offers | 4.1 / 5.2 |
+| Campaign TTL | Same as flash deal TTL (`campaigns.expires_at`; lazy expiry) | 5.2 |
 | Campaign discount | `10`–`50` % | 5.1 |
 
 ---
@@ -255,6 +255,8 @@ Create consumer after dummy login.
   "displayName": "Alex",
   "budgetTier": null,
   "dietaryTags": [],
+  "preferredCuisines": [],
+  "diningStyles": [],
   "createdAt": "2026-06-02T10:00:00.000Z"
 }
 ```
@@ -268,7 +270,9 @@ Create consumer after dummy login.
 ```json
 {
   "budgetTier": "TIER_2",
-  "dietaryTags": ["vegan", "halal"],
+  "dietaryTags": ["vegan"],
+  "preferredCuisines": ["Italian", "Japanese"],
+  "diningStyles": ["casual"],
   "lastLat": 40.758,
   "lastLng": -73.9855
 }
@@ -278,8 +282,11 @@ Create consumer after dummy login.
 
 **Validation:**
 
-- `budgetTier`: required for onboarding complete; one of `TIER_1` | `TIER_2` | `TIER_3`
-- `dietaryTags`: array of strings; use `[]` or `["none"]` for no restriction
+- At least one field must be provided; partial preference updates are supported.
+- `budgetTier`: one of `TIER_1` | `TIER_2` | `TIER_3`
+- `dietaryTags`: dietary restrictions such as `vegan`, `halal`, or `gluten-free`
+- `preferredCuisines`: categorized cuisine preferences
+- `diningStyles`: dining contexts such as `casual`, `family`, `date-night`, or `business`
 
 #### `GET /api/v1/users/me`
 
@@ -646,7 +653,7 @@ Validates not expired, then returns booking payload or redirects client to `POST
 }
 ```
 
-On create, the gateway sets `campaign.expiresAt = now + 900s` (same TTL as offers), calls the ML match service, and inserts `offers` for matched users (`expiresAt = now + 900s`). Overdue active campaigns are lazily marked `expired` (pending offers revoked) when campaigns or offers are read.
+On create, the gateway accepts optional `ttlMinutes` (10–60, default **15**) and applies that single TTL to both `campaign.expiresAt` and each offer's `expiresAt`. It then calls the ML match service and inserts `offers` for matched users. Overdue active campaigns are lazily marked `expired` (pending offers revoked) when campaigns or offers are read.
 
 #### `GET /api/v1/restaurants/:restaurantId/campaigns`
 

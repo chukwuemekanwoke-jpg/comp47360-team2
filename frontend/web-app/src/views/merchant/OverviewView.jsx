@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import BusynessMeter from '../../components/BusynessMeter';
 import RevpashMeter from '../../components/RevpashMeter';
@@ -14,6 +14,9 @@ import {
 
 const MIN_DISCOUNT = 10;
 const MAX_DISCOUNT = 50;
+const MIN_TTL_MINUTES = 10;
+const MAX_TTL_MINUTES = 60;
+const DEFAULT_TTL_MINUTES = 15;
 
 export default function OverviewView() {
   const { restaurantId, restaurant } = useOutletContext();
@@ -29,26 +32,9 @@ export default function OverviewView() {
 
   const [tableQuota, setTableQuota] = useState(1);
   const [discountPercent, setDiscountPercent] = useState(15);
+  const [ttlMinutes, setTtlMinutes] = useState(DEFAULT_TTL_MINUTES);
   const [formError, setFormError] = useState('');
   const [cancelError, setCancelError] = useState('');
-
-  // Ticks every second so the campaign countdown moves smoothly between the
-  // 5s activeCampaign poll, same pattern as LiveOfferTracker's offer countdowns.
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const campaignSecondsRemaining = activeCampaign?.expiresAt
-    ? Math.max(0, Math.round((new Date(activeCampaign.expiresAt).getTime() - now) / 1000))
-    : null;
-
-  function formatTimeLeft(seconds) {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-  }
 
   const handleCreateCampaign = async (e) => {
     e.preventDefault();
@@ -69,8 +55,13 @@ export default function OverviewView() {
       return;
     }
 
+    if (!Number.isInteger(ttlMinutes) || ttlMinutes < MIN_TTL_MINUTES || ttlMinutes > MAX_TTL_MINUTES) {
+      setFormError(`Deal duration must be between ${MIN_TTL_MINUTES} and ${MAX_TTL_MINUTES} minutes`);
+      return;
+    }
+
     try {
-      await createCampaign({ restaurantId, tableQuota, discountPercent }).unwrap();
+      await createCampaign({ restaurantId, tableQuota, discountPercent, ttlMinutes }).unwrap();
     } catch (err) {
       setFormError(err?.data?.error?.message || 'Failed to create campaign');
     }
@@ -126,14 +117,12 @@ export default function OverviewView() {
                     <dd className="text-table-text">{activeCampaign.discountPercent}%</dd>
                     <dt className="text-table-textSubtle">Tables Claimed</dt>
                     <dd className="text-table-text">{activeCampaign.tablesClaimed} / {activeCampaign.tableQuota}</dd>
-                    {campaignSecondsRemaining !== null && (
-                      <>
-                        <dt className="text-table-textSubtle">Time Left</dt>
-                        <dd className="text-table-offer font-bold tracking-wider">
-                          {formatTimeLeft(campaignSecondsRemaining)}
-                        </dd>
-                      </>
-                    )}
+                    <dt className="text-table-textSubtle">Time Left</dt>
+                    <dd className="text-table-text">
+                      {typeof activeCampaign.secondsRemaining === 'number'
+                        ? `${Math.ceil(activeCampaign.secondsRemaining / 60)} min`
+                        : '—'}
+                    </dd>
                   </dl>
 
                   {cancelError && (
@@ -203,6 +192,25 @@ export default function OverviewView() {
                   className="w-full bg-table-canvas border border-table-border rounded-xl px-4 py-2.5 text-sm text-table-text focus:outline-none focus:border-table-offer transition-colors disabled:opacity-50"
                 />
               </div>
+            </div>
+
+            <div>
+              <label htmlFor="ttlMinutes" className="block text-[10px] font-mono text-table-textMuted uppercase tracking-wide mb-1.5">
+                Deal Duration (minutes, {MIN_TTL_MINUTES}-{MAX_TTL_MINUTES})
+              </label>
+              <input
+                id="ttlMinutes"
+                type="number"
+                min={MIN_TTL_MINUTES}
+                max={MAX_TTL_MINUTES}
+                value={ttlMinutes}
+                onChange={(e) => setTtlMinutes(Number(e.target.value))}
+                disabled={!!activeCampaign || isCreatingCampaign}
+                className="w-full bg-table-canvas border border-table-border rounded-xl px-4 py-2.5 text-sm text-table-text focus:outline-none focus:border-table-offer transition-colors disabled:opacity-50"
+              />
+              <p className="mt-1.5 text-[10px] font-mono text-table-textSubtle">
+                Applies to both the campaign and each flash-deal offer.
+              </p>
             </div>
 
             <button

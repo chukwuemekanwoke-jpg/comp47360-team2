@@ -1,7 +1,10 @@
 const { FLASH_DEAL_TTL_SECONDS } = require("./candidateUsers");
 
-async function insertOffersForUsers(client, { campaignId, userIds }) {
+async function insertOffersForUsers(client, { campaignId, userIds, ttlSeconds = FLASH_DEAL_TTL_SECONDS }) {
   const offerIds = [];
+  const resolvedTtlSeconds = Number.isInteger(ttlSeconds) && ttlSeconds > 0
+    ? ttlSeconds
+    : FLASH_DEAL_TTL_SECONDS;
 
   for (const userId of userIds) {
     const { rows } = await client.query(
@@ -9,7 +12,7 @@ async function insertOffersForUsers(client, { campaignId, userIds }) {
        VALUES ($1, $2, NOW() + ($3 * INTERVAL '1 second'))
        ON CONFLICT (campaign_id, user_id) DO NOTHING
        RETURNING id`,
-      [campaignId, userId, FLASH_DEAL_TTL_SECONDS]
+      [campaignId, userId, resolvedTtlSeconds]
     );
 
     if (rows.length > 0) {

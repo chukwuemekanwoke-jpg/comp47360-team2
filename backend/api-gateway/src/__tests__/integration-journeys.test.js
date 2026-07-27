@@ -41,6 +41,8 @@ function userRow(overrides = {}) {
     display_name: "Ava Diner",
     budget_tier: null,
     dietary_tags: [],
+    preferred_cuisines: [],
+    dining_styles: [],
     last_lat: null,
     last_lng: null,
     created_at: NOW,
@@ -123,7 +125,7 @@ class JourneyDatabase {
       return Promise.resolve({ rows: [] });
     }
 
-    if (text.includes("FROM users WHERE LOWER(email) = LOWER($1)")) {
+    if (text.includes("FROM users u") && text.includes("LOWER(u.email) = LOWER($1)")) {
       const email = String(params[0]).toLowerCase();
       return Promise.resolve({
         rows: [...this.users.values()].filter((user) => user.email?.toLowerCase() === email),
@@ -156,14 +158,27 @@ class JourneyDatabase {
       });
     }
 
-    if (text.includes("UPDATE users SET") && text.includes("budget_tier")) {
+    if (text.includes("INSERT INTO user_preferences (user_id)")) {
+      return Promise.resolve({ rows: [] });
+    }
+
+    if (text.includes("UPDATE user_preferences SET")) {
       const userId = params[params.length - 1];
       const user = this.users.get(userId);
       user.budget_tier = params[0];
       user.dietary_tags = params[1];
-      user.last_lat = params[2];
-      user.last_lng = params[3];
-      return Promise.resolve({ rows: [user] });
+      user.preferred_cuisines = params[2];
+      user.dining_styles = params[3];
+      return Promise.resolve({ rows: [] });
+    }
+
+    if (
+      text.includes("FROM users u")
+      && text.includes("JOIN user_preferences p")
+      && text.includes("WHERE u.id = $1")
+    ) {
+      const user = this.users.get(params[0]);
+      return Promise.resolve({ rows: user ? [user] : [] });
     }
 
     if (text.includes("UPDATE users SET last_lat = $1, last_lng = $2 WHERE id = $3")) {
@@ -514,6 +529,8 @@ describe("integrated C-side and B-side API journeys", () => {
       .send({
         budgetTier: "TIER_2",
         dietaryTags: ["vegetarian"],
+        preferredCuisines: ["Japanese"],
+        diningStyles: ["casual"],
         lastLat: 40.73,
         lastLng: -73.99,
       });
@@ -523,6 +540,8 @@ describe("integrated C-side and B-side API journeys", () => {
       id: CUSTOMER_ID,
       budgetTier: "TIER_2",
       dietaryTags: ["vegetarian"],
+      preferredCuisines: ["Japanese"],
+      diningStyles: ["casual"],
       lastLat: 40.73,
       lastLng: -73.99,
     });

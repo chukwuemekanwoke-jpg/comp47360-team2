@@ -1,5 +1,6 @@
 const request = require("supertest");
 const createApp = require("../app");
+const config = require("../config");
 
 const app = createApp();
 
@@ -48,6 +49,25 @@ describe("GET /api/v1/users/me/bookings", () => {
       .set("X-User-Id", "not-a-uuid");
     expect(res.status).toBe(400);
     expect(res.body.error.code).toBe("VALIDATION_ERROR");
+  });
+
+  it("rejects X-User-Id when legacy header auth is disabled", async () => {
+    const previous = config.allowLegacyUserHeader;
+    config.allowLegacyUserHeader = false;
+
+    try {
+      const res = await request(app)
+        .get("/api/v1/users/me/bookings")
+        .set("X-User-Id", "550e8400-e29b-41d4-a716-446655440001");
+
+      expect(res.status).toBe(401);
+      expect(res.body.error).toMatchObject({
+        code: "UNAUTHORIZED",
+        message: "Missing Authorization Bearer token",
+      });
+    } finally {
+      config.allowLegacyUserHeader = previous;
+    }
   });
 });
 

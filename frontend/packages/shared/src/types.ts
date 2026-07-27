@@ -19,6 +19,8 @@ export interface UserProfile {
   displayName: string;
   budgetTier: BudgetTier | null;
   dietaryTags: string[];
+  preferredCuisines: string[];
+  diningStyles: string[];
   createdAt: string;
   lastLat?: number;
   lastLng?: number;
