@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from "rea
 import { useRouter } from "expo-router";
 import BackendHealthCard from "@/components/BackendHealth";
 import CollapsibleFilters from "@/components/CollapsibleFilters";
+import DraggableSheet from "@/components/DraggableSheet";
 import BookingModal from "@/components/BookingCheckout";
 import { useGetNearbyRestaurantsQuery } from "@shared/apiSlice";
 import { DISCOVERY_RADIUS_M, SEAT_AVAILABILITY_POLL_MS } from "@shared/constants";
@@ -66,54 +67,11 @@ export default function MapScreen() {
 
   return (
     <View className="flex-1 bg-table-canvas">
-      {/* ── Header card ── */}
-      <View className="mx-4 mt-4 bg-table-surface border border-table-border rounded-2xl px-4 py-3">
-        <Text className="text-sm font-bold text-table-cream">Live Restaurant Map</Text>
-        <View className="flex-row items-center gap-1.5 mt-0.5">
-          <View className="w-1.5 h-1.5 rounded-full bg-table-teal" />
-          <Text className="text-[9px] font-bold uppercase tracking-widest text-table-teal">
-            Real-time feed
-          </Text>
-        </View>
-      </View>
-
       {/* ── Search + collapsible filters ── */}
-      <View className="mx-4 mt-3">
+      <View className="mx-4 mt-4">
         <CollapsibleFilters>
           <LocationComponent />
         </CollapsibleFilters>
-      </View>
-
-      {/* ── Map Box Container ── */}
-      <View className="mx-4 mt-3 rounded-2xl overflow-hidden border border-table-border relative" style={{ height: 260 }}>
-        
-        {/* Wrap the lazy component in Suspense to provide an SSR-safe loading window */}
-        <Suspense fallback={
-          <View className="flex-1 items-center justify-center bg-table-surface">
-            <ActivityIndicator size="small" />
-          </View>
-        }>
-          <LazyLeafletMap
-            latitude={latitude}
-            longitude={longitude}
-            restaurantsList={restaurantsList}
-            busynessLabel={busynessLabel}
-            theme={theme}
-            onViewDetails={(id) => router.push({ pathname: "/tabs/CardTab", params: { focusId: id } })}
-            onVisibleRestaurantsChange={setVisibleMarkers}
-          />
-        </Suspense>
-
-        {/* List toggle overlay */}
-        <TouchableOpacity
-          className="absolute bottom-3 right-3 bg-table-canvas/80 border border-table-border px-3 py-1.5 rounded-lg z-[1000]"
-          onPress={() => router.push("/tabs/CardTab")}
-          activeOpacity={0.8}
-        >
-          <Text className="text-table-cream text-[10px] font-bold uppercase tracking-widest">
-            List View
-          </Text>
-        </TouchableOpacity>
       </View>
 
       {/* No location prompt */}
@@ -126,56 +84,94 @@ export default function MapScreen() {
         </View>
       )}
 
-      {/* ── Nearby Cards List — mirrors exactly what the map is showing ── */}
-      <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold mx-4 mt-5 mb-2">
-        {nearbyList.length > 0 ? `${nearbyList.length} On the map` : "On the map"}
-      </Text>
+      {/* Map fills the rest, with the nearby list draggable over it */}
+      <View className="flex-1 mt-3">
+        <View className="flex-1 mx-4 rounded-2xl overflow-hidden border border-table-border relative">
 
-      <ScrollView className="px-4" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
-        {nearbyList.length === 0 && (
-          <Text className="text-table-gold text-xs text-center py-6">
-            No restaurants in this map area. Pan or zoom out to see more.
-          </Text>
-        )}
-        {nearbyList.map(({ restaurant: r, highlighted }: MapMarkerEntry) => (
-          <View key={r.id} className="bg-table-surface border border-table-border rounded-2xl p-4 mb-3">
-            <View className="flex-row items-start justify-between mb-2">
-              <View className="flex-1 mr-3">
-                <Text className="text-sm font-bold text-table-cream">
-                  {highlighted ? "★ " : ""}{r.name}
-                </Text>
-                <Text className="text-xs text-table-gold mt-0.5">
-                  {r.cuisine} · {r.distanceMeters < 1000 ? `${Math.round(r.distanceMeters)} m` : `${(r.distanceMeters / 1000).toFixed(1)} km`}
-                </Text>
-              </View>
-              <View className="px-2 py-1 rounded-lg" style={{ backgroundColor: hexToRgba(busynessColor(r.busynessScore), 0.1) }}>
-                <Text className="text-[10px] font-bold uppercase tracking-widest" style={{ color: busynessColor(r.busynessScore) }}>
-                  {busynessLabel(r.busynessScore)}
-                </Text>
-              </View>
+          {/* Wrap the lazy component in Suspense to provide an SSR-safe loading window */}
+          <Suspense fallback={
+            <View className="flex-1 items-center justify-center bg-table-surface">
+              <ActivityIndicator size="small" color={colors.teal} />
             </View>
+          }>
+            <LazyLeafletMap
+              latitude={latitude}
+              longitude={longitude}
+              restaurantsList={restaurantsList}
+              busynessLabel={busynessLabel}
+              theme={theme}
+              onViewDetails={(id) => router.push({ pathname: "/tabs/CardTab", params: { focusId: id } })}
+              onVisibleRestaurantsChange={setVisibleMarkers}
+            />
+          </Suspense>
 
-            <View className="flex-row items-center justify-between border-t border-table-border pt-2 mt-1">
-              <View className="flex-row gap-4">
-                <Text className="text-xs text-table-gold">
-                  <MaterialCommunityIcons name="seat-outline" size={12} color={colors.gold} />{" "}
-                  <Text className="text-table-live font-bold">{r.availableTableCount} free</Text>
-                </Text>
+          {/* List toggle overlay — top-right, clear of the draggable sheet */}
+          <TouchableOpacity
+            className="absolute top-2 right-2 bg-table-canvas/80 border border-table-border px-3 py-1.5 rounded-lg z-[1000]"
+            onPress={() => router.push("/tabs/CardTab")}
+            activeOpacity={0.8}
+          >
+            <Text className="text-table-cream text-[10px] font-bold uppercase tracking-widest">
+              List View
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* ── Nearby Cards List — mirrors exactly what the map is showing ── */}
+        <DraggableSheet
+          handle={
+            <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold">
+              {nearbyList.length > 0 ? `${nearbyList.length} On the map` : "On the map"}
+            </Text>
+          }
+        >
+          <ScrollView className="px-4 pt-2" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
+            {nearbyList.length === 0 && (
+              <Text className="text-table-gold text-xs text-center py-6">
+                No restaurants in this map area. Pan or zoom out to see more.
+              </Text>
+            )}
+            {nearbyList.map(({ restaurant: r, highlighted }: MapMarkerEntry) => (
+              <View key={r.id} className="bg-table-surface border border-table-border rounded-2xl p-4 mb-3">
+                <View className="flex-row items-start justify-between mb-2">
+                  <View className="flex-1 mr-3">
+                    <Text className="text-sm font-bold text-table-cream">
+                      {highlighted ? "★ " : ""}{r.name}
+                    </Text>
+                    <Text className="text-xs text-table-gold mt-0.5">
+                      {r.cuisine} · {r.distanceMeters < 1000 ? `${Math.round(r.distanceMeters)} m` : `${(r.distanceMeters / 1000).toFixed(1)} km`}
+                    </Text>
+                  </View>
+                  <View className="px-2 py-1 rounded-lg" style={{ backgroundColor: hexToRgba(busynessColor(r.busynessScore), 0.1) }}>
+                    <Text className="text-[10px] font-bold uppercase tracking-widest" style={{ color: busynessColor(r.busynessScore) }}>
+                      {busynessLabel(r.busynessScore)}
+                    </Text>
+                  </View>
+                </View>
+
+                <View className="flex-row items-center justify-between border-t border-table-border pt-2 mt-1">
+                  <View className="flex-row gap-4">
+                    <Text className="text-xs text-table-gold">
+                      <MaterialCommunityIcons name="seat-outline" size={12} color={colors.gold} />{" "}
+                      <Text className="text-table-live font-bold">{r.availableTableCount} free</Text>
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => setSelectedRestaurant(r)}
+                    className="bg-table-teal px-3 py-1.5 rounded-lg"
+                    activeOpacity={0.8}
+                  >
+                    <Text className="text-table-canvas text-[10px] font-bold uppercase tracking-widest">
+                      Book
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-              <TouchableOpacity
-                onPress={() => setSelectedRestaurant(r)}
-                className="bg-table-teal px-3 py-1.5 rounded-lg"
-                activeOpacity={0.8}
-              >
-                <Text className="text-table-canvas text-[10px] font-bold uppercase tracking-widest">
-                  Book
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        ))}
-        <BackendHealthCard/>
-      </ScrollView>
+            ))}
+            <BackendHealthCard/>
+          </ScrollView>
+        </DraggableSheet>
+      </View>
 
       {/* Booking modal */}
       <BookingModal
