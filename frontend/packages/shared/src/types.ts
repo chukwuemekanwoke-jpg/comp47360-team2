@@ -21,6 +21,8 @@ export interface UserProfile {
   dietaryTags: string[];
   preferredCuisines: string[];
   diningStyles: string[];
+  requiresWheelchairAccess: boolean;
+  requiresSensoryFriendly: boolean;
   createdAt: string;
   lastLat?: number;
   lastLng?: number;

@@ -28,6 +28,8 @@ const AUTH_PROFILE_COLUMNS = `
   p.dietary_restrictions AS dietary_tags,
   p.preferred_cuisines,
   p.dining_styles,
+  p.requires_wheelchair_access,
+  p.requires_sensory_friendly,
   u.last_lat,
   u.last_lng,
   u.created_at,

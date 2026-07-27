@@ -901,6 +901,12 @@ components:
           type: array
           items:
             type: string
+        requiresWheelchairAccess:
+          type: boolean
+          description: Diner needs step-free access.
+        requiresSensoryFriendly:
+          type: boolean
+          description: Diner needs a low-stimulation room.
         createdAt:
           type: string
           format: date-time
@@ -991,6 +997,10 @@ components:
           type: array
           items:
             type: string
+        requiresWheelchairAccess:
+          type: boolean
+        requiresSensoryFriendly:
+          type: boolean
         lastLat:
           type: number
         lastLng:

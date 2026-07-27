@@ -78,7 +78,9 @@ router.post(
       await expireOverdueCampaigns(client, { restaurantId: req.restaurantId });
 
       const { rows: restaurantRows } = await client.query(
-        `SELECT id, latitude, longitude, manager_user_id, capacity
+        `SELECT id, latitude, longitude, manager_user_id, capacity,
+                cuisine, neighborhood, avg_check_per_cover,
+                is_wheelchair_accessible, sensory_friendly
          FROM restaurants
          WHERE id = $1
          FOR UPDATE`,

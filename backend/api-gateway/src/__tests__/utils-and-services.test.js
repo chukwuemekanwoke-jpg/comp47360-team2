@@ -4,6 +4,7 @@ const {
   MATCH_RADIUS_M,
   findNearbyCandidates,
   toMlCandidates,
+  toMlRestaurant,
 } = require("../services/candidateUsers");
 const { insertOffersForUsers } = require("../services/offerInsert");
 const { expirePendingOffers } = require("../services/offers");
@@ -236,6 +237,10 @@ describe("cache and offer helper services", () => {
             id: "user-1",
             budget_tier: "TIER_2",
             dietary_tags: ["vegan"],
+            preferred_cuisines: ["italian"],
+            dining_styles: ["date-night"],
+            requires_wheelchair_access: true,
+            requires_sensory_friendly: false,
             distance_meters: "425.4",
           },
         ],
@@ -261,14 +266,53 @@ describe("cache and offer helper services", () => {
     expect(client.query.mock.calls[0][0]).toContain(
       "JOIN user_preferences p ON p.user_id = u.id"
     );
+    expect(client.query.mock.calls[0][0]).toContain("p.preferred_cuisines");
+    expect(client.query.mock.calls[0][0]).toContain("p.dining_styles");
+    expect(client.query.mock.calls[0][0]).toContain("p.requires_wheelchair_access");
+    expect(client.query.mock.calls[0][0]).toContain("p.requires_sensory_friendly");
     expect(toMlCandidates(rows)).toEqual([
       {
         userId: "user-1",
         budgetTier: "TIER_2",
         dietaryTags: ["vegan"],
+        preferredCuisines: ["italian"],
+        diningStyles: ["date-night"],
+        requiresWheelchairAccess: true,
+        requiresSensoryFriendly: false,
         distanceMeters: 425,
       },
     ]);
+  });
+
+  it("maps a restaurant row to the ML payload shape", () => {
+    expect(
+      toMlRestaurant({
+        id: "restaurant-1",
+        cuisine: "italian",
+        neighborhood: "Midtown",
+        avg_check_per_cover: "48.50",
+        is_wheelchair_accessible: true,
+        sensory_friendly: false,
+      })
+    ).toEqual({
+      id: "restaurant-1",
+      cuisine: "italian",
+      neighborhood: "Midtown",
+      avgCheckPerCover: 48.5,
+      isWheelchairAccessible: true,
+      sensoryFriendly: false,
+    });
+  });
+
+  it("defaults missing restaurant attributes in the ML payload", () => {
+    expect(toMlRestaurant({ id: "restaurant-2" })).toEqual({
+      id: "restaurant-2",
+      cuisine: null,
+      neighborhood: null,
+      avgCheckPerCover: null,
+      isWheelchairAccessible: false,
+      sensoryFriendly: false,
+    });
   });
 
   it("inserts offers for matched users and ignores conflict rows", async () => {

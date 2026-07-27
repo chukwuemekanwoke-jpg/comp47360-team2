@@ -1,4 +1,9 @@
-const { findNearbyCandidates, toMlCandidates, FLASH_DEAL_TTL_SECONDS } = require("./candidateUsers");
+const {
+  findNearbyCandidates,
+  toMlCandidates,
+  toMlRestaurant,
+  FLASH_DEAL_TTL_SECONDS,
+} = require("./candidateUsers");
 const { insertOffersForUsers } = require("./offerInsert");
 const { callMlMatch } = require("./mlMatchClient");
 
@@ -26,6 +31,7 @@ async function createCampaignOffers(client, {
     const match = await callMlMatch({
       campaignId,
       restaurantId: restaurant.id,
+      restaurant: toMlRestaurant(restaurant),
       candidateLimit,
       candidates,
     });
