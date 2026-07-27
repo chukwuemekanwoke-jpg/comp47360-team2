@@ -15,6 +15,7 @@ import {
   formatDiningStyle,
 } from "@/components/PreferenceEditor";
 import SignInPrompt from "@/components/SignInPrompt";
+import { ACCESS_NEEDS } from "@shared/constants";
 import { navColors } from "@/theme";
 
 export default function ProfileScreen() {
@@ -87,7 +88,16 @@ export default function ProfileScreen() {
     favoriteCuisines: user.preferredCuisines ?? legacyCuisines,
     diningStyle: (user.diningStyles?.[0] ?? legacyDiningStyle ?? "casual") as DiningStyle,
     maxPriceLevel: user.budgetTier ? TIER_PRICE_LEVEL[user.budgetTier] : 1,
+    // Absent on responses from a gateway older than migration 013.
+    accessNeeds: {
+      requiresWheelchairAccess: user.requiresWheelchairAccess ?? false,
+      requiresSensoryFriendly: user.requiresSensoryFriendly ?? false,
+    },
   };
+
+  const activeAccessNeeds = ACCESS_NEEDS.filter(
+    ({ field }) => profile.accessNeeds[field]
+  );
 
   // Everything above the bookings list scrolls with it — BookingsProfile's
   // FlatList is the single page scroller.
@@ -166,13 +176,25 @@ export default function ProfileScreen() {
           </Text>
         </View>
 
-        <View>
+        <View className="mb-3">
           <Text className="text-table-gold text-[10px] uppercase">
             Dining Style
           </Text>
 
           <Text className="text-table-cream text-sm font-bold mt-1">
             {formatDiningStyle(profile.diningStyle)}
+          </Text>
+        </View>
+
+        <View>
+          <Text className="text-table-gold text-[10px] uppercase">
+            Access Needs
+          </Text>
+
+          <Text className="text-table-cream text-sm font-bold mt-1">
+            {activeAccessNeeds.length === 0
+              ? "None set"
+              : activeAccessNeeds.map(({ label }) => label).join(", ")}
           </Text>
         </View>
       </View>
@@ -235,6 +257,7 @@ export default function ProfileScreen() {
           initialCuisines={profile.favoriteCuisines}
           initialPriceLevel={profile.maxPriceLevel}
           initialDiningStyle={profile.diningStyle}
+          initialAccessNeeds={profile.accessNeeds}
         />
       )}
     </View>
