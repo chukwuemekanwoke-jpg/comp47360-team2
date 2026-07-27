@@ -16,6 +16,7 @@ from booking_maturity import (
 )
 from model_service import (
     BusynessModelService,
+    RestaurantFeatures,
     get_model_service,
 )
 
@@ -87,7 +88,9 @@ class InferenceRequest(BaseModel):
         ),
     )
 
-    # Retained for compatibility with existing clients.
+    # Used to resolve the taxi zone by point-in-polygon against the official
+    # TLC shapefile, so a prediction no longer depends on the restaurant
+    # existing in the locally exported feature table.
     latitude: Optional[float] = Field(
         None,
         ge=-90,
@@ -100,6 +103,57 @@ class InferenceRequest(BaseModel):
         le=180,
     )
 
+    taxi_zone_id: Optional[int] = Field(
+        None,
+        ge=1,
+        description=(
+            "TLC taxi zone LocationID. Takes precedence over the "
+            "coordinate lookup when the caller already knows it."
+        ),
+    )
+
+    # -----------------------------------------------------
+    # Restaurant attributes owned by the calling service.
+    #
+    # These are genuine model features. Supplying them makes the caller's
+    # database authoritative; omitting one falls back to the local feature
+    # table and then to the pipeline's median imputation.
+    # -----------------------------------------------------
+
+    typical_time_mid: Optional[float] = Field(
+        None,
+        ge=0,
+        description=(
+            "Typical visit length in minutes. Derived from Google's "
+            "'People typically spend ...' text during training."
+        ),
+    )
+
+    rating: Optional[float] = Field(
+        None,
+        ge=0,
+        le=5,
+    )
+
+    reviews: Optional[float] = Field(
+        None,
+        ge=0,
+    )
+
+    estimated_area_sqft: Optional[float] = Field(
+        None,
+        gt=0,
+    )
+
+    takeaway_ratio: Optional[float] = Field(
+        None,
+        ge=0,
+        le=1,
+    )
+
+    # Accepted for client compatibility but not model features: the trained
+    # pipeline has no corresponding column, so these are neither used nor
+    # silently blended into the score.
     rolling_busyness_7d: Optional[float] = Field(
         None,
         ge=0,
@@ -180,12 +234,32 @@ class InferenceResponse(BaseModel):
         le=1,
     )
 
-    taxi_dropoffs_1h: float = Field(
-        ...,
+    taxi_dropoffs_1h: Optional[float] = Field(
+        None,
         ge=0,
+        description=(
+            "Null when no taxi zone could be resolved and no override was "
+            "supplied — the model then relies on its imputed median."
+        ),
     )
 
-    taxi_zone_id: str
+    taxi_zone_id: Optional[str] = None
+
+    taxi_zone_source: str = Field(
+        "unresolved",
+        description=(
+            "Where taxi_zone_id came from: request, coordinates, "
+            "feature_table, or unresolved."
+        ),
+    )
+
+    feature_source: str = Field(
+        "imputed",
+        description=(
+            "Where the restaurant-level features came from: request, "
+            "feature_table, mixed, or imputed."
+        ),
+    )
 
     observed_occupancy: Optional[float] = Field(
         None,
@@ -376,6 +450,22 @@ def predict_busyness(
             NEW_YORK_TIMEZONE
         ).month
 
+    # Everything the caller knows about the venue is forwarded. The service
+    # treats these as authoritative and only falls back to its local feature
+    # table for whatever is absent, so an id that isn't in that table is no
+    # longer a failure.
+    features = RestaurantFeatures(
+        typical_time_mid=payload.typical_time_mid,
+        rating=payload.rating,
+        reviews=payload.reviews,
+        estimated_area_sqft=payload.estimated_area_sqft,
+        takeaway_ratio=payload.takeaway_ratio,
+        taxi_zone_id=payload.taxi_zone_id,
+        capacity=payload.capacity,
+        latitude=payload.latitude,
+        longitude=payload.longitude,
+    )
+
     try:
         model_prediction = service.predict(
             restaurant_id=restaurant_id,
@@ -385,13 +475,8 @@ def predict_busyness(
             taxi_dropoffs_override=(
                 payload.taxi_dropoffs_1h
             ),
+            features=features,
         )
-
-    except KeyError as exc:
-        raise HTTPException(
-            status_code=404,
-            detail=str(exc),
-        ) from exc
 
     except ValueError as exc:
         raise HTTPException(
@@ -481,7 +566,7 @@ def predict_busyness(
     )
 
     return InferenceResponse(
-        restaurant_id=model_prediction.restaurant_id,
+        restaurant_id=restaurant_id,
         busyness_level=(
             model_prediction.busyness_level
         ),
@@ -505,6 +590,12 @@ def predict_busyness(
         ),
         taxi_zone_id=(
             model_prediction.taxi_zone_id
+        ),
+        taxi_zone_source=(
+            model_prediction.taxi_zone_source
+        ),
+        feature_source=(
+            model_prediction.feature_source
         ),
         observed_occupancy=(
             round(occupancy, 4)

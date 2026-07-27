@@ -20,11 +20,12 @@ class FakeModelService:
 
     def predict(
         self,
-        restaurant_id,
         hour,
         weekday,
         month=None,
         taxi_dropoffs_override=None,
+        restaurant_id=None,
+        features=None,
     ):
         self.last_prediction_request = {
             "restaurant_id": restaurant_id,
@@ -34,18 +35,18 @@ class FakeModelService:
             "taxi_dropoffs_override": (
                 taxi_dropoffs_override
             ),
+            "features": features,
         }
-
-        if restaurant_id == "unknown-restaurant":
-            raise KeyError(
-                f"Unknown restaurant_id: {restaurant_id}"
-            )
 
         dropoffs = (
             float(taxi_dropoffs_override)
             if taxi_dropoffs_override is not None
             else 125.0
         )
+
+        # An id absent from the local feature table is no longer an error —
+        # it just means nothing was resolved from that table.
+        is_unknown = restaurant_id == "unknown-restaurant"
 
         return BusynessPrediction(
             restaurant_id=str(restaurant_id),
@@ -58,9 +59,15 @@ class FakeModelService:
                 "queue_required": 0.50,
                 "severe_queue": 0.40,
             },
-            taxi_dropoffs_1h=dropoffs,
-            taxi_zone_id="161",
+            taxi_dropoffs_1h=None if is_unknown else dropoffs,
+            taxi_zone_id=None if is_unknown else "161",
             capacity=10,
+            taxi_zone_source=(
+                "unresolved" if is_unknown else "feature_table"
+            ),
+            feature_source=(
+                "imputed" if is_unknown else "feature_table"
+            ),
         )
 
 
@@ -166,20 +173,19 @@ def test_predict_busyness_uses_model_service(
         "confidence": 0.80,
         "taxi_dropoffs_1h": 125.0,
         "taxi_zone_id": "161",
+        "taxi_zone_source": "feature_table",
+        "feature_source": "feature_table",
         "observed_occupancy": None,
         "booking_weight": None,
     }
 
-    assert (
-        fake_model_service.last_prediction_request
-        == {
-            "restaurant_id": "restaurant-123",
-            "hour": 19,
-            "weekday": 4,
-            "month": 7,
-            "taxi_dropoffs_override": None,
-        }
-    )
+    request = fake_model_service.last_prediction_request
+
+    assert request["restaurant_id"] == "restaurant-123"
+    assert request["hour"] == 19
+    assert request["weekday"] == 4
+    assert request["month"] == 7
+    assert request["taxi_dropoffs_override"] is None
 
 
 def test_predict_busyness_passes_taxi_override(
@@ -242,9 +248,14 @@ def test_predict_busyness_probabilities_sum_to_one(
     )
 
 
-def test_predict_busyness_returns_404_for_unknown_restaurant(
+def test_predict_busyness_serves_restaurant_absent_from_feature_table(
     client,
 ):
+    """
+    An id the local Parquet export has never seen must still predict. The
+    caller's database is the source of truth for restaurants; this table is
+    only a fallback for features the caller did not supply.
+    """
     response = client.post(
         "/predict/busyness"
         "?restaurant_id=unknown-restaurant",
@@ -255,10 +266,57 @@ def test_predict_busyness_returns_404_for_unknown_restaurant(
         },
     )
 
-    assert response.status_code == 404
-    assert "Unknown restaurant_id" in (
-        response.json()["detail"]
+    assert response.status_code == 200
+
+    body = response.json()
+
+    assert body["restaurant_id"] == "unknown-restaurant"
+    assert body["busyness_score"] == 0.65
+    assert body["taxi_zone_id"] is None
+    assert body["taxi_dropoffs_1h"] is None
+
+    # The response says so rather than passing an imputed guess off as a
+    # fully-resolved prediction.
+    assert body["taxi_zone_source"] == "unresolved"
+    assert body["feature_source"] == "imputed"
+
+
+def test_predict_busyness_forwards_restaurant_features(
+    client,
+    fake_model_service,
+):
+    response = client.post(
+        "/predict/busyness"
+        "?restaurant_id=restaurant-123",
+        json={
+            "hour_of_day": 19,
+            "day_of_week": 4,
+            "month": 7,
+            "latitude": 40.7128,
+            "longitude": -74.0060,
+            "taxi_zone_id": 161,
+            "typical_time_mid": 75.0,
+            "rating": 4.4,
+            "reviews": 1280,
+            "estimated_area_sqft": 2400.0,
+            "takeaway_ratio": 0.35,
+            "capacity": 42,
+        },
     )
+
+    assert response.status_code == 200
+
+    features = fake_model_service.last_prediction_request["features"]
+
+    assert features.latitude == 40.7128
+    assert features.longitude == -74.0060
+    assert features.taxi_zone_id == 161
+    assert features.typical_time_mid == 75.0
+    assert features.rating == 4.4
+    assert features.reviews == 1280
+    assert features.estimated_area_sqft == 2400.0
+    assert features.takeaway_ratio == 0.35
+    assert features.capacity == 42
 
 
 def test_predict_busyness_rejects_invalid_time_values(
