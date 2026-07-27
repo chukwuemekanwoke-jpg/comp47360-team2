@@ -7,9 +7,12 @@ import type { ThemeName } from '@shared/settingsSlice';
 import {
   FULL_DETAIL_ZOOM,
   MapBounds,
+  MapFocus,
   MapMarkerEntry,
   selectMapMarkers,
 } from '@/lib/mapDisplay';
+import { formatCuisine } from '@/lib/cuisineImages';
+import { formatRating } from '@/lib/format';
 
 // Fix for default Leaflet marker icons breaking in web bundlers
 // @ts-ignore
@@ -151,6 +154,26 @@ function Recenter({ latitude, longitude }: { latitude: number; longitude: number
   return null;
 }
 
+// Drives the camera from a tap on the parent's nearby list. Zooming to at
+// least FULL_DETAIL_ZOOM guarantees the tapped venue is drawn individually
+// instead of being culled into the zoomed-out overview subset.
+function FocusOn({ focus }: { focus?: MapFocus | null }) {
+  const map = useMap();
+  const token = focus?.token;
+
+  useEffect(() => {
+    if (!focus) return;
+    map.flyTo([focus.latitude, focus.longitude], Math.max(map.getZoom(), FULL_DETAIL_ZOOM), {
+      duration: 0.6,
+    });
+    // Keyed on the token alone — re-running whenever `focus` changes identity
+    // would drag the map back every time the parent re-renders.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
+
+  return null;
+}
+
 interface LeafletMapProps {
   latitude: number;
   longitude: number;
@@ -165,6 +188,8 @@ interface LeafletMapProps {
   // Fires whenever the rendered marker set changes (pan/zoom/data), so the
   // parent can keep its list in sync with what the map actually shows.
   onVisibleRestaurantsChange?: (entries: MapMarkerEntry[]) => void;
+  // Set by the parent when a row in the nearby list is tapped.
+  focus?: MapFocus | null;
 }
 
 export default function LeafletMapContainer({
@@ -176,6 +201,7 @@ export default function LeafletMapContainer({
   theme,
   userLocation,
   onVisibleRestaurantsChange,
+  focus,
 }: LeafletMapProps) {
   const [viewport, setViewport] = useState<{ bounds: MapBounds; zoom: number } | null>(null);
   const userIcon = useMemo(() => makeUserIcon(theme), [theme]);
@@ -219,6 +245,8 @@ export default function LeafletMapContainer({
 
         <Recenter latitude={latitude} longitude={longitude} />
 
+        <FocusOn focus={focus} />
+
         {userLocation && (
           <Marker
             position={[userLocation.lat, userLocation.lng]}
@@ -252,7 +280,14 @@ export default function LeafletMapContainer({
                   {highlighted ? '★ ' : ''}{r.name}
                 </h3>
                 <p style={{ margin: '0 0 8px 0', fontSize: '11px', color: '#64748b' }}>
-                  {r.cuisine} · {busynessLabel(r.busynessScore)}
+                  {formatCuisine(r.cuisine)} · {busynessLabel(r.busynessScore)}
+                  {/* Nested block span rather than a sibling <p> so the 8px
+                      gap above the button stays put when there's no rating. */}
+                  {r.rating != null && (
+                    <span style={{ display: 'block', marginTop: '2px', color: '#b45309', fontWeight: 600 }}>
+                      {formatRating(r.rating, r.reviews)}
+                    </span>
+                  )}
                 </p>
                 <button
                   onClick={() => onViewDetails(r.id)}
