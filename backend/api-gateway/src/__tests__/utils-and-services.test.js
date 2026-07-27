@@ -95,6 +95,14 @@ describe("validation utilities", () => {
     expect(validateCampaignBody({ tableQuota: 2, discountPercent: 20 })).toEqual({
       tableQuota: 2,
       discountPercent: 20,
+      ttlMinutes: 15,
+      ttlSeconds: 900,
+    });
+    expect(validateCampaignBody({ tableQuota: 2, discountPercent: 20, ttlMinutes: 30 })).toEqual({
+      tableQuota: 2,
+      discountPercent: 20,
+      ttlMinutes: 30,
+      ttlSeconds: 1800,
     });
     expect(requireNonEmptyString(" Tablé ", "name")).toBe("Tablé");
   });
@@ -113,6 +121,9 @@ describe("validation utilities", () => {
     );
     expect(() => validateCampaignBody({ tableQuota: 1, discountPercent: 99 })).toThrow(
       "discountPercent must be an integer"
+    );
+    expect(() => validateCampaignBody({ tableQuota: 1, discountPercent: 20, ttlMinutes: 5 })).toThrow(
+      "ttlMinutes must be an integer between 10 and 60"
     );
     expect(() => requireNonEmptyString("", "displayName")).toThrow("displayName is required");
   });
@@ -247,6 +258,9 @@ describe("cache and offer helper services", () => {
       "manager-1",
       2,
     ]);
+    expect(client.query.mock.calls[0][0]).toContain(
+      "JOIN user_preferences p ON p.user_id = u.id"
+    );
     expect(toMlCandidates(rows)).toEqual([
       {
         userId: "user-1",

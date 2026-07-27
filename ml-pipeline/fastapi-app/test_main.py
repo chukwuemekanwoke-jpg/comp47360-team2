@@ -1,159 +1,431 @@
+import math
+
+import pytest
 from fastapi.testclient import TestClient
 
 import main
+from model_service import BusynessPrediction
 
 
-client = TestClient(main.app)
+# =========================================================
+# Fake model service
+# =========================================================
+
+class FakeModelService:
+    restaurant_count = 2815
+    model_classes = [0, 1, 2]
+
+    def __init__(self):
+        self.last_prediction_request = None
+
+    def predict(
+        self,
+        restaurant_id,
+        hour,
+        weekday,
+        month=None,
+        taxi_dropoffs_override=None,
+    ):
+        self.last_prediction_request = {
+            "restaurant_id": restaurant_id,
+            "hour": hour,
+            "weekday": weekday,
+            "month": month,
+            "taxi_dropoffs_override": (
+                taxi_dropoffs_override
+            ),
+        }
+
+        if restaurant_id == "unknown-restaurant":
+            raise KeyError(
+                f"Unknown restaurant_id: {restaurant_id}"
+            )
+
+        dropoffs = (
+            float(taxi_dropoffs_override)
+            if taxi_dropoffs_override is not None
+            else 125.0
+        )
+
+        return BusynessPrediction(
+            restaurant_id=str(restaurant_id),
+            busyness_level=1,
+            busyness_label="Queue Required",
+            busyness_score=0.65,
+            confidence=0.80,
+            class_probabilities={
+                "no_wait": 0.10,
+                "queue_required": 0.50,
+                "severe_queue": 0.40,
+            },
+            taxi_dropoffs_1h=dropoffs,
+            taxi_zone_id="161",
+            capacity=10,
+        )
 
 
-def test_root_describes_service_endpoints():
+# =========================================================
+# Fixtures
+# =========================================================
+
+@pytest.fixture
+def fake_model_service():
+    return FakeModelService()
+
+
+@pytest.fixture
+def client(monkeypatch, fake_model_service):
+    """
+    Replace the real startup model loader so unit tests do not
+    depend on local model and Parquet files.
+    """
+    monkeypatch.setattr(
+        main,
+        "get_model_service",
+        lambda: fake_model_service,
+    )
+
+    # Using TestClient as a context manager executes the
+    # FastAPI lifespan startup and shutdown functions.
+    with TestClient(main.app) as test_client:
+        yield test_client
+
+
+# =========================================================
+# Root and health tests
+# =========================================================
+
+def test_root_describes_service_endpoints(client):
     response = client.get("/")
 
     assert response.status_code == 200
+
     body = response.json()
+
     assert body["status"] == "online"
-    assert body["endpoints"]["health"] == "/health"
-    assert body["endpoints"]["predict_busyness"] == "/predict/busyness"
-    assert body["endpoints"]["match"] == "/api/v1/match"
+    assert body["service"] == (
+        "Tablé ML Inference API"
+    )
+    assert body["version"] == "2.0.0"
+
+    assert body["endpoints"] == {
+        "health": "/health",
+        "predict_busyness": (
+            "/predict/busyness"
+        ),
+        "match": "/api/v1/match",
+    }
 
 
-def test_health_check_is_healthy():
+def test_health_check_reports_loaded_model(client):
     response = client.get("/health")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "healthy"}
+
+    assert response.json() == {
+        "status": "healthy",
+        "model_loaded": True,
+        "restaurant_count": 2815,
+        "model_classes": [0, 1, 2],
+    }
 
 
-def test_predict_busyness_returns_stable_prediction(monkeypatch):
-    monkeypatch.setattr(main.random, "uniform", lambda _low, _high: 0.0)
+# =========================================================
+# XGBoost prediction endpoint tests
+# =========================================================
 
+def test_predict_busyness_uses_model_service(
+    client,
+    fake_model_service,
+):
     response = client.post(
-        "/predict/busyness?restaurant_id=mercer-room",
+        "/predict/busyness"
+        "?restaurant_id=restaurant-123",
         json={
             "hour_of_day": 19,
-            "day_of_week": 5,
-            "taxi_dropoffs_1h": 25,
-            "rolling_busyness_7d": 0.4,
-            "neighborhood": "Manhattan",
-            "cuisine": "Omakase",
-            "distance_meters": 450,
+            "day_of_week": 4,
+            "month": 7,
         },
     )
 
     assert response.status_code == 200
-    assert response.json() == {
-        "restaurant_id": "mercer-room",
-        "busyness_score": 0.9,
-        "available_table_count": 1,
-        "confidence": 0.95,
-        "taxi_dropoffs_1h": 25.0,
-        "area_busyness_factor": None,
+
+    body = response.json()
+
+    assert body == {
+        "restaurant_id": "restaurant-123",
+        "busyness_level": 1,
+        "busyness_label": "Queue Required",
+        "busyness_score": 0.65,
+        "class_probabilities": {
+            "no_wait": 0.10,
+            "queue_required": 0.50,
+            "severe_queue": 0.40,
+        },
+        "available_table_count": 4,
+        "confidence": 0.80,
+        "taxi_dropoffs_1h": 125.0,
+        "taxi_zone_id": "161",
         "observed_occupancy": None,
         "booking_weight": None,
     }
 
+    assert (
+        fake_model_service.last_prediction_request
+        == {
+            "restaurant_id": "restaurant-123",
+            "hour": 19,
+            "weekday": 4,
+            "month": 7,
+            "taxi_dropoffs_override": None,
+        }
+    )
 
-def test_predict_busyness_uses_area_factor_when_coordinates_given(monkeypatch):
-    monkeypatch.setattr(main.random, "uniform", lambda _low, _high: 0.0)
 
-    # Times Square coordinates — real taxi zone + pedestrian-count data
-    # should resolve here, exercising the full area_factor path.
+def test_predict_busyness_passes_taxi_override(
+    client,
+    fake_model_service,
+):
     response = client.post(
-        "/predict/busyness?restaurant_id=times-square-spot",
+        "/predict/busyness"
+        "?restaurant_id=restaurant-123",
         json={
-            "hour_of_day": 19,
-            "day_of_week": 4,
-            "latitude": 40.758948773339,
-            "longitude": -73.984774441289,
+            "hour_of_day": 12,
+            "day_of_week": 1,
+            "month": 4,
+            "taxi_dropoffs_1h": 250,
         },
     )
 
     assert response.status_code == 200
+
     body = response.json()
-    assert body["restaurant_id"] == "times-square-spot"
-    assert 0.0 <= body["busyness_score"] <= 1.0
-    assert body["taxi_dropoffs_1h"] is not None and body["taxi_dropoffs_1h"] > 0
-    assert body["area_busyness_factor"] is not None
-    assert 0.0 <= body["area_busyness_factor"] <= 1.0
-    assert body["confidence"] > 0.75  # both taxi + pedestrian signals available here
+
+    assert body["taxi_dropoffs_1h"] == 250.0
+
+    assert (
+        fake_model_service
+        .last_prediction_request[
+            "taxi_dropoffs_override"
+        ]
+        == 250
+    )
 
 
-def test_newly_onboarded_merchant_scores_purely_from_location(monkeypatch):
-    """Day 0, no bookings: the booking weight must be zero and the score must
-    equal the location prior exactly — onboarding attaches the location and
-    predicts from it alone."""
-    monkeypatch.setattr(main.random, "uniform", lambda _low, _high: 0.0)
-
-    payload = {"hour_of_day": 19, "day_of_week": 5}
-    prior = client.post("/predict/busyness?restaurant_id=r1", json=payload).json()
-
-    cold = client.post(
-        "/predict/busyness?restaurant_id=r1",
+def test_predict_busyness_probabilities_sum_to_one(
+    client,
+):
+    response = client.post(
+        "/predict/busyness"
+        "?restaurant_id=restaurant-123",
         json={
-            **payload,
+            "hour_of_day": 18,
+            "day_of_week": 5,
+            "month": 8,
+        },
+    )
+
+    assert response.status_code == 200
+
+    probabilities = response.json()[
+        "class_probabilities"
+    ]
+
+    total_probability = sum(
+        probabilities.values()
+    )
+
+    assert math.isclose(
+        total_probability,
+        1.0,
+        abs_tol=1e-6,
+    )
+
+
+def test_predict_busyness_returns_404_for_unknown_restaurant(
+    client,
+):
+    response = client.post(
+        "/predict/busyness"
+        "?restaurant_id=unknown-restaurant",
+        json={
+            "hour_of_day": 19,
+            "day_of_week": 4,
+            "month": 7,
+        },
+    )
+
+    assert response.status_code == 404
+    assert "Unknown restaurant_id" in (
+        response.json()["detail"]
+    )
+
+
+def test_predict_busyness_rejects_invalid_time_values(
+    client,
+):
+    response = client.post(
+        "/predict/busyness"
+        "?restaurant_id=restaurant-123",
+        json={
+            "hour_of_day": 25,
+            "day_of_week": 7,
+            "month": 13,
+        },
+    )
+
+    assert response.status_code == 422
+
+    error_fields = {
+        tuple(error["loc"])
+        for error in response.json()["detail"]
+    }
+
+    assert (
+        "body",
+        "hour_of_day",
+    ) in error_fields
+
+    assert (
+        "body",
+        "day_of_week",
+    ) in error_fields
+
+    assert (
+        "body",
+        "month",
+    ) in error_fields
+
+
+def test_predict_busyness_rejects_negative_taxi_override(
+    client,
+):
+    response = client.post(
+        "/predict/busyness"
+        "?restaurant_id=restaurant-123",
+        json={
+            "hour_of_day": 10,
+            "day_of_week": 2,
+            "taxi_dropoffs_1h": -1,
+        },
+    )
+
+    assert response.status_code == 422
+
+
+# =========================================================
+# Booking maturity tests
+# =========================================================
+
+def test_new_restaurant_keeps_pure_model_prediction(
+    client,
+):
+    response = client.post(
+        "/predict/busyness"
+        "?restaurant_id=restaurant-new",
+        json={
+            "hour_of_day": 19,
+            "day_of_week": 4,
+            "month": 7,
             "days_since_onboarding": 0,
             "recent_bookings_total_30d": 0,
             "recent_bookings_same_bucket_30d": 0,
             "capacity": 10,
         },
-    ).json()
+    )
 
-    assert cold["booking_weight"] == 0.0
-    assert cold["observed_occupancy"] == 0.0
-    assert cold["busyness_score"] == prior["busyness_score"]
+    assert response.status_code == 200
+
+    body = response.json()
+
+    assert body["booking_weight"] == 0.0
+    assert body["observed_occupancy"] == 0.0
+    assert body["busyness_score"] == 0.65
+    assert body["available_table_count"] == 4
 
 
-def test_mature_merchant_blends_toward_observed_bookings(monkeypatch):
-    """Past 30 days with plenty of bookings: weight approaches the 0.6 cap and
-    the score moves toward the venue's own bucket occupancy, while the
-    location prior keeps its guaranteed >= 40% share."""
-    monkeypatch.setattr(main.random, "uniform", lambda _low, _high: 0.0)
-
-    # Prior for hour 19 / day 5 with no coords or taxi data = 0.8.
-    # Bucket is fully booked: 16 bookings / (4 weekday occurrences x 4 tables).
+def test_mature_restaurant_blends_toward_observed_occupancy(
+    client,
+):
     response = client.post(
-        "/predict/busyness?restaurant_id=r2",
+        "/predict/busyness"
+        "?restaurant_id=restaurant-mature",
         json={
             "hour_of_day": 19,
-            "day_of_week": 5,
-            "days_since_onboarding": 45,
+            "day_of_week": 4,
+            "month": 7,
+            "days_since_onboarding": 30,
             "recent_bookings_total_30d": 120,
-            "recent_bookings_same_bucket_30d": 16,
-            "capacity": 4,
+            "recent_bookings_same_bucket_30d": 40,
+            "capacity": 10,
         },
-    ).json()
+    )
 
-    assert response["observed_occupancy"] == 1.0
-    # 0.6 cap x maturity 1.0 x evidence 120/(120+20)
-    assert response["booking_weight"] == 0.5143
-    assert response["busyness_score"] == 0.9029  # 0.8 pulled up toward 1.0
-    assert response["booking_weight"] <= 0.6
+    assert response.status_code == 200
+
+    body = response.json()
+
+    # Four approximate occurrences of the selected weekday
+    # over 30 days, with ten tables:
+    # 40 / (4 * 10) = 1.0.
+    assert body["observed_occupancy"] == 1.0
+
+    # 0.6 * 1.0 * 120 / (120 + 20)
+    assert body["booking_weight"] == 0.5143
+
+    expected_score = (
+        0.65 * (1.0 - body["booking_weight"])
+        + 1.0 * body["booking_weight"]
+    )
+
+    assert math.isclose(
+        body["busyness_score"],
+        round(expected_score, 4),
+        abs_tol=1e-4,
+    )
+
+    assert (
+        body["busyness_score"] > 0.65
+    )
+
+    assert body["confidence"] == 1.0
 
 
-def test_sparse_booking_history_keeps_score_near_location_prior(monkeypatch):
-    """A 30-day-old venue with only 2 bookings: evidence shrinkage keeps the
-    weight tiny so the noisy own-history barely moves the score."""
-    monkeypatch.setattr(main.random, "uniform", lambda _low, _high: 0.0)
-
+def test_sparse_booking_history_has_small_effect(
+    client,
+):
     response = client.post(
-        "/predict/busyness?restaurant_id=r3",
+        "/predict/busyness"
+        "?restaurant_id=restaurant-sparse",
         json={
             "hour_of_day": 19,
-            "day_of_week": 5,
+            "day_of_week": 4,
+            "month": 7,
             "days_since_onboarding": 30,
             "recent_bookings_total_30d": 2,
             "recent_bookings_same_bucket_30d": 2,
-            "capacity": 4,
+            "capacity": 10,
         },
-    ).json()
+    )
 
-    assert response["booking_weight"] < 0.06
-    assert abs(response["busyness_score"] - 0.8) < 0.05
+    assert response.status_code == 200
+
+    body = response.json()
+
+    assert body["booking_weight"] < 0.06
+    assert (
+        abs(body["busyness_score"] - 0.65)
+        < 0.05
+    )
 
 
-def test_match_users_orders_candidates_by_score(monkeypatch):
-    monkeypatch.setattr(main.random, "uniform", lambda _low, _high: 0.0)
+# =========================================================
+# Flash-deal matching tests
+# =========================================================
 
+def test_match_users_orders_candidates_by_score(
+    client,
+):
     response = client.post(
         "/api/v1/match",
         json={
@@ -184,12 +456,23 @@ def test_match_users_orders_candidates_by_score(monkeypatch):
     )
 
     assert response.status_code == 200
+
     body = response.json()
-    assert body["matchedUserIds"] == ["near-vegan", "mid-user"]
-    assert body["scores"][0] > body["scores"][1]
+
+    assert body["matchedUserIds"] == [
+        "near-vegan",
+        "mid-user",
+    ]
+
+    assert (
+        body["scores"][0]
+        > body["scores"][1]
+    )
 
 
-def test_match_users_returns_empty_result_without_candidates():
+def test_match_users_returns_empty_result(
+    client,
+):
     response = client.post(
         "/api/v1/match",
         json={
@@ -201,21 +484,44 @@ def test_match_users_returns_empty_result_without_candidates():
     )
 
     assert response.status_code == 200
-    assert response.json() == {"matchedUserIds": [], "scores": []}
+
+    assert response.json() == {
+        "matchedUserIds": [],
+        "scores": [],
+    }
 
 
-def test_request_validation_rejects_invalid_shapes():
-    response = client.post(
-        "/predict/busyness?restaurant_id=bad-room",
-        json={
-            "hour_of_day": 26,
-            "day_of_week": 9,
-            "distance_meters": -1,
-        },
+def test_match_candidate_score_is_deterministic(
+    client,
+):
+    payload = {
+        "campaignId": "campaign-1",
+        "restaurantId": "restaurant-1",
+        "candidateLimit": 1,
+        "candidates": [
+            {
+                "userId": "user-1",
+                "budgetTier": "TIER_2",
+                "dietaryTags": ["vegan"],
+                "distanceMeters": 300,
+            }
+        ],
+    }
+
+    first_response = client.post(
+        "/api/v1/match",
+        json=payload,
     )
 
-    assert response.status_code == 422
-    error_fields = {tuple(error["loc"]) for error in response.json()["detail"]}
-    assert ("body", "hour_of_day") in error_fields
-    assert ("body", "day_of_week") in error_fields
-    assert ("body", "distance_meters") in error_fields
+    second_response = client.post(
+        "/api/v1/match",
+        json=payload,
+    )
+
+    assert first_response.status_code == 200
+    assert second_response.status_code == 200
+
+    assert (
+        first_response.json()
+        == second_response.json()
+    )

@@ -7,15 +7,41 @@ const { toUserJson, toOfferInboxItem, toBookingJson } = require("../../utils/ser
 const {
   validateBudgetTier,
   validateDietaryTags,
+  validatePreferredCuisines,
+  validateDiningStyles,
   requireNonEmptyString,
 } = require("../../utils/validate");
 const { expirePendingOffers } = require("../../services/offers");
+const { expireOverdueCampaigns } = require("../../services/expireCampaigns");
 const { lapseExpiredBookings } = require("../../services/bookingLifecycle");
 
 const router = Router();
 
-const USER_COLUMNS =
+const LEGACY_USER_COLUMNS =
   "id, display_name, budget_tier, dietary_tags, last_lat, last_lng, created_at";
+
+const USER_PROFILE_COLUMNS = `
+  u.id,
+  u.display_name,
+  p.budget_tier,
+  p.dietary_restrictions AS dietary_tags,
+  p.preferred_cuisines,
+  p.dining_styles,
+  u.last_lat,
+  u.last_lng,
+  u.created_at
+`;
+
+async function getUserProfile(db, userId) {
+  const { rows } = await db.query(
+    `SELECT ${USER_PROFILE_COLUMNS}
+     FROM users u
+     JOIN user_preferences p ON p.user_id = u.id
+     WHERE u.id = $1`,
+    [userId]
+  );
+  return rows[0];
+}
 
 const BOOKING_COLUMNS =
   "id, user_id, restaurant_id, offer_id, campaign_id, status, transport_mode, eta_minutes, hold_expires_at, confirmed_at";
@@ -33,7 +59,7 @@ router.post(
     const { rows } = await pool.query(
       `INSERT INTO users (display_name)
        VALUES ($1)
-       RETURNING ${USER_COLUMNS}`,
+       RETURNING ${LEGACY_USER_COLUMNS}`,
       [displayName]
     );
 
@@ -46,12 +72,8 @@ router.get(
   requireUser,
   asyncHandler(async (req, res) => {
     const pool = getPool();
-    const { rows } = await pool.query(
-      `SELECT ${USER_COLUMNS} FROM users WHERE id = $1`,
-      [req.userId]
-    );
-
-    res.status(200).json(toUserJson(rows[0]));
+    const user = await getUserProfile(pool, req.userId);
+    res.status(200).json(toUserJson(user));
   })
 );
 
@@ -66,6 +88,7 @@ router.get(
       throw new AppError(400, "VALIDATION_ERROR", "status filter must be pending when provided");
     }
 
+    await expireOverdueCampaigns(pool);
     await expirePendingOffers(pool, req.userId);
 
     const params = [req.userId];
@@ -137,40 +160,69 @@ router.patch(
   requireUser,
   asyncHandler(async (req, res) => {
     const pool = getPool();
-    const { budgetTier, dietaryTags, lastLat, lastLng } = req.body ?? {};
+    const {
+      budgetTier,
+      dietaryTags,
+      preferredCuisines,
+      diningStyles,
+      lastLat,
+      lastLng,
+    } = req.body ?? {};
 
     if (
       budgetTier === undefined
       && dietaryTags === undefined
+      && preferredCuisines === undefined
+      && diningStyles === undefined
       && lastLat === undefined
       && lastLng === undefined
     ) {
       throw new AppError(400, "VALIDATION_ERROR", "At least one preference field is required");
     }
 
-    const updates = [];
-    const values = [];
-    let paramIndex = 1;
+    const preferenceUpdates = [];
+    const preferenceValues = [];
 
     if (budgetTier !== undefined) {
       validateBudgetTier(budgetTier);
-      updates.push(`budget_tier = $${paramIndex++}`);
-      values.push(budgetTier);
+      preferenceUpdates.push(`budget_tier = $${preferenceValues.length + 1}`);
+      preferenceValues.push(budgetTier);
     }
 
     if (dietaryTags !== undefined) {
       validateDietaryTags(dietaryTags);
-      updates.push(`dietary_tags = $${paramIndex++}`);
-      values.push(dietaryTags);
+      preferenceUpdates.push(
+        `dietary_restrictions = $${preferenceValues.length + 1}`
+      );
+      preferenceValues.push(dietaryTags.map((tag) => tag.trim()));
     }
+
+    if (preferredCuisines !== undefined) {
+      validatePreferredCuisines(preferredCuisines);
+      preferenceUpdates.push(
+        `preferred_cuisines = $${preferenceValues.length + 1}`
+      );
+      preferenceValues.push(preferredCuisines.map((cuisine) => cuisine.trim()));
+    }
+
+    if (diningStyles !== undefined) {
+      validateDiningStyles(diningStyles);
+      preferenceUpdates.push(
+        `dining_styles = $${preferenceValues.length + 1}`
+      );
+      preferenceValues.push(diningStyles.map((style) => style.trim()));
+    }
+
+    const locationUpdates = [];
+    const locationValues = [];
 
     if (lastLat !== undefined) {
       const parsedLat = Number(lastLat);
       if (!Number.isFinite(parsedLat) || parsedLat < -90 || parsedLat > 90) {
         throw new AppError(400, "VALIDATION_ERROR", "lastLat must be a number between -90 and 90");
       }
-      updates.push(`last_lat = $${paramIndex++}`);
-      values.push(parsedLat);
+      locationUpdates.push(`last_lat = $${locationValues.length + 1}`);
+      locationValues.push(parsedLat);
     }
 
     if (lastLng !== undefined) {
@@ -178,21 +230,52 @@ router.patch(
       if (!Number.isFinite(parsedLng) || parsedLng < -180 || parsedLng > 180) {
         throw new AppError(400, "VALIDATION_ERROR", "lastLng must be a number between -180 and 180");
       }
-      updates.push(`last_lng = $${paramIndex++}`);
-      values.push(parsedLng);
+      locationUpdates.push(`last_lng = $${locationValues.length + 1}`);
+      locationValues.push(parsedLng);
     }
 
-    values.push(req.userId);
+    const client = await pool.connect();
 
-    const { rows } = await pool.query(
-      `UPDATE users
-       SET ${updates.join(", ")}
-       WHERE id = $${paramIndex}
-       RETURNING ${USER_COLUMNS}`,
-      values
-    );
+    try {
+      await client.query("BEGIN");
 
-    res.status(200).json(toUserJson(rows[0]));
+      // Defensive for users created before migration 011's insert trigger.
+      await client.query(
+        `INSERT INTO user_preferences (user_id)
+         VALUES ($1)
+         ON CONFLICT (user_id) DO NOTHING`,
+        [req.userId]
+      );
+
+      if (preferenceUpdates.length > 0) {
+        preferenceValues.push(req.userId);
+        await client.query(
+          `UPDATE user_preferences
+           SET ${preferenceUpdates.join(", ")}
+           WHERE user_id = $${preferenceValues.length}`,
+          preferenceValues
+        );
+      }
+
+      if (locationUpdates.length > 0) {
+        locationValues.push(req.userId);
+        await client.query(
+          `UPDATE users
+           SET ${locationUpdates.join(", ")}
+           WHERE id = $${locationValues.length}`,
+          locationValues
+        );
+      }
+
+      const user = await getUserProfile(client, req.userId);
+      await client.query("COMMIT");
+      res.status(200).json(toUserJson(user));
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
+    }
   })
 );
 

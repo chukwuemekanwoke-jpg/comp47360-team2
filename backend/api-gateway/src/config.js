@@ -39,6 +39,14 @@ const config = {
     process.env.JWT_SECRET
     || (process.env.NODE_ENV === "production" ? null : "dev-jwt-secret-change-me"),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || "7d",
+  // X-User-Id exists only for local demos and older tests. It is not an
+  // authentication credential and must never be trusted by default in a
+  // deployed production service.
+  allowLegacyUserHeader: (() => {
+    if (process.env.ALLOW_LEGACY_USER_HEADER === "true") return true;
+    if (process.env.ALLOW_LEGACY_USER_HEADER === "false") return false;
+    return (process.env.NODE_ENV || "development") !== "production";
+  })(),
   webAppUrl: process.env.WEB_APP_URL || "http://localhost:5173",
   // Rate limiting (sensitive routes). Off by default in test so suites stay stable;
   // set RATE_LIMIT_ENABLED=true/false to override.

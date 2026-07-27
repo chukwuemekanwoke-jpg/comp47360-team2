@@ -48,7 +48,9 @@ export default function OnboardingScreen() {
       await triggerUpdatePreferences({
         userId,
         budgetTier: priceLevelToBudgetTier(maxPriceLevel),
-        dietaryTags: [...favoriteCuisines, diningStyle],
+        dietaryTags: [],
+        preferredCuisines: favoriteCuisines,
+        diningStyles: [diningStyle],
         // Only send coordinates when we have a real device fix — no
         // hardcoded fallback, the map handles missing location itself.
         ...(location ? { lastLat: location.lat, lastLng: location.lng } : {}),

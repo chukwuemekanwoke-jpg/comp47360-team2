@@ -18,8 +18,22 @@ const router = Router();
 
 router.use(authRateLimiter);
 
-const USER_COLUMNS =
+const LEGACY_AUTH_USER_COLUMNS =
   "id, display_name, budget_tier, dietary_tags, last_lat, last_lng, created_at, email, token_version";
+
+const AUTH_PROFILE_COLUMNS = `
+  u.id,
+  u.display_name,
+  p.budget_tier,
+  p.dietary_restrictions AS dietary_tags,
+  p.preferred_cuisines,
+  p.dining_styles,
+  u.last_lat,
+  u.last_lng,
+  u.created_at,
+  u.email,
+  u.token_version
+`;
 
 const PASSWORD_RESET_ACK_MESSAGE =
   "If an account exists for that email, a reset link has been sent.";
@@ -46,9 +60,10 @@ function validatePassword(value) {
 
 async function findUserByEmail(pool, email) {
   const { rows } = await pool.query(
-    `SELECT ${USER_COLUMNS}, password_hash
-     FROM users
-     WHERE LOWER(email) = LOWER($1)`,
+    `SELECT ${AUTH_PROFILE_COLUMNS}, u.password_hash
+     FROM users u
+     JOIN user_preferences p ON p.user_id = u.id
+     WHERE LOWER(u.email) = LOWER($1)`,
     [email]
   );
   return rows[0] ?? null;
@@ -100,7 +115,7 @@ router.post(
     const { rows } = await pool.query(
       `INSERT INTO users (display_name, email, password_hash)
        VALUES ($1, $2, $3)
-       RETURNING ${USER_COLUMNS}`,
+       RETURNING ${LEGACY_AUTH_USER_COLUMNS}`,
       [displayName, email, passwordHash]
     );
 
