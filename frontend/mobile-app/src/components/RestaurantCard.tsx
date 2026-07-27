@@ -113,7 +113,7 @@ function RestaurantCard({ restaurant: r, onBook }: RestaurantCardProps) {
           onPress={() => onBook?.(r)}
         >
           <Text className="text-table-canvas text-xs font-bold uppercase tracking-widest">
-            Book Table
+            Book Table Now
           </Text>
         </TouchableOpacity>
       </View>
