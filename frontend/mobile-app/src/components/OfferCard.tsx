@@ -105,7 +105,7 @@ export default function OfferCard({ offer, onAccept, isAccepting }: OfferCardPro
             className="text-xs font-bold uppercase tracking-widest"
             style={{ color: isExpired ? "#71717a" : "#09090b" }}
           >
-            {isAccepting ? "Claiming..." : isExpired ? "Unavailable" : "Claim Offer"}
+            {isAccepting ? "Claiming..." : isExpired ? "Unavailable" : "Claim & Book Now"}
           </Text>
         </TouchableOpacity>
       </View>

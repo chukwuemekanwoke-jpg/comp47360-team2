@@ -10,6 +10,8 @@
 | [migrations/003_add_restaurant_capacity_cuisine.sql](./migrations/003_add_restaurant_capacity_cuisine.sql) | `restaurants.capacity`, `restaurants.cuisine` |
 | [migrations/006_add_revpash_fields.sql](./migrations/006_add_revpash_fields.sql) | RevPASH inputs on `restaurants` and `bookings` |
 | [migrations/008_add_password_reset.sql](./migrations/008_add_password_reset.sql) | Password reset token columns on `users` |
+| [migrations/011_create_user_preferences.sql](./migrations/011_create_user_preferences.sql) | One-to-one categorized `user_preferences` table + legacy compatibility mirror |
+| [migrations/012_create_historical_taxi_demand.sql](./migrations/012_create_historical_taxi_demand.sql) | Empty schema for year/month/weekday/hour taxi-demand aggregates |
 
 ## Prerequisites
 
@@ -36,7 +38,7 @@ docker compose ps
 psql "$DATABASE_URL" -c "\dt"
 ```
 
-Expected tables: `users`, `restaurants`, `campaigns`, `offers`, `bookings`, `availability_snapshots`, `schema_migrations`.
+Expected tables: `users`, `user_preferences`, `restaurants`, `campaigns`, `offers`, `bookings`, `availability_snapshots`, `historical_taxi_demand`, `schema_migrations`.
 
 | Command            | Action                                    |
 | ------------------ | ----------------------------------------- |

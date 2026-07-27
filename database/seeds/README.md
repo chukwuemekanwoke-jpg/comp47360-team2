@@ -57,7 +57,7 @@ Until JWT login is wired on all clients, pass these UUIDs via `X-User-Id` or use
 
 | Role | UUID | Notes |
 |------|------|--------|
-| Consumer (onboarded) | `550e8400-e29b-41d4-a716-446655440001` | `budget_tier=TIER_2`, `dietary_tags=[vegan]` |
+| Consumer (onboarded) | `550e8400-e29b-41d4-a716-446655440001` | `user_preferences.budget_tier=TIER_2`, `dietary_restrictions=[vegan]` |
 | Restaurant manager | `550e8400-e29b-41d4-a716-446655440002` | Manages Maple Room + Tablé Demo Central |
 
 ## Restaurants summary

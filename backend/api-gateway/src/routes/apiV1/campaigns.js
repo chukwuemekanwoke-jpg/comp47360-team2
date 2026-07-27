@@ -10,11 +10,13 @@ const { validateCampaignBody } = require("../../utils/validate");
 const { createCampaignOffers } = require("../../services/createCampaignOffers");
 const { getCampaignOffers } = require("../../services/getCampaignOffers");
 const { getCampaignRevpashLift } = require("../../services/getCampaignRevpashLift");
+const { expireOverdueCampaigns } = require("../../services/expireCampaigns");
 
 const router = Router({ mergeParams: true });
 
 const CAMPAIGN_COLUMNS = `
-  id, restaurant_id, status, table_quota, tables_claimed, discount_percent, created_at
+  id, restaurant_id, status, table_quota, tables_claimed, discount_percent,
+  created_at, expires_at
 `;
 
 router.use(requireUser);
@@ -24,6 +26,8 @@ router.get(
   "/active",
   asyncHandler(async (req, res) => {
     const pool = getPool();
+    await expireOverdueCampaigns(pool, { restaurantId: req.restaurantId });
+
     const { rows } = await pool.query(
       `SELECT ${CAMPAIGN_COLUMNS}
        FROM campaigns
@@ -43,6 +47,8 @@ router.get(
   "/",
   asyncHandler(async (req, res) => {
     const pool = getPool();
+    await expireOverdueCampaigns(pool, { restaurantId: req.restaurantId });
+
     const { rows } = await pool.query(
       `SELECT ${CAMPAIGN_COLUMNS}
        FROM campaigns
@@ -52,7 +58,7 @@ router.get(
     );
 
     res.status(200).json({
-      campaigns: rows.map(toCampaignJson),
+      campaigns: rows.map((row) => toCampaignJson(row)),
     });
   })
 );
@@ -62,12 +68,14 @@ router.post(
   writeRateLimiter,
   asyncHandler(async (req, res) => {
     const pool = getPool();
-    const { tableQuota, discountPercent } = validateCampaignBody(req.body);
+    const { tableQuota, discountPercent, ttlSeconds } = validateCampaignBody(req.body);
 
     const client = await pool.connect();
 
     try {
       await client.query("BEGIN");
+
+      await expireOverdueCampaigns(client, { restaurantId: req.restaurantId });
 
       const { rows: restaurantRows } = await client.query(
         `SELECT id, latitude, longitude, manager_user_id, capacity
@@ -91,11 +99,28 @@ router.post(
         );
       }
 
+      const { rows: activeRows } = await client.query(
+        `SELECT id
+         FROM campaigns
+         WHERE restaurant_id = $1 AND status = 'active'
+         LIMIT 1
+         FOR UPDATE`,
+        [req.restaurantId]
+      );
+
+      if (activeRows.length > 0) {
+        throw new AppError(
+          409,
+          "CONFLICT",
+          "An active campaign already exists for this restaurant"
+        );
+      }
+
       const { rows: campaignRows } = await client.query(
-        `INSERT INTO campaigns (restaurant_id, table_quota, discount_percent)
-         VALUES ($1, $2, $3)
+        `INSERT INTO campaigns (restaurant_id, table_quota, discount_percent, expires_at)
+         VALUES ($1, $2, $3, NOW() + ($4 * INTERVAL '1 second'))
          RETURNING ${CAMPAIGN_COLUMNS}`,
-        [req.restaurantId, tableQuota, discountPercent]
+        [req.restaurantId, tableQuota, discountPercent, ttlSeconds]
       );
 
       const campaign = campaignRows[0];
@@ -104,6 +129,7 @@ router.post(
         campaignId: campaign.id,
         restaurant,
         tableQuota,
+        ttlSeconds,
       });
 
       await client.query("COMMIT");
@@ -126,6 +152,8 @@ router.get(
     if (!campaignId || !isUuid(campaignId)) {
       throw new AppError(400, "VALIDATION_ERROR", "Invalid campaignId format");
     }
+
+    await expireOverdueCampaigns(pool, { restaurantId: req.restaurantId });
 
     const offers = await getCampaignOffers(pool, {
       restaurantId: req.restaurantId,
@@ -169,6 +197,8 @@ router.post(
 
     try {
       await client.query("BEGIN");
+
+      await expireOverdueCampaigns(client, { restaurantId: req.restaurantId });
 
       const { rows } = await client.query(
         `SELECT ${CAMPAIGN_COLUMNS}

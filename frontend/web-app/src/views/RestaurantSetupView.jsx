@@ -34,8 +34,8 @@ export default function RestaurantSetupView() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleLocationChange = ({ latitude, longitude }) => {
-    setFormData((prev) => ({ ...prev, latitude, longitude }));
+  const handleLocationChange = ({ latitude, longitude, addressLine }) => {
+    setFormData((prev) => ({ ...prev, latitude, longitude, addressLine: addressLine ?? prev.addressLine }));
   };
 
   const handleToggleAccessibility = (key) => {
@@ -48,6 +48,11 @@ export default function RestaurantSetupView() {
 
     if (!formData.name.trim() || !formData.cuisine.trim()) {
       setError('Restaurant name and cuisine are required.');
+      return;
+    }
+
+    if (!formData.addressLine.trim()) {
+      setError('Search an address or drop a pin on the map to set your location.');
       return;
     }
 
@@ -126,22 +131,6 @@ export default function RestaurantSetupView() {
             </div>
 
             <div>
-              <label htmlFor="addressLine" className="block text-[11px] font-mono text-table-textMuted uppercase tracking-wide mb-1.5 font-bold">
-                Address
-              </label>
-              <input
-                id="addressLine"
-                type="text"
-                name="addressLine"
-                value={formData.addressLine}
-                onChange={handleInputChange}
-                placeholder="123 Manhattan Ave, New York, NY"
-                className="w-full bg-table-canvas border border-table-border rounded-xl px-4 py-3 text-sm text-table-text placeholder-table-textSubtle focus:outline-none focus:border-table-primary transition-colors"
-                disabled={isSubmitting}
-              />
-            </div>
-
-            <div>
               <label htmlFor="phone" className="block text-[11px] font-mono text-table-textMuted uppercase tracking-wide mb-1.5 font-bold">
                 Phone
               </label>
@@ -164,6 +153,7 @@ export default function RestaurantSetupView() {
               <RestaurantLocationPicker
                 latitude={formData.latitude}
                 longitude={formData.longitude}
+                addressLine={formData.addressLine}
                 onChange={handleLocationChange}
                 disabled={isSubmitting}
               />

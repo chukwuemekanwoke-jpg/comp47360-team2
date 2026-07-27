@@ -47,6 +47,7 @@ const { createCampaignOffers } = require("../services/createCampaignOffers");
 const { callMlBusyness } = require("../services/mlBusynessClient");
 const { getRevpashSummary } = require("../services/getRevpash");
 const { getCampaignRevpashLift } = require("../services/getCampaignRevpashLift");
+const config = require("../config");
 
 const app = createApp();
 
@@ -62,6 +63,8 @@ function userRow(overrides = {}) {
     display_name: "Yuhao",
     budget_tier: null,
     dietary_tags: [],
+    preferred_cuisines: [],
+    dining_styles: [],
     last_lat: null,
     last_lng: null,
     created_at: NOW,
@@ -127,6 +130,7 @@ function campaignRow(overrides = {}) {
     tables_claimed: 0,
     discount_percent: 20,
     created_at: NOW,
+    expires_at: new Date("2099-01-01T00:15:00.000Z"),
     ...overrides,
   };
 }
@@ -158,18 +162,27 @@ describe("users routes", () => {
   });
 
   it("updates preferences and returns normalized coordinates", async () => {
-    mockPool.query
-      .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
-      .mockResolvedValueOnce({
-        rows: [
-          userRow({
-            budget_tier: "TIER_2",
-            dietary_tags: ["vegetarian"],
-            last_lat: "40.73",
-            last_lng: "-73.99",
-          }),
-        ],
-      });
+    const updatedUser = userRow({
+      budget_tier: "TIER_2",
+      dietary_tags: ["vegetarian"],
+      preferred_cuisines: ["Japanese"],
+      dining_styles: ["casual"],
+      last_lat: "40.73",
+      last_lng: "-73.99",
+    });
+    const client = {
+      query: jest
+        .fn()
+        .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [] }) // defensive preference INSERT
+        .mockResolvedValueOnce({ rows: [] }) // preference UPDATE
+        .mockResolvedValueOnce({ rows: [] }) // location UPDATE
+        .mockResolvedValueOnce({ rows: [updatedUser] }) // joined profile SELECT
+        .mockResolvedValueOnce({ rows: [] }), // COMMIT
+      release: jest.fn(),
+    };
+    mockPool.query.mockResolvedValueOnce({ rows: [{ id: USER_ID }] });
+    mockPool.connect.mockResolvedValueOnce(client);
 
     const res = await request(app)
       .patch("/api/v1/users/me/preferences")
@@ -177,6 +190,8 @@ describe("users routes", () => {
       .send({
         budgetTier: "TIER_2",
         dietaryTags: ["vegetarian"],
+        preferredCuisines: ["Japanese"],
+        diningStyles: ["casual"],
         lastLat: 40.73,
         lastLng: -73.99,
       });
@@ -185,9 +200,16 @@ describe("users routes", () => {
     expect(res.body).toMatchObject({
       budgetTier: "TIER_2",
       dietaryTags: ["vegetarian"],
+      preferredCuisines: ["Japanese"],
+      diningStyles: ["casual"],
       lastLat: 40.73,
       lastLng: -73.99,
     });
+    expect(client.query).toHaveBeenCalledWith(
+      expect.stringContaining("UPDATE user_preferences"),
+      ["TIER_2", ["vegetarian"], ["Japanese"], ["casual"], USER_ID]
+    );
+    expect(client.release).toHaveBeenCalled();
   });
 
   it("returns bookings for the signed-in user", async () => {
@@ -233,6 +255,27 @@ describe("restaurant routes", () => {
       availableTableCount: 2,
       distanceMeters: 450,
     });
+  });
+
+  it("does not trust X-User-Id to update location when legacy auth is disabled", async () => {
+    const previous = config.allowLegacyUserHeader;
+    config.allowLegacyUserHeader = false;
+    mockPool.query.mockResolvedValueOnce({ rows: [restaurantRow()] });
+
+    try {
+      const res = await request(app)
+        .get("/api/v1/restaurants/nearby?lat=40.73&lng=-73.99")
+        .set("X-User-Id", USER_ID);
+
+      expect(res.status).toBe(200);
+      expect(mockPool.query).toHaveBeenCalledTimes(1);
+      expect(mockPool.query).not.toHaveBeenCalledWith(
+        expect.stringContaining("UPDATE users"),
+        expect.any(Array)
+      );
+    } finally {
+      config.allowLegacyUserHeader = previous;
+    }
   });
 
   it("geocodes neighborhood when lat/lng are omitted", async () => {
@@ -574,7 +617,8 @@ describe("offer routes", () => {
     const client = {
       query: jest
         .fn()
-        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [] }) // expire overdue campaigns
         .mockResolvedValueOnce({
           rows: [
             {
@@ -586,7 +630,7 @@ describe("offer routes", () => {
           ],
         })
         .mockResolvedValueOnce({ rows: [{ last_lat: "40.73", last_lng: "-73.99" }] })
-        .mockResolvedValueOnce({ rows: [] }),
+        .mockResolvedValueOnce({ rows: [] }), // COMMIT
       release: jest.fn(),
     };
 
@@ -621,10 +665,12 @@ describe("campaign routes", () => {
     const client = {
       query: jest
         .fn()
-        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [] }) // expire overdue
         .mockResolvedValueOnce({ rows: [restaurantRow()] })
+        .mockResolvedValueOnce({ rows: [] }) // no active campaign
         .mockResolvedValueOnce({ rows: [campaignRow()] })
-        .mockResolvedValueOnce({ rows: [] }),
+        .mockResolvedValueOnce({ rows: [] }), // COMMIT
       release: jest.fn(),
     };
 
@@ -644,12 +690,54 @@ describe("campaign routes", () => {
       restaurantId: RESTAURANT_ID,
       tableQuota: 3,
       discountPercent: 20,
+      status: "active",
     });
+    expect(res.body.expiresAt).toBeTruthy();
     expect(createCampaignOffers).toHaveBeenCalledWith(client, {
       campaignId: CAMPAIGN_ID,
       restaurant: expect.objectContaining({ id: RESTAURANT_ID }),
       tableQuota: 3,
+      ttlSeconds: 900,
     });
+  });
+
+  it("creates a campaign with a manager-selected shared TTL", async () => {
+    const client = {
+      query: jest
+        .fn()
+        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: [restaurantRow()] })
+        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({
+          rows: [campaignRow({ expires_at: new Date("2099-01-01T00:30:00.000Z") })],
+        })
+        .mockResolvedValueOnce({ rows: [] }),
+      release: jest.fn(),
+    };
+
+    mockPool.query
+      .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
+      .mockResolvedValueOnce({ rows: [{ id: RESTAURANT_ID, manager_user_id: USER_ID }] });
+    mockPool.connect.mockResolvedValueOnce(client);
+    createCampaignOffers.mockResolvedValueOnce(["offer-1"]);
+
+    const res = await request(app)
+      .post(`/api/v1/restaurants/${RESTAURANT_ID}/campaigns`)
+      .set("X-User-Id", USER_ID)
+      .send({ tableQuota: 3, discountPercent: 20, ttlMinutes: 30 });
+
+    expect(res.status).toBe(201);
+    expect(createCampaignOffers).toHaveBeenCalledWith(client, {
+      campaignId: CAMPAIGN_ID,
+      restaurant: expect.objectContaining({ id: RESTAURANT_ID }),
+      tableQuota: 3,
+      ttlSeconds: 1800,
+    });
+    expect(client.query).toHaveBeenCalledWith(
+      expect.stringContaining("INSERT INTO campaigns"),
+      [RESTAURANT_ID, 3, 20, 1800]
+    );
   });
 
   it("lists offers for a campaign", async () => {
@@ -659,6 +747,7 @@ describe("campaign routes", () => {
     mockPool.query
       .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
       .mockResolvedValueOnce({ rows: [{ id: RESTAURANT_ID, manager_user_id: USER_ID }] })
+      .mockResolvedValueOnce({ rows: [] }) // expire overdue campaigns
       .mockResolvedValueOnce({ rows: [{ id: CAMPAIGN_ID }] })
       .mockResolvedValueOnce({ rows: [] })
       .mockResolvedValueOnce({
@@ -706,6 +795,7 @@ describe("campaign routes", () => {
     mockPool.query
       .mockResolvedValueOnce({ rows: [{ id: USER_ID }] })
       .mockResolvedValueOnce({ rows: [{ id: RESTAURANT_ID, manager_user_id: USER_ID }] })
+      .mockResolvedValueOnce({ rows: [] }) // expire overdue
       .mockResolvedValueOnce({ rows: [] });
 
     const res = await request(app)
@@ -753,7 +843,8 @@ describe("campaign routes", () => {
     const client = {
       query: jest
         .fn()
-        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [] }) // expire
         .mockResolvedValueOnce({ rows: [restaurantRow({ capacity: 8 })] }),
       release: jest.fn(),
     };
@@ -780,15 +871,16 @@ describe("campaign routes", () => {
     const client = {
       query: jest
         .fn()
-        .mockResolvedValueOnce({ rows: [] })
+        .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [] }) // expire
         .mockResolvedValueOnce({
           rows: [campaignRow({ status: "active" })],
         })
         .mockResolvedValueOnce({
           rows: [campaignRow({ status: "cancelled" })],
         })
-        .mockResolvedValueOnce({ rows: [] })
-        .mockResolvedValueOnce({ rows: [] }),
+        .mockResolvedValueOnce({ rows: [] }) // revoke offers
+        .mockResolvedValueOnce({ rows: [] }), // COMMIT
       release: jest.fn(),
     };
 

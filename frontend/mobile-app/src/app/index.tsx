@@ -15,6 +15,7 @@ import { setSession } from "@shared/authSlice";
 import { useAppDispatch, useAppSelector } from "@shared/hooks";
 import { ApiError } from "@shared/types";
 import { registerForPushNotificationsAsync } from "@/services/pushNotifications";
+import { navColors } from "@/theme";
 
 type Mode = "login" | "register";
 
@@ -26,6 +27,7 @@ function extractErrorMessage(err: unknown): string {
 export default function AuthScreen() {
   const dispatch = useAppDispatch();
   const sessionUserId = useAppSelector((state) => state.auth.userId);
+  const colors = navColors[useAppSelector((state) => state.settings.theme)];
 
   const [mode, setMode] = useState<Mode>("login");
   const [email, setEmail] = useState("");
@@ -144,7 +146,7 @@ export default function AuthScreen() {
             activeOpacity={0.8}
             style={{ opacity: isSubmitting ? 0.7 : 1 }}
           >
-            {isSubmitting && <ActivityIndicator size="small" color="#09090b" />}
+            {isSubmitting && <ActivityIndicator size="small" color={colors.canvas} />}
             <Text className="text-table-canvas text-sm font-bold uppercase tracking-widest">
               {isSubmitting
                 ? "One moment…"

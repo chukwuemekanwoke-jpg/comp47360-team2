@@ -6,6 +6,7 @@ const { getPool } = require("../../db/pool");
 const { toBookingJson } = require("../../utils/serialize");
 const { DEFAULT_TRANSPORT_MODE } = require("../../utils/validate");
 const { createBooking } = require("../../services/createBooking");
+const { expireOverdueCampaigns } = require("../../services/expireCampaigns");
 
 const router = Router();
 
@@ -27,6 +28,8 @@ router.post(
 
     try {
       await client.query("BEGIN");
+
+      await expireOverdueCampaigns(client);
 
       const { rows: offerRows } = await client.query(
         `SELECT o.id, o.status, o.expires_at, c.restaurant_id

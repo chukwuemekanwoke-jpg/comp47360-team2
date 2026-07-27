@@ -203,6 +203,8 @@ describe("createBooking", () => {
           campaign_id: CAMPAIGN_ID,
           restaurant_id: RESTAURANT_ID,
           discount_percent: 20,
+          campaign_status: "active",
+          campaign_expires_at: new Date("2099-01-01T00:15:00.000Z"),
         },
       ],
       [booking({ offer_id: OFFER_ID, campaign_id: CAMPAIGN_ID })],

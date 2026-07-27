@@ -176,6 +176,8 @@ function userRow(overrides = {}) {
     display_name: "Contract Diner",
     budget_tier: null,
     dietary_tags: [],
+    preferred_cuisines: [],
+    dining_styles: [],
     last_lat: null,
     last_lng: null,
     created_at: NOW,
@@ -234,6 +236,7 @@ function campaignRow(overrides = {}) {
     tables_claimed: 0,
     discount_percent: 20,
     created_at: NOW,
+    expires_at: OFFER_EXPIRY,
     ...overrides,
   };
 }
@@ -282,7 +285,7 @@ class ContractDatabase {
       return Promise.resolve({ rows: [] });
     }
 
-    if (text.includes("FROM users WHERE LOWER(email) = LOWER($1)")) {
+    if (text.includes("FROM users u") && text.includes("LOWER(u.email) = LOWER($1)")) {
       const email = String(params[0]).toLowerCase();
       return Promise.resolve({
         rows: [...this.users.values()].filter((user) => user.email?.toLowerCase() === email),
@@ -323,7 +326,11 @@ class ContractDatabase {
       });
     }
 
-    if (text.includes("SELECT id, display_name, budget_tier")) {
+    if (
+      text.includes("FROM users u")
+      && text.includes("JOIN user_preferences p")
+      && text.includes("WHERE u.id = $1")
+    ) {
       const user = this.users.get(params[0]);
       return Promise.resolve({ rows: user ? [user] : [] });
     }
@@ -334,13 +341,17 @@ class ContractDatabase {
       return Promise.resolve({ rows: [] });
     }
 
-    if (text.includes("UPDATE users SET") && text.includes("budget_tier")) {
+    if (text.includes("INSERT INTO user_preferences (user_id)")) {
+      return Promise.resolve({ rows: [] });
+    }
+
+    if (text.includes("UPDATE user_preferences SET")) {
       const user = this.users.get(params[params.length - 1]);
       user.budget_tier = params[0];
       user.dietary_tags = params[1];
-      user.last_lat = params[2];
-      user.last_lng = params[3];
-      return Promise.resolve({ rows: [user] });
+      user.preferred_cuisines = params[2] ?? [];
+      user.dining_styles = params[3] ?? [];
+      return Promise.resolve({ rows: [] });
     }
 
     if (text.includes("UPDATE users SET last_lat = $1, last_lng = $2 WHERE id = $3")) {
@@ -495,9 +506,24 @@ class ContractDatabase {
             expires_at: offer.expires_at,
             campaign_id: offer.campaign_id,
             restaurant_id: campaign.restaurant_id,
+            discount_percent: campaign.discount_percent,
+            campaign_status: campaign.status,
+            campaign_expires_at: campaign.expires_at,
           },
         ],
       });
+    }
+
+    if (text.includes("UPDATE campaigns") && text.includes("status = 'expired'")) {
+      return Promise.resolve({ rows: [] });
+    }
+
+    if (text.includes("UPDATE offers") && text.includes("status = 'revoked'")) {
+      return Promise.resolve({ rows: [] });
+    }
+
+    if (text.includes("FROM campaigns") && text.includes("status = 'active'") && text.includes("FOR UPDATE")) {
+      return Promise.resolve({ rows: [] });
     }
 
     if (text.includes("UPDATE offers SET status = 'accepted'")) {
@@ -563,8 +589,15 @@ class ContractDatabase {
       return Promise.resolve({ rows: [{ id: OFFER_ID }] });
     }
 
+    if (text.includes("UPDATE offers SET status = 'expired'")) {
+      return Promise.resolve({ rows: [] });
+    }
+
     if (text.includes("FROM campaigns WHERE restaurant_id = $1 AND status = 'active'")) {
-      return Promise.resolve({ rows: [this.campaigns.get(CAMPAIGN_ID)] });
+      const campaign = this.campaigns.get(CAMPAIGN_ID);
+      return Promise.resolve({
+        rows: campaign && campaign.status === "active" ? [campaign] : [],
+      });
     }
 
     if (text.includes("FROM campaigns WHERE restaurant_id = $1")) {
@@ -632,6 +665,8 @@ describe("OpenAPI contract validation", () => {
       body: {
         budgetTier: "TIER_2",
         dietaryTags: ["vegetarian"],
+        preferredCuisines: ["Japanese"],
+        diningStyles: ["casual"],
         lastLat: 40.73,
         lastLng: -73.99,
       },

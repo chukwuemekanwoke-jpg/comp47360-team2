@@ -9,6 +9,7 @@ erDiagram
   users ||--o{ bookings : places
   users ||--o{ offers : receives
   users ||--o{ restaurants : manages
+  users ||--|| user_preferences : has
   restaurants ||--o{ campaigns : runs
   restaurants ||--o{ bookings : hosts
   restaurants ||--o{ availability_snapshots : logs
@@ -18,8 +19,16 @@ erDiagram
 
   users {
     uuid id PK
+    text email
+    text display_name
+  }
+
+  user_preferences {
+    uuid user_id PK,FK
     budget_tier budget_tier
-    text_array dietary_tags
+    text_array dietary_restrictions
+    text_array preferred_cuisines
+    text_array dining_styles
   }
 
   restaurants {
@@ -52,18 +61,30 @@ erDiagram
     int eta_minutes
     timestamptz hold_expires_at
   }
+
+  historical_taxi_demand {
+    smallint source_year PK
+    smallint taxi_zone_id PK
+    smallint month PK
+    smallint weekday PK
+    smallint hour PK
+    int dropoff_count
+    bigint passenger_count_sum
+    float avg_trip_distance
+  }
 ```
 
 ## P0 user story mapping
 
 | Story | Requirement | Tables / columns |
 |-------|-------------|----------------|
-| **1.1** Onboarding | Budget tier + dietary tags → PostgreSQL for ML | `users.budget_tier`, `users.dietary_tags` |
+| **1.1** Onboarding | Categorized preferences → PostgreSQL for ML | `user_preferences.budget_tier`, `dietary_restrictions`, `preferred_cuisines`, `dining_styles` |
 | **2.1** Discovery | Within 1.5 km, `available_table_count > 0` | `restaurants.latitude`, `restaurants.longitude`, `restaurants.available_table_count`; query uses haversine (app/SQL) — see README |
 | **3.1 / 3.2** Booking | 15 min hold vs ETA | `restaurants.hold_window_minutes`, `bookings.eta_minutes`, `bookings.hold_expires_at`, `bookings.transport_mode` |
 | **4.1** Offers | 900 s TTL, disable accept when expired | `offers.expires_at`, `offers.status` (`pending` → `expired` via app or scheduled job) |
 | **5.2** Dashboard | Campaign `active` → `completed` when quota filled | `campaigns.table_quota`, `campaigns.tables_claimed`, `campaigns.status`; trigger revokes pending `offers` |
 | **5.1** RevPASH | Revenue per available seat hour | `restaurants.opens_at`, `closes_at`, `avg_check_per_cover`; `bookings.party_size`, `seated_at`, `check_amount`, `duration_minutes` |
+| Historical traffic proxy | Store yearly taxi-demand aggregates for model features | `historical_taxi_demand.source_year`, `taxi_zone_id`, `month`, `weekday`, `hour`, `dropoff_count` |
 
 ### P1 (schema-ready, optional for demo data)
 
@@ -84,8 +105,16 @@ Consumer profiles. Auth via JWT (`Authorization: Bearer`); seed data may use fix
 - `password_hash`: bcrypt hash; null for users without credentials
 - `token_version`: incremented on logout to invalidate outstanding JWTs
 - `password_reset_token_hash` / `password_reset_expires_at`: single-use forgot-password flow
+- `budget_tier` / `dietary_tags`: temporary compatibility mirror retained by migration 011 for rollback
+
+### `user_preferences`
+
+One-to-one categorized preference record keyed by `user_id`.
+
 - `budget_tier`: `TIER_1` \| `TIER_2` \| `TIER_3` (UI labels € / €€ / €€€)
-- `dietary_tags`: PostgreSQL `TEXT[]` for ML features
+- `dietary_restrictions`: requirements such as vegan, halal, or gluten-free
+- `preferred_cuisines`: explicit cuisine choices used by onboarding/matching
+- `dining_styles`: casual, family, date-night, or business contexts
 
 ### `restaurants`
 
@@ -107,6 +136,8 @@ Restaurant-triggered lull-mitigation runs.
 
 - `table_quota` / `tables_claimed`: when claimed ≥ quota → `completed` (DB trigger)
 - `discount_percent`: enforced **10–50** at DB level
+- `expires_at`: campaign TTL end — set from manager `ttlMinutes` (default **15**, range 10–60); same value applied to offers
+- `status`: `active` → `completed` (quota), `cancelled` (manager), or `expired` (TTL; lazy on read)
 
 ### `offers`
 
@@ -132,6 +163,16 @@ Standard or deal-backed reservations.
 ### `availability_snapshots`
 
 Append-only history for simulated availability (see [docs/data-strategy.md](../docs/data-strategy.md)).
+
+### `historical_taxi_demand`
+
+Static taxi drop-off aggregates for ML proxy features. The composite primary key
+enforces one row per source year, taxi zone, month, weekday, and hour.
+
+- `weekday`: Pandas convention, Monday `0` through Sunday `6`
+- `dropoff_count` / `passenger_count_sum`: non-negative aggregate counts
+- `avg_trip_distance`: nullable non-negative mean distance in miles
+- Migration 012 creates only the schema; importing source data is a separate operation
 
 ### `restaurant_revpash_hourly` (view)
 
@@ -162,8 +203,10 @@ Radius constant for discovery: **1500 metres** (product spec).
 
 Columns likely used as model features:
 
-- `users`: `budget_tier`, `dietary_tags`, `last_lat`, `last_lng`
+- `user_preferences`: `budget_tier`, `dietary_restrictions`, `preferred_cuisines`, `dining_styles`
+- `users`: `last_lat`, `last_lng`
 - `restaurants`: `busyness_score`, `neighborhood`, EDI flags
 - `availability_snapshots`: time-series busyness for training
+- `historical_taxi_demand`: static zone/time taxi-demand proxy features
 
 Matching output creates `offers` rows for a `campaign_id` + `user_id`.

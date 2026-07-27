@@ -4,6 +4,7 @@ const STATUS_STYLE = {
   active: 'bg-table-offer/10 text-table-offer border-table-offer/30',
   completed: 'bg-table-primary/10 text-table-primary border-table-primary/30',
   cancelled: 'bg-table-danger/10 text-table-danger border-table-danger/30',
+  expired: 'bg-table-interactive text-table-textMuted border-table-border',
 };
 
 function formatDate(iso) {

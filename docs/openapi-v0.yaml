@@ -893,6 +893,14 @@ components:
           type: array
           items:
             type: string
+        preferredCuisines:
+          type: array
+          items:
+            type: string
+        diningStyles:
+          type: array
+          items:
+            type: string
         createdAt:
           type: string
           format: date-time
@@ -967,11 +975,19 @@ components:
 
     UserPreferences:
       type: object
-      required: [budgetTier, dietaryTags]
+      minProperties: 1
       properties:
         budgetTier:
           $ref: "#/components/schemas/BudgetTier"
         dietaryTags:
+          type: array
+          items:
+            type: string
+        preferredCuisines:
+          type: array
+          items:
+            type: string
+        diningStyles:
           type: array
           items:
             type: string
@@ -1268,6 +1284,14 @@ components:
           type: integer
           minimum: 10
           maximum: 50
+        ttlMinutes:
+          type: integer
+          minimum: 10
+          maximum: 60
+          default: 15
+          description: >
+            Single shared TTL for the campaign and its offers (minutes).
+            Defaults to 15 when omitted.
 
     Campaign:
       type: object
@@ -1289,3 +1313,11 @@ components:
         createdAt:
           type: string
           format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+          description: Campaign TTL end (MVP same as offer TTL, 900 seconds from create).
+        secondsRemaining:
+          type: integer
+          nullable: true
+          description: Seconds until campaign expires; 0 when expired or past TTL.

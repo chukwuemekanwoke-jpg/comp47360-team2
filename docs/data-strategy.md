@@ -189,7 +189,7 @@ flowchart LR
 | `rolling_busyness_7d` | `availability_snapshots` |
 | `neighborhood` | Dataset A |
 | `cuisine` | Dataset A |
-| `user.budget_tier`, `dietary_tags` | `users` (Story 1.1) |
+| `user.budget_tier`, categorized preference arrays | `user_preferences` (Story 1.1) |
 | `distance_meters` | Computed at match time |
 
 **Target options:**
@@ -222,7 +222,7 @@ flowchart LR
 | `restaurants.busyness_score` | Dataset B aggregates + ML |
 | `restaurants.available_table_count` | Simulation job − active bookings |
 | `availability_snapshots` | Append each simulation tick or hourly cron |
-| `users.dietary_tags`, `budget_tier` | App onboarding only |
+| `user_preferences` | App onboarding only |
 | `bookings` | Runtime API (reduces availability) |
 | `campaigns` / `offers` | B-side + ML match (not from open data) |
 
@@ -298,11 +298,11 @@ whenever a migration adds a field or an enrichment script (e.g.
 `enrich-places.js`) actually gets run and flips a column from simulated to
 real in practice.
 
-### `users`
+### `users` and `user_preferences`
 
 | Column | Classification | Why |
 |---|---|---|
-| `budget_tier`, `dietary_tags` | **Actual** | Typed in by the user at onboarding |
+| `user_preferences.budget_tier`, `dietary_restrictions`, `preferred_cuisines`, `dining_styles` | **Actual** | Typed in by the user at onboarding |
 | `email`, `password_hash` | **Actual** | Real auth credentials |
 | `last_lat` / `last_lng` | **Actual** | Real device/browser location at last use |
 | `token_version`, `password_reset_token_hash` / `password_reset_expires_at` | **Actual** (system-generated, not a business signal) | Auth bookkeeping |

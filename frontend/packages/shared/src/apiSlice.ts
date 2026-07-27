@@ -128,8 +128,19 @@ export const tableApi = createApi({
       query: () => '/config/maps-key',
     }),
 
-    updatePreferences: builder.mutation<UserProfile, { userId: string; budgetTier: BudgetTier; dietaryTags: string[]; lastLat?: number; lastLng?: number }>({
-      query: ({ userId, ...body }: { userId: string; budgetTier: BudgetTier; dietaryTags: string[]; lastLat?: number; lastLng?: number }) => ({
+    updatePreferences: builder.mutation<
+      UserProfile,
+      {
+        userId: string;
+        budgetTier?: BudgetTier;
+        dietaryTags?: string[];
+        preferredCuisines?: string[];
+        diningStyles?: string[];
+        lastLat?: number;
+        lastLng?: number;
+      }
+    >({
+      query: ({ userId, ...body }) => ({
         url: '/users/me/preferences',
         method: 'PATCH',
         body,
@@ -223,8 +234,19 @@ export const tableApi = createApi({
     }),
 
     // --- API Contract 4.7 B-Side Campaigns ---
-    createCampaign: builder.mutation<Campaign, { restaurantId: string; tableQuota: number; discountPercent: number }>({
-      query: ({ restaurantId, ...body }: { restaurantId: string; tableQuota: number; discountPercent: number }) => ({
+    createCampaign: builder.mutation<
+      Campaign,
+      { restaurantId: string; tableQuota: number; discountPercent: number; ttlMinutes?: number }
+    >({
+      query: ({
+        restaurantId,
+        ...body
+      }: {
+        restaurantId: string;
+        tableQuota: number;
+        discountPercent: number;
+        ttlMinutes?: number;
+      }) => ({
         url: `/restaurants/${restaurantId}/campaigns`,
         method: 'POST',
         body,
