@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from "rea
 import { useRouter } from "expo-router";
 import BackendHealthCard from "@/components/BackendHealth";
 import CollapsibleFilters from "@/components/CollapsibleFilters";
+import BookingModal from "@/components/BookingCheckout";
 import { useGetNearbyRestaurantsQuery } from "@shared/apiSlice";
 import { DISCOVERY_RADIUS_M, SEAT_AVAILABILITY_POLL_MS } from "@shared/constants";
 import { applyRestaurantFilters, busynessColor, busynessLabel } from "@shared/restaurantFilters";
@@ -10,11 +11,20 @@ import { RestaurantSummary } from "@shared/types";
 import { useAppSelector } from "@shared/hooks";
 import LocationComponent from "@/components/LocationComponent";
 import { MapMarkerEntry } from "@/lib/mapDisplay";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { navColors } from "@/theme";
 
 // Lazy load map component
 const LazyLeafletMap = lazy(() => import("@/components/WebMap"));
+
+// busynessColor() returns a fixed semantic hex outside the table-* palette,
+// so it can't be expressed as a Tailwind class — tint it explicitly instead.
+function hexToRgba(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
 
 // Fallback used until a real GPS fix lands in the user slice.
 const DEFAULT_LATITUDE = 40.7589;
@@ -22,6 +32,7 @@ const DEFAULT_LONGITUDE = -73.9851;
 
 export default function MapScreen() {
   const router = useRouter();
+  const [selectedRestaurant, setSelectedRestaurant] = useState<RestaurantSummary | null>(null);
 
   const userLocation = useAppSelector((state) => state.user.location);
   const filters = useAppSelector((state) => state.user.filters);
@@ -30,7 +41,7 @@ export default function MapScreen() {
   const latitude = userLocation?.lat ?? DEFAULT_LATITUDE;
   const longitude = userLocation?.lng ?? DEFAULT_LONGITUDE;
 
-  const { data } = useGetNearbyRestaurantsQuery(
+  const { data, isLoading } = useGetNearbyRestaurantsQuery(
     {
       lat: latitude,
       lng: longitude,
@@ -68,7 +79,9 @@ export default function MapScreen() {
 
       {/* ── Search + collapsible filters ── */}
       <View className="mx-4 mt-3">
-        <CollapsibleFilters />
+        <CollapsibleFilters>
+          <LocationComponent />
+        </CollapsibleFilters>
       </View>
 
       {/* ── Map Box Container ── */}
@@ -103,6 +116,16 @@ export default function MapScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* No location prompt */}
+      {!userLocation && !isLoading && (
+        <View className="mx-4 mt-3 bg-table-surface border border-table-border rounded-2xl p-4">
+          <Text className="text-xs text-table-gold mb-3">
+            Enable location to discover nearby restaurants.
+          </Text>
+          <LocationComponent />
+        </View>
+      )}
+
       {/* ── Nearby Cards List — mirrors exactly what the map is showing ── */}
       <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold mx-4 mt-5 mb-2">
         {nearbyList.length > 0 ? `${nearbyList.length} On the map` : "On the map"}
@@ -125,32 +148,42 @@ export default function MapScreen() {
                   {r.cuisine} · {r.distanceMeters < 1000 ? `${Math.round(r.distanceMeters)} m` : `${(r.distanceMeters / 1000).toFixed(1)} km`}
                 </Text>
               </View>
-              <View className="px-2 py-1 rounded-lg" style={{ backgroundColor: busynessColor(r.busynessScore) + "18" }}>
+              <View className="px-2 py-1 rounded-lg" style={{ backgroundColor: hexToRgba(busynessColor(r.busynessScore), 0.1) }}>
                 <Text className="text-[10px] font-bold uppercase tracking-widest" style={{ color: busynessColor(r.busynessScore) }}>
                   {busynessLabel(r.busynessScore)}
                 </Text>
               </View>
             </View>
 
-            <View className="flex-row gap-4 border-t border-table-border pt-2 mt-1">
-              <Text className="text-xs text-table-gold">
-                <Ionicons name="time-outline" size={12} color={colors.gold} /> {Math.round(r.busynessScore * 100)}%
-              </Text>
-              <Text className="text-xs text-table-gold">
-                <MaterialCommunityIcons name="seat-outline" size={12} color={colors.gold} />{" "}
-                <Text className="text-table-live font-bold">{r.availableTableCount} free</Text>
-              </Text>
-              {r.isWheelchairAccessible && (
-                <Text className="text-xs text-table-offer font-bold">
-                  <Ionicons name="accessibility-outline" size={12} color={colors.offer} /> Accessible
+            <View className="flex-row items-center justify-between border-t border-table-border pt-2 mt-1">
+              <View className="flex-row gap-4">
+                <Text className="text-xs text-table-gold">
+                  <MaterialCommunityIcons name="seat-outline" size={12} color={colors.gold} />{" "}
+                  <Text className="text-table-live font-bold">{r.availableTableCount} free</Text>
                 </Text>
-              )}
+              </View>
+              <TouchableOpacity
+                onPress={() => setSelectedRestaurant(r)}
+                className="bg-table-teal px-3 py-1.5 rounded-lg"
+                activeOpacity={0.8}
+              >
+                <Text className="text-table-canvas text-[10px] font-bold uppercase tracking-widest">
+                  Book
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
         ))}
-        <LocationComponent/>
         <BackendHealthCard/>
       </ScrollView>
+
+      {/* Booking modal */}
+      <BookingModal
+        isVisible={selectedRestaurant !== null}
+        restaurant={selectedRestaurant}
+        userCoordinates={userLocation ?? { lat: 0, lng: 0 }}
+        onClose={() => setSelectedRestaurant(null)}
+      />
     </View>
   );
 }
