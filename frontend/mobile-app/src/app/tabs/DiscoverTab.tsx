@@ -128,19 +128,23 @@ export default function DiscoverScreen() {
     >
       {/* Header */}
       <View className="mx-4 mt-4 bg-table-surface border border-table-border rounded-2xl px-4 py-3">
-        <Text className="text-sm font-bold text-table-cream">Discover</Text>
+        <Text className="text-sm font-bold text-table-cream">Tables available now</Text>
         <Text className="text-[9px] font-bold uppercase tracking-widest text-table-gold mt-0.5">
-          Curated from live availability near you
+          Free tables within {DISCOVERY_RADIUS_M / 1000} km of you
+        </Text>
+        <Text className="text-[10px] text-table-cream/60 mt-2 leading-relaxed">
+          Every booking here is for right now. We check your travel time at checkout, so you
+          only book a table you can still reach before it is released.
         </Text>
       </View>
 
       {restaurants.length === 0 ? (
         <Text className="text-table-gold text-xs text-center mt-12 mx-8">
-          No restaurants nearby right now. Try enabling location or check back later.
+          No tables free nearby right now. Try enabling location, or check back in a few minutes.
         </Text>
       ) : (
         <>
-          <SectionTitle title="Top picks" subtitle="Free tables, low wait" />
+          <SectionTitle title="Top picks" subtitle="Tables free now, low wait" />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}>
             {topPicks.map((r) => (
               <RestaurantTile key={r.id} item={r} />
