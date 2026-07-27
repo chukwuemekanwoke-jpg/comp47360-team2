@@ -14,7 +14,10 @@ const {
 } = require("../../utils/validate");
 const { resolveEtaResult } = require("../../services/etaResolver");
 const { getCachedEta, setCachedEta } = require("../../utils/etaCache");
-const { refreshRestaurantBusyness } = require("../../services/busynessService");
+const {
+  refreshRestaurantBusyness,
+  scheduleBusynessRefresh,
+} = require("../../services/busynessService");
 const { getRevpashSummary } = require("../../services/getRevpash");
 const config = require("../../config");
 const {
@@ -50,6 +53,7 @@ const RESTAURANT_COLUMNS = `
   r.capacity,
   r.cuisine,
   r.busyness_score,
+  r.busyness_updated_at,
   r.is_wheelchair_accessible,
   r.sensory_friendly,
   r.address_line,
@@ -243,6 +247,12 @@ router.get(
       radiusM,
       restaurants: rows.map(toRestaurantSummary),
     });
+
+    // Deliberately not awaited: the response above is already sent with the
+    // stored scores. Venues whose busyness_updated_at is older than the TTL
+    // get recomputed in the background, so the next search serves fresh
+    // values without any request paying for the ml-service round trip.
+    scheduleBusynessRefresh(pool, rows);
   })
 );
 

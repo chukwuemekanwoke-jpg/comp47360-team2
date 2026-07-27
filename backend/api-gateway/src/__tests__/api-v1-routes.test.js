@@ -376,9 +376,15 @@ describe("restaurant routes", () => {
         recentBookingsSameBucket30d: 3,
       })
     );
-    expect(mockPool.query).toHaveBeenLastCalledWith(
+    expect(mockPool.query).toHaveBeenCalledWith(
       expect.stringContaining("INSERT INTO availability_snapshots"),
       [RESTAURANT_ID, 3, 0.72]
+    );
+    // The fresh score is cached on the restaurant so /nearby can serve it and
+    // skip the ml-service until busyness_updated_at goes stale.
+    expect(mockPool.query).toHaveBeenLastCalledWith(
+      expect.stringContaining("busyness_updated_at = NOW()"),
+      [0.72, RESTAURANT_ID]
     );
   });
 
