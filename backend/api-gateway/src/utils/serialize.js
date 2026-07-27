@@ -33,6 +33,8 @@ function toRestaurantSummary(row) {
     capacity: row.capacity,
     cuisine: row.cuisine,
     busynessScore: row.busyness_score != null ? Number(row.busyness_score) : 0,
+    rating: row.rating != null ? Number(row.rating) : null,
+    reviews: row.reviews != null ? Number(row.reviews) : null,
     isWheelchairAccessible: row.is_wheelchair_accessible,
     sensoryFriendly: row.sensory_friendly,
   };

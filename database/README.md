@@ -12,6 +12,7 @@
 | [migrations/008_add_password_reset.sql](./migrations/008_add_password_reset.sql) | Password reset token columns on `users` |
 | [migrations/011_create_user_preferences.sql](./migrations/011_create_user_preferences.sql) | One-to-one categorized `user_preferences` table + legacy compatibility mirror |
 | [migrations/012_create_historical_taxi_demand.sql](./migrations/012_create_historical_taxi_demand.sql) | Empty schema for year/month/weekday/hour taxi-demand aggregates |
+| [migrations/013_add_restaurant_rating_reviews.sql](./migrations/013_add_restaurant_rating_reviews.sql) | Nullable restaurant aggregate rating and review count |
 
 ## Prerequisites
 
