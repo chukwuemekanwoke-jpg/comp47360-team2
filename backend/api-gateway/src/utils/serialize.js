@@ -6,6 +6,8 @@ function toUserJson(row) {
     dietaryTags: row.dietary_tags ?? [],
     preferredCuisines: row.preferred_cuisines ?? [],
     diningStyles: row.dining_styles ?? [],
+    requiresWheelchairAccess: row.requires_wheelchair_access ?? false,
+    requiresSensoryFriendly: row.requires_sensory_friendly ?? false,
     createdAt: row.created_at.toISOString(),
   };
 

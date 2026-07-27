@@ -27,6 +27,10 @@ async function findNearbyCandidates(client, { restaurant, limit }) {
          u.id,
          p.budget_tier,
          p.dietary_restrictions AS dietary_tags,
+         p.preferred_cuisines,
+         p.dining_styles,
+         p.requires_wheelchair_access,
+         p.requires_sensory_friendly,
          ${HAVERSINE_SQL} AS distance_meters
        FROM users u
        JOIN user_preferences p ON p.user_id = u.id
@@ -34,7 +38,8 @@ async function findNearbyCandidates(client, { restaurant, limit }) {
          AND u.last_lng IS NOT NULL
          AND u.id IS DISTINCT FROM $4
      )
-     SELECT id, budget_tier, dietary_tags, distance_meters
+     SELECT id, budget_tier, dietary_tags, preferred_cuisines, dining_styles,
+            requires_wheelchair_access, requires_sensory_friendly, distance_meters
      FROM nearby_users
      WHERE distance_meters <= $3
      ORDER BY distance_meters ASC
@@ -56,8 +61,28 @@ function toMlCandidates(rows) {
     userId: row.id,
     budgetTier: row.budget_tier,
     dietaryTags: row.dietary_tags ?? [],
+    preferredCuisines: row.preferred_cuisines ?? [],
+    diningStyles: row.dining_styles ?? [],
+    requiresWheelchairAccess: row.requires_wheelchair_access ?? false,
+    requiresSensoryFriendly: row.requires_sensory_friendly ?? false,
     distanceMeters: Math.round(Number(row.distance_meters)),
   }));
+}
+
+/**
+ * Venue-side attributes the matcher scores candidate preferences against.
+ * Raw values only — tier/threshold decisions belong to the scoring heuristic.
+ */
+function toMlRestaurant(row) {
+  return {
+    id: row.id,
+    cuisine: row.cuisine ?? null,
+    neighborhood: row.neighborhood ?? null,
+    avgCheckPerCover:
+      row.avg_check_per_cover != null ? Number(row.avg_check_per_cover) : null,
+    isWheelchairAccessible: row.is_wheelchair_accessible ?? false,
+    sensoryFriendly: row.sensory_friendly ?? false,
+  };
 }
 
 module.exports = {
@@ -69,4 +94,5 @@ module.exports = {
   MATCH_RADIUS_M,
   findNearbyCandidates,
   toMlCandidates,
+  toMlRestaurant,
 };

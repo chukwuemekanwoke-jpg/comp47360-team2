@@ -208,6 +208,10 @@ class MatchCandidate(BaseModel):
     userId: str
     budgetTier: Optional[str] = None
     dietaryTags: List[str] = Field(default_factory=list)
+    preferredCuisines: List[str] = Field(default_factory=list)
+    diningStyles: List[str] = Field(default_factory=list)
+    requiresWheelchairAccess: bool = False
+    requiresSensoryFriendly: bool = False
 
     distanceMeters: float = Field(
         ...,
@@ -215,9 +219,26 @@ class MatchCandidate(BaseModel):
     )
 
 
+class MatchRestaurant(BaseModel):
+    """
+    Venue-side attributes scored against candidate preferences.
+
+    Optional on the request so older gateway builds that send only
+    restaurantId keep working.
+    """
+
+    id: str
+    cuisine: Optional[str] = None
+    neighborhood: Optional[str] = None
+    avgCheckPerCover: Optional[float] = None
+    isWheelchairAccessible: bool = False
+    sensoryFriendly: bool = False
+
+
 class MatchRequest(BaseModel):
     campaignId: str
     restaurantId: str
+    restaurant: Optional[MatchRestaurant] = None
 
     candidateLimit: int = Field(
         ...,
@@ -255,7 +276,10 @@ def get_service(request: Request) -> BusynessModelService:
     return service
 
 
-def score_candidate(candidate: MatchCandidate) -> float:
+def score_candidate(
+        candidate: MatchCandidate, 
+        restaraunt:MatchRestaurant | None
+    ) -> float:
     """
     Existing deterministic flash-deal candidate heuristic.
 
@@ -271,11 +295,15 @@ def score_candidate(candidate: MatchCandidate) -> float:
 
     score = distance_factor * 0.6
 
-    if candidate.budgetTier:
+    if restaraunt and (restaraunt.cuisine in candidate.preferredCuisines):
         score += 0.2
-
-    if candidate.dietaryTags:
+    if restaraunt and (restaraunt.isWheelchairAccessible and candidate.requiresWheelchairAccess):
         score += 0.1
+    elif restaraunt and ((not restaraunt.isWheelchairAccessible) and candidate.requiresWheelchairAccess):
+        score = 0
+    if restaraunt and (restaraunt.sensoryFriendly and candidate.requiresSensoryFriendly):
+        score += 0.1
+
 
     return round(
         min(1.0, max(0.0, score)),
@@ -510,7 +538,7 @@ def match_users(payload: MatchRequest):
         (
             (
                 candidate.userId,
-                score_candidate(candidate),
+                score_candidate(candidate, payload.restaurant),
             )
             for candidate in payload.candidates
         ),

@@ -136,6 +136,8 @@ export const tableApi = createApi({
         dietaryTags?: string[];
         preferredCuisines?: string[];
         diningStyles?: string[];
+        requiresWheelchairAccess?: boolean;
+        requiresSensoryFriendly?: boolean;
         lastLat?: number;
         lastLng?: number;
       }
