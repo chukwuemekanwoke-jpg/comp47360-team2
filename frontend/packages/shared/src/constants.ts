@@ -22,6 +22,32 @@ export const CUISINES = [
   "American"
 ];
 
+// Diner access requirements. Matched against the venue's
+// isWheelchairAccessible / sensoryFriendly attributes during flash-deal
+// matching, so these are needs rather than tastes. `field` is both the
+// UserProfile property and the PATCH /users/me/preferences request key.
+export type AccessNeedField = "requiresWheelchairAccess" | "requiresSensoryFriendly";
+
+export const ACCESS_NEEDS: {
+  field: AccessNeedField;
+  label: string;
+  icon: string;
+  hint: string;
+}[] = [
+  {
+    field: "requiresWheelchairAccess",
+    label: "Step-free access",
+    icon: "accessibility-outline",
+    hint: "Only match venues with wheelchair access",
+  },
+  {
+    field: "requiresSensoryFriendly",
+    label: "Sensory friendly",
+    icon: "leaf-outline",
+    hint: "Prefer quieter, low-stimulation rooms",
+  },
+];
+
 // Available travel modes - lifted from mobile app
 export const TRAVEL_METHODS: { label: string; icon: string; mode: TransportMode }[] = [
   { label: "Walking", icon: "walk-outline", mode: "walking" },

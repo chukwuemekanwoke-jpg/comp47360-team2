@@ -4,9 +4,11 @@ import ModalSheet from "./ModalSheet";
 import { useUpdatePreferencesMutation } from "@shared/apiSlice";
 import { useAppSelector } from "@shared/hooks";
 import PreferenceEditor, {
+  AccessNeeds,
   DiningStyle,
   priceLevelToBudgetTier,
 } from "./PreferenceEditor";
+import { AccessNeedField } from "@shared/constants";
 
 interface EditPreferencesModalProps {
   isVisible: boolean;
@@ -15,6 +17,7 @@ interface EditPreferencesModalProps {
   initialCuisines: string[];
   initialPriceLevel: number;
   initialDiningStyle: DiningStyle;
+  initialAccessNeeds: AccessNeeds;
 }
 
 // "Edit preferences" sheet on the profile page. Saves via the same
@@ -26,6 +29,7 @@ export default function EditPreferencesModal({
   initialCuisines,
   initialPriceLevel,
   initialDiningStyle,
+  initialAccessNeeds,
 }: EditPreferencesModalProps) {
   const userId = useAppSelector((state) => state.auth.userId);
   const [triggerUpdatePreferences, { isLoading: saving }] = useUpdatePreferencesMutation();
@@ -33,6 +37,7 @@ export default function EditPreferencesModal({
   const [favoriteCuisines, setFavoriteCuisines] = useState<string[]>(initialCuisines);
   const [maxPriceLevel, setMaxPriceLevel] = useState(initialPriceLevel);
   const [diningStyle, setDiningStyle] = useState<DiningStyle>(initialDiningStyle);
+  const [accessNeeds, setAccessNeeds] = useState<AccessNeeds>(initialAccessNeeds);
 
   const toggleCuisine = (cuisine: string) => {
     setFavoriteCuisines((current) =>
@@ -40,6 +45,10 @@ export default function EditPreferencesModal({
         ? current.filter((c) => c !== cuisine)
         : [...current, cuisine]
     );
+  };
+
+  const toggleAccessNeed = (field: AccessNeedField) => {
+    setAccessNeeds((current) => ({ ...current, [field]: !current[field] }));
   };
 
   const save = async () => {
@@ -50,6 +59,7 @@ export default function EditPreferencesModal({
         budgetTier: priceLevelToBudgetTier(maxPriceLevel),
         preferredCuisines: favoriteCuisines,
         diningStyles: [diningStyle],
+        ...accessNeeds,
       }).unwrap();
       onClose();
     } catch (error) {
@@ -75,9 +85,11 @@ export default function EditPreferencesModal({
           favoriteCuisines={favoriteCuisines}
           maxPriceLevel={maxPriceLevel}
           diningStyle={diningStyle}
+          accessNeeds={accessNeeds}
           onToggleCuisine={toggleCuisine}
           onSetPriceLevel={setMaxPriceLevel}
           onSetDiningStyle={setDiningStyle}
+          onToggleAccessNeed={toggleAccessNeed}
         />
       </ScrollView>
 
