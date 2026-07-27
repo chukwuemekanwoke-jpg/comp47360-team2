@@ -2,7 +2,9 @@ import React, { useMemo, useState, lazy, Suspense } from "react"; // Added lazy 
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import BackendHealthCard from "@/components/BackendHealth";
-import CollapsibleFilters from "@/components/CollapsibleFilters";
+import FilterBar, { FilterSheet } from "@/components/FilterBar";
+import DraggableSheet from "@/components/DraggableSheet";
+import BookingModal from "@/components/BookingCheckout";
 import { useGetNearbyRestaurantsQuery } from "@shared/apiSlice";
 import { DISCOVERY_RADIUS_M, SEAT_AVAILABILITY_POLL_MS } from "@shared/constants";
 import { applyRestaurantFilters, busynessColor, busynessLabel } from "@shared/restaurantFilters";
@@ -10,11 +12,20 @@ import { RestaurantSummary } from "@shared/types";
 import { useAppSelector } from "@shared/hooks";
 import LocationComponent from "@/components/LocationComponent";
 import { MapMarkerEntry } from "@/lib/mapDisplay";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { navColors } from "@/theme";
 
 // Lazy load map component
 const LazyLeafletMap = lazy(() => import("@/components/WebMap"));
+
+// busynessColor() returns a fixed semantic hex outside the table-* palette,
+// so it can't be expressed as a Tailwind class — tint it explicitly instead.
+function hexToRgba(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
 
 // Fallback used until a real GPS fix lands in the user slice.
 const DEFAULT_LATITUDE = 40.7589;
@@ -22,6 +33,9 @@ const DEFAULT_LONGITUDE = -73.9851;
 
 export default function MapScreen() {
   const router = useRouter();
+  const [selectedRestaurant, setSelectedRestaurant] = useState<RestaurantSummary | null>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filtersTop, setFiltersTop] = useState(0);
 
   const userLocation = useAppSelector((state) => state.user.location);
   const filters = useAppSelector((state) => state.user.filters);
@@ -30,7 +44,7 @@ export default function MapScreen() {
   const latitude = userLocation?.lat ?? DEFAULT_LATITUDE;
   const longitude = userLocation?.lng ?? DEFAULT_LONGITUDE;
 
-  const { data } = useGetNearbyRestaurantsQuery(
+  const { data, isLoading } = useGetNearbyRestaurantsQuery(
     {
       lat: latitude,
       lng: longitude,
@@ -55,102 +69,130 @@ export default function MapScreen() {
 
   return (
     <View className="flex-1 bg-table-canvas">
-      {/* ── Header card ── */}
-      <View className="mx-4 mt-4 bg-table-surface border border-table-border rounded-2xl px-4 py-3">
-        <Text className="text-sm font-bold text-table-cream">Live Restaurant Map</Text>
-        <View className="flex-row items-center gap-1.5 mt-0.5">
-          <View className="w-1.5 h-1.5 rounded-full bg-table-teal" />
-          <Text className="text-[9px] font-bold uppercase tracking-widest text-table-teal">
-            Real-time feed
+      {/* ── Search + filter toggle — the panel itself overlays the screen ── */}
+      <View
+        className="mx-4 mt-4"
+        onLayout={(e) =>
+          setFiltersTop(e.nativeEvent.layout.y + e.nativeEvent.layout.height + 12)
+        }
+      >
+        <FilterBar active={filtersOpen} onToggle={() => setFiltersOpen((v) => !v)} />
+      </View>
+
+      {/* No location prompt */}
+      {!userLocation && !isLoading && (
+        <View className="mx-4 mt-3 bg-table-surface border border-table-border rounded-2xl p-4">
+          <Text className="text-xs text-table-gold mb-3">
+            Enable location to discover nearby restaurants.
           </Text>
+          <LocationComponent />
         </View>
-      </View>
+      )}
 
-      {/* ── Search + collapsible filters ── */}
-      <View className="mx-4 mt-3">
-        <CollapsibleFilters />
-      </View>
+      {/* Map fills the rest, with the nearby list draggable over it */}
+      <View className="flex-1 mt-3">
+        <View className="flex-1 mx-4 rounded-2xl overflow-hidden border border-table-border relative">
 
-      {/* ── Map Box Container ── */}
-      <View className="mx-4 mt-3 rounded-2xl overflow-hidden border border-table-border relative" style={{ height: 260 }}>
-        
-        {/* Wrap the lazy component in Suspense to provide an SSR-safe loading window */}
-        <Suspense fallback={
-          <View className="flex-1 items-center justify-center bg-table-surface">
-            <ActivityIndicator size="small" />
-          </View>
-        }>
-          <LazyLeafletMap
-            latitude={latitude}
-            longitude={longitude}
-            restaurantsList={restaurantsList}
-            busynessLabel={busynessLabel}
-            theme={theme}
-            onViewDetails={(id) => router.push({ pathname: "/tabs/CardTab", params: { focusId: id } })}
-            onVisibleRestaurantsChange={setVisibleMarkers}
-          />
-        </Suspense>
+          {/* Wrap the lazy component in Suspense to provide an SSR-safe loading window */}
+          <Suspense fallback={
+            <View className="flex-1 items-center justify-center bg-table-surface">
+              <ActivityIndicator size="small" color={colors.teal} />
+            </View>
+          }>
+            <LazyLeafletMap
+              latitude={latitude}
+              longitude={longitude}
+              restaurantsList={restaurantsList}
+              busynessLabel={busynessLabel}
+              theme={theme}
+              onViewDetails={(id) => router.push({ pathname: "/tabs/CardTab", params: { focusId: id } })}
+              onVisibleRestaurantsChange={setVisibleMarkers}
+            />
+          </Suspense>
 
-        {/* List toggle overlay */}
-        <TouchableOpacity
-          className="absolute bottom-3 right-3 bg-table-canvas/80 border border-table-border px-3 py-1.5 rounded-lg z-[1000]"
-          onPress={() => router.push("/tabs/CardTab")}
-          activeOpacity={0.8}
+          {/* List toggle overlay — top-right, clear of the draggable sheet */}
+          <TouchableOpacity
+            className="absolute top-2 right-2 bg-table-canvas/80 border border-table-border px-3 py-1.5 rounded-lg z-[1000]"
+            onPress={() => router.push("/tabs/CardTab")}
+            activeOpacity={0.8}
+          >
+            <Text className="text-table-cream text-[10px] font-bold uppercase tracking-widest">
+              List View
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* ── Nearby Cards List — mirrors exactly what the map is showing ── */}
+        <DraggableSheet
+          handle={
+            <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold">
+              {nearbyList.length > 0 ? `${nearbyList.length} On the map` : "On the map"}
+            </Text>
+          }
         >
-          <Text className="text-table-cream text-[10px] font-bold uppercase tracking-widest">
-            List View
-          </Text>
-        </TouchableOpacity>
+          <ScrollView className="px-4 pt-2" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
+            {nearbyList.length === 0 && (
+              <Text className="text-table-gold text-xs text-center py-6">
+                No restaurants in this map area. Pan or zoom out to see more.
+              </Text>
+            )}
+            {nearbyList.map(({ restaurant: r, highlighted }: MapMarkerEntry) => (
+              <View key={r.id} className="bg-table-surface border border-table-border rounded-2xl p-4 mb-3">
+                <View className="flex-row items-start justify-between mb-2">
+                  <View className="flex-1 mr-3">
+                    <Text className="text-sm font-bold text-table-cream">
+                      {highlighted ? "★ " : ""}{r.name}
+                    </Text>
+                    <Text className="text-xs text-table-gold mt-0.5">
+                      {r.cuisine} · {r.distanceMeters < 1000 ? `${Math.round(r.distanceMeters)} m` : `${(r.distanceMeters / 1000).toFixed(1)} km`}
+                    </Text>
+                  </View>
+                  <View className="px-2 py-1 rounded-lg" style={{ backgroundColor: hexToRgba(busynessColor(r.busynessScore), 0.1) }}>
+                    <Text className="text-[10px] font-bold uppercase tracking-widest" style={{ color: busynessColor(r.busynessScore) }}>
+                      {busynessLabel(r.busynessScore)}
+                    </Text>
+                  </View>
+                </View>
+
+                <View className="flex-row items-center justify-between border-t border-table-border pt-2 mt-1">
+                  <View className="flex-row gap-4">
+                    <Text className="text-xs text-table-gold">
+                      <MaterialCommunityIcons name="seat-outline" size={12} color={colors.gold} />{" "}
+                      <Text className="text-table-live font-bold">{r.availableTableCount} free</Text>
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => setSelectedRestaurant(r)}
+                    className="bg-table-teal px-3 py-1.5 rounded-lg"
+                    activeOpacity={0.8}
+                  >
+                    <Text className="text-table-canvas text-[10px] font-bold uppercase tracking-widest">
+                      Book
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
+            <BackendHealthCard/>
+          </ScrollView>
+        </DraggableSheet>
       </View>
 
-      {/* ── Nearby Cards List — mirrors exactly what the map is showing ── */}
-      <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold mx-4 mt-5 mb-2">
-        {nearbyList.length > 0 ? `${nearbyList.length} On the map` : "On the map"}
-      </Text>
+      <FilterSheet
+        isVisible={filtersOpen}
+        top={filtersTop}
+        onClose={() => setFiltersOpen(false)}
+      >
+        <LocationComponent />
+      </FilterSheet>
 
-      <ScrollView className="px-4" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
-        {nearbyList.length === 0 && (
-          <Text className="text-table-gold text-xs text-center py-6">
-            No restaurants in this map area. Pan or zoom out to see more.
-          </Text>
-        )}
-        {nearbyList.map(({ restaurant: r, highlighted }: MapMarkerEntry) => (
-          <View key={r.id} className="bg-table-surface border border-table-border rounded-2xl p-4 mb-3">
-            <View className="flex-row items-start justify-between mb-2">
-              <View className="flex-1 mr-3">
-                <Text className="text-sm font-bold text-table-cream">
-                  {highlighted ? "★ " : ""}{r.name}
-                </Text>
-                <Text className="text-xs text-table-gold mt-0.5">
-                  {r.cuisine} · {r.distanceMeters < 1000 ? `${Math.round(r.distanceMeters)} m` : `${(r.distanceMeters / 1000).toFixed(1)} km`}
-                </Text>
-              </View>
-              <View className="px-2 py-1 rounded-lg" style={{ backgroundColor: busynessColor(r.busynessScore) + "18" }}>
-                <Text className="text-[10px] font-bold uppercase tracking-widest" style={{ color: busynessColor(r.busynessScore) }}>
-                  {busynessLabel(r.busynessScore)}
-                </Text>
-              </View>
-            </View>
-
-            <View className="flex-row gap-4 border-t border-table-border pt-2 mt-1">
-              <Text className="text-xs text-table-gold">
-                <Ionicons name="time-outline" size={12} color={colors.gold} /> {Math.round(r.busynessScore * 100)}%
-              </Text>
-              <Text className="text-xs text-table-gold">
-                <MaterialCommunityIcons name="seat-outline" size={12} color={colors.gold} />{" "}
-                <Text className="text-table-live font-bold">{r.availableTableCount} free</Text>
-              </Text>
-              {r.isWheelchairAccessible && (
-                <Text className="text-xs text-table-offer font-bold">
-                  <Ionicons name="accessibility-outline" size={12} color={colors.offer} /> Accessible
-                </Text>
-              )}
-            </View>
-          </View>
-        ))}
-        <LocationComponent/>
-        <BackendHealthCard/>
-      </ScrollView>
+      {/* Booking modal */}
+      <BookingModal
+        isVisible={selectedRestaurant !== null}
+        restaurant={selectedRestaurant}
+        userCoordinates={userLocation ?? { lat: 0, lng: 0 }}
+        onClose={() => setSelectedRestaurant(null)}
+      />
     </View>
   );
 }

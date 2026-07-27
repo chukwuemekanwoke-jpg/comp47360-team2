@@ -8,7 +8,8 @@ import {
   View,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { useGetNearbyRestaurantsQuery } from "@shared/apiSlice";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { useGetNearbyRestaurantsQuery, useGetProfileQuery } from "@shared/apiSlice";
 import { DISCOVERY_RADIUS_M, SEAT_AVAILABILITY_POLL_MS } from "@shared/constants";
 import { busynessColor, busynessLabel } from "@shared/restaurantFilters";
 import { RestaurantSummary } from "@shared/types";
@@ -39,8 +40,15 @@ export default function DiscoverScreen() {
   const dispatch = useAppDispatch();
 
   const location = useAppSelector((state) => state.user.location);
+  const userId = useAppSelector((state) => state.auth.userId);
   const lat = location?.lat ?? FALLBACK_LAT;
   const lng = location?.lng ?? FALLBACK_LNG;
+
+  // Preferences now live in user_preferences and come back categorized, so
+  // Discover can key off preferredCuisines directly instead of unpicking the
+  // old mixed dietaryTags array. Guests skip the query and see the
+  // unpersonalised sections.
+  const { data: profile } = useGetProfileQuery(userId ?? skipToken);
 
   // Same cached query the map and list use — browsing here costs no
   // additional backend requests.
@@ -50,6 +58,23 @@ export default function DiscoverScreen() {
   );
 
   const restaurants = useMemo(() => data?.restaurants ?? [], [data]);
+
+  // Cuisine comparisons are lowercase everywhere (see applyRestaurantFilters).
+  const preferredCuisines = useMemo(
+    () => (profile?.preferredCuisines ?? []).map((c) => c.toLowerCase()),
+    [profile]
+  );
+
+  const forYou = useMemo(
+    () =>
+      preferredCuisines.length === 0
+        ? []
+        : [...restaurants]
+            .filter((r) => preferredCuisines.includes(r.cuisine.toLowerCase()))
+            .sort((a, b) => desirabilityScore(b) - desirabilityScore(a))
+            .slice(0, CAROUSEL_SIZE),
+    [restaurants, preferredCuisines]
+  );
 
   const topPicks = useMemo(
     () =>
@@ -67,10 +92,12 @@ export default function DiscoverScreen() {
     [restaurants]
   );
 
-  const cuisines = useMemo(
-    () => [...new Set(restaurants.map((r) => r.cuisine))].sort(),
-    [restaurants]
-  );
+  // Preferred cuisines lead the row, everything else stays alphabetical.
+  const cuisines = useMemo(() => {
+    const all = [...new Set(restaurants.map((r) => r.cuisine))].sort();
+    const isPreferred = (c: string) => preferredCuisines.includes(c.toLowerCase());
+    return [...all.filter(isPreferred), ...all.filter((c) => !isPreferred(c))];
+  }, [restaurants, preferredCuisines]);
 
   // Deep-link into the Restaurants tab pre-narrowed to this restaurant.
   const openRestaurant = (r: RestaurantSummary) => {
@@ -128,19 +155,41 @@ export default function DiscoverScreen() {
     >
       {/* Header */}
       <View className="mx-4 mt-4 bg-table-surface border border-table-border rounded-2xl px-4 py-3">
-        <Text className="text-sm font-bold text-table-cream">Discover</Text>
+        <Text className="text-sm font-bold text-table-cream">Tables available now</Text>
         <Text className="text-[9px] font-bold uppercase tracking-widest text-table-gold mt-0.5">
-          Curated from live availability near you
+          Free tables within {DISCOVERY_RADIUS_M / 1000} km of you
+        </Text>
+        <Text className="text-[10px] text-table-cream/60 mt-2 leading-relaxed">
+          Every booking here is for right now. We check your travel time at checkout, so you
+          only book a table you can still reach before it is released.
         </Text>
       </View>
 
       {restaurants.length === 0 ? (
         <Text className="text-table-gold text-xs text-center mt-12 mx-8">
-          No restaurants nearby right now. Try enabling location or check back later.
+          No tables free nearby right now. Try enabling location, or check back in a few minutes.
         </Text>
       ) : (
         <>
-          <SectionTitle title="Top picks" subtitle="Free tables, low wait" />
+          {preferredCuisines.length > 0 && (
+            <>
+              <SectionTitle title="For you" subtitle="Matched to your saved cuisines" />
+              {forYou.length === 0 ? (
+                <Text className="text-table-gold text-xs mx-4 mb-1">
+                  Nothing in your cuisines has a free table right now — the picks below are
+                  everything else nearby.
+                </Text>
+              ) : (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}>
+                  {forYou.map((r) => (
+                    <RestaurantTile key={r.id} item={r} />
+                  ))}
+                </ScrollView>
+              )}
+            </>
+          )}
+
+          <SectionTitle title="Top picks" subtitle="Tables free now, low wait" />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}>
             {topPicks.map((r) => (
               <RestaurantTile key={r.id} item={r} />
@@ -154,7 +203,14 @@ export default function DiscoverScreen() {
             ))}
           </ScrollView>
 
-          <SectionTitle title="Browse by cuisine" subtitle="Jump straight to a craving" />
+          <SectionTitle
+            title="Browse by cuisine"
+            subtitle={
+              preferredCuisines.length > 0
+                ? "Your cuisines first"
+                : "Jump straight to a craving"
+            }
+          />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16 }}>
             {cuisines.map((cuisine) => (
               <TouchableOpacity
