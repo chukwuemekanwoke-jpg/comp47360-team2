@@ -105,6 +105,7 @@ export default function MapScreen() {
               restaurantsList={restaurantsList}
               busynessLabel={busynessLabel}
               theme={theme}
+              userLocation={userLocation}
               onViewDetails={(id) => router.push({ pathname: "/tabs/CardTab", params: { focusId: id } })}
               onVisibleRestaurantsChange={setVisibleMarkers}
             />

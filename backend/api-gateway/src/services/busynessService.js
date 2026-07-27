@@ -1,4 +1,14 @@
 const { callMlBusyness } = require("./mlBusynessClient");
+const config = require("../config");
+
+// Venues with a refresh already running, so concurrent /nearby requests don't
+// each fire an ml-service call for the same restaurant.
+const inFlight = new Set();
+
+// Venues whose last refresh failed. Without this, a down ml-service would be
+// retried by every single nearby search for every stale venue.
+const failureCooldownUntil = new Map();
+const FAILURE_COOLDOWN_MS = 5 * 60 * 1000;
 
 // JS Date#getDay() is 0=Sunday..6=Saturday; ml-service expects 0=Monday..6=Sunday.
 function toMlDayOfWeek(jsDay) {
@@ -101,7 +111,131 @@ async function refreshRestaurantBusyness(pool, { id, latitude, longitude, availa
     console.warn(`[busyness] failed to write availability_snapshots for restaurant ${id}: ${err.message}`);
   }
 
+  try {
+    // Cache the result on the restaurant itself. /nearby serves this column
+    // directly, and busyness_updated_at is what makes the refresh skippable
+    // for the next hour.
+    await pool.query(
+      `UPDATE restaurants
+       SET busyness_score = $1, busyness_updated_at = NOW()
+       WHERE id = $2`,
+      [prediction.busynessScore, id]
+    );
+  } catch (err) {
+    console.warn(`[busyness] failed to persist score for restaurant ${id}: ${err.message}`);
+  }
+
   return prediction;
 }
 
-module.exports = { refreshRestaurantBusyness, fetchBookingMaturityStats, toMlDayOfWeek };
+function isStale(row, now, ttlMs) {
+  if (!row.busyness_updated_at) {
+    return true;
+  }
+  return now - new Date(row.busyness_updated_at).getTime() >= ttlMs;
+}
+
+function lastRefreshedAt(row) {
+  // Never-scored venues sort first — they have no usable score at all.
+  return row.busyness_updated_at ? new Date(row.busyness_updated_at).getTime() : 0;
+}
+
+/**
+ * Picks which of the supplied restaurant rows are due a refresh: stale by
+ * TTL, not already refreshing, not in post-failure cooldown, stalest first,
+ * and never more than `limit` of them.
+ */
+function selectStaleRestaurants(rows, { now, ttlMs, limit }) {
+  return rows
+    .filter((row) => {
+      if (inFlight.has(row.id)) {
+        return false;
+      }
+      const cooldownUntil = failureCooldownUntil.get(row.id);
+      if (cooldownUntil != null) {
+        if (cooldownUntil > now) {
+          return false;
+        }
+        failureCooldownUntil.delete(row.id);
+      }
+      return isStale(row, now, ttlMs);
+    })
+    .sort((a, b) => lastRefreshedAt(a) - lastRefreshedAt(b))
+    .slice(0, limit);
+}
+
+/**
+ * Refreshes stale venues out of band. Callers hand over the rows they just
+ * served and do not await this: the response already went out with the stored
+ * scores, and the fresh values land in the table for the next request.
+ *
+ * Resolves with the ids actually refreshed so tests (and callers that do want
+ * to wait) can assert on it. Never rejects.
+ */
+async function refreshStaleBusyness(pool, rows, options = {}) {
+  const now = options.now ?? Date.now();
+  const ttlMs = options.ttlMs ?? config.busynessRefreshTtlMs;
+  const limit = options.limit ?? config.busynessRefreshMaxPerRequest;
+
+  const due = selectStaleRestaurants(rows, { now, ttlMs, limit });
+  if (due.length === 0) {
+    return [];
+  }
+
+  due.forEach((row) => inFlight.add(row.id));
+
+  const refreshed = await Promise.all(
+    due.map(async (row) => {
+      try {
+        const prediction = await refreshRestaurantBusyness(pool, {
+          id: row.id,
+          latitude: row.latitude,
+          longitude: row.longitude,
+          availableTableCount: row.available_table_count,
+        });
+
+        if (!prediction) {
+          failureCooldownUntil.set(row.id, now + FAILURE_COOLDOWN_MS);
+          return null;
+        }
+        return row.id;
+      } catch (err) {
+        // refreshRestaurantBusyness already swallows ml-service failures, so
+        // reaching here means something unexpected — still must not escape a
+        // fire-and-forget call and become an unhandled rejection.
+        failureCooldownUntil.set(row.id, Date.now() + FAILURE_COOLDOWN_MS);
+        console.warn(`[busyness] background refresh failed for restaurant ${row.id}: ${err.message}`);
+        return null;
+      } finally {
+        inFlight.delete(row.id);
+      }
+    })
+  );
+
+  return refreshed.filter((id) => id !== null);
+}
+
+/** Fire-and-forget wrapper for request handlers. */
+function scheduleBusynessRefresh(pool, rows, options) {
+  return refreshStaleBusyness(pool, rows, options).catch((err) => {
+    console.warn(`[busyness] background refresh batch failed: ${err.message}`);
+    return [];
+  });
+}
+
+// Test seam: module-level dedupe state would otherwise leak between cases.
+function resetBusynessRefreshState() {
+  inFlight.clear();
+  failureCooldownUntil.clear();
+}
+
+module.exports = {
+  refreshRestaurantBusyness,
+  refreshStaleBusyness,
+  scheduleBusynessRefresh,
+  selectStaleRestaurants,
+  resetBusynessRefreshState,
+  fetchBookingMaturityStats,
+  toMlDayOfWeek,
+  FAILURE_COOLDOWN_MS,
+};

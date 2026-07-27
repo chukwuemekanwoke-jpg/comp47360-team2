@@ -6,6 +6,8 @@ function toUserJson(row) {
     dietaryTags: row.dietary_tags ?? [],
     preferredCuisines: row.preferred_cuisines ?? [],
     diningStyles: row.dining_styles ?? [],
+    requiresWheelchairAccess: row.requires_wheelchair_access ?? false,
+    requiresSensoryFriendly: row.requires_sensory_friendly ?? false,
     createdAt: row.created_at.toISOString(),
   };
 
@@ -33,6 +35,8 @@ function toRestaurantSummary(row) {
     capacity: row.capacity,
     cuisine: row.cuisine,
     busynessScore: row.busyness_score != null ? Number(row.busyness_score) : 0,
+    rating: row.rating != null ? Number(row.rating) : null,
+    reviews: row.reviews != null ? Number(row.reviews) : null,
     isWheelchairAccessible: row.is_wheelchair_accessible,
     sensoryFriendly: row.sensory_friendly,
   };

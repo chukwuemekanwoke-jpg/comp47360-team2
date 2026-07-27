@@ -1,6 +1,6 @@
 const config = require("../config");
 
-async function callMlMatch({ campaignId, restaurantId, candidateLimit, candidates }) {
+async function callMlMatch({ campaignId, restaurantId, restaurant, candidateLimit, candidates }) {
   const url = `${config.mlServiceUrl}/api/v1/match`;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), config.mlMatchTimeoutMs);
@@ -12,6 +12,7 @@ async function callMlMatch({ campaignId, restaurantId, candidateLimit, candidate
       body: JSON.stringify({
         campaignId,
         restaurantId,
+        restaurant,
         candidateLimit,
         candidates,
       }),

@@ -12,6 +12,7 @@
     "migrate:down": "node scripts/migrate.js --down",
     "seed": "node scripts/seed.js",
     "seed:real": "node scripts/seed.js --real",
+    "seed:taxi-demand": "node scripts/seed.js --taxi-demand",
     "generate:seed": "node scripts/generate-seed.js",
     "enrich:places": "node scripts/enrich-places.js"
   },

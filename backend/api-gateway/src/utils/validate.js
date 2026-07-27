@@ -150,6 +150,12 @@ function validateDiningStyles(value) {
   validateStringArray(value, "diningStyles");
 }
 
+function validateBoolean(value, fieldName) {
+  if (typeof value !== "boolean") {
+    throw new AppError(400, "VALIDATION_ERROR", `${fieldName} must be a boolean`);
+  }
+}
+
 function requireNonEmptyString(value, fieldName) {
   if (typeof value !== "string" || value.trim() === "") {
     throw new AppError(400, "VALIDATION_ERROR", `${fieldName} is required`);
@@ -329,6 +335,7 @@ module.exports = {
   validateDietaryTags,
   validatePreferredCuisines,
   validateDiningStyles,
+  validateBoolean,
   requireNonEmptyString,
   parsePartySize,
   parseBookingStatus,

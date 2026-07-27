@@ -11,6 +11,8 @@ export interface UserProfile {
   favoriteCuisines: string[];
   maxPriceLevel: number;
   diningStyle: string;
+  requiresWheelchairAccess: boolean;
+  requiresSensoryFriendly: boolean;
 }
 
 interface ProfileContextType {

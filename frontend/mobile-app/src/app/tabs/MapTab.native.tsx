@@ -8,7 +8,7 @@ import {
   regionToViewport,
   selectMapMarkers,
 } from "@/lib/mapDisplay";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useAppSelector } from "@shared/hooks";
 import { useGetNearbyRestaurantsQuery } from "@shared/apiSlice";
 import { DISCOVERY_RADIUS_M, SEAT_AVAILABILITY_POLL_MS } from "@shared/constants";
@@ -92,6 +92,26 @@ export default function MapScreen() {
     );
   }, [location]);
 
+  // The user dot below is a custom child view, which react-native-maps draws by
+  // rasterising it into the native annotation. Switching tabs detaches this
+  // screen's native views and the bitmap is never redrawn on the way back, so
+  // the dot returns blank — the restaurant pins are unaffected because they use
+  // the built-in pin (pinColor) rather than a child view. Remount the marker on
+  // every focus, and let it track view changes just long enough to redraw:
+  // flipping tracking back off is what forces the final icon update, and
+  // leaving it on would re-rasterise the dot every frame.
+  const [dotEpoch, setDotEpoch] = useState(0);
+  const [dotTracking, setDotTracking] = useState(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      setDotEpoch((n) => n + 1);
+      setDotTracking(true);
+      const settle = setTimeout(() => setDotTracking(false), 800);
+      return () => clearTimeout(settle);
+    }, [])
+  );
+
   return (
     <View className="flex-1 bg-table-canvas">
 
@@ -128,6 +148,42 @@ export default function MapScreen() {
             onRegionChangeComplete={(region: Region) => setViewport(regionToViewport(region))}
             customMapStyle={theme === "dark" ? darkMapStyle : undefined}
           >
+            {/* Where results are measured from. Drawn for any user location,
+                GPS or a manually chosen neighbourhood, so the reference point
+                stays visible when the area picker is used instead of GPS. */}
+            {location && (
+              <Marker
+                key={`user-dot-${dotEpoch}`}
+                coordinate={{ latitude: location.lat, longitude: location.lng }}
+                anchor={{ x: 0.5, y: 0.5 }}
+                zIndex={20}
+                tracksViewChanges={dotTracking}
+              >
+                <View
+                  style={{
+                    width: 18,
+                    height: 18,
+                    borderRadius: 9,
+                    backgroundColor: colors.teal,
+                    borderWidth: 3,
+                    borderColor: "#ffffff",
+                  }}
+                />
+                <Callout tooltip={false}>
+                  <View style={{ width: 150, padding: 8 }}>
+                    <Text style={{ fontWeight: "700", fontSize: 13 }}>
+                      {location.label ? `${location.label}, Manhattan` : "You are here"}
+                    </Text>
+                    <Text style={{ fontSize: 11, color: "#71717a", marginTop: 2 }}>
+                      {location.label
+                        ? "Browsing this area"
+                        : `${location.lat.toFixed(4)}°N, ${Math.abs(location.lng).toFixed(4)}°W`}
+                    </Text>
+                  </View>
+                </Callout>
+              </Marker>
+            )}
+
             {markers.map(({ restaurant: r, highlighted }) => (
               <Marker
                 key={r.id}

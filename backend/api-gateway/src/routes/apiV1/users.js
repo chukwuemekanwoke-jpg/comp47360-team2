@@ -9,6 +9,7 @@ const {
   validateDietaryTags,
   validatePreferredCuisines,
   validateDiningStyles,
+  validateBoolean,
   requireNonEmptyString,
 } = require("../../utils/validate");
 const { expirePendingOffers } = require("../../services/offers");
@@ -27,6 +28,8 @@ const USER_PROFILE_COLUMNS = `
   p.dietary_restrictions AS dietary_tags,
   p.preferred_cuisines,
   p.dining_styles,
+  p.requires_wheelchair_access,
+  p.requires_sensory_friendly,
   u.last_lat,
   u.last_lng,
   u.created_at
@@ -165,6 +168,8 @@ router.patch(
       dietaryTags,
       preferredCuisines,
       diningStyles,
+      requiresWheelchairAccess,
+      requiresSensoryFriendly,
       lastLat,
       lastLng,
     } = req.body ?? {};
@@ -174,6 +179,8 @@ router.patch(
       && dietaryTags === undefined
       && preferredCuisines === undefined
       && diningStyles === undefined
+      && requiresWheelchairAccess === undefined
+      && requiresSensoryFriendly === undefined
       && lastLat === undefined
       && lastLng === undefined
     ) {
@@ -211,6 +218,22 @@ router.patch(
         `dining_styles = $${preferenceValues.length + 1}`
       );
       preferenceValues.push(diningStyles.map((style) => style.trim()));
+    }
+
+    if (requiresWheelchairAccess !== undefined) {
+      validateBoolean(requiresWheelchairAccess, "requiresWheelchairAccess");
+      preferenceUpdates.push(
+        `requires_wheelchair_access = $${preferenceValues.length + 1}`
+      );
+      preferenceValues.push(requiresWheelchairAccess);
+    }
+
+    if (requiresSensoryFriendly !== undefined) {
+      validateBoolean(requiresSensoryFriendly, "requiresSensoryFriendly");
+      preferenceUpdates.push(
+        `requires_sensory_friendly = $${preferenceValues.length + 1}`
+      );
+      preferenceValues.push(requiresSensoryFriendly);
     }
 
     const locationUpdates = [];

@@ -21,6 +21,8 @@ export interface UserProfile {
   dietaryTags: string[];
   preferredCuisines: string[];
   diningStyles: string[];
+  requiresWheelchairAccess: boolean;
+  requiresSensoryFriendly: boolean;
   createdAt: string;
   lastLat?: number;
   lastLng?: number;
@@ -34,6 +36,8 @@ export interface RestaurantSummary {
   neighborhood: string;
   availableTableCount: number;
   busynessScore: number;
+  rating: number | null;
+  reviews: number | null;
   distanceMeters: number;
   isWheelchairAccessible: boolean;
   sensoryFriendly: boolean;

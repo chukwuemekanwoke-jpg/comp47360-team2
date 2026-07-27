@@ -83,6 +83,8 @@ function restaurantRow(overrides = {}) {
     capacity: 24,
     cuisine: "Omakase",
     busyness_score: 0.35,
+    rating: 4.7,
+    reviews: 362,
     is_wheelchair_accessible: true,
     sensory_friendly: false,
     address_line: "12 Mercer Street",
@@ -167,6 +169,8 @@ describe("users routes", () => {
       dietary_tags: ["vegetarian"],
       preferred_cuisines: ["Japanese"],
       dining_styles: ["casual"],
+      requires_wheelchair_access: true,
+      requires_sensory_friendly: true,
       last_lat: "40.73",
       last_lng: "-73.99",
     });
@@ -192,6 +196,8 @@ describe("users routes", () => {
         dietaryTags: ["vegetarian"],
         preferredCuisines: ["Japanese"],
         diningStyles: ["casual"],
+        requiresWheelchairAccess: true,
+        requiresSensoryFriendly: true,
         lastLat: 40.73,
         lastLng: -73.99,
       });
@@ -202,14 +208,57 @@ describe("users routes", () => {
       dietaryTags: ["vegetarian"],
       preferredCuisines: ["Japanese"],
       diningStyles: ["casual"],
+      requiresWheelchairAccess: true,
+      requiresSensoryFriendly: true,
       lastLat: 40.73,
       lastLng: -73.99,
     });
     expect(client.query).toHaveBeenCalledWith(
       expect.stringContaining("UPDATE user_preferences"),
-      ["TIER_2", ["vegetarian"], ["Japanese"], ["casual"], USER_ID]
+      ["TIER_2", ["vegetarian"], ["Japanese"], ["casual"], true, true, USER_ID]
     );
     expect(client.release).toHaveBeenCalled();
+  });
+
+  it("updates accessibility requirements on their own", async () => {
+    const updatedUser = userRow({ requires_wheelchair_access: true });
+    const client = {
+      query: jest
+        .fn()
+        .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [] }) // defensive preference INSERT
+        .mockResolvedValueOnce({ rows: [] }) // preference UPDATE
+        .mockResolvedValueOnce({ rows: [updatedUser] }) // joined profile SELECT
+        .mockResolvedValueOnce({ rows: [] }), // COMMIT
+      release: jest.fn(),
+    };
+    mockPool.query.mockResolvedValueOnce({ rows: [{ id: USER_ID }] });
+    mockPool.connect.mockResolvedValueOnce(client);
+
+    const res = await request(app)
+      .patch("/api/v1/users/me/preferences")
+      .set("X-User-Id", USER_ID)
+      .send({ requiresWheelchairAccess: true });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({ requiresWheelchairAccess: true });
+    expect(client.query).toHaveBeenCalledWith(
+      expect.stringContaining("requires_wheelchair_access = $1"),
+      [true, USER_ID]
+    );
+  });
+
+  it("rejects non-boolean accessibility requirements", async () => {
+    mockPool.query.mockResolvedValueOnce({ rows: [{ id: USER_ID }] });
+
+    const res = await request(app)
+      .patch("/api/v1/users/me/preferences")
+      .set("X-User-Id", USER_ID)
+      .send({ requiresSensoryFriendly: "yes" });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe("VALIDATION_ERROR");
+    expect(mockPool.connect).not.toHaveBeenCalled();
   });
 
   it("returns bookings for the signed-in user", async () => {
@@ -329,9 +378,15 @@ describe("restaurant routes", () => {
         recentBookingsSameBucket30d: 3,
       })
     );
-    expect(mockPool.query).toHaveBeenLastCalledWith(
+    expect(mockPool.query).toHaveBeenCalledWith(
       expect.stringContaining("INSERT INTO availability_snapshots"),
       [RESTAURANT_ID, 3, 0.72]
+    );
+    // The fresh score is cached on the restaurant so /nearby can serve it and
+    // skip the ml-service until busyness_updated_at goes stale.
+    expect(mockPool.query).toHaveBeenLastCalledWith(
+      expect.stringContaining("busyness_updated_at = NOW()"),
+      [0.72, RESTAURANT_ID]
     );
   });
 
