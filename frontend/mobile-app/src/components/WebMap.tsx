@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import type { UserLocation } from '@shared/userSlice';
 import type { ThemeName } from '@shared/settingsSlice';
 import {
   FULL_DETAIL_ZOOM,
@@ -33,10 +34,28 @@ const TILE_LAYERS: Record<ThemeName, { url: string; attribution: string }> = {
   },
 };
 
-const POPUP_ACCENT: Record<ThemeName, string> = {
+const ACCENT: Record<ThemeName, string> = {
   dark: '#00f2fe',
   light: '#0891b2',
 };
+
+// "You are here" dot. Shown for any user location, whether it came from a real
+// GPS fix or from manually picking a Manhattan neighbourhood — the map should
+// always say where the results are being measured from.
+function makeUserIcon(theme: ThemeName) {
+  const color = ACCENT[theme];
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+      width: 18px; height: 18px; border-radius: 50%;
+      background: ${color}; border: 3px solid #ffffff;
+      box-shadow: 0 0 0 6px ${color}33, 0 2px 6px rgba(0,0,0,0.4);
+    "></div>`,
+    iconSize: [18, 18],
+    iconAnchor: [9, 9],
+    popupAnchor: [0, -12],
+  });
+}
 
 // Gold badge for the top picks so they stand out from the default pins.
 const highlightIcon = L.divIcon({
@@ -82,6 +101,56 @@ function ViewportTracker({
   return null;
 }
 
+// Tab screens stay mounted when you switch away — they are only hidden with
+// `display: none`, which drops this container to zero size. Leaflet still
+// listens for window resizes, so it can re-measure against that empty box and
+// pan the map pane by half a viewport; switching back then leaves the user dot
+// shifted out of the (overflow-hidden) frame. Re-measure and restore the last
+// view we recorded at a real size whenever the container has one again.
+function ResizeGuard() {
+  const map = useMap();
+
+  useEffect(() => {
+    const container = map.getContainer();
+    const isVisible = () => container.clientWidth > 0 && container.clientHeight > 0;
+
+    // Only recorded while the container is really on screen: the move events
+    // Leaflet fires off a zero-size re-measure carry a bogus centre.
+    let lastView = { center: map.getCenter(), zoom: map.getZoom() };
+    const remember = () => {
+      if (isVisible()) lastView = { center: map.getCenter(), zoom: map.getZoom() };
+    };
+    map.on('moveend zoomend', remember);
+
+    const observer = new ResizeObserver(() => {
+      if (!isVisible()) return;
+      map.invalidateSize();
+      map.setView(lastView.center, lastView.zoom, { animate: false });
+    });
+    observer.observe(container);
+
+    return () => {
+      observer.disconnect();
+      map.off('moveend zoomend', remember);
+    };
+  }, [map]);
+
+  return null;
+}
+
+// MapContainer's `center` only applies at mount, so a centre that lands later —
+// an async GPS fix, or switching neighbourhood from the picker — has to be
+// applied imperatively or the user marker ends up off screen.
+function Recenter({ latitude, longitude }: { latitude: number; longitude: number }) {
+  const map = useMap();
+
+  useEffect(() => {
+    map.setView([latitude, longitude], Math.max(map.getZoom(), INITIAL_ZOOM));
+  }, [map, latitude, longitude]);
+
+  return null;
+}
+
 interface LeafletMapProps {
   latitude: number;
   longitude: number;
@@ -89,6 +158,10 @@ interface LeafletMapProps {
   busynessLabel: (score: number) => string;
   onViewDetails: (id: string) => void;
   theme: ThemeName;
+  // The user's own position — GPS or a manually chosen neighbourhood. Null
+  // while no location has been resolved, in which case no dot is drawn (the
+  // map centre is then just the default fallback area, not the user).
+  userLocation?: UserLocation | null;
   // Fires whenever the rendered marker set changes (pan/zoom/data), so the
   // parent can keep its list in sync with what the map actually shows.
   onVisibleRestaurantsChange?: (entries: MapMarkerEntry[]) => void;
@@ -101,9 +174,11 @@ export default function LeafletMapContainer({
   busynessLabel,
   onViewDetails,
   theme,
+  userLocation,
   onVisibleRestaurantsChange,
 }: LeafletMapProps) {
   const [viewport, setViewport] = useState<{ bounds: MapBounds; zoom: number } | null>(null);
+  const userIcon = useMemo(() => makeUserIcon(theme), [theme]);
 
   // Pure client-side selection over the cached restaurant list — panning and
   // zooming never trigger new backend requests.
@@ -140,6 +215,31 @@ export default function LeafletMapContainer({
           onChange={(bounds, zoom) => setViewport({ bounds, zoom })}
         />
 
+        <ResizeGuard />
+
+        <Recenter latitude={latitude} longitude={longitude} />
+
+        {userLocation && (
+          <Marker
+            position={[userLocation.lat, userLocation.lng]}
+            icon={userIcon}
+            zIndexOffset={2000}
+          >
+            <Popup minWidth={120}>
+              <div style={{ fontFamily: 'system-ui, sans-serif', padding: '2px' }}>
+                <h3 style={{ margin: 0, fontSize: '13px', fontWeight: 'bold', color: '#1e293b' }}>
+                  {userLocation.label ? `${userLocation.label}, Manhattan` : 'You are here'}
+                </h3>
+                <p style={{ margin: '4px 0 0 0', fontSize: '11px', color: '#64748b' }}>
+                  {userLocation.label
+                    ? 'Browsing this area'
+                    : `${userLocation.lat.toFixed(4)}°N, ${Math.abs(userLocation.lng).toFixed(4)}°W`}
+                </p>
+              </div>
+            </Popup>
+          </Marker>
+        )}
+
         {markers.map(({ restaurant: r, highlighted }) => (
           <Marker
             key={r.id}
@@ -158,7 +258,7 @@ export default function LeafletMapContainer({
                   onClick={() => onViewDetails(r.id)}
                   style={{
                     width: '100%',
-                    backgroundColor: POPUP_ACCENT[theme],
+                    backgroundColor: ACCENT[theme],
                     border: 'none',
                     borderRadius: '6px',
                     color: theme === 'dark' ? '#0f172a' : '#ffffff',

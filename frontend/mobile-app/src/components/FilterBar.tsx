@@ -71,9 +71,7 @@ interface FilterSheetProps {
 
 // The filter panel, overlaid on the screen instead of pushed into the layout,
 // so opening it never displaces the map or the list. Rendered in-tree rather
-// than in a Modal to stay inside the theme cascade (see ModalSheet.web.tsx);
-// mount it as a direct child of the screen's root view, since `top` is
-// measured in that view's coordinates.
+// than in a Modal to stay inside the theme cascade (see ModalSheet.web.tsx)
 export function FilterSheet({ isVisible, onClose, top, children }: FilterSheetProps) {
   const windowHeight = useWindowDimensions().height;
 
