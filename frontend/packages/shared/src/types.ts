@@ -34,6 +34,8 @@ export interface RestaurantSummary {
   neighborhood: string;
   availableTableCount: number;
   busynessScore: number;
+  rating: number | null;
+  reviews: number | null;
   distanceMeters: number;
   isWheelchairAccessible: boolean;
   sensoryFriendly: boolean;

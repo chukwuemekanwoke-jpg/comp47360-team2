@@ -320,6 +320,7 @@ real in practice.
 | `hold_window_minutes`, `sensory_friendly`, `manager_user_id` | **Simulated/operational** | No public dataset backs these; deterministically seeded per restaurant |
 | `available_table_count` | **Simulated** | Simulation rule (§2.3) — no live POS/reservation feed exists |
 | `busyness_score` | **Hybrid, split by surface** | **Real** for the merchant detail view (`GET /restaurants/:id`) — computed live from NYC taxi-dropoff + pedestrian-count data via the ml-service. Still the **static seeded** value on the diner-facing `GET /restaurants/nearby` list (known gap — not yet wired, see RISK_REGISTER R-11) |
+| `rating`, `reviews` | **Actual when populated** | External aggregate rating and review count; nullable until a trusted enrichment/import process supplies them |
 
 ### `campaigns` / `offers`
 
