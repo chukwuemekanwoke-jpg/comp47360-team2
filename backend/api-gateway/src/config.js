@@ -25,6 +25,13 @@ const config = {
   mlServiceUrl: process.env.ML_SERVICE_URL || "http://localhost:8000",
   mlMatchTimeoutMs: Number(process.env.ML_MATCH_TIMEOUT_MS) || 5000,
   mlBusynessTimeoutMs: Number(process.env.ML_BUSYNESS_TIMEOUT_MS) || 5000,
+
+  // How long a stored busyness_score stays usable before /nearby schedules a
+  // background ml-service refresh for that venue.
+  busynessRefreshTtlMs: Number(process.env.BUSYNESS_REFRESH_TTL_MS) || 60 * 60 * 1000,
+  // Upper bound on background refreshes kicked off by a single /nearby call.
+
+  busynessRefreshMaxPerRequest: Number(process.env.BUSYNESS_REFRESH_MAX_PER_REQUEST) || 5,
   googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || null,
   // Separate from googleMapsApiKey above: that one is called server-to-server
   // (Routes API) and must stay unrestricted-by-referrer. This one is handed
