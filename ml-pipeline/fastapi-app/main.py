@@ -277,8 +277,8 @@ def get_service(request: Request) -> BusynessModelService:
 
 
 def score_candidate(
-        candidate: MatchCandidate, 
-        restaraunt:MatchRestaurant | None
+        candidate: MatchCandidate,
+        restaurant:MatchRestaurant | None
     ) -> float:
     """
     Existing deterministic flash-deal candidate heuristic.
@@ -295,13 +295,13 @@ def score_candidate(
 
     score = distance_factor * 0.6
 
-    if restaraunt and (restaraunt.cuisine in candidate.preferredCuisines):
+    if restaurant and (restaurant.cuisine in candidate.preferredCuisines):
         score += 0.2
-    if restaraunt and (restaraunt.isWheelchairAccessible and candidate.requiresWheelchairAccess):
+    if restaurant and (restaurant.isWheelchairAccessible and candidate.requiresWheelchairAccess):
         score += 0.1
-    elif restaraunt and ((not restaraunt.isWheelchairAccessible) and candidate.requiresWheelchairAccess):
+    elif restaurant and ((not restaurant.isWheelchairAccessible) and candidate.requiresWheelchairAccess):
         score = 0
-    if restaraunt and (restaraunt.sensoryFriendly and candidate.requiresSensoryFriendly):
+    if restaurant and (restaurant.sensoryFriendly and candidate.requiresSensoryFriendly):
         score += 0.1
 
 
