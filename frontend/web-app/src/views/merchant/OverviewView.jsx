@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import BusynessMeter from '../../components/BusynessMeter';
 import RevpashMeter from '../../components/RevpashMeter';
+import OccupancyMeter from '../../components/OccupancyMeter';
 import CampaignHistory from '../../components/CampaignHistory';
 import LiveOfferTracker from '../../components/LiveOfferTracker';
+import BookingsList from '../../components/BookingsList';
 import {
   useGetActiveCampaignQuery,
   useCreateCampaignMutation,
@@ -86,10 +88,12 @@ export default function OverviewView() {
       <div className="space-y-6">
         {restaurant && (
           <>
+            <OccupancyMeter available={restaurant.availableTableCount} capacity={restaurant.capacity} />
             <BusynessMeter busynessScore={restaurant.busynessScore} />
             <RevpashMeter restaurantId={restaurantId} />
           </>
         )}
+        <BookingsList restaurantId={restaurantId} />
       </div>
 
       <div className="space-y-6">

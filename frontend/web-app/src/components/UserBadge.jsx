@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useGetProfileQuery } from '../../../packages/shared/src/apiSlice.ts';
 
@@ -18,13 +19,16 @@ export default function UserBadge() {
   const name = profile?.displayName;
 
   return (
-    <div className="flex items-center gap-2.5 min-w-0">
+    <Link
+      to="/merchant/settings"
+      className="flex items-center gap-2.5 min-w-0 hover:opacity-80 transition-opacity"
+    >
       <div className="w-8 h-8 rounded-full bg-table-interactive border border-table-border flex items-center justify-center text-[11px] font-mono font-bold text-table-primary shrink-0">
         {initials(name)}
       </div>
       <span className="text-xs font-mono text-table-textMuted truncate max-w-[120px]">
         {name || '…'}
       </span>
-    </div>
+    </Link>
   );
 }

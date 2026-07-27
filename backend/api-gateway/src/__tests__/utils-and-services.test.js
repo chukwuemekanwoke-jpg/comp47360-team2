@@ -142,6 +142,8 @@ describe("serialization utilities", () => {
       capacity: 24,
       cuisine: "Omakase",
       busyness_score: "0.42",
+      rating: "4.7",
+      reviews: 362,
       is_wheelchair_accessible: true,
       sensory_friendly: false,
       distance_meters: "452.6",
@@ -153,6 +155,8 @@ describe("serialization utilities", () => {
       latitude: 40.73,
       longitude: -73.99,
       busynessScore: 0.42,
+      rating: 4.7,
+      reviews: 362,
       distanceMeters: 453,
     });
     expect(toRestaurantDetail(restaurantRow)).toMatchObject({

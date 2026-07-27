@@ -1028,6 +1028,15 @@ components:
           type: string
         busynessScore:
           type: number
+        rating:
+          type: number
+          minimum: 0
+          maximum: 5
+          nullable: true
+        reviews:
+          type: integer
+          minimum: 0
+          nullable: true
         distanceMeters:
           type: number
         isWheelchairAccessible:

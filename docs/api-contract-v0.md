@@ -142,6 +142,8 @@ All non-2xx responses use:
   "neighborhood": "Midtown",
   "availableTableCount": 2,
   "busynessScore": 0.35,
+  "rating": 4.7,
+  "reviews": 362,
   "distanceMeters": 420,
   "isWheelchairAccessible": false,
   "sensoryFriendly": false
