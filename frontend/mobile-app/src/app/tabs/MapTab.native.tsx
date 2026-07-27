@@ -153,9 +153,11 @@ export default function MapScreen() {
                 stays visible when the area picker is used instead of GPS. */}
             {location && (
               <Marker
+                key={`user-dot-${dotEpoch}`}
                 coordinate={{ latitude: location.lat, longitude: location.lng }}
                 anchor={{ x: 0.5, y: 0.5 }}
                 zIndex={20}
+                tracksViewChanges={dotTracking}
               >
                 <View
                   style={{
