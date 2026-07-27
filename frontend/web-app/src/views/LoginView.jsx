@@ -35,20 +35,19 @@ export default function LoginView() {
 
   return (
     <div className="h-[calc(100svh-73px)] w-full flex items-center justify-center bg-table-canvas relative overflow-hidden">
-      {/* Ambient scene: a faint grid (masked to a center vignette) plus two
-          soft glow blobs — replaces the old stock photo with something that
-          still has depth, but stays in the operational/technical register
-          the rest of the app uses instead of a lifestyle photo. */}
+      {/* Manhattan hero photo, brought back per team request — dark overlay
+          keeps the card/text readable over it, glow blobs kept for depth
+          consistent with the rest of the dashboard's visual language. */}
       <div
-        className="absolute inset-0 opacity-40 pointer-events-none"
+        className="absolute inset-0 pointer-events-none"
         style={{
           backgroundImage:
-            'linear-gradient(var(--table-border) 1px, transparent 1px), linear-gradient(90deg, var(--table-border) 1px, transparent 1px)',
-          backgroundSize: '34px 34px',
-          maskImage: 'radial-gradient(circle at 50% 40%, black, transparent 70%)',
-          WebkitMaskImage: 'radial-gradient(circle at 50% 40%, black, transparent 70%)',
+            "url('https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=2000&auto=format&fit=crop')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
         }}
       />
+      <div className="absolute inset-0 bg-table-canvas/80 backdrop-blur-[2px] pointer-events-none" />
       <div
         className="absolute w-[420px] h-[420px] rounded-full blur-3xl opacity-20 -top-32 -left-24 pointer-events-none"
         style={{ background: 'var(--table-primary)' }}
