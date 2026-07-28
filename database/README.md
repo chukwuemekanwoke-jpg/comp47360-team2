@@ -137,3 +137,21 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5433/table_dev
 ```
 
 Then run `npm run db:up` again.
+
+## Local backups
+
+`npm run db:backup` dumps the running `table-postgres` container to
+`database/backups/table_dev_<timestamp>.sql` via `pg_dump` inside the
+container (no local Postgres client needed).
+
+**`database/backups/` is gitignored — never commit a raw dump.** It contains
+every user's `password_hash` and real email addresses; committing it would
+put durable, crackable credentials in git history. Keep backups local, or
+move real backup/restore needs to Cloud SQL's own automated backups/exports
+once deployed.
+
+Restore a dump:
+
+```bash
+docker exec -i table-postgres psql -U postgres -d table_dev < database/backups/table_dev_20260728_120000.sql
+```
