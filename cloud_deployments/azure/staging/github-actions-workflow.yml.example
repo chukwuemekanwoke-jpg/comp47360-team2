@@ -1,0 +1,63 @@
+# TEMPLATE — not live. This is what would need to go in
+# .github/workflows/deploy-azure-staging.yml in the app repo for the
+# GitHub Actions + OIDC CI/CD path (identity.tf) to actually trigger
+# deploys. Deliberately NOT placed into .github/workflows/ automatically —
+# that directory affects real CI for the whole repo, so copying this in
+# needs its own explicit go-ahead, separate from the Terraform review.
+#
+# Fill in the placeholders (marked <...>) with the real values Terraform
+# creates: client_id = azurerm_user_assigned_identity.github_actions.client_id,
+# tenant_id/subscription_id from your Azure subscription.
+
+name: Deploy to Azure Container Apps (staging)
+
+on:
+  push:
+    branches: [develop]
+
+permissions:
+  id-token: write # required for OIDC — no stored Azure credentials
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login (OIDC, no client secret)
+        uses: azure/login@v2
+        with:
+          client-id: <AZURERM_USER_ASSIGNED_IDENTITY_GITHUB_ACTIONS_CLIENT_ID>
+          tenant-id: <AZURE_TENANT_ID>
+          subscription-id: <AZURE_SUBSCRIPTION_ID>
+
+      - name: Build and push api-gateway
+        run: |
+          az acr login --name <ACR_NAME>
+          docker build --no-cache -t <ACR_LOGIN_SERVER>/api-gateway:latest \
+            -f backend/api-gateway/Dockerfile backend/api-gateway
+          docker push <ACR_LOGIN_SERVER>/api-gateway:latest
+
+      - name: Build and push ml-service
+        run: |
+          docker build -t <ACR_LOGIN_SERVER>/ml-service:latest \
+            -f ml-pipeline/fastapi-app/Dockerfile ml-pipeline/fastapi-app
+          docker push <ACR_LOGIN_SERVER>/ml-service:latest
+
+      # Unlike Cloud Run/App Runner, Container Apps does NOT auto-redeploy
+      # when a new image lands on the same tag — this explicit update call
+      # is what actually rolls out the new image. See the note in compute.tf.
+      - name: Deploy api-gateway
+        run: |
+          az containerapp update \
+            --name api-gateway-staging \
+            --resource-group tabl-staging-rg \
+            --image <ACR_LOGIN_SERVER>/api-gateway:latest
+
+      - name: Deploy ml-service
+        run: |
+          az containerapp update \
+            --name ml-service-staging \
+            --resource-group tabl-staging-rg \
+            --image <ACR_LOGIN_SERVER>/ml-service:latest
