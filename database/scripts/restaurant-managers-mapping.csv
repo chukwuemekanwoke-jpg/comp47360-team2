@@ -1,0 +1,1403 @@
+restaurant_id,restaurant_name,manager_user_id,display_name,email
+3b949de4-e6f5-5404-878d-827ff5c1d5d0,"Itaewon Pocha",093ec636-d3c0-439b-b39b-7306157ed311,"Timothy Hernandez",managers@itaewon-pocha.com
+20fc669c-425b-584d-8a13-827eb9fa70ed,"Carlo's Bakery",5a4a5d35-03e7-47ef-b071-e3202e189324,"Jennifer Green",managers@carlos-bakery.com
+e665a439-233f-51dc-b965-277509d98ffb,"Dunkin'",704e202e-8bd3-4ed7-b4cf-f4f3ac2371b6,"Emily Kelly",managers@dunkin.com
+3f8f5ccd-65a7-54bc-b2ba-0ee5c2e72436,"Hana Michi",98b04ff9-dcdb-4aef-a977-6d32149ecb40,"Maria Lopez",managers@hana-michi.com
+8bd71bfb-b6f2-522b-9156-b216bcc597a7,"Jeong Yuk Jeom Korean BBQ NYC",50dd9760-3107-472c-b375-e94fa763fcf3,"Daniel Phillips",managers@jeong-yuk-jeom-korean-bbq-nyc.com
+9a707d2f-1722-59ba-89b3-49076b8e8a5e,"The Library",75bf624d-93db-402c-bc7a-514925d78aba,"Nicole White",managers@the-library.com
+1927e609-3c1c-53e8-a32f-de46fcab57e6,"The Edison Ballroom",ef4dbcbf-c4b8-4da4-8ceb-048e8dcd0573,"David Kelly",managers@the-edison-ballroom.com
+74309b9f-874a-58ff-b2c4-869d57cadaf4,"Starbucks Coffee Company",1607a69b-60ed-4809-ad38-5c9150e70591,"Raymond Flores",managers@starbucks-coffee-company.com
+242b5e87-083f-5986-a31d-78214f3d1bf6,"Maruzzella",43a8887c-7a93-4d86-afb4-1a75e02393e6,"Cynthia Turner",managers@maruzzella.com
+8949341b-3e5d-566a-9391-f9ae0a57e627,"Franchia Vegan Café",5d121e76-4cce-4aaa-845c-ec2cfde05df7,"Rachel Cook",managers@franchia-vegan-caf.com
+fc807699-37fa-5e7f-be70-dc35876b60c1,"SHADE BAR Crepes",31573a3a-9baf-4a55-9a9a-09fe9ae2c685,"Kathleen Hill",managers@shade-bar-crepes.com
+964bb234-23f0-5bad-a2fd-f6cb77c240c8,"Tile Bar",f9f1a10b-4a0d-4fd4-9449-0b1a749ef4c9,"Sharon Peterson",managers@tile-bar.com
+300693ee-bca2-5b27-8e9c-6c2670d1f698,"Space Karaoke Bar & Lounge | Koreatown NYC",921909b9-15f0-416c-b536-d5e6300824a3,"Robert Phillips",managers@space-karaoke-bar-lounge-koreatown-nyc.com
+f8d42b09-c9e3-520d-92e1-e7ad8ac5dddb,"Rowdy Rooster - Penn",c8063959-3882-426e-87c5-400a39d93f0c,"Jack Parker",managers@rowdy-rooster-penn.com
+913dbb11-a930-58d3-b296-97ebb54d1929,"Starbucks Coffee Company",ea4fac68-1be1-4a46-9f75-937506c250a8,"Nancy Rogers",managers@starbucks-coffee-company-2.com
+f7158c9d-832a-5ca0-9d9d-66e3013c438f,"Blondies Sports",a914253d-1db6-4146-8af9-6760dafe71ae,"John Young",managers@blondies-sports.com
+2600a819-6d00-511a-b7bd-dbc7aa5da964,"Annapurna Bhavan",74191b88-b1f8-4e3a-b09a-93dca3fb6a46,"Barbara Cruz",managers@annapurna-bhavan.com
+4076baa1-7284-5fe3-a46a-9dc2aef96816,"iPizzaNY- Times Square",e486b076-287b-49bb-91e6-1a403562ceb9,"Amanda Ross",managers@ipizzany-times-square.com
+dc632317-a671-5811-947e-a78c050137b6,"El Gallo Taqueria",5515f014-9b77-46a8-a273-2eb1da35acc3,"William Cook",managers@el-gallo-taqueria.com
+a5d2845b-8c21-5a51-811a-99044f9675ff,"Famous Pops Pizzas",8070408e-86a3-4c9d-b303-f237dfdc9bdb,"Diane Johnson",managers@famous-pops-pizzas.com
+c08fd0ed-051d-5731-bd32-1c0921c116e6,"810 Deli & Cafe",47c47351-4824-4e77-8985-214a0ecd10cc,"Tyler Nelson",managers@810-deli-cafe.com
+fc99202e-a3be-513f-998a-046ec8c04a6d,"August Wilson Theatre",60fca8dd-831a-4f01-bdde-9e8786021cbb,"Deborah Howard",managers@august-wilson-theatre.com
+ba858fd1-a8ea-5430-ba14-6a9a451b83b9,"Kushi Kushi Yaki | Ramen & Yakitori Izakaya",e5c439db-e013-447a-a872-538b0e74e496,"John Myers",managers@kushi-kushi-yaki-ramen-yakitori-izakaya.com
+26558b99-57c5-5191-be75-04aea0ec0daf,"Old Town Bar",86c00be0-d603-4463-bf75-3c10a28c40da,"Donna Jimenez",managers@old-town-bar.com
+101bec6d-3538-5223-ad08-70aac8c5f03f,"Tavola Hells Kitchen",ced46d05-b6ad-43ea-a7c5-c27cfd449921,"Nancy Johnson",managers@tavola-hells-kitchen.com
+290c9d21-157d-5a11-bea0-ee9c989d1911,"Sevilla",35c58abc-547c-458c-a926-15bfd6113068,"Patrick Hall",managers@sevilla.com
+da4c48d6-f43a-5b80-9f99-823c21666be3,"McHale's Bar & Grill",ddf58ad9-6993-410c-bbff-fea0efbb9193,"James Hughes",managers@mchales-bar-grill.com
+1c7ba0e5-68f2-5f13-97ce-e3d843c411f3,"Old Homestead Steakhouse",535d5603-1830-4dc1-8ef5-26544d333dcf,"Jack Ramos",managers@old-homestead-steakhouse.com
+f05a2356-69bf-5464-9a8b-09527b41aee2,"NUBIANI - Koreatown",c0fd45a8-e20a-4327-adb7-ff4c4b3f9cdb,"Emily Long",managers@nubiani-koreatown.com
+2b205532-b48f-5bec-883c-42f69cfb4cc0,"Arturo's Coal Oven Pizza",dc82fdb6-2c4a-459b-b207-cb5237cf79af,"Jessica Bailey",managers@arturos-coal-oven-pizza.com
+c23aeb78-0ac8-5ecf-a102-b96dd94d19a7,"Oncheon NYC",eec018da-fd49-4233-9be6-a86083caf7ac,"Emma Perez",managers@oncheon-nyc.com
+3c9e68a9-7d6c-567f-96cb-1a27510ca8ad,"Chipotle Mexican Grill",9837de1e-8a53-4ce0-8017-5c82713f6fd7,"Susan Bennett",managers@chipotle-mexican-grill.com
+71c72695-ac37-5d49-8341-ced19bd84628,"NY Pizza Suprema",7a2d39b5-7938-4961-94ce-90dc6c758038,"Ryan Sanders",managers@ny-pizza-suprema.com
+22624016-cb4b-5b5c-930a-40d0edcf95cf,"Serafina Times Square",aa28f8c7-f58a-4488-ab75-69390ceb45d4,"Andrew Alvarez",managers@serafina-times-square.com
+4a856e43-d860-5006-aa4d-9a0831ab1863,"Jumbo Bagel Cafe",ae7475ff-19bd-4e94-b204-b06417936f39,"Christine Harris",managers@jumbo-bagel-cafe.com
+34c0e813-46dc-5847-8d64-b6da2d6f1a6f,"Dig Inn",ff20a748-f626-49d9-877c-7cb64d8f826d,"Raymond Mendoza",managers@dig-inn.com
+9fb73314-6f6f-57c0-9169-1e2a8370ac22,"Nancy Whiskey Pub",f87da618-f4de-4cc9-abc4-8f37441a751b,"Carolyn Wilson",managers@nancy-whiskey-pub.com
+d48e7e4b-8b9c-5fe0-816f-1082f0a19af0,"Reif's Bar",6046f8a5-d9b3-41c5-98bb-c245b053f33b,"Samantha Thompson",managers@reifs-bar.com
+a7498770-1109-582e-8285-7a29b3ba3e09,"Let's Meat BBQ",5a314524-0b0e-46f3-bbea-eaf2c63d4771,"Debra Ruiz",managers@lets-meat-bbq.com
+c663960e-9f47-5cad-aa13-191f95310abe,"Judge Roy Bean Public House",46981d32-63ed-4e7b-8876-fa7f03ebd404,"Thomas Flores",managers@judge-roy-bean-public-house.com
+e9010c27-7f43-55c6-86db-0f66c842d8ac,"Longo Bros",9b458a11-e7b7-4340-b513-d1fbeab831a6,"Sarah Ross",managers@longo-bros.com
+27d17c15-1eb1-5b0c-b6b8-cdd9b72835aa,"Casa Bella",4601206b-7740-49c6-98cb-d4da1ce7b6bf,"Jonathan Thomas",managers@casa-bella.com
+d11c5b7e-ff0d-5ba5-9cdc-752dd2954c83,"Cuchifritos",11a56659-4ce8-4e74-b54f-527d028bb7ac,"Donna Parker",managers@cuchifritos.com
+a411dd85-052f-5821-a119-8a7338d15983,"Tipsy Shanghai 蘇杭餐厅",8a2d9b9e-b986-4463-b803-a973d882aea7,"Nicholas Johnson",managers@tipsy-shanghai.com
+2e38dee2-5297-5d99-acc4-901c3275e919,"Terra Blues",b98361a5-6d88-41f6-a3fe-60cc095de267,"Amy Mendoza",managers@terra-blues.com
+d5e9af70-4b96-5bae-8a25-dcb92c751ac7,"Cooper Town",bda14645-a3cf-4fd9-985e-73ce586176e6,"Timothy Robinson",managers@cooper-town.com
+cae27255-788d-5d49-b898-10d994c46917,"Paris Baguette",dfaa99af-c2a9-4451-a531-31c1a294e19f,"Deborah Thomas",managers@paris-baguette.com
+0cfd6671-5305-5d84-b840-66f014b46922,"Mezzaluna",1f6d0bd2-48de-438e-aba5-ce96b5152d6a,"Cynthia Perez",managers@mezzaluna.com
+2ad0bf4d-7698-5595-a78a-30573510f904,"Starstruck Coffee",856b3092-2ef1-4a02-b62e-15e5398bc5cf,"Sharon Torres",managers@starstruck-coffee.com
+6ddfe7d0-32d7-56ad-aa87-d29c778e78d0,"O'Hara's Restaurant and Pub",12d58803-24b2-4404-8463-e8c0723152e7,"Samantha Reed",managers@oharas-restaurant-and-pub.com
+fb44b18b-cd10-57a3-ae23-e9659f6b7b00,"Allora Fifth Ave",161a138e-410c-4782-9ad5-19e946b799e1,"Daniel Cox",managers@allora-fifth-ave.com
+a2dc91c0-4f71-5881-8684-aadfc329da97,"Friend Of A Farmer",7b47bf98-961a-4b30-abfa-06783781a805,"Raymond Walker",managers@friend-of-a-farmer.com
+257bd838-5af3-5bd4-9afe-1cf69a181d4e,"Starbucks Coffee Company",5ea49615-4525-4bd1-8171-d956501e2aff,"Laura Anderson",managers@starbucks-coffee-company-3.com
+f9c2edb4-0ac6-5a42-b22c-19c234526813,"Primola",a41c806e-ebc6-4cd8-a49b-c90ba8168bb5,"Carolyn Rogers",managers@primola.com
+a8390583-565b-55ac-87e2-0d0ccc9f786c,"Sake Bar Decibel",ccdccf2e-1a6b-4251-95ab-e89c4e4881a4,"Patrick Rogers",managers@sake-bar-decibel.com
+bfd68291-aabf-5cfe-a885-3ac4489e15d5,"The Black Sheep Sports Bar N.Y.C",f819cc35-2380-4f25-a2fc-9085c25fa266,"Anna Cox",managers@the-black-sheep-sports-bar-n-y-c.com
+74a1d3d6-26c7-5989-8105-b8aaad530d88,"The Townhouse of New York",944cd08f-a713-4689-bb00-9473a39497e9,"Carolyn King",managers@the-townhouse-of-new-york.com
+4917942e-b198-5aed-b8b9-828c343dfe8a,"Boxers HK",b1915e4d-1213-4294-8aba-d23a5d09bcc9,"Thomas Rodriguez",managers@boxers-hk.com
+0e3b7c70-92cf-55ef-a2e8-d4bcfbbeb60d,"Jimbo’s Hamburger Palace",9c23e227-6cb2-44be-921c-68e7bb013e3a,"Gary Anderson",managers@jimbo-s-hamburger-palace.com
+0d7447b8-9db6-5961-988b-b4199b790343,"Luke's Bar & Grill",ccc809bf-665a-416b-9f90-020b4c795ba0,"Patrick Anderson",managers@lukes-bar-grill.com
+661591b5-dc44-51f0-8421-cc36e668e484,"Cassidys Pub",15b09516-0b18-4ad1-9cde-4827c127a55e,"Lisa Murphy",managers@cassidys-pub.com
+69118752-0a89-5950-bbae-d23c5e136e72,"Burgerology Midtown",c236866d-8f1d-474f-9c67-ff2703f53dd6,"Alexander Reyes",managers@burgerology-midtown.com
+6cf45b43-a2c1-5937-945c-5d545a8d4382,"Sutton Cafe",fe61b1a7-b1d5-4e06-974b-c8929278ae99,"Ashley Morgan",managers@sutton-cafe.com
+ae6bf63d-ebb5-53dd-925d-16f4be08480d,"East Japanese Restaurant",c93313fb-9af2-430d-b5e1-fce68e823a71,"Donald Martinez",managers@east-japanese-restaurant.com
+d78428cd-f11e-5bb0-8664-5017e59703dc,"Tartine",0abb8d20-f956-41af-a43d-ee9493ee0856,"William Campbell",managers@tartine.com
+ad098246-02c3-5444-8ff6-851273574e00,"Blue Willow 夜来湘",cc26154b-4c58-4c23-937b-62e41e340966,"Daniel Ross",managers@blue-willow.com
+d5d34404-8fa2-553a-99be-530a5a789eb0,"cha &",3bb5f444-606b-4a76-a6fc-47b0882e0682,"Charles Robinson",managers@cha.com
+42403979-de85-5f92-bdc1-53ffe821be90,"The Lobster Club",845167e2-4cac-4959-9aec-932da147a26d,"Sharon Johnson",managers@the-lobster-club.com
+0c5ee221-bfb7-5bcf-9813-d18fce9f8c5a,"Dunkin'",b8155ce2-5466-4b6d-a70c-3d9ecf7fdb3e,"Katherine Gomez",managers@dunkin-2.com
+0d25f4b2-205c-5cd5-8af4-9c48765baedc,"Amsterdam Billiards",6d44b356-fe91-47fe-ba5a-513b8b7970e1,"William Nelson",managers@amsterdam-billiards.com
+bdf2cc97-478b-5b39-a9bb-cd5d448341d0,"Rosie Dunn's Victorian Pub",2b9f0012-b2a4-4384-8bd0-e3e32e3ba178,"Sandra Ramirez",managers@rosie-dunns-victorian-pub.com
+c2593f01-e131-5b34-8765-3cd495a3df80,"EJ's Luncheonette",5051a3dd-19dd-464f-9be8-edfd52ad1290,"Jonathan Brooks",managers@ejs-luncheonette.com
+b416ee23-ab7d-5cbf-bd9c-836be15154d5,"Fitzgerald's Pub",925f347d-f2c3-434f-8e4f-740520b475d1,"Daniel Lewis",managers@fitzgeralds-pub.com
+5a4a7a1e-4281-53c4-a79c-d2a70117b611,"Kin ramen",95512715-f0e8-4187-b575-65a9306c8d42,"Anna Gonzalez",managers@kin-ramen.com
+26826a16-a5bc-5cfa-93e2-23eaedb27e48,"Mojo East",03520196-67d7-4ac6-8a65-c3ca0a97aa7f,"Carol Lee",managers@mojo-east.com
+67e5c19e-bf52-52b8-bd83-f5007cd3174e,"Fresco by Scotto",b32f3c43-b4fa-4793-ae84-a5b25bba35d6,"Helen Robinson",managers@fresco-by-scotto.com
+af03f36e-0d02-5eab-81ce-03c4ccc9b7d5,"Pasta Eater Hell’s Kitchen",2983f5a5-7a75-457f-9edb-3dbc54b4eda4,"Nicole Lee",managers@pasta-eater-hell-s-kitchen.com
+33baba24-8596-5324-9628-876042fdd466,"Caridad Restaurant",2f17acbc-8c25-4ae1-aa1a-300c22946638,"Jonathan Peterson",managers@caridad-restaurant.com
+d8332068-d6fa-5d64-85a1-67d33c55e5cd,"Sweet Moment NYC",b5ca877c-7f11-4b9f-a4e4-2531e6c9df10,"Angela Phillips",managers@sweet-moment-nyc.com
+23fffa1f-ad06-50d9-a28b-d0ebe4e0bcca,"Delancey Street Pizza",9f476a03-48e4-44e6-a175-88017f43aefa,"Lisa Kelly",managers@delancey-street-pizza.com
+995da50d-1fa1-5def-ac4a-f0933567fb90,"Rich Aroma",26e3eaee-330e-4546-9997-cb3938a1dbb1,"Janet Price",managers@rich-aroma.com
+5ccf094c-1f03-5210-a30f-517072ce20f0,"Lucinda's",87e33a12-9859-43a7-b95f-8244b653b195,"Cynthia Baker",managers@lucindas.com
+27dc88b0-96f5-5a60-b8f2-d142f55a31e1,"McCoys",65507e0e-d740-4177-aa01-d4bf1e5edea6,"Rebecca Jackson",managers@mccoys.com
+74eb4653-f746-546a-a7b9-496efadd8833,"Rosemary's Midtown",374d76cd-ebcc-4c6b-aaa8-d958aca03803,"Samuel James",managers@rosemarys-midtown.com
+611fceb2-aa46-52ec-b908-f067059a904a,"Metro Diner",e07f1043-c81e-4eca-b1f3-1bc85a02ee06,"George Robinson",managers@metro-diner.com
+69bdb30d-a9fa-55ab-8127-c7e02019d24e,"Upside Pizza",da3f2684-474c-4c71-82d1-8737452025e1,"Jacob Wright",managers@upside-pizza.com
+1401e049-34ca-5614-852b-b33c9c4f711e,"Jackson Hole Burgers",93631906-e566-4ad5-94ed-5969917d7569,"Joshua Jackson",managers@jackson-hole-burgers.com
+52512f78-9695-5e50-a949-f1aa22eee238,"Ess-a-Bagel",587901b1-3471-4723-917f-50857cd6cf50,"Justin Patel",managers@ess-a-bagel.com
+bd97fc8d-74d5-55e7-8178-d693e22a2b79,"Faces & Names Bar and Lounge",0726289f-16ff-48e4-8eb3-3f2c6f4d9fad,"Carol Carter",managers@faces-names-bar-and-lounge.com
+05cbace0-3878-5681-bc90-13680e312d36,"NASA CAFE",43dfc27c-f9b1-4254-ba53-dc2d8c252a1e,"Matthew Hill",managers@nasa-cafe.com
+50564376-8204-5d63-a28e-e2fd784a45ad,"Ryan Maguire's Bar & Restaurant",154eba31-a6db-48ed-9129-8eabee3fc88a,"Michael Wright",managers@ryan-maguires-bar-restaurant.com
+50c958f0-93ef-56e7-a4f4-26fbc21694d7,"Skinny Louie",a4c7d8df-70de-427e-a48b-597886f2dc9f,"Mary Cruz",managers@skinny-louie.com
+8f81d42f-f65b-59fa-bbc9-f44e10122ec1,"Metropolitan Club",51f92112-891a-455c-8117-19915bfda3b8,"Larry Brown",managers@metropolitan-club.com
+fb0dadb2-2047-5cf6-b52a-f9d36a0b5ffd,"Xi'an Famous Foods 西安名吃 | Midtown 45th&6th",4f710997-55b7-4910-aa8a-791b4f785268,"Nicholas Gomez",managers@xian-famous-foods-midtown-45th-6th.com
+17b5ceac-759d-54fa-9258-f00d66c94f1e,"Altesi Downtown",6dca2442-f0a8-465f-8f9d-e4a6bcbc4bc5,"Scott Morales",managers@altesi-downtown.com
+a9e417d2-6446-5a0e-8ca5-2ede36a7d9b5,"French Roast",cbaf9d43-55e5-45a9-8a63-c0d38ff902bb,"Laura Reed",managers@french-roast.com
+dadaaccb-ee00-530f-8a21-ea6738a2533b,"Broadway Dive",56b9b0c7-eaf4-41e6-b358-7a7b7e86cb1f,"Steven Flores",managers@broadway-dive.com
+a1e32678-9425-5dee-a0e4-7b459033a250,"Zaro’s Family Bakery",af8b5528-ee85-4e50-86ef-1ec01252613a,"James Ross",managers@zaro-s-family-bakery.com
+3b3c671a-c88e-50af-91e9-5275d2c4d37e,"Lombardi's",b8b76d32-e197-4c3e-858c-d769050ff40e,"Katherine White",managers@lombardis.com
+8ba7d252-6668-56d5-80ec-e645e83ed486,"The Terrace and Outdoor Gardens at the Times Square EDITION",79119037-83a5-4c47-9555-2e27497a3fb4,"Andrew Martinez",managers@the-terrace-and-outdoor-gardens-at-the-times-square-edition.com
+ea328963-b1f9-517e-910a-36541d442886,"Bagelworks",bf95f290-dfb1-4287-a248-36bcdb2dc0fa,"Jonathan Hughes",managers@bagelworks.com
+d90fa009-29f0-58eb-b095-735dce32bff3,"LA ISLA RESTAURANT",5287e705-3434-415e-b5e1-c81b1691be8c,"Katherine Green",managers@la-isla-restaurant.com
+247e5fd8-3483-5453-b12c-a376517b44ef,"Starbucks Coffee Company",0da4265f-7144-4c65-8276-37be09f71e41,"Deborah Johnson",managers@starbucks-coffee-company-4.com
+ef9ca6fa-aa51-5da8-947e-3ed70dd56365,"Popeyes Louisiana Kitchen",7e5c9a98-4de1-40fd-92c2-a05920abfef0,"Anna Morris",managers@popeyes-louisiana-kitchen.com
+8e09649b-4360-52c6-a288-d82877034149,"Starbucks",6d155506-b039-44ae-8b2b-5321e98886ef,"Scott Scott",managers@starbucks.com
+e57148d6-e29c-5770-8ef7-beb8dc35370a,"Post Billiards Cafe",4a7ff0b7-2c84-4817-ae10-b3c66edd4232,"Gregory Rivera",managers@post-billiards-cafe.com
+fb1dd391-5823-5d74-b9c8-865d7ba99658,"The Gin Mill",509ba686-ce10-419c-ac0c-a361bb48d282,"Sarah Morgan",managers@the-gin-mill.com
+e5740939-16c5-5390-adbd-7c74efad60df,"Malecon Restaurant (97th Street)",6fd68205-9a7e-4c86-bfbf-52a4a06a71a2,"Sarah Campbell",managers@malecon-restaurant-97th-street.com
+70ed45a1-8bf0-5014-a130-6eb5b28528ae,"Murphy's Law",d7e7b03e-d6a1-40c4-9e9d-d03640920275,"Samuel Thomas",managers@murphys-law.com
+610de05e-184e-58b8-b164-302bdf766f02,"Joe's Pizza",904e9b4a-80d3-4f08-b9db-1d4aa18ad172,"Joseph Cook",managers@joes-pizza.com
+3a324bd2-e341-5c84-b7f6-6c00cb8710a8,"Felice 64",318fe17a-232d-4bda-bf2e-a4412af79394,"William Thompson",managers@felice-64.com
+565a8338-f54a-5d14-a9a7-e43c2a431247,"Maya by Chef Richard Sandoval - NYC",1995a538-f305-4a96-a731-15b68878f15a,"Elizabeth Diaz",managers@maya-by-chef-richard-sandoval-nyc.com
+bf71fe3b-1632-5b41-b14c-2b2c64732214,"Emilio's Ballato",143aed5b-e2b4-4e18-9140-3d3583a519b7,"Frank Gomez",managers@emilios-ballato.com
+21f516bb-b718-5c95-a463-574009b8cc64,"Stromboli Pizza",ae646c89-88c9-45b4-af9d-825b13744596,"Daniel Foster",managers@stromboli-pizza.com
+7d203a12-be63-53b0-8c01-84267fcaf593,"Cafeteria",a756be57-4883-4b9b-af3a-c2ea485015ba,"Susan Hill",managers@cafeteria.com
+74ae7f9e-4be0-5c4a-ba5a-f8e057f110f0,"Frank",be7eb823-f01c-47c2-9532-2e1def070bf8,"Samantha Wood",managers@frank.com
+2895d89d-3d42-5942-bde3-0be6d3472612,"Subway",7ed1fd7d-90c6-454e-858d-7e82284d2c26,"Karen Turner",managers@subway.com
+24b31b5e-6353-5b04-883b-ce24a6045bdc,"Le Monde",5bc532da-96d6-4c49-83b8-46b659dab96d,"Michael Nelson",managers@le-monde.com
+f76c7abe-b171-5dc6-a634-748223e113ae,"John's of Bleecker Street",dc49f716-fe12-4634-8d89-0153b7de1e86,"Justin Reed",managers@johns-of-bleecker-street.com
+14584528-6145-5dce-b1f1-b5f835588035,"Starbucks Coffee Company",23508826-63b0-4d7c-a9bc-5667244c940b,"Sharon Brown",managers@starbucks-coffee-company-5.com
+01700020-dda7-569e-8263-f422fcba2a2f,"Aji Sushi",9bd7cebe-4b1d-49e0-bcf4-f79763f80c2a,"Elizabeth Turner",managers@aji-sushi.com
+cfbc22d8-109e-5387-b88e-a358ec454395,"For Five Coffee Times Square",b66f2e74-c950-454c-882d-7da8076abb4b,"Jacob Bailey",managers@for-five-coffee-times-square.com
+bfb5c4b2-4285-58c7-b9e8-2cc765bd2d0a,"John's Pizzeria of Times Square",1761b49b-9409-40ec-bd0b-4beeccb5fe91,"Stephanie Castillo",managers@johns-pizzeria-of-times-square.com
+1aec0d69-1dbf-5d6c-b5d6-61f32bde1365,"Lena Horne Theatre",a09ccc99-8ed5-4024-8a62-76b4bd1bb62e,"Thomas Walker",managers@lena-horne-theatre.com
+fb7f0077-d437-58ba-981d-10ca4c3062e8,"Pershing Square",851196a6-27e2-4313-9d01-9572b5614322,"Ashley Hall",managers@pershing-square.com
+99965908-d917-5ed8-b703-a468d6910941,"Liffy II Bar",8093a280-cd4d-49f2-8937-be548d17e523,"Alexander Wood",managers@liffy-ii-bar.com
+3c5109d2-37de-5335-bac7-9f0792012951,"Park Bar",7d303169-b314-4088-adb1-5f07a278cf55,"Laura Kelly",managers@park-bar.com
+8c61db41-2bc4-50c4-962a-835aa348e0a5,"Starbucks Coffee Company",5dca0882-0916-43f3-a53d-4d22e1a0f81a,"Jonathan Williams",managers@starbucks-coffee-company-6.com
+931a1eaf-2d8f-5bd5-b65c-43704b4fce9b,"Silver Star",90e0008f-88ca-44d5-8cb2-053c6d9f3a62,"Melissa Young",managers@silver-star.com
+c3c3b233-f9ae-5214-8dac-c8f39c140323,"The View",d357422c-bf20-468d-92fe-06b8faeb81bc,"Cynthia Morgan",managers@the-view.com
+2a62f8e4-9249-53f5-ad72-9533e795c1fe,"Paul, Weiss, Rifkind, Wharton & Garrison",835476b8-3391-40cc-aada-c483e44f167c,"Joshua Ross",managers@paul-weiss-rifkind-wharton-garrison.com
+cabc67b2-581b-5f04-8331-ab57f745a31a,"Ellen's Stardust Diner",31587ad1-0dd9-4f10-8edd-9fe09971ad1f,"Richard Miller",managers@ellens-stardust-diner.com
+9e00e442-aa12-593a-bd4c-52486eb10b3d,"Peter McManus Cafe",b397a2e4-1429-4a09-b93c-b31333d63b36,"Joshua Garcia",managers@peter-mcmanus-cafe.com
+cc4d6d29-1d3b-5e5f-b68f-fad0b36c1718,"Barbaresco",b6b55a4f-975c-4435-8da3-f37e4d978a72,"Jerry Rivera",managers@barbaresco.com
+a8af0942-6fe4-5e11-bca4-8bd0fac27398,"Hudson Hound",c95f67e2-e849-4a79-9f28-e1128cb442c6,"Kevin Myers",managers@hudson-hound.com
+fc55db59-a6c8-5152-ba87-c68439817fa4,"Peter Dillon's Pub",2babb2a6-09de-4dfa-a144-833e757d5188,"Brenda Torres",managers@peter-dillons-pub.com
+0b83e924-7d10-5cd0-a0fa-cea9d3f2bd6a,"Lunella",40f8e871-2a61-4987-bc03-da336bdbb209,"Jonathan Alvarez",managers@lunella.com
+d304a9b4-60b0-52d0-a27e-bc77be8d578b,"Chopt Creative Salad Co.",ddc774fc-4221-45f8-9fdc-396fe1b90094,"Pamela Thomas",managers@chopt-creative-salad-co.com
+39d17f3b-4371-52b4-be37-f6d151c0a142,"Starbucks Coffee Company",cd20c058-9137-4e26-bdea-d643440d63cc,"Richard Gonzalez",managers@starbucks-coffee-company-7.com
+73f1b639-78d4-5cdf-b625-1f3622c7395a,"Clinton St. Baking Company",04d76e02-5dcf-43d3-be13-bcc60a3d64fe,"Debra Williams",managers@clinton-st-baking-company.com
+8bb249e0-38cc-59ef-995f-d257699fad96,"Verlaine",fc1a8530-fd2e-4855-bb0e-abbeef9d46bc,"Samuel Bailey",managers@verlaine.com
+a5f90c58-adca-5eb2-9413-254f5bcd1eeb,"Starbucks Coffee Company",09ad6ca2-7b1e-495a-ac57-bf485a5d8360,"Ryan Foster",managers@starbucks-coffee-company-8.com
+f8adee69-ea19-5fb8-b96e-6f6f7d08cb5e,"JoJo by Jean-Georges",78082c7f-fc00-4d25-a545-170555094342,"Stephanie Mendoza",managers@jojo-by-jean-georges.com
+2592ada8-35e3-5fd1-9b9e-14b546930f09,"Bowery Palace",844bd527-90da-4c29-8f3d-085dfdce4061,"George Johnson",managers@bowery-palace.com
+89bbaf8f-b44e-559a-90d7-4b461c1ec76f,"Popeyes Louisiana Kitchen",e3f39bf9-5dfd-4bdc-8f54-5d461311237e,"Michelle Thompson",managers@popeyes-louisiana-kitchen-2.com
+e2b951aa-de19-5a70-9dc6-8ffc0602fc87,"Jimbos Hamburger Palace",974d36d4-0b89-4398-b653-c9a9d8d66750,"Andrew Parker",managers@jimbos-hamburger-palace.com
+160f0b0b-efea-5831-871e-9824ebb05c85,"Village Underground",e8f85d9a-baa2-4e85-b2e5-8354d0dff209,"Debra Long",managers@village-underground.com
+679bed42-5cda-57eb-95de-5b8a15b4c718,"Bonsignour",45269774-deef-4187-bb8c-a9c93d113a4d,"Brian Smith",managers@bonsignour.com
+e75b7cd0-2c29-5ef5-9f24-e13292b0ebb9,"Art Bar",7aff97e1-9c2b-4d00-8ed3-084cbea83833,"Jerry Anderson",managers@art-bar.com
+1be3ec95-8640-5b80-a4cd-0f2dd13c8f7a,"Waverly Diner",d2a9ed01-8c54-44c2-97d2-79ae17109a96,"Deborah Mendoza",managers@waverly-diner.com
+5f75c51d-a028-5a70-a77b-0bc38db510a5,"Hearth",565fada0-2e97-4baf-aefb-a0d6544371c2,"Joshua Morales",managers@hearth.com
+7fe63f29-6cc2-5d76-8193-6dbbc8e859f8,"Casa Mono",7c38d7ef-72db-4a4b-9b09-7b7617f857f0,"Gregory Williams",managers@casa-mono.com
+2b54d23c-ec2f-57ed-97f6-4cc1d7535c4a,"Ari Sushi",484432f0-0324-4a8c-94f8-d3e68d08665a,"Margaret Cox",managers@ari-sushi.com
+dc2f88ef-e0bb-570c-b696-8082dfe35fbb,"Dolly's",7a858014-e600-4ba0-b195-10576204452b,"Kathleen Wright",managers@dollys.com
+fd4313b8-9b8b-5161-8833-e53818e698a5,"Dunkin'",e7470448-747e-4304-a508-b7cd7758da8c,"Karen Miller",managers@dunkin-3.com
+d105ec6b-4269-5155-b464-24f394ee8380,"Floridita",850fa567-2f57-4292-8567-04bd9c24c797,"Tyler Morris",managers@floridita.com
+a78bcdd6-2282-5c5b-9844-8d7b1541f53f,"Elsa La Reina Del Chicharron",ee8359de-50bc-4032-a0fd-e347c4e9670c,"Jack Roberts",managers@elsa-la-reina-del-chicharron.com
+c96702e3-cc73-51e6-9da7-86be149c5018,"Wogies Bar & Grill , West Village",bd23f8f8-05cb-4043-b5dc-24b0bede806a,"Nicholas Bailey",managers@wogies-bar-grill-west-village.com
+0cf12963-c620-532a-b6bc-e6c8579f70c4,"Tulcingo Del Valle",2d603c7b-e892-4b48-bf7e-135015be6ac9,"Brandon Baker",managers@tulcingo-del-valle.com
+6ac755f8-81f1-5903-a9d4-894154999834,"Patsy's Italian Restaurant",b6017ac0-59ed-4b62-95df-3795c24430b8,"Emily Patel",managers@patsys-italian-restaurant.com
+cf882740-fc3b-5d02-8e52-53eb6e9bab04,"Madame Tussauds New York",646037a3-8cdc-4b3e-b36d-9cc0e1b22ab6,"Nancy Peterson",managers@madame-tussauds-new-york.com
+8c66a3d2-4cb3-5bd9-a6c9-04128ef3fdac,"Applebee's Grill + Bar",e4c47309-0f30-4153-b0b6-6188c01d06aa,"Katherine Johnson",managers@applebees-grill-bar.com
+2607bf3f-d57c-5ad7-86d1-3d95f53415d6,"Hyo Dong Gak",ffac4279-38d7-4bc4-b06a-8e8133ba30b8,"Carolyn Flores",managers@hyo-dong-gak.com
+192be5d7-bb55-5b54-958e-39628d8020a6,"DK Restaurant NYC",73739a0f-ae10-44a7-a85e-ecfea16376fc,"Linda Cook",managers@dk-restaurant-nyc.com
+2d3cd7e0-bea6-5b61-ac52-bc83ab12538f,"Chung Dduk",e4b6db36-61b2-43de-ae85-2e48d1c4a005,"Raymond Evans",managers@chung-dduk.com
+571a0af4-d4c3-5c18-8e2b-c292aa254ae5,"Europan Cafe",a0a2ae5b-7d53-4966-ad07-18db17fc63e5,"Debra Long",managers@europan-cafe.com
+461e6b38-d1bb-5f1f-ac5f-1e22a420d639,"Hollywood Diner",d09326ab-5375-4003-8f7f-019de0e21bd8,"Melissa Patel",managers@hollywood-diner.com
+be60b3d4-0482-5ac2-82e0-e0681e09f2b0,"Jennifer's Cafe",022f8642-689a-4cd8-97d2-bb482f3a5e65,"Michelle White",managers@jennifers-cafe.com
+31222921-e39a-53d9-8e6d-8a4edc8a2597,"Dunkin'",be623600-24c6-4f70-b839-2c032f880451,"Mary Robinson",managers@dunkin-4.com
+531857d1-22fd-584f-a48f-f2d69f331091,"Lure Fishbar",5aebe4d2-3174-4d79-81a1-4d0ae8a47100,"Sarah Ortiz",managers@lure-fishbar.com
+87f543db-46bb-585f-8a7f-07c57250d1b5,"Clockwork Bar",f870d77c-0f3a-4ab4-9d28-5ca4e59e28b9,"Robert Clark",managers@clockwork-bar.com
+f2a73e90-00c5-5300-9d6c-38dbe741abb5,"Cafe du Soleil",85edc5f6-ee70-4553-909a-5cc239be5259,"Timothy Smith",managers@cafe-du-soleil.com
+c68634f2-96a4-54cf-bb2b-7032a6fa972e,"Uva",97a42ca6-e97a-45f2-a9bc-e3582d4c3c64,"Nicole Foster",managers@uva.com
+378b9969-05cb-59fa-89c8-0d47c479b1ea,"Cookshop",a3b4130f-8af5-411c-985b-47307a624441,"Raymond Ross",managers@cookshop.com
+ca6a7617-5f47-562e-b39b-7750a8ab180c,"Chipotle Mexican Grill",d35a45fe-3754-4d4f-8b0b-37ab27abc111,"Stephen Diaz",managers@chipotle-mexican-grill-2.com
+3f60b11e-283a-5440-a223-911197467042,"Chipotle Mexican Grill",38bd4295-60d6-49fe-82a0-95cac2ccc797,"Daniel Thomas",managers@chipotle-mexican-grill-3.com
+1675fa1d-6a91-5291-8064-a8d661d1f49a,"Creperie",3dcc6f73-fb6a-43e9-806f-9232c707bbca,"James Alvarez",managers@creperie.com
+8578f931-4696-541d-a0fc-5758853c3f6f,"Sabor A Mexico II",70539f5e-7ba2-4e53-9113-666dc7cb79d8,"Ronald Ward",managers@sabor-a-mexico-ii.com
+92b2d47c-d473-5195-a5b9-6042ddd26424,"La Nonna",73d70ac8-fc60-42e5-b448-2e85a35018a0,"Amanda Wood",managers@la-nonna.com
+10bcf0d6-e7fa-5631-98be-80647bad380b,"Starbucks Coffee Company",5d0b8d2b-eb5c-434d-8967-5eaef0766421,"Catherine Brown",managers@starbucks-coffee-company-9.com
+acb00ca1-f38c-551c-9985-1d6900bba92e,"Wa Lung Kitchen",fc351ad7-dd17-436c-a031-557a2537a612,"Samuel King",managers@wa-lung-kitchen.com
+0da5d826-8615-5ead-9fef-a8c0fc4962bb,"Subway",9f407f12-c9a9-43b0-98e3-94b61c1993ef,"Heather Baker",managers@subway-2.com
+8610aaad-5406-5c4d-97aa-1ef9eba17e33,"P.J. Clarke's On The Hudson",5cd72d7a-7654-484b-aea3-878b41673c53,"Dennis Wright",managers@p-j-clarkes-on-the-hudson.com
+4bd3a55b-cd5f-56bc-8fb4-f9eeb836962a,"Dublin House",4f64d8d0-37ce-4945-9eff-b5217d0cae17,"Robert Ramos",managers@dublin-house.com
+7fb7da4e-98ad-58ec-908d-25843368359e,"Restaurante Ecuatoriano Genesis",2321c7a6-9c8e-41e6-b614-7b4c89bb82d1,"Michelle Nelson",managers@restaurante-ecuatoriano-genesis.com
+bd04d0b0-fee5-5003-8f96-4fd6169d296e,"5 Estrellas Bakery Corporation",c63b7233-6c24-4520-a2ec-c8287be0b6d3,"Emily Wright",managers@5-estrellas-bakery-corporation.com
+f04154f2-8351-5cf7-a94d-aafcfe68f77f,"G's Coffee Shop",1578c4ae-f8b0-4183-9d32-af331cb80706,"Laura Baker",managers@gs-coffee-shop.com
+9de535ec-cc16-5432-80d3-3294fb227590,"Hawa Smoothie & Bubble Tea",30fcaf39-b4ea-43ca-ac46-86eb7996e8dd,"Amy Flores",managers@hawa-smoothie-bubble-tea.com
+89871463-6e22-560a-83e0-1031598deb78,"Starbucks Coffee Company",5c184878-6159-48c3-bede-a2c328452346,"Amanda Castillo",managers@starbucks-coffee-company-10.com
+4fafbac9-f928-504f-81b1-04409db3eb96,"Libretto's Pizza",04b96df6-8629-4fd4-a161-7bf392500214,"Jason Flores",managers@librettos-pizza.com
+9d7ecde8-5d86-5a2b-840c-28fb49fc7777,"Hop Lee",ad584157-904f-4205-b1c9-7113390f1535,"Anna Jimenez",managers@hop-lee.com
+045b0bae-b11f-5be7-8aac-18400ebf38b4,"Kettle of Fish",01e5e184-5a9a-4bb6-93d5-a12673351b8c,"David Richardson",managers@kettle-of-fish.com
+6547f5d8-51a5-5653-90f3-6708c5c83d32,"Barcelona Bar",9d610ef0-be32-4d78-80c5-d955fc027732,"Paul Hughes",managers@barcelona-bar.com
+1133fbc9-7305-5d2f-bec4-7591fc78403b,"The Landmark Tavern",e8734bd1-4167-401c-8745-72b24a048152,"Dorothy Young",managers@the-landmark-tavern.com
+cd6534f4-e026-577c-858b-b191074f89c3,"Hard Rock Cafe",3b631f20-bac0-4db9-a8a3-ad031e578841,"Samantha Young",managers@hard-rock-cafe.com
+3280f189-99ff-5f91-9a6b-19c36bddb435,"Chipotle Mexican Grill",2d734fa2-7912-4982-9546-45570f342f61,"Nicole Campbell",managers@chipotle-mexican-grill-4.com
+53cf7955-efea-5749-9555-f65a95f80e0c,"Junior's Restaurant & Bakery",4c912815-6a98-4ffe-aea0-ddb980f427ea,"Christine Torres",managers@juniors-restaurant-bakery.com
+89348524-51c1-58c8-a576-408e6ee3392f,"Carve: Unique Sandwiches & Pizza",8990a5e1-2b05-4ef3-80df-07365c170fe0,"Emma Johnson",managers@carve-unique-sandwiches-pizza.com
+1d023d0b-7824-527b-9f7c-aa3abd6af4e5,"Umami Express",36b3985d-de28-4a6b-8e90-b840fef72f07,"Brian Kelly",managers@umami-express.com
+13387455-0208-52f5-8b80-4bee214eb7cc,"Hurley's Restaurant & Bar",89055fa1-6e78-45cb-9ff3-3e4ee3caa520,"Jonathan Morris",managers@hurleys-restaurant-bar.com
+72a49aa6-00cc-5bf4-9747-b89e92507b77,"Gennaro Restaurant",d0aa6e5f-c866-45b2-9706-18b6529a32ce,"Jason Cook",managers@gennaro-restaurant.com
+b633986d-a216-5055-bd8f-2f9bad80f433,"809",20bdd320-4d87-4d85-87d4-c24f8deb9658,"Donald Parker",managers@809.com
+16f62428-5074-5fe6-92f4-f090b7fa9819,"Bar Belly",c85dfc40-76aa-4bf7-b7ba-26f50cd4f897,"Benjamin Kim",managers@bar-belly.com
+b7f03cbc-2bb7-58ea-bd64-0300ba3a20b6,"Patron Mexican Grill",43fb78b0-c46b-40fb-b3b5-48b5b0eae6ef,"Brenda Long",managers@patron-mexican-grill.com
+b52f9720-2ca5-5748-a1d2-eceb0bcef1a6,"Cafe Cluny",f496a22a-5210-4108-b127-c218ade71790,"Steven Patel",managers@cafe-cluny.com
+19c3ea3e-aecb-5dd4-88ae-ead4fa213224,"McDonald's",e9a938cd-7c1e-4731-8b44-767645a51b7c,"Amanda Thomas",managers@mcdonalds.com
+2ddc6afa-00db-581b-9f64-7396a75c5581,"Standings",459f8ff8-f4cb-45ab-b51e-e28d345f57b8,"Nicole Diaz",managers@standings.com
+96b0e78a-27bc-5080-9110-1ffb2300057d,"11th Street Cafe",d955e783-0788-4ad8-a324-b896d4af8d60,"Donna Smith",managers@11th-street-cafe.com
+74ecdc6a-c85b-5785-90c1-4b1efce85703,"S Wan Cafe",7cf92873-29fa-40fc-a6c6-4340a11e7e9f,"Frank Murphy",managers@s-wan-cafe.com
+7bec1afe-fe58-51ca-adb0-e68e3aff0672,"Greenwich Treehouse",6dc400cb-6c09-4256-8e23-06f343df4817,"Nicole White",managers@greenwich-treehouse.com
+3d83c77f-e405-580c-8b64-5ff394d22bf5,"Double Down Saloon",f3d9693f-18cf-4aea-a5a5-1dbdc5db73fe,"Carol Nguyen",managers@double-down-saloon.com
+3c9e5ea6-b9c5-5e70-961d-3867fb4661ae,"Boqueria Flatiron",627da620-052e-4840-9e84-4ac8400c7656,"Laura Gray",managers@boqueria-flatiron.com
+2c039d01-d5d7-5a81-b544-c5ad9f5b841d,"Da Gennaro",042a326e-9766-4527-8cb9-0c9c3f5a3d8e,"Melissa Parker",managers@da-gennaro.com
+ada2f962-4dfd-5b2f-8589-9887a2d92f7c,"Shuka",b0bcb214-cb6b-438a-9766-e8f9cc55fa8a,"Nancy Alvarez",managers@shuka.com
+c868eb62-2e62-5dc6-a5e4-5e692412bb5f,"P.J. Clarke's Lincoln Square",36879cbb-430f-4ce4-9097-3f284dc498d6,"Nicholas Perez",managers@p-j-clarkes-lincoln-square.com
+217ca870-b991-5db2-bc36-1486b2504a23,"Chipotle Mexican Grill",af0fa4c7-237e-428f-b8d4-9df918801aa2,"Michael Garcia",managers@chipotle-mexican-grill-5.com
+59cf9b0e-7b61-5139-8a14-ee6ede0c2a5e,"La Colombe Coffee Workshop",247649ea-9b0e-43bc-b67f-b7dbed4cc17a,"Laura Patel",managers@la-colombe-coffee-workshop.com
+bc71dac4-a1f4-5986-91f9-c6d704544644,"Certé",adb6c485-f044-4b11-849a-4ea2c7d6ab50,"Cynthia Morgan",managers@cert.com
+7a530413-053b-55c5-a204-6c9156622d41,"Magnolia Bakery - Upper West Side",63b273ac-1e61-4ded-98b1-2f5862ee5e59,"Debra Kim",managers@magnolia-bakery-upper-west-side.com
+f93dbe84-ece4-5e56-95b9-4dd0c6213619,"Momofuku Noodle Bar",adcebd60-829c-4f5b-b4a8-233cf3747a77,"Thomas Phillips",managers@momofuku-noodle-bar.com
+cb26040e-02b5-5dce-9153-df8853bc723a,"The Smith",dc0082d3-a3fb-441d-a3d7-764bec5d4a60,"Joseph Morgan",managers@the-smith.com
+3850d09e-16da-50bd-9fbb-c55808158dc5,"Sedutto",27b1b79f-c8b4-47d5-a118-c2ea5e9a4eca,"Jerry Morgan",managers@sedutto.com
+d46b7cd9-0f8c-5ec2-9cc2-80271b2ef94b,"Starbucks Coffee Company",60bedcbd-ea35-4ad8-b7b3-7a945b48dc94,"Jacob Smith",managers@starbucks-coffee-company-11.com
+d89675ae-0440-5aab-9dac-77a3aa0b2656,"Iggy's Keltic Lounge",792ca7a6-84cf-4c3a-804d-306bda10f28c,"Kimberly Garcia",managers@iggys-keltic-lounge.com
+2635d7dd-6232-5104-9708-b6170583c871,"Rumours Bar & Grille",a679655a-0636-43a1-807c-7ef2b696061a,"Debra Gomez",managers@rumours-bar-grille.com
+a2f578f9-2e4c-5bdf-a53b-e357b4663fb0,"Think Coffee",5ca2a2c4-e21b-47c6-8adf-3d8dce0e5384,"Michelle Smith",managers@think-coffee.com
+67760064-2cbd-5d62-9010-7539fdbb88ab,"Niall's on 52nd",77ff0622-5bbd-4fab-a204-d3e4a78dfac6,"Timothy Garcia",managers@nialls-on-52nd.com
+65a11462-1d6f-5e8b-9b8f-a81ca1d37109,"The Gaf West",dfb707de-f1b0-49b8-ac81-5760cfecafa1,"Cynthia Robinson",managers@the-gaf-west.com
+1f0c043a-f478-5489-91b7-f5d7217b7da6,"Five Guys",b42db1b9-1030-4e96-9fca-bc8a71ef9323,"Sarah Morris",managers@five-guys.com
+6abe3287-5e5e-5934-9265-eca642893669,"Nizza",25eab6c9-b5ce-46dc-86a2-c0fa1c6c0e74,"Donald Cox",managers@nizza.com
+f1aa7200-9f19-5bab-8d7f-2bdc566fff8f,"Gyu-Kaku Japanese BBQ",908cfde2-2dec-40f3-a1e2-13bc9910a8ce,"Margaret King",managers@gyu-kaku-japanese-bbq.com
+75e991ac-a617-5619-baf7-ad4b5465e057,"Starbucks Coffee Company",4af99d14-e821-4546-b31e-627baf614247,"Jonathan Howard",managers@starbucks-coffee-company-12.com
+d1f0a753-56a7-5e46-a627-d185ae7c7b54,"Tomi Jazz",4fe8a3b9-b3f7-46f9-a6a4-01adfd0b332f,"Deborah Gutierrez",managers@tomi-jazz.com
+e81489c5-2d63-5b94-b325-b0cc80decfa2,"5th&Mad",7273880c-ad2c-442f-b5b2-cf43c33ce0ab,"Sarah Bennett",managers@5th-mad.com
+bdfbd80d-e49f-5c25-b8c9-a921a41c6522,"Mamas pizza",cf99edab-db70-41d2-995a-8a0828de5edf,"Robert Carter",managers@mamas-pizza.com
+776e3fe2-fdc1-51ef-a036-d47e593f2673,"The Ten Bells",a79e2930-b0f5-478f-a69c-bdb89a71bf37,"Michael Hill",managers@the-ten-bells.com
+4dabdddb-79bd-51a8-b6c6-5c3e68a0ad47,"Chipotle Mexican Grill",dc15a47a-7ac2-49f8-ae81-c10f10cfc474,"Charles Mendoza",managers@chipotle-mexican-grill-6.com
+8922a8bf-cb54-513a-b84f-0f311b87fbb5,"Joe Coffee Company: Chelsea",8737ed16-f082-4810-8f38-150638794d88,"Joseph Myers",managers@joe-coffee-company-chelsea.com
+153c51db-6c6c-533d-8448-d9874f190a3b,"Juniper Bar",fdfbc7ee-3804-4f13-a5bb-3d8b2a5ef6bc,"Dorothy Walker",managers@juniper-bar.com
+b57e0088-4ce4-5fe2-86a1-3a83c2951ff5,"181 Cabrini",74ad3da7-8b12-4d1f-9272-f7c1c7e346ba,"Jessica Collins",managers@181-cabrini.com
+45164caa-57fb-549e-aa05-9c98d879f6a2,"Bar Veloce",293394fe-e3ee-4d19-aa47-7a537f655772,"Kimberly Kim",managers@bar-veloce.com
+92be68be-b54d-53bf-9122-ed1af5554aec,"Chopt Creative Salad Co.",6da76cca-964e-4d8a-a931-9cb4ed2e1851,"Larry Watson",managers@chopt-creative-salad-co-2.com
+245bd49e-f76e-57d5-a856-4a4985b53175,"Leo's Bagels",ddab8500-26c1-4680-800b-c4a5586bf624,"Pamela Gomez",managers@leos-bagels.com
+12f58ee1-b088-5b04-8e22-cc696f4c2ab8,"Zinc Bar",8de9c022-96cf-4fd4-b6ab-e801ad513f05,"Jennifer Cooper",managers@zinc-bar.com
+3688e886-3c56-52ca-8e5f-6d7eab6c7645,"Everyday Gourmet Deli",a72a740f-14bd-4719-85d4-9176763a3258,"Timothy Davis",managers@everyday-gourmet-deli.com
+8f088311-0be5-567b-9c84-5cc1d98c5ce9,"Spunto NYC Thin Crust Pizza",d222a84c-9c1f-42b2-b4d9-d0b626b38a70,"Linda Kelly",managers@spunto-nyc-thin-crust-pizza.com
+cf64d2d2-fa46-522b-b1b6-2aa78a6681fe,"Boqueria Soho",fdb8ff99-f602-477c-8880-c8684ef248ec,"Thomas Cooper",managers@boqueria-soho.com
+62f1aead-3992-59a8-a0d2-2055d0425ca4,"Dunkin'",8a982164-1aa6-4d24-b88d-7d6df1a1e685,"Gregory Rivera",managers@dunkin-5.com
+f562bc95-5625-50f1-a075-1d71b0af8e99,"Starbucks Coffee Company",4363a28e-b04c-4373-9a07-ebe7b73bcdd8,"Justin Gonzalez",managers@starbucks-coffee-company-13.com
+47935a86-f090-5942-b557-a564195fc0a3,"Madison",5ef2831d-1c17-4ad6-8f2d-0b11693f9114,"Kathleen Wood",managers@madison.com
+5149281d-562d-516f-9260-58e4ccd571e7,"Refried Beans",daf52d93-a32d-4360-977a-4d9b4f91c531,"Charles Martinez",managers@refried-beans.com
+e22801f0-5b30-5082-8756-d023e5a846a3,"Guadalupe Restaurant",2813a7c7-63bf-49ff-a570-95a1c08f33ec,"Susan Martinez",managers@guadalupe-restaurant.com
+1eb4c747-f9d6-5e01-9721-863d1a8f53df,"Bagel Express 3",a3086bf4-a499-486a-8a1c-1d40f0fd92af,"Jack Miller",managers@bagel-express-3.com
+450a8dcc-4643-5dca-8081-7feef1a02e06,"Slate",2dfcd0e5-aeab-4f07-b068-3d03c223c101,"Stephen Phillips",managers@slate.com
+54add3b9-d4e8-52a1-9be5-0ac2cd7b16a8,"Raspberry Deli Grocery",83c6c69c-a8f4-4bf8-bfb3-16371d55f6fe,"Robert Alvarez",managers@raspberry-deli-grocery.com
+fdf2220f-5eca-5ed3-a3b0-ccb965aad0d6,"Shanghai",11cff9c2-450d-4fe9-aef4-5f6e9498ab2d,"Justin Hill",managers@shanghai.com
+10f7a92a-25cd-5ede-8c45-b3c5a32459b6,"Suram Sushi & Ramen",99814fd9-0fb8-4c69-89b5-30da192fbe76,"Angela Scott",managers@suram-sushi-ramen.com
+fb017154-6eb5-59cc-a405-bf66d4549001,"The Coffee Inn",351fee9d-17fd-4a4f-8796-80fc1596067c,"Shirley Hall",managers@the-coffee-inn.com
+a4275de3-0cf3-5405-8e8f-25a1d808d3ea,"Amity Hall Downtown",4b7d7a6a-7485-42d2-8f83-92b4014e257b,"Janet Rogers",managers@amity-hall-downtown.com
+c40cf84c-34d0-5739-9b3b-e9457c851107,"Goldman Sachs Headquarters",49abc48f-083d-4aaf-ba50-ed3c991fabaf,"Rachel Gomez",managers@goldman-sachs-headquarters.com
+9b98353b-abae-5a17-81dd-c5c1b9edf2ac,"The Grey Dog - Chelsea",78c0441c-e028-4213-b3ff-07295d017e37,"Jonathan Martinez",managers@the-grey-dog-chelsea.com
+0e60e4e5-54fc-500a-8ddd-17872e6142e8,"Chipotle Mexican Grill",46e46b49-b3b5-4d3f-b4c0-fe9dd9886279,"Michael Gray",managers@chipotle-mexican-grill-7.com
+f854a5d8-369f-54d0-bf11-50eea0e0853e,"Woorijip",85d241a1-6c66-4d90-abe3-01ea81218ef7,"Stephen Martinez",managers@woorijip.com
+16653796-1604-5aa7-8f0e-38c17bf4c6f4,"Dunkin'",cd3f83e1-8e0f-489f-aec1-7f399f660c55,"Anna Gray",managers@dunkin-6.com
+833ce7c1-d7ae-538a-af5d-1b86239b336a,"Ayza Wine & Chocolate Bar",3a5f938e-9ed8-43f3-894e-49194ff6af9f,"Gary Williams",managers@ayza-wine-chocolate-bar.com
+6cf7971c-8ae5-5883-ae07-fc8a7f55d482,"Il Corso",282bb1e0-f86c-4b17-b27c-13a5a881b142,"Brian Jimenez",managers@il-corso.com
+dec60790-331a-5daf-a03f-f878fcf592f6,"ViVi Bubble Tea",07481e60-5091-4a59-b150-7a1fdf3fdd20,"Jessica Campbell",managers@vivi-bubble-tea.com
+3c1ccaaf-9b22-5b13-9294-2faa60ef8927,"Ofrenda",1ecc3cc5-9406-4b96-9755-204c90c45014,"Timothy White",managers@ofrenda.com
+f54ee58a-49f2-5474-8b0b-16ebe9a60fea,"Starbucks Coffee Company",8510920d-a482-45ec-be24-63b37c099b37,"Kevin Campbell",managers@starbucks-coffee-company-14.com
+44f0dcf7-fe02-5e43-8710-0c7e107f765f,"ROBERT",361e8678-364f-4065-a117-33d628253d35,"Donna Morris",managers@robert.com
+e6ed5e29-d8fe-56c1-b0bf-7c023f666f61,"OLIO E PIÙ",060fa5b5-9555-4455-9132-6e8275314bf3,"Angela Nelson",managers@olio-e-pi.com
+f15b19ed-f539-535b-a6cc-e4ca660de578,"Harlem Tavern",73ebcf64-ca67-44c5-8657-c5d2e98042b8,"Benjamin Jackson",managers@harlem-tavern.com
+42c8d27e-8ef1-5bda-afb5-b4d6ec5ccef3,"Empanada Mama Times Square (40th St)",078cb7d0-4df7-4c53-9619-042ee4dacf49,"Timothy Nguyen",managers@empanada-mama-times-square-40th-st.com
+4522c801-a180-5fe1-b1e1-f15fbe9c82a0,"Noche Mexicana",029c62d0-0def-4e97-9501-660d967c1d0a,"Linda Martinez",managers@noche-mexicana.com
+ea166fbc-a140-5c47-9cba-b9b69e562ceb,"Gotham Pizza",701dcefe-b955-4d98-ad67-bb9e66e66c83,"Sarah Turner",managers@gotham-pizza.com
+93868ed1-19ff-57bf-b9ee-cdae0d50d222,"JACK Studios",c201de48-9044-45ee-9f01-c376f554fc9b,"Robert Martin",managers@jack-studios.com
+b4b6a04e-73a3-5407-95d3-45d94471e589,"Fiat Cafe",f8faacd1-c555-4ce2-9a38-1a0b7d3854f0,"Michael Harris",managers@fiat-cafe.com
+d7f532c5-87fa-5894-b25e-ff93634f15ae,"Chipotle Mexican Grill",7c32be8d-1037-49c2-b72f-66a7f2e5faac,"Jacob Watson",managers@chipotle-mexican-grill-8.com
+f9c40a39-106f-521b-a5f9-4b4e0bb36cbd,"Hudson Clearwater",ac3acf8b-4928-4c1e-b609-b86bb3b0f5a7,"Christine Cruz",managers@hudson-clearwater.com
+0db9b28a-30b9-5440-bb97-d6862e794cb7,"Masala Times",1b62bce0-ad9a-4885-9b28-e5d612956e5b,"Benjamin Lewis",managers@masala-times.com
+4e9af907-a21f-5fe4-b805-0d30ebcfdd0f,"Inwood Local Wine Bar & Beer Garden",da86c2aa-5997-48c3-b0c9-6f6046826385,"Donna Peterson",managers@inwood-local-wine-bar-beer-garden.com
+343d567e-d40e-53e2-8a78-672c0afaa79e,"Yummy Thai",a9593128-c0cb-4d8e-8d40-d65f3ae0dc14,"Cynthia Walker",managers@yummy-thai.com
+06bd5d85-b65d-587b-bb4f-0bf9d38cf009,"Park Avenue Tavern",99d48577-6815-4605-ac4f-8511f80dfd49,"Nancy Perez",managers@park-avenue-tavern.com
+9e9115c4-b816-52b7-a672-a90ac75cbd65,"3 Sheets",f6da8e24-6309-46e5-af75-24ab1516e4a7,"William Anderson",managers@3-sheets.com
+1a1934bd-fc7d-53bb-8bdb-0d34e7a72a09,"Red Poke",88963b32-8759-419e-b8d5-89028cd64b75,"Timothy Torres",managers@red-poke.com
+d1cbdf4e-97e0-54a0-8b52-5c425d3d286d,"Grand Great Wall",87b4a521-fead-49c7-a09e-e0a2b4fe4e1e,"Kathleen Carter",managers@grand-great-wall.com
+12364028-ef1b-5033-8443-da5e5315510f,"Bar Italia",96eebc1e-98ea-4bac-afc2-c3bd97f1d37d,"Alexander Gutierrez",managers@bar-italia.com
+ebace905-0185-5035-8443-d62ae775d8b2,"Bangkok 2 Thai",4c0631c5-9174-4645-8652-70e484d9d480,"James Rivera",managers@bangkok-2-thai.com
+39e1ea23-2c81-58b8-8297-1bc186baeae6,"Rubirosa",6816e292-3d81-4a79-b3fb-95d7b0a69b82,"Anna Nguyen",managers@rubirosa.com
+f9d8e125-7661-5fbe-aef8-bf280913b38d,"Buvette",d78c7534-1249-4bbe-9677-575a42b730a2,"Jacob Parker",managers@buvette.com
+176217eb-8b07-5a28-9689-6c926fb88ce0,"Spice Thai",8b37faca-b387-4ce6-a791-4cc8f41d9f95,"Rebecca Chavez",managers@spice-thai.com
+0b5bdf42-a2f9-5f8b-9349-54733e8836a7,"Beauty & Essex",783c5476-aa90-4166-bee8-e235066971aa,"Stephen Bailey",managers@beauty-essex.com
+ef66795b-9db9-5fbb-80e8-8879d274d793,"Fraunces Tavern",0a6dddc4-df4f-498b-9f38-c590a6199812,"Emma Kelly",managers@fraunces-tavern.com
+f2105450-ad79-515a-9de1-8abcfbd2b31f,"Joe Coffee Company: Northwest Corner",9928d6f2-e21e-4c58-b38e-5332c0f4c83f,"Pamela Flores",managers@joe-coffee-company-northwest-corner.com
+3e125f16-dfa8-5a47-b4b8-3e46a113ba7b,"Chipotle Mexican Grill",c9b9e7d8-6e9c-4071-9fa6-e3fc07fb7348,"Angela Foster",managers@chipotle-mexican-grill-9.com
+7b843840-477a-5ead-b7e3-0edf0cc02125,"Taqueria Guadalupe",5f84ab7a-a4ba-4a11-b895-456dc12e54bb,"Emma Rogers",managers@taqueria-guadalupe.com
+47cf773b-b386-5e69-b541-a87512c43425,"Swagat NY",2d2c3561-8f1d-4624-8263-60e113ca89cf,"Thomas Long",managers@swagat-ny.com
+766f5f25-d0ff-5c80-afcc-f23af04268b0,"Móle Cantina Mexicana- Upper East Side",36f67294-7e86-4c7a-9d2f-1521300fee24,"Jennifer Ortiz",managers@m-le-cantina-mexicana-upper-east-side.com
+49b89c12-de9f-5cca-a2a1-3c7230b25717,"Laut",6ef0f70d-8e48-4846-adc6-294f0800be59,"Joseph Cook",managers@laut.com
+a1314abc-f34c-556a-964b-43b5ae50ab87,"Anton's",2ac46f4a-22a9-4c1f-9694-faffe6740ec8,"John Jones",managers@antons.com
+9e7fbc06-9798-589d-86cc-52582af610af,"Creperie NYC",27c65843-a769-42da-bc11-133b00cb4450,"Rebecca Murphy",managers@creperie-nyc.com
+3314608c-89b5-5522-bb4f-1ab199db4897,"Midnight Express Diner",fe53d40c-394e-4e15-8d93-38764bcb149a,"Kenneth Gutierrez",managers@midnight-express-diner.com
+c7f824a5-1292-5239-a56d-04edbe7526cd,"Lechonera Tropical & Grill",08160caa-b2d8-47d1-a9e7-995b786d4b6b,"Jack Myers",managers@lechonera-tropical-grill.com
+7118749f-ea23-5d5e-9be3-b46aaf0037ad,"REMI FLOWER COFFEE",78382aed-cfe8-4eee-a9dd-5f13b78f366f,"Catherine Adams",managers@remi-flower-coffee.com
+d962cc42-f6ba-5e7e-a708-f7cca4d5d353,"Osteria Laguna",54d1ad34-ac13-4dc2-9a70-6b2424802021,"Emma Robinson",managers@osteria-laguna.com
+ec391dca-4bdd-5705-b956-2c52d5d7a14a,"The Junction",6c7712d2-575b-4ebc-bff6-53d00070757b,"Karen Allen",managers@the-junction.com
+91326248-9be4-5da3-9569-098e9410da74,"Chipotle Mexican Grill",eae2e80c-736e-4135-aff8-eea707b90d8c,"Michael Hughes",managers@chipotle-mexican-grill-10.com
+786abe6b-fc32-53c5-a789-14c57711be0f,"SARAVANAA BHAVAN",43d78ab8-39cb-4bb8-912d-7247eb4b174e,"Nicole Thompson",managers@saravanaa-bhavan.com
+dbc111a1-5542-5a10-ba3c-181b3a7ccd25,"Mille-Feuille Bakery Cafe",7fa647ea-be95-4ec9-9645-0cd10cfc0998,"Justin Ward",managers@mille-feuille-bakery-cafe.com
+2ff1274c-1787-5380-8ec9-77e32ac48c66,"Osteria al Doge",7b46f4c2-d766-49ed-8a0a-50f240eb95a3,"Justin Chavez",managers@osteria-al-doge.com
+ba2c57d5-d4d9-56a9-8d85-462f45a97fb2,"Culture Espresso",34faef73-6df3-4fab-b625-42e1373d0327,"Sharon Ramirez",managers@culture-espresso.com
+002f452d-736c-57de-8cfa-564057e8b517,"The Original Pita Grill",adb662dd-f9bd-4c3d-901f-9490b99a5065,"Brandon Murphy",managers@the-original-pita-grill.com
+808bb849-67dd-5c25-bb59-e4469d4bcaaf,"Gyu-Kaku Japanese BBQ",9ccf64b4-85af-4703-a6b2-b15255338f9b,"Emily Lewis",managers@gyu-kaku-japanese-bbq-2.com
+b2ff69a9-8cf5-5ed7-9594-cebbf7044491,"Pizza Gaga",296fbfbd-1481-4a4a-be51-1492f8f45072,"Janet Green",managers@pizza-gaga.com
+fdfd53cf-8296-540b-8454-d00b3ce9a7dc,"Bathtub Gin",c3fab21c-970b-4840-9ad4-7328bff6ed5d,"Nicholas Carter",managers@bathtub-gin.com
+d8d61717-5034-5afa-91bb-7e99a27ff406,"Think Coffee",0f8801d3-a149-4986-b02d-6d52197ea5bf,"Timothy Roberts",managers@think-coffee-2.com
+481a5bba-031f-5727-ab51-081aaefd506c,"Toloache",a63d16fa-aeb3-4d1c-8dba-be4f63c4a682,"Edward Lee",managers@toloache.com
+c19d6a53-424d-5b8c-a2c4-12e79755863d,"Hair of the Dog",f0456f7b-3eb7-4ce5-95cd-896b263659e7,"Ryan Nelson",managers@hair-of-the-dog.com
+0de2bc5e-b773-557b-ad9d-868c389508b4,"Chipotle Mexican Grill",c91b3759-7de1-4c81-b6a2-292781dd1025,"Elizabeth Chavez",managers@chipotle-mexican-grill-11.com
+47921471-0a86-51bb-aa72-59800327c43a,"Puglia | Italian",472ea762-e033-475c-a2f4-de6a929879ce,"Jeffrey Gray",managers@puglia-italian.com
+fbd6533c-1dcd-5c6c-8e5d-e661a22d74ad,"Orion Diner & Grill",cd44d284-6adb-4ce1-986f-17199f3b071d,"Gary Roberts",managers@orion-diner-grill.com
+e58817c3-3cd5-5be0-bee2-35ed25dec274,"GRIND THE NYC COFFEE SHOP & BAGEL HOUSE",6160755c-f390-41c9-879c-07da4cbe4a91,"Justin Carter",managers@grind-the-nyc-coffee-shop-bagel-house.com
+964142dd-a701-5607-a4f8-71f80beaf0e4,"Baskin-Robbins",e1bb2e7c-610a-41df-8417-163f2f4121e2,"Janet Gomez",managers@baskin-robbins.com
+81e86be0-c4d6-50ac-92b4-3ec263002b48,"Serafina Meatpacking",678b871c-dc9b-4f64-8c0e-c0a0a66ea9a2,"George Patel",managers@serafina-meatpacking.com
+e19f12da-7a29-55ec-b5fe-8426510565d0,"Taboonette",6cc3ddd5-a493-471b-9e4a-fb12662f849c,"Matthew Cook",managers@taboonette.com
+d8c87e25-9388-5d6c-9657-c57289a4d5b4,"The Wayland",27e8e31c-def6-4c3f-9706-e5624a5ac062,"Barbara Williams",managers@the-wayland.com
+c0a240df-8868-51b0-8876-8c92cb060881,"Amélie West Village Restaurant, Bistro & Wine Bar",84e7a344-6431-4c05-83e8-26004421bb8b,"Nancy Wood",managers@am-lie-west-village-restaurant-bistro-wine-bar.com
+43766cca-21ad-5f7a-b9a1-85ef523c19df,"Dunkin'",72ca3598-067d-409b-9509-88574183b425,"Steven Baker",managers@dunkin-7.com
+090d4e42-e57f-595b-b425-d62b481bd640,"Lulo Restaurant",8c7826eb-c981-4f4f-912e-9acaa052a9d4,"Nancy Thompson",managers@lulo-restaurant.com
+f24d863d-aa08-56f6-8888-a9a1aee4d2c2,"Aziza Cafe and Lounge",f313b8fb-0890-4c04-abdf-83644ed88c77,"Paul Johnson",managers@aziza-cafe-and-lounge.com
+dd1f52b1-1e19-5bc5-a7fe-15332675e56d,"Gramercy Tavern",b91059d0-1423-4cf1-8010-f4a7e5c363a7,"Christine Diaz",managers@gramercy-tavern.com
+775eb52f-e48a-5bb9-ba27-eaec23a5b8f0,"Kare Thai",6d09e623-7999-464f-b1ff-cc69d8d7e8f7,"Scott Chavez",managers@kare-thai.com
+f48d4985-2f92-56c4-92f4-06f095e659d4,"Starbucks Coffee Company",dcb35b1b-4ba0-48e9-a998-22e7266d3464,"Amy Wilson",managers@starbucks-coffee-company-15.com
+36577781-6784-5b2f-a1fb-bdb9b8f0f3cc,"Atomic Wings",e68db8c4-8f8d-49aa-aec4-6482d966390e,"Joseph Morris",managers@atomic-wings.com
+f332a295-603b-5326-8977-02e3d341852c,"Dunkin'",1391b72a-4a50-4b01-99f5-a558ebd81d3b,"Tyler Hill",managers@dunkin-8.com
+e7974128-2261-5750-88b7-9bccb60aff37,"Ali Baba Mediterranean & turkish Cuisine",3f14ad4c-c59d-41d0-8694-184e1f537580,"Brandon Foster",managers@ali-baba-mediterranean-turkish-cuisine.com
+6e9937c1-c6f3-5c83-b925-88f7d6bbe32b,"Alphabet City Beer Co.",1a5628aa-1941-4560-9b8e-e81e113d1079,"Mary Parker",managers@alphabet-city-beer-co.com
+b8f0ee5b-674c-5029-bd0d-321e90e4f467,"taïm mediterranean kitchen",88fda162-06f7-4224-b47b-9c14e1cd7ee3,"Steven Rivera",managers@ta-m-mediterranean-kitchen.com
+25b584f6-f839-5d62-9a0e-aacc61731c07,"The Kati Roll Company",d24d90ec-e0cd-4a2e-b7e3-1d13840f6a50,"Charles Collins",managers@the-kati-roll-company.com
+3f95db98-2373-5aef-a062-0e270bff6430,"Mickey Spillane's",4de0a4ec-56e5-459f-9e70-6813e8167895,"Christine Morales",managers@mickey-spillanes.com
+f1f00d73-2f86-5d63-97de-666054a6e9ae,"The Perfect Pint",61a7d836-9c5b-43e9-9dd8-b01274601c98,"George Garcia",managers@the-perfect-pint.com
+8e48ee52-5ba7-5e00-b289-fdd9effe475f,"Mercato",66281b57-a504-4c51-a0d4-e4bf7f9c6520,"Elizabeth Carter",managers@mercato.com
+06cfd67f-1cfb-58af-b5f8-ab20afc59e8e,"Briciola",785a8877-55f7-4062-aa7b-cce535d50cda,"Ryan Diaz",managers@briciola.com
+bad55fc9-15ba-53b0-8284-22d38b2bb945,"Nikko Hibachi Asian Fusion",ff7c4504-fab4-43a5-8567-2fa0a0c91692,"Margaret Foster",managers@nikko-hibachi-asian-fusion.com
+53bd51c9-a2ad-5954-9ace-340539837537,"Dunkin'",d6bbab53-b37a-432b-b86a-d90f9e5ede7d,"Donna Castillo",managers@dunkin-9.com
+c68ded41-55a8-5f4d-9aa5-fab67bff2abf,"Five Guys",61a22d85-4ca5-41c1-b713-8c70870a0a85,"Shirley Mitchell",managers@five-guys-2.com
+2750b647-7023-586d-8dd6-4b46b6421c69,"Uncle Paul's Pizza",a98e53e8-1506-4e61-8c22-5c81edc603c7,"Jason Long",managers@uncle-pauls-pizza.com
+fe85957b-f801-5665-a369-ce75ff74bf2b,"Beer Authority",46d8089b-5b50-4652-9f28-8bb3ab2836b6,"Barbara Anderson",managers@beer-authority.com
+c2838c3f-8f53-501d-add3-aebcadada73c,"Cantina Rooftop",082e414d-ae24-4a73-807c-b9abe628c0a1,"Nicole Scott",managers@cantina-rooftop.com
+7d648bef-e04e-53d8-8fcc-0d69d0690454,"Beer Culture",e986f17b-a9ac-43a6-8eea-1060db4ba91b,"Frank Ross",managers@beer-culture.com
+5d2c32e1-fe0d-5fdc-abfc-df1bbb682094,"Subway",e48a4f66-fc8b-4ee8-b39d-f743466339de,"Angela Ross",managers@subway-3.com
+9231d55e-e50b-5f96-b1f0-8a50def78e35,"Famous Famiglia Pizzeria",e91e9e01-0d93-4499-ba3f-3d3f9eb35430,"James Turner",managers@famous-famiglia-pizzeria.com
+7ed60d0d-d386-53e3-940d-0d01a840ac54,"A Saffron Thread",1cc0f6ca-452e-4552-9066-444298455ddb,"Edward Watson",managers@a-saffron-thread.com
+ca17a230-2657-5926-8555-15c5463324dd,"El Patio Mexicano",d1ebc339-5a66-49d1-8573-b85455cbd9db,"George Lee",managers@el-patio-mexicano.com
+e43ec6c1-a49a-57d3-b88d-558da59bd67b,"The Dead Rabbit",3646a917-4273-4942-8a75-04a41b488d57,"Jacob Brooks",managers@the-dead-rabbit.com
+79e1b0e1-c833-5f3c-9a46-2a2e6599cce5,"Chipotle Mexican Grill",755e085d-ee64-41ad-8bdb-716fff544d5d,"Ashley Miller",managers@chipotle-mexican-grill-12.com
+16f92334-e3d6-5d5a-bddb-7d7829ebe553,"Birch Coffee",99219f0a-ee75-44f6-bf1e-066b913a3603,"Angela James",managers@birch-coffee.com
+fa249d92-06d8-5b82-8ab7-a652aec226e7,"Silvana",d957a038-2986-4e50-b9b4-a806175abb04,"Emily Wilson",managers@silvana.com
+64dd03c2-2b6f-5ddc-9410-3e901531d136,"Just Salad",dca3939a-55d1-4879-9fb1-ada685729d14,"Anna Taylor",managers@just-salad.com
+7276e36c-abbb-5759-838d-8be1cb33166d,"Dream Baby Bar and Cocktail Parlour",c1a992e9-1885-4eb0-aff4-247ab8c9d436,"Raymond Edwards",managers@dream-baby-bar-and-cocktail-parlour.com
+b0e5a3b3-e0d9-5e35-ab40-326f1a4b39d7,"Chipotle Mexican Grill",5e3088a8-2293-45f3-a106-e46617a87439,"Emma Robinson",managers@chipotle-mexican-grill-13.com
+e58ffed4-e9fb-5ece-a473-38b35a9646ca,"The Immigrant",4022524d-5b7f-4843-83ab-1aaa9ce4099f,"Sarah Peterson",managers@the-immigrant.com
+94a7669d-33e2-5251-a4ae-c1815c4b033a,"Made In Mexico",30380986-41d5-4228-8fd3-2638f6bcb021,"Sandra Reyes",managers@made-in-mexico.com
+e84318ee-e589-559a-8322-463d962578a4,"Rintintin",e66da095-b79c-4f6d-bc24-d40f2b278f87,"Melissa James",managers@rintintin.com
+dce45864-e098-5cdd-a468-018a745d59b7,"Baskin-Robbins",b96e4c58-d2de-4cd2-a12c-43595e92b309,"Debra King",managers@baskin-robbins-2.com
+6077280e-6ad1-5712-a8ac-ad768376a61f,"Subway",8723cf9e-092f-48eb-9d8b-35d5b47c76de,"Shirley Ruiz",managers@subway-4.com
+808c7774-5252-5816-ac39-4bffbc654707,"The Drunken Munkey - UES",3317cb5f-d248-4c9e-9ccd-d87e842fd471,"Samantha Hughes",managers@the-drunken-munkey-ues.com
+dcea07c3-162a-5151-aa0d-cf833ee9c3ce,"The Jeffrey Craft Beer & Bites",ac659ed3-d2ef-49e4-8db8-887bb8b6c3b9,"Katherine Moore",managers@the-jeffrey-craft-beer-bites.com
+4ef5842f-2af3-51d6-963f-6c3bed1bfebf,"TAO Downtown Restaurant",842a6a58-b9dc-4e51-9b31-b7ec1f757800,"Michelle Rogers",managers@tao-downtown-restaurant.com
+ceccfc28-afb0-5940-9b76-8d3b747cb538,"Dunkin'",df0cc2e3-e1bf-4ef8-8e7f-5b19274a4b37,"Kenneth Wood",managers@dunkin-10.com
+8858c7e1-d58c-5887-9ef3-7625a45fe175,"Juice Generation",81e2ee1b-909e-4b1c-9446-6340d223278c,"Carolyn Mitchell",managers@juice-generation.com
+026f93d9-f613-53ab-b0ae-c11c04013a2e,"Emmett's",c1d6b39a-8889-4031-b517-2db717102051,"Carolyn Edwards",managers@emmetts.com
+4dccc1b2-4aea-57b4-bdab-ecc56dd3d4f1,"Up Thai",6a171e7c-a803-4f9c-99c2-9f24af1e7a0c,"Maria Morris",managers@up-thai.com
+ba8d3f61-2f3b-5fd6-b06c-eaacfbf37488,"Mee Noodle Shop & Grill",14b19e3c-54f7-4160-b9c4-4613cd161a50,"Michelle Rivera",managers@mee-noodle-shop-grill.com
+ebe7e97a-1d36-5f70-960a-c44ce357c2fc,"Hardware",a503ce5d-f872-4eba-8a7a-ec4bf473400e,"Dorothy Hughes",managers@hardware.com
+f7e388d0-1651-526d-b06a-c46165d96c5b,"Just Salad",1f5d29be-4ee7-43e8-b6fe-2bbfa9813181,"Michael Bailey",managers@just-salad-2.com
+1e5217b0-79fd-5e0a-b175-40620ea27ec8,"Juicy Cube",81ab1576-4fbc-4bf0-ad2b-5a11b9c1d3ac,"Michael Gutierrez",managers@juicy-cube.com
+cdbb5f15-fc05-572f-9299-db061b51180c,"Gourmet 45",6625324d-d84b-45a7-aa3a-fbf1eeef614b,"Frank Jones",managers@gourmet-45.com
+8d391bc5-8060-5ca2-b30d-8ff8c1af732e,"Il Gattopardo",84aa364b-970e-4e2f-bef5-b6c5cc64c818,"Katherine Watson",managers@il-gattopardo.com
+74751e3e-4a02-554f-9f4a-0d8880341707,"George Bang Bang",05971756-116d-41a2-9a00-42b4a3e3d871,"Gary Kelly",managers@george-bang-bang.com
+72724c6d-5a52-5cfc-9abb-0b6c00ec2d61,"Aria Hell's Kitchen",d686ad6a-3410-4fe9-b741-d140dc8741bc,"Samantha Turner",managers@aria-hells-kitchen.com
+3754de9d-ddca-5ad7-88c4-da86e5a96376,"Vinatería",913bb0cb-5d03-4d2c-8c05-70595c68d98e,"Jason Sanders",managers@vinater-a.com
+c16cb1cb-00e2-5594-8d51-cc465e559ac5,"Buttercup BakeShop",0d007a2c-ed2a-4cc1-a281-11f415af86d1,"George Nguyen",managers@buttercup-bakeshop.com
+0095e010-3fe7-53a5-852c-be0c2d3bea1c,"Winnie's Jazz Club",685a43eb-65dc-4790-9f3b-a4c7c0622fc6,"Kathleen Wright",managers@winnies-jazz-club.com
+b85aeb3b-0495-5c19-adbd-24f247db8ed4,"Morgan Stanley Global Headquarters",c6324beb-4b49-4fc6-b4d5-b351860b8058,"John Nguyen",managers@morgan-stanley-global-headquarters.com
+aff06899-ffeb-5f61-a59a-c091576d2839,"Jamba",84f60e64-2126-495c-b374-19ca3438bc9a,"Nancy Ward",managers@jamba.com
+0760712e-e144-52b6-afe1-85966a715e81,"IL FORNO NYC - HELL'S KITCHEN",831fb733-bcc8-4cae-b0a3-ad3034d79335,"Nancy Ortiz",managers@il-forno-nyc-hells-kitchen.com
+97cc74db-037b-5172-be52-454bc455f1e1,"Wogies Bar & Grill, FIDI",40cd1eb8-8647-4eed-9da1-9584c3e62139,"Kathleen Roberts",managers@wogies-bar-grill-fidi.com
+663e2134-b678-5806-93ee-70ac178b3b3b,"Altesi",37f99c79-247f-4f32-8ae4-180b8193d239,"Steven Long",managers@altesi.com
+573f3d29-8145-5dc2-8149-2d600178ba7d,"Malecon Restaurant (175th Street)",51c9c4c3-57a7-417c-9a9e-710523c43055,"Frank Morales",managers@malecon-restaurant-175th-street.com
+57dd5eea-0ab8-521c-b66b-2f467ab000ac,"John Sullivan's",45faeb4d-ab75-4aeb-b8f2-67dba02403e2,"Charles Jones",managers@john-sullivans.com
+2593cae1-4c48-57a6-94cf-6c9889c1d175,"Dig Inn",0e4f26e8-2931-4268-bdc4-64f7a1f00ad6,"Shirley Rivera",managers@dig-inn-2.com
+aed1cc4d-6e31-5e5d-bd59-7ba0864c590e,"Ladurée Soho",b9577020-49bc-45de-9aca-14544e9c325c,"Charles Long",managers@ladur-e-soho.com
+814d7dde-e459-527b-8a1c-123a7b1f6682,"MO Lounge",de4cf872-a643-426c-823a-716436264a6c,"Susan Wood",managers@mo-lounge.com
+24f4c098-05da-5e65-bd48-91c08414c056,"The Capital Grille",13aff10e-fdc8-496a-92ba-e56ea9761580,"Melissa Collins",managers@the-capital-grille.com
+c9234f85-d795-5b9b-a03b-111df254853f,"Starbucks Coffee Company",40e38fb1-bcca-494a-96ff-40ea42c36763,"Dennis Sanders",managers@starbucks-coffee-company-16.com
+f41d83e4-91e2-58e7-af1d-369ece698c69,"The Grey Dog - West Village",2182745c-c6d7-4185-a557-b1c95f35bd00,"Pamela Brown",managers@the-grey-dog-west-village.com
+ac056e9b-c1aa-5ce2-9ced-d128900920b5,"Blue Ribbon Brasserie",2fda427b-0870-4d3e-a539-401c7219efb5,"Barbara Peterson",managers@blue-ribbon-brasserie.com
+c0cdd369-3f85-5608-a195-07ec1ff78285,"Ivan Ramen",5608f6b6-c569-46dc-a809-eef4fb5c30d3,"Carol Johnson",managers@ivan-ramen.com
+8eb82b69-f7b1-505d-a42c-835710d463ed,"Black Seed Bagels - Nolita",72556e51-9ebf-4342-a296-7acf9fef3562,"Patrick Torres",managers@black-seed-bagels-nolita.com
+9aa9d836-e7ae-5311-8b31-65d8f9210529,"Go Believe",1c6b7536-18cb-4222-acb0-2d560373fe14,"Christine Reed",managers@go-believe.com
+58e57afa-467b-5fb1-99e7-c53095dedd3b,"Añejo Tribeca",0ba684eb-743b-4f87-82a2-47333373ad0d,"Robert Reed",managers@a-ejo-tribeca.com
+1ac55c60-9b19-5068-a21a-094e27f0a658,"Dear Irving Gramercy",e0ee957d-8510-4d5e-824e-4b780bf29aec,"Christine Adams",managers@dear-irving-gramercy.com
+68ef2a7c-c173-5b3d-a1ef-acba4ca6ac60,"Fonda",aae0f9bd-1c8b-4d67-852a-ba1c4335c508,"Catherine Bailey",managers@fonda.com
+38a9e6f0-4d3b-5c7b-95d0-2e1591640845,"Think Coffee",971a45a5-5c66-4774-af0a-7d2c7331d45d,"Mary Campbell",managers@think-coffee-3.com
+d7c0d9b3-c114-5549-b787-388a545a1470,"Serena's Wine Bar",12c9a4e0-44e4-4d9c-b051-89339a472310,"Jeffrey Ward",managers@serenas-wine-bar.com
+b4d33288-de97-5b11-95d1-e57eb6633b74,"Baazi Nyc",a1da8f85-bd9a-45ae-80d1-4cae6179c0f1,"Amanda Ramirez",managers@baazi-nyc.com
+0327d96f-db66-56cc-a88b-3802d6873508,"Chelsea Golden Wok",721b1554-cb8b-4a4a-982f-0c6e8a545661,"Jason Hernandez",managers@chelsea-golden-wok.com
+5a92ab4a-dc0e-595e-b04c-4625fd9eab5c,"Studio 151",b0c02b35-cdfe-402e-95ad-b047d7f68342,"Jason Cooper",managers@studio-151.com
+60a7775f-1802-51f0-aa04-33460421fb5f,"Chipotle Mexican Grill",cd1c77e4-64cf-4077-849e-2f70278b98f7,"Anthony Williams",managers@chipotle-mexican-grill-14.com
+34c1c763-11a5-51a9-a543-8948ff40c4ee,"Domino's Pizza",5fededa1-e8a7-4456-a055-645aeb491684,"Andrew Nelson",managers@dominos-pizza.com
+0bebcfdd-d75e-59c9-be36-7b1e5a3ed545,"Meijin",47075415-a81f-4d95-8684-1c9631575677,"Carolyn Scott",managers@meijin.com
+e9baee50-1a8f-5330-ba04-b794ed4a1430,"Akami",9b5059ed-8d33-4eec-9779-ad925baac6d1,"John Thompson",managers@akami.com
+ba4568ee-4750-5a60-9051-0a990d0366c7,"Ethyl's Bar & Restaurant",e0c3f49e-d04f-4261-96f2-88b7da345b67,"Carolyn Ramirez",managers@ethyls-bar-restaurant.com
+cea8f653-1c29-5070-ac0e-34a0cbe5349e,"Sophie's Cuban Cuisine - Lenox Hill",fdcc6d18-7f76-478a-b696-14a6232f1d4e,"Karen Rivera",managers@sophies-cuban-cuisine-lenox-hill.com
+4b00da4e-c760-5176-be72-8250c8c49f80,"Empanadas Monumental",30f3b02c-8e24-4cf5-857d-6c9ba7568b0d,"Melissa Hernandez",managers@empanadas-monumental.com
+416a8b3b-3c58-5795-bae7-6cfe005f0f09,"Shy Shy",1429f1f8-f24e-4d7b-853f-e33b1fccc5d5,"Anthony Martin",managers@shy-shy.com
+34b1ec57-7b06-588e-acad-1d1d1daf3533,"Magnolia Bakery - Moynihan Train Hall",001c378b-f5d0-45b5-a37c-b4dd6a086fd1,"Kimberly Richardson",managers@magnolia-bakery-moynihan-train-hall.com
+57593778-cea6-51ea-a5a6-d7e7dd71417f,"Famous Sichuan 川外川",833d5322-3b89-4987-83a9-e0e8bff5c4a4,"Rebecca Hughes",managers@famous-sichuan.com
+d7dc7807-cb98-5074-bbf7-8dba411cf895,"Mrs. Fish",a706ff3b-535d-476e-92f9-6ebbbdd32cdb,"Maria Castillo",managers@mrs-fish.com
+2f2b9318-f022-59ac-8d67-8dbfd0e0c6fa,"The Milton",07c05f98-d886-4bd2-a41f-7f27783148bc,"Kenneth Scott",managers@the-milton.com
+e1b9a9d3-cf6c-5860-a60d-7eb4b7267a53,"Jimbo's Hamburger Palace",cf520afc-7d97-4934-92d7-97365ac503d4,"Dennis Ramos",managers@jimbos-hamburger-palace-2.com
+106f8af5-c10a-52dd-bc28-64e455ea940c,"Turtle Bay Tavern",4e4cfcb6-305b-4b6d-8e54-f8baaf7aea23,"Rebecca Bennett",managers@turtle-bay-tavern.com
+207c1e19-9ba9-5922-b47f-696f2ace6358,"La Fiesta",f7b5806c-c211-43ae-8eb5-abde083dba9a,"David Hall",managers@la-fiesta.com
+58da9c76-b7b7-5bcc-bdbc-ffb7ed5df90a,"Just Salad",8ad0238c-f34a-4bc2-af8d-7aa5bf258024,"Nicole Foster",managers@just-salad-3.com
+08790ceb-2473-5b51-a549-42b13670a2b9,"Caledonia Bar",2683d007-ff68-4776-a89b-2cf2481ca2e8,"Paul Gomez",managers@caledonia-bar.com
+51c59586-f412-5e3c-bce3-9501c7a755a9,"Jin Ramen Upper West Side",0877ca7e-ba8f-40a4-860f-657186131ac7,"Dorothy Parker",managers@jin-ramen-upper-west-side.com
+c9cd9acd-abc7-5dff-b51e-8a66c0f1908d,"Sophie's Cuban Cuisine - Financial District",052b349b-d31e-497d-a95d-83111d67bbe5,"Kimberly Rodriguez",managers@sophies-cuban-cuisine-financial-district.com
+5ce49288-02cd-5fef-a851-ee92808d5930,"The Ribbon",73051eaa-92fc-4ed7-8855-0084013bf3fb,"James Flores",managers@the-ribbon.com
+cf80c796-c44b-5c05-a57f-d6f398cf0c9a,"Mermaid Oyster Bar",2b1a31c5-220f-4a41-adc2-863582c3731b,"Brian Lopez",managers@mermaid-oyster-bar.com
+63720ac3-e02f-5d5d-9da6-d3e051a11cac,"Panda Express",1fcbb81d-612a-4a4a-920e-93467c991046,"Daniel Hall",managers@panda-express.com
+b2d530d0-a1a1-5d54-a790-c3440db780d0,"Chipotle Mexican Grill",469ec022-7fd9-44cc-bcd2-7ed585db091d,"John Ward",managers@chipotle-mexican-grill-15.com
+e0867d34-c46c-58ae-8274-77f7ef00e32e,"The Malt House",430809d4-3841-4cc3-9225-2b1192d4505b,"Elizabeth Foster",managers@the-malt-house.com
+bd415ecc-9bd4-5e13-9bff-d3a5dcdb6028,"Piccolo Trattoria Ristorante Pizzeria",a8904f36-c6b2-4a3d-95fd-b7e61fdbfabc,"Carolyn Richardson",managers@piccolo-trattoria-ristorante-pizzeria.com
+f03afaec-d0a0-58fc-b284-a35676f009b3,"Chopt Creative Salad Co.",37403ab5-531e-4de6-bb01-77dfdd55611c,"Kimberly Parker",managers@chopt-creative-salad-co-3.com
+dc1f24f6-a111-5c9f-9bf3-6c8d99eae42d,"Leon's Bagels",f0253ba3-214c-4cca-9f07-496c74b81765,"Justin Flores",managers@leons-bagels.com
+da77dfcb-124c-503e-ab49-9251d3d09073,"Sofrito",78bf9fac-2ec9-45d4-a161-fde6ef6cfe37,"Kathleen Hall",managers@sofrito.com
+3142b913-f316-5607-b3ea-f9fcf374081a,"Bagels & Co",6408eccf-68a6-40a6-ac56-c3469ec9eead,"Andrew Hall",managers@bagels-co.com
+c4d623df-fe5c-5fd7-bd33-f6243dc2eb02,"Tataki Japanese Restaurant",02a90606-033e-4270-a4f7-ef2099968acd,"Dorothy Ruiz",managers@tataki-japanese-restaurant.com
+d17c75ef-6cd3-5d0f-ac9b-c55d58a2a15c,"Crave Fishbar Upper West Side | Raw Bar & Seafood restaurant",80635223-d4ff-4a1c-a0ca-749a820d19cb,"Dennis Flores",managers@crave-fishbar-upper-west-side-raw-bar-seafood-restaurant.com
+90941b19-2720-51ec-97be-292d37930ea1,"Naruto Ramen",c87f84dc-b70a-4231-9e0f-56eb7012d131,"Heather Ramos",managers@naruto-ramen.com
+8a703c46-c0c6-5343-9f06-2b2c0c4dd67c,"La Colombe Coffee Workshop",475b5d41-fbb4-480c-9cd0-1f09b6422283,"Kathleen Richardson",managers@la-colombe-coffee-workshop-2.com
+a4a6ab12-5ad8-5053-b20d-a50f97ee7661,"Chipotle Mexican Grill",93927880-321d-438c-9476-2d2e7b1b7b57,"Nicholas Diaz",managers@chipotle-mexican-grill-16.com
+c205b01a-259b-520c-971d-1a3a7974a343,"Mr. Purple",f909c780-153e-434a-9993-df4bceacaf5e,"Brenda Cook",managers@mr-purple.com
+9d864ed5-4bf9-5798-960b-558ce232b8a5,"Medi Wine Bar & Restaurant",5d696948-07ec-4c94-9488-7db845a3fcd5,"Melissa Gonzalez",managers@medi-wine-bar-restaurant.com
+c2ac4aba-cae5-5cbf-8905-51a8b7ad6143,"Saba's Pizza",74d9af5d-640e-45c4-98f9-d69858f015ce,"Amy Kelly",managers@sabas-pizza.com
+ba108e74-1e86-5d07-840e-3d6ec82a6d18,"Chipotle Mexican Grill",625041a0-179b-4503-b60e-2e1cadf3efa6,"Timothy Ramos",managers@chipotle-mexican-grill-17.com
+41a0179f-7f46-502c-92e8-829e9108cfab,"Texas Rotisserie & Grill",f3280f9f-a9c9-4821-8c02-7777a3342e46,"Jonathan Long",managers@texas-rotisserie-grill.com
+6d770605-f603-5806-80f3-2794d3335a95,"Altro Paradiso",0f2eff5a-c852-4e17-8c4e-7c905eb2f2cd,"Angela Mitchell",managers@altro-paradiso.com
+9999f673-211a-5b2b-ae7b-2852728fc2d6,"Wendy's",f62171af-b59c-46b2-ad6b-1ebc8c4444cf,"Jessica Morales",managers@wendys.com
+3dccf419-d5f7-59ed-926c-3d2d5ec29287,"The Long Hall Pub & Grocery",8bf21a4a-562f-456c-9e23-6fad55d65fda,"Christine Wilson",managers@the-long-hall-pub-grocery.com
+f1b59359-d615-549d-81a9-90bc7cd600aa,"Little Beet",cff7d382-56e5-4b05-8138-67813ebce7b1,"Sarah Moore",managers@little-beet.com
+39f9bcb1-4670-54a6-90d4-696df5feead3,"Becco",7cc54392-b6cf-4a09-b81a-db9761e0916c,"Jerry Thompson",managers@becco.com
+76a56ca4-8af3-5e79-81fa-ee692c34426f,"Mémé Mediterranean",c8dc7a6e-5f59-4dfc-b0bf-13da5f291bcf,"Samantha Rogers",managers@m-m-mediterranean.com
+d4a588ca-935d-5d9d-b8ee-9dc0e7d9a5a1,"Juice Generation",ff1c146d-7e60-493b-b6da-b5139bf3fcb3,"Dorothy Reed",managers@juice-generation-2.com
+1283e98e-23a1-548d-9a26-091c37e96e62,"Topaz Thai Authentic",fd56e137-67c5-41d0-92c1-62269f6f4dc2,"Joshua Campbell",managers@topaz-thai-authentic.com
+250ddb3f-0aef-5c86-884e-439da3c76739,"Anjappar Indian Cuisine",5d4a6b6b-b71d-4591-9fff-c17ac1862714,"Sharon Ortiz",managers@anjappar-indian-cuisine.com
+faa62987-33d1-5ba6-b867-f756b78ab854,"Sweets Bakery",4e78ce6e-a8a8-48e9-b417-be46d14d52ac,"Tyler Jimenez",managers@sweets-bakery.com
+f0681836-b47b-5dee-a05d-59f891fd3984,"Domino's Pizza",92035263-8af4-42ea-89c3-1bae519257ac,"Rebecca Wilson",managers@dominos-pizza-2.com
+0f3b57bf-dceb-58ee-b303-c4c8c8fcfea3,"Gebhard's Beer Culture",6ee6a756-2410-4ce8-b01c-02577755eeff,"Benjamin Chavez",managers@gebhards-beer-culture.com
+5e12cdbe-a59b-541a-a5df-0739f40b7dcd,"LENWICH",1fd0ed9c-c630-4c9f-955f-fd0d7140ff86,"Larry Ward",managers@lenwich.com
+cde5b60e-ede9-564f-a97f-c8641ba9a57e,"Gregorys Coffee",be95770c-a6e8-46b5-852b-be392b7d7e0d,"Janet Ramos",managers@gregorys-coffee.com
+5a0d0870-1732-5b77-9cb1-3d6344a93924,"Chinelos 2",8c7c77ef-2a3f-47f6-bed9-8585e3ee6d6e,"Pamela Rodriguez",managers@chinelos-2.com
+5ac60f95-1b8c-55dc-8b84-388ddba731bb,"Convene 237 Park",1650ffa8-a8f3-4285-9d3f-ab9f45056dbd,"William Brown",managers@convene-237-park.com
+f5b53736-6dce-588f-844c-fe7fa9fbe557,"Porchlight",8af15dfb-2424-4f93-b7da-b7456c0bcc00,"Jack Bailey",managers@porchlight.com
+175d80ed-d0f1-5906-b37b-1b09a615f298,"Stop 809",7543880a-8179-4434-9486-e78317dd828a,"Paul Reyes",managers@stop-809.com
+2cca6bfe-dab7-5425-a76a-b8d563de3bdb,"Domino's Pizza",42cada52-458b-4f96-9e94-4b1f67ca7191,"Sandra Patel",managers@dominos-pizza-3.com
+d301769a-269c-52be-b531-469b9cea3825,"Fillmore Deli & Backroom",7d38b18c-1103-400e-b361-c1bc074dd454,"Tyler Rogers",managers@fillmore-deli-backroom.com
+72ce8aa1-adf6-5667-aca4-af3b3d0c7ebb,"Mediterraneo Pizza",d64a4a19-e5d7-4bf0-9bae-22de870f932e,"Timothy Phillips",managers@mediterraneo-pizza.com
+eeceb856-6a30-5955-8942-fc05f8db5e6c,"Vin Sur Vingt Wine Bar - Upper West Side",af1e41fd-2391-487a-9237-5f7dc2d41aa7,"Sandra Hernandez",managers@vin-sur-vingt-wine-bar-upper-west-side.com
+f7a67206-0498-5de0-b611-6e28d87d2e34,"Gregorys Coffee",b92bf262-9584-436e-a3ff-7735319a691e,"Alexander Diaz",managers@gregorys-coffee-2.com
+7e4a891c-2c87-5826-ab12-9b046b87a631,"Jacques Brasserie",66f916a9-a073-4b8a-86af-d210f1634880,"Patrick Walker",managers@jacques-brasserie.com
+d21bbef4-d883-5873-bf69-d76621b24b99,"Starbucks Coffee Company",5fb2d36a-9ad4-4876-a5a7-191c8e305d24,"Stephanie Cook",managers@starbucks-coffee-company-17.com
+a11d65f1-64ab-56ed-82fd-f1f579243e69,"Henrietta Hudson",b176ebfe-487d-4f4e-a7f3-eb20380c0161,"Raymond Foster",managers@henrietta-hudson.com
+428a51ee-a59d-52eb-8d22-38900efbde84,"LENWICH",80a4a9ed-1784-4bb3-b762-de8d7f480402,"Anna Jimenez",managers@lenwich-2.com
+163063b6-76d3-587c-a266-4d1f1c7fabc1,"sweetgreen - Healthy Salads, Wraps, and Bowls",571a6087-45df-4cfe-b55f-d9df850daddd,"Christine Jackson",managers@sweetgreen-healthy-salads-wraps-and-bowls.com
+65826481-0e01-56e1-96ac-4e3a198a7d02,"Taco Bell",7a071ecb-7cb3-4ecc-9539-7c7bf2015160,"Kenneth Miller",managers@taco-bell.com
+70d34d59-6649-5987-9e92-272fb3a87352,"Dunkin'",2bf5b874-fbe8-4cba-97ff-ef8fd30e1e15,"Jonathan Price",managers@dunkin-11.com
+eb031852-dfee-50d4-ac4a-8862e5197f4f,"Five Stuy Cafe",692665e7-941e-43d4-a813-c876aa7091c0,"Debra Turner",managers@five-stuy-cafe.com
+d369bb59-0733-58e9-8d5e-b95af4d2add8,"Starbucks Coffee Company",69b541c7-112c-41d3-9f9f-4d13b7256f71,"David Sanchez",managers@starbucks-coffee-company-18.com
+ee11b90b-e5af-581d-9d97-318a44b622b1,"sweetgreen",b7e06abb-6e39-4e8b-895c-acfbd94cf412,"Laura Roberts",managers@sweetgreen.com
+a031350c-d04c-5751-9c6f-3c3408a6ef59,"Le Coucou",749c8a53-bfb2-409a-822e-48a2c136926e,"Sarah Roberts",managers@le-coucou.com
+81abce0a-13d3-51f2-9bfb-da81a2245c0f,"Dunkin'",d0636033-24d9-482d-be59-b877355ae690,"Margaret Ortiz",managers@dunkin-12.com
+3026cccc-2821-5877-9391-d782ddf5c0e0,"CAVA",702c095e-1060-4c7c-9f64-ca923a52004d,"Donald Lewis",managers@cava.com
+3ef26bc2-4e9c-556e-910b-2ec75899b824,"The Smith",849a2acd-69fc-4a97-8929-64d040b1c5c3,"Emily Patel",managers@the-smith-2.com
+2a060d84-c1fe-5e95-a1b2-a4f7b90c5a1e,"Oramen",6fc097b2-bbfb-4b58-adeb-54fc2e22bd6a,"Samantha Edwards",managers@oramen.com
+c086ad1a-771b-5a59-9574-a33b59e5d9ab,"Grand Salon at Baccarat Hotel",ddb536ca-c2d2-46a3-be4e-299574abaf44,"Samuel Cooper",managers@grand-salon-at-baccarat-hotel.com
+00369826-f612-5426-a81d-d652359291a7,"Gregorys Coffee",a0a8c45a-78a9-42cc-945f-953bdd431fc2,"Ronald Bailey",managers@gregorys-coffee-3.com
+4c1ac2ef-8b03-5424-8f26-57674b6cb630,"Osamil",0c0de082-2cac-4ceb-a519-3d69dd8009f1,"Scott Sanders",managers@osamil.com
+175f13ce-2aea-5126-b4b3-97ad4ae051ad,"Allora",9797cc17-dd22-4459-bb7f-152700263c88,"Charles Thomas",managers@allora.com
+57e044ec-c716-5552-946a-dd797e7b6f4e,"IPPUDO Westside",161874eb-363c-4c8b-b63b-d00502e7c84c,"Edward Moore",managers@ippudo-westside.com
+e35c7bda-3447-5928-81d0-eb00b8d43d52,"Bonchon 32nd st",e53dfd3e-2e5f-4708-a298-653a15564784,"Jason Parker",managers@bonchon-32nd-st.com
+26ac01e2-a376-524b-9681-cd97b384a658,"K-Bap & Wings | Korean",1c50c775-6a3c-4d31-bae3-931954a35bb1,"Rachel Harris",managers@k-bap-wings-korean.com
+0ed2c56f-20ca-5321-b4c1-207fe63d6d5b,"Boucherie West Village",32beb423-f6f5-40a6-99e3-48de52bc9d7e,"Samuel Young",managers@boucherie-west-village.com
+f01ef086-f32a-59c7-bdba-1eef611af91d,"Glaze Teriyaki",c91b3dc8-e71f-4a6e-8a1c-432b6069cf6c,"Lisa Cox",managers@glaze-teriyaki.com
+d2e6fdab-44d9-5f2e-9ea1-3c4a959e1abc,"Dos Caminos",15ebc44d-134a-484a-beee-47f8acc10f96,"Kevin Walker",managers@dos-caminos.com
+6f4efa13-10da-559a-9857-25cebc678bd5,"Burger King",7ed554b9-222c-4cc9-a82b-c352a6ac8eb5,"Jerry Williams",managers@burger-king.com
+9e543611-fc63-5557-816b-864d61352ac0,"Starbucks Coffee Company",55cad825-fffd-4ece-9fa8-82fed9577c81,"Justin Brooks",managers@starbucks-coffee-company-19.com
+9953b263-47f3-5b0f-9b0e-037966d11814,"Los Mariscos",9663f112-0506-43aa-9665-fba80d6dd7d4,"Elizabeth Murphy",managers@los-mariscos.com
+7a3b1c47-ccd0-53cd-94d7-b4bfa990ff87,"Culture 307",8b601af2-570c-420a-a3a0-abc73cd359ea,"Donald Thompson",managers@culture-307.com
+29e94332-6878-52c6-8e9c-ff0a2ce2501e,"Oscar Wilde",23da96c3-e5a7-4fa5-bcdb-33bd88051c5f,"Justin Long",managers@oscar-wilde.com
+2635fd49-67b4-5076-9052-c5cebdeb0500,"Starbucks Coffee Company",f0adfb8b-0a11-40a2-90fc-986ee2624497,"Anthony Nguyen",managers@starbucks-coffee-company-20.com
+65c90a03-f498-529d-8fc0-be3820fbf654,"Bellhop",f47f5c78-7a72-41b9-8245-825bcc438763,"Karen Mendoza",managers@bellhop.com
+e91ce58b-66fe-5ad7-a1c0-24017226944d,"JOE & THE JUICE",a0932eec-8507-4cbb-8966-8a600a28090a,"William Thomas",managers@joe-the-juice.com
+5f48d6aa-c9b6-593d-b217-8b35a0975a1d,"L.A. Burdick Handmade Chocolates",04c1e267-6a03-4eda-a23b-4aadd6b63020,"Linda Morgan",managers@l-a-burdick-handmade-chocolates.com
+16d71307-ae60-57b4-ac45-656479838060,"Maison Pickle",fffbf522-da3a-47a9-9a6a-52d8f2fc50fd,"Brian Long",managers@maison-pickle.com
+daf8175a-d1f2-57be-8ee1-9df8110474ca,"Tim Ho Wan East Village",e8cdf84a-8b6d-46b0-a946-f42e2d30e797,"Sharon Murphy",managers@tim-ho-wan-east-village.com
+a1a35a81-0a08-5a05-96f7-7c389c9bab7e,"Tubby Hook Tavern",c9da1346-1150-4dc6-b603-864d9ea68acf,"Benjamin Turner",managers@tubby-hook-tavern.com
+81133d59-47ff-5006-a662-28c81e2d0532,"Chow House",167800c2-e997-4a3c-a8e3-96dad46da268,"Thomas Gray",managers@chow-house.com
+21e846a9-ea35-5974-81ba-cb43fc386013,"Van Leeuwen Ice Cream",359f6fe4-d151-4146-aeed-688f8c2d83c1,"Charles Nguyen",managers@van-leeuwen-ice-cream.com
+0d69e378-873c-580c-bd34-b5cf458c7a46,"Dunkin'",e3a88b69-096e-402c-96ea-5892fb976fe9,"Tyler Davis",managers@dunkin-13.com
+7d277843-f8d6-59c2-be16-4c713dc6fb05,"Whitmans",0b515faf-a09a-4078-a6df-5dfa0a1a86ba,"Ryan Morales",managers@whitmans.com
+c8e3a212-c060-57a2-b29f-812f8a69c923,"Lian Jiang",534b3441-00bc-42d7-8b3f-c60b8cafeacc,"Dennis Smith",managers@lian-jiang.com
+c388aee0-eb85-5b8e-be82-acd8bb3805b8,"Aloaf Bakery Cafe",e068e549-9551-49ae-8d63-648e466fa38e,"Joseph Ruiz",managers@aloaf-bakery-cafe.com
+7f4ee53a-9eb6-5ddb-8dec-26ceda6bd95e,"Pier 61 Chelsea Piers",9b60adf1-a714-4a3c-86c7-abad99a09e24,"Kevin Richardson",managers@pier-61-chelsea-piers.com
+1ff13b0b-4ec2-54e4-b4e8-b30b21a7a57f,"Domino's Pizza",d055f9fc-1769-4b3b-8540-f2ea48137982,"Jason Morris",managers@dominos-pizza-4.com
+75db4f0d-5279-587f-90f2-93547fa34023,"Street Taco",18c43e00-9e6f-4be0-b5a5-f8a8b7273532,"Sandra Richardson",managers@street-taco.com
+b1914fa0-2799-5e1f-a7cd-932e82b65b7c,"Norma",7fa294e8-85ea-4423-b143-ec41963aa43c,"Daniel Hernandez",managers@norma.com
+55ed7956-a030-521e-a6c3-ba9345b9c39f,"The Hideout Chai Bar",576c38af-f34b-4a21-9d4c-7587d1c8fe85,"Kenneth Reyes",managers@the-hideout-chai-bar.com
+20368beb-b3cb-5bfd-bbfa-ef519c7edcd4,"wagamama nomad, new york",1567bdc4-a78a-44dc-b2ee-c6ff8667bc93,"Kathleen Evans",managers@wagamama-nomad-new-york.com
+0fcab902-97fd-5404-a4c6-1c7e979a9b89,"Dunkin'",5044a9a6-0924-4b66-86e8-e77141e287c4,"Shirley Brown",managers@dunkin-14.com
+87fc0c69-0345-5a7d-a237-2a59c29bb2bd,"Dhaba Indian Cuisine",a3c88ec9-7bf5-476a-a204-9ae6b496d976,"Gregory King",managers@dhaba-indian-cuisine.com
+ae64fc8a-9bfb-5d25-813e-bb4ac6552a0c,"JOE & THE JUICE",4308173b-6d84-4207-b364-c9deb51b34e3,"Jeffrey Edwards",managers@joe-the-juice-2.com
+674999d3-446c-5c58-84d8-5d7b5b201160,"The Craftsman",beeb13ef-5eb7-422d-8dad-1c037b73ebbd,"Sharon Cooper",managers@the-craftsman.com
+1f0ac6ee-1423-5eb9-89a7-2ea7bc45ce3d,"Dyckman Dogs",1729a283-cb63-4f94-b659-cb124686c0e3,"Benjamin Gray",managers@dyckman-dogs.com
+2760bf71-3769-55bc-9988-717f62a9b49d,"Café Bilboquet",a4c51830-9bed-4658-937a-93e62accb6ba,"Donna Rivera",managers@caf-bilboquet.com
+3efe7c8a-c9e5-537d-8b81-e28c5b8dff14,"Kirkland & Ellis LLP",cbadaf06-b976-4041-8d09-8dce47e87a75,"Melissa Thomas",managers@kirkland-ellis-llp.com
+add1c8f5-208c-5b95-8231-b5adb5979770,"Le Marais",622549e0-a15c-4e10-881a-df8e755473e6,"Helen Jones",managers@le-marais.com
+3bb1e6b4-be12-5f48-b3f5-7552a569d5fa,"Starbucks Coffee Company",01907bd2-2516-40b5-bb5c-0f6a18dc372a,"Donald Rogers",managers@starbucks-coffee-company-21.com
+c3b23d19-9f91-5bb5-9164-30ce2b742ed8,"King's Chef",f786a18f-9c51-4eec-a21f-fd8d78ef6e11,"Katherine Ward",managers@kings-chef.com
+866955b3-d647-570e-9ee2-1b7b8fa426ad,"BO's Bagels",a3703cba-0f26-4c55-ae50-c939d2fb06d9,"George Martinez",managers@bos-bagels.com
+374d016d-ab01-5cd1-8b27-8ecddfe9bf9e,"Gregorys Coffee",b24fa65c-b780-4907-a8ad-9713fdfcdfc1,"Lisa Campbell",managers@gregorys-coffee-4.com
+e38033a1-4e7b-5eba-bc51-fcf5ccaa9678,"Tacos Cuautla Morelos",f74636b2-3a1f-4060-8f1a-78e405cab705,"Nicole Peterson",managers@tacos-cuautla-morelos.com
+8e2984ba-bfcd-5e25-a31c-3102bc170e0b,"Mughlai Grill",cbee0b6c-5f38-4e7f-ba00-54b3e9ccbaea,"Joshua Evans",managers@mughlai-grill.com
+39424f9f-4cd0-5721-8bcf-43cf322bb3e9,"Market Crates",cd1ca242-2c3b-4021-8924-1c8a2915d266,"Barbara Chavez",managers@market-crates.com
+795918cf-1d66-5c53-819c-54ddbb0f14a5,"La Casa Del Pollo Restaurant",cdb6790f-9549-4677-bdd3-690e1bd16507,"Margaret Wood",managers@la-casa-del-pollo-restaurant.com
+4155f3b8-0658-5a4f-a7a3-1bda1dc366cb,"Amélie Upper West Side Bistro & Wine Bar",6994f08e-b89b-45f6-b15e-cd402916f0b5,"Joshua Patel",managers@am-lie-upper-west-side-bistro-wine-bar.com
+0117c386-3c5e-5725-a139-6e6e2213b10a,"Gyro King",c0b6b027-a42d-4ae3-8317-210cf827dba5,"Nancy Cooper",managers@gyro-king.com
+c074f075-5f1a-597f-b8db-3168a1737353,"Emily",a0999787-e0c6-4eb2-b341-3ee5303e2c48,"Sharon Sanders",managers@emily.com
+a993c1d8-7735-59d8-ae75-93d59fcb5da8,"Tomiño Taberna Gallega",c4aca50d-9dd7-460b-9507-ea05839b79ee,"Carol Brooks",managers@tomi-o-taberna-gallega.com
+cca34003-a48c-5636-92a3-ac760d5b4011,"Luke's Lobster Union Square",d51f5fa5-b326-4395-afe3-9a52d0a2ae53,"Jerry Jackson",managers@lukes-lobster-union-square.com
+39ce4f4c-3898-5fde-909a-21a636880603,"Society Cafe",42df7eed-881d-4e79-a6a8-b2ef4c5d0c0f,"Jack Gomez",managers@society-cafe.com
+d4010854-6613-573e-874b-0f6cb32fda75,"sweetgreen - Healthy Salads, Wraps, and Bowls",cd05d236-25e1-4db0-96c0-28276ad8fd5c,"Maria Rogers",managers@sweetgreen-healthy-salads-wraps-and-bowls-2.com
+d4933688-ce0d-58ae-8499-7c4f7fcc5923,"Ko Sushi",1c9e7075-2cb5-4fe1-99cd-757fa069584a,"Ashley Martin",managers@ko-sushi.com
+c91aa036-d8e3-5574-a66a-0c157a1c5442,"Cap't Loui Broadway - Cajun Seafood Boil",ad9303a6-035f-49d3-97ff-5cad5893b22e,"Dorothy Chavez",managers@capt-loui-broadway-cajun-seafood-boil.com
+6655ad3e-eeeb-5fd5-8c77-4bf099bb15fa,"BURGERS & GRILL",843d5729-f9d7-4f45-b52a-746e44a349b0,"Samantha Martin",managers@burgers-grill.com
+e5e62f74-da7b-5b86-bfd9-e32fd6665cfa,"Häagen-Dazs",ebcdeaeb-cdb1-484d-82d5-ed72a88d82c7,"Jonathan Anderson",managers@h-agen-dazs.com
+453277ba-ba41-5e93-8a48-903d34ab1124,"JOE & THE JUICE",eb0cf3aa-0305-415b-8d2f-5260f9430f97,"Jerry Lee",managers@joe-the-juice-3.com
+d9414d5d-8c31-592d-9365-373aa602a8a5,"Roey's",de0a4c07-139b-4757-9b3c-3f6c2220a5e1,"William Ross",managers@roeys.com
+98864b5a-3c01-51fb-972c-a005413ea4fd,"McDonald's",6f4224d5-5cc4-4114-ab80-9be119ae0205,"Cynthia Garcia",managers@mcdonalds-2.com
+395c5806-1328-5c83-bdd1-146676298e0f,"Mama's Fried Chicken",1f51f7bf-2dd7-4293-87f1-f3a3200d3df1,"Kathleen Smith",managers@mamas-fried-chicken.com
+f5bf7876-5bba-5306-95b2-cbbfc420026e,"Ho Foods",e14c7f20-7a2f-4d40-b8cb-0909fe7be05b,"Daniel Ross",managers@ho-foods.com
+0c9923f5-a2c7-511d-905a-49024a9d2236,"Papa Johns Pizza",dd9e86c5-e97c-4f1b-a177-fd155b5cd68b,"Jonathan Walker",managers@papa-johns-pizza.com
+faa16ded-b7ec-5f7b-9142-3693434cc8fd,"Papa Johns Pizza",d3dc0012-167d-4078-976f-8224623886d0,"Diane Bennett",managers@papa-johns-pizza-2.com
+97ac1119-e7e6-50f1-a825-11eb3b0d28f1,"fresh&co",fb9bbf91-9c33-4388-ade3-aad9ce35aa63,"Shirley Moore",managers@fresh-co.com
+bd8c89aa-6828-59a1-9d35-d36c7790db8b,"Montagu's Gusto",d1b0cdd4-d4b4-46e2-a846-7bd4f17f9a6b,"Kimberly Castillo",managers@montagus-gusto.com
+8cb1ec04-efad-5546-843b-bc90561dc75d,"Kith Manhattan",c01f3b8e-36cd-4804-b9fd-1e5c449b5498,"Karen Foster",managers@kith-manhattan.com
+8adee9be-f9ed-5b7e-b42f-9f34a97313d9,"Le Cafe Coffee",cd976861-703b-49f1-81c2-98d5f4008c51,"Alexander Cox",managers@le-cafe-coffee.com
+6ec761af-9275-52a8-a26e-41f05aaaf079,"La Pecora Bianca Midtown",29fcb414-10c6-4d7c-917d-4529af21c67f,"Edward Mendoza",managers@la-pecora-bianca-midtown.com
+cae04f87-3b51-5b52-a0b9-ab0c9bf9312a,"Lulla NYC",cdb371b6-718a-4de5-86c2-49d3c654a55c,"Anna Perez",managers@lulla-nyc.com
+0e0ab9a8-406d-547e-9c61-07cbaa1b575c,"IPPUDO 5th Avenue",b5cb4097-e194-4b62-a810-d5a669e5c80a,"Kathleen Castillo",managers@ippudo-5th-avenue.com
+1927d195-f35a-5133-9508-8c3e7d9a93b6,"Dunkin'",0d1e8d21-6815-4650-9321-d3d344191c71,"Angela Williams",managers@dunkin-15.com
+4faaf278-97b3-5ca6-9442-b980669fb931,"Panda Express",5babcba5-79de-45b7-920f-4c484d442a6a,"Samuel Ross",managers@panda-express-2.com
+0f2e6060-8ab3-5e76-badd-13c20b82ad23,"Lilly's Craft and Kitchen",ab818d90-3926-4d3c-9d6b-157f9f50f371,"Laura Lee",managers@lillys-craft-and-kitchen.com
+869dd7c5-77ae-566f-b409-eca26d0cdd9f,"Miraj Healthy Grill",3d6ff8fa-02e7-440b-9c12-17114b756577,"Melissa Martin",managers@miraj-healthy-grill.com
+5ed879df-0fa1-55ad-b305-c2902d08f90a,"Spice Symphony",3e93adc3-45f4-4ec4-b992-7a4f2235501c,"Karen Carter",managers@spice-symphony.com
+0a5607b7-bd22-5f0d-9d59-842b9644767b,"Little Alley",30cb2073-3079-41a5-b8cd-4dd2c489bc58,"Dorothy Kim",managers@little-alley.com
+edfcfca7-d431-5903-9870-a4af03e2a7fa,"Fok Noodles",9915bdb3-7d9e-431c-a41c-7db380a46225,"Stephanie Ruiz",managers@fok-noodles.com
+8bc53a94-3ee8-5449-9e64-80716503b9ff,"Barrow Street Ale House",55f3b82c-a408-47fe-b1e1-cafb138b0622,"Robert Mendoza",managers@barrow-street-ale-house.com
+cbb5cbd2-f142-5348-bd2b-fda2255009bc,"Wok Wok Malaysian Cuisine",75b3e000-bbcb-4145-8d6d-e73b8cfb1a8b,"Barbara James",managers@wok-wok-malaysian-cuisine.com
+0f6df0ff-683f-55f1-a93c-1ca3db9c32ad,"Frenchette",49d41e0b-8204-4720-8e99-38b20558ffcc,"Heather Morales",managers@frenchette.com
+a9fb3a8f-1aad-50ad-b7c9-71dbe0704884,"Yummy City",b0c16c1b-db94-417f-adb9-e3723f390361,"Gregory Myers",managers@yummy-city.com
+40ba31fa-bf9a-531e-a4d9-f54672182f86,"Le Reveil Coffee",42160a44-db0a-4241-aef3-6fd2df4fcd06,"Frank Kim",managers@le-reveil-coffee.com
+1ad518b0-16a7-56c1-99ef-2f19d577110b,"Juice Generation",f5340251-ed23-4965-88fd-aa68bcf299ec,"Jason Nelson",managers@juice-generation-3.com
+974da11b-d60e-57c9-bd46-ecada46ca190,"Manhattanville Coffee",c4ba32ad-7824-4540-9a5e-bee904493b92,"Patricia Rivera",managers@manhattanville-coffee.com
+d7df4aab-aa85-5648-a7e6-cb7b975e20c4,"outro nyc",57894516-9d3e-4ca4-afd8-30dbafa4d329,"George Smith",managers@outro-nyc.com
+93e52d3b-1943-507d-8ce9-a1adc2170c61,"Davelle",affd6d7d-1db6-44ff-b295-e5c99b5dc539,"Sarah Rivera",managers@davelle.com
+36395394-c644-5626-8aa0-627e9e9a5fab,"Calle 191 Pescaderia",7b63b010-c5a4-4dab-9214-7289053f968a,"Eric Campbell",managers@calle-191-pescaderia.com
+6d6d5270-f497-5148-89ac-947e4bb43ef8,"Variety Coffee Roasters",15fd345c-851f-4842-aef6-a894080229f2,"Heather Jimenez",managers@variety-coffee-roasters.com
+e7e039bb-dba6-5bc6-b756-a163deb9b74e,"Lucky",041aaa8f-d2f7-4ffa-8c01-9a729e65a184,"Carolyn Hughes",managers@lucky.com
+106cf422-f3bc-5f08-ba88-7544e2087fd9,"Toro Loco",31c91b33-2088-4cea-b800-19d03d6fdeb7,"Carolyn Ortiz",managers@toro-loco.com
+be04e050-76dc-5732-b174-977899ca8d9f,"Dunkin'",c3fddabe-6051-4b9e-9091-92d39eaca539,"Deborah Hill",managers@dunkin-16.com
+cf1ecbfb-581c-5aaf-86b0-40e329df091e,"Brooklyn Pizza Masters",7456bd60-ed99-407a-b823-8edd6c1210df,"Alexander Harris",managers@brooklyn-pizza-masters.com
+adf4b00d-0914-55a7-9e81-b7f1d09a097c,"La Nacional",347fe4da-e0fa-408d-a01e-a9bc41e03ab4,"Barbara James",managers@la-nacional.com
+85a92766-fe79-5759-b546-b04381616674,"Serendipity 3 - Upper East Side",ccae13b0-fadc-4ca4-9ab5-fc5dec69f2be,"Nancy Long",managers@serendipity-3-upper-east-side.com
+ca755643-c92f-544e-acb6-d6bf85718f77,"Green Kitchen 84",055718c4-4112-460b-9773-b705fd187f2c,"Robert Gray",managers@green-kitchen-84.com
+8e161ba8-9088-5d9c-a1f0-10d87bbfbc25,"TOKUYAMATCHA & ONIGIRAZU BAR- E 6th St.",67151d37-a232-4bc5-a8c4-53eefb96db2e,"Michelle Cooper",managers@tokuyamatcha-onigirazu-bar-e-6th-st.com
+9cc22c2c-64b1-5670-8fdf-e00cc361dba8,"maman",27b7b175-2f32-4b14-8161-e04f43dd93d8,"Cynthia Gonzalez",managers@maman.com
+b6fc281a-b629-554c-b8fa-340271344c69,"Fleming by Le Bilboquet",6678014c-c2c6-4c58-9d78-217bbb81bfd0,"Pamela Scott",managers@fleming-by-le-bilboquet.com
+780ac695-ca76-528c-91f7-97061c93bc12,"Hawa Smoothies & Bubble Tea",895c630d-1901-441f-9e6d-49306436e65e,"Brian Kim",managers@hawa-smoothies-bubble-tea.com
+8c264f20-11cb-555d-beba-6dffe832c527,"886",79df4e0b-0de0-4c88-8d6a-c9ef11fa87cb,"Amanda Johnson",managers@886.com
+14aa2c65-3ae5-59f6-981c-c214ea07169d,"Marinara Pizza",00cb5994-30f5-409f-9991-9cd816f9ad03,"William Smith",managers@marinara-pizza.com
+27822559-12b3-572c-8a49-c154df19ddd6,"Dig Inn",533f644a-13c8-4ea2-835d-2092a54b6117,"Patricia Chavez",managers@dig-inn-3.com
+e96abcc9-f7c2-5db1-bc8a-9d880e6572fc,"Mace",05b561cc-28f2-4b2d-b8c0-74a4139dfb2e,"Debra Ramirez",managers@mace.com
+ded05fa9-19fa-519b-b35c-770493d71559,"Ralph’s Famous Italian Ices",4b8fcfeb-ca43-4650-9d3c-e05cf9178116,"Joshua Long",managers@ralph-s-famous-italian-ices.com
+a5b16d00-5254-50ee-ba62-a2fca9b4f450,"Gong Cha",24abcfe8-cc68-42dc-9330-aa9210256c2d,"Helen Cruz",managers@gong-cha.com
+b4dd0dde-07ae-5764-a65b-4d0e1a0e8b07,"canteenM",965b5896-9fc9-4daf-9912-f0a6cdb5c72e,"Ryan King",managers@canteenm.com
+54244ed7-a77a-5452-b3c6-f57ac5ac7f19,"Yoi Ramen & tea",d18d28b5-97fb-408d-85bd-3e6293b90d36,"Laura Parker",managers@yoi-ramen-tea.com
+adfc975a-8c4f-596e-a234-fc9fd60f9d70,"China Xiang",57b060d1-f9c8-418b-ad65-cc8f2edfab70,"Shirley Wilson",managers@china-xiang.com
+57b7c02e-3a0b-5539-93bd-4d96d117e1dd,"The Tailor Public House",ef3c00aa-2725-4822-ad2b-3fcd35eaeb4e,"Alexander Edwards",managers@the-tailor-public-house.com
+4998ce05-ed33-510e-a96e-1ea751b9e182,"Kobeque",b510a968-a9b2-4fef-ba6e-b10ededa0068,"Jacob Hill",managers@kobeque.com
+7d42bb7c-d914-5cda-99ad-af46d77905fd,"WOKUNI",5a92923b-58b8-4ac1-8f45-f29d811c93f0,"Benjamin Gray",managers@wokuni.com
+b3b04627-5998-572d-b61f-d04357617046,"$1 Pizza",9c44bea9-8d53-4437-a6b8-7b655d3b8afc,"Katherine Kim",managers@1-pizza.com
+f5a9394a-6670-507a-b6d6-6500f126a9d3,"Slate Cafe NoMad",4bff7d98-dd91-4aeb-877a-5fea533a928d,"James Kim",managers@slate-cafe-nomad.com
+00a84214-b6b8-560a-b2dd-5b45235e0615,"Bake Culture",e1cabea6-03e7-4935-8976-dac83ddd4e9f,"Emily Ramirez",managers@bake-culture.com
+b39f5cd4-6569-5d38-b073-cc94ef05b850,"Alimama Tea",fa80a2ac-9982-437f-b66e-39d880d0e81c,"Laura Long",managers@alimama-tea.com
+769c058a-2f3b-53fb-acac-1d1517c9383f,"El Encanto De Lola 2",4503a190-6e2c-4914-9b0c-00175b183451,"Sarah Young",managers@el-encanto-de-lola-2.com
+dcbc7987-e188-5d00-873e-f40921fb7923,"Wok 88",93ad3306-2d85-419c-9ecb-d07e7976bc4b,"Melissa Brooks",managers@wok-88.com
+d991d285-e284-558b-b3c1-2ef360421db4,"NY 99 Cents Pizza",26a75460-ad93-4d13-b504-461f186ca808,"Tyler Watson",managers@ny-99-cents-pizza.com
+f37484d3-4ce1-5994-a1af-bf166808503f,"cloudM New York Bowery",721cdae2-a207-44b6-8139-f89a8f66a432,"Thomas Hernandez",managers@cloudm-new-york-bowery.com
+a32df3e2-51e9-5845-9519-fd8efe0c87c6,"Shake Shack West Village",36edebc5-81e9-4e14-b2fd-f8b37c7cbd8d,"Ryan Robinson",managers@shake-shack-west-village.com
+ab09c147-e473-564a-8314-5f79be2ffc77,"Rockbar NYC",b24dcd2b-93ed-47d7-aaff-8aa21462af11,"Charles Ward",managers@rockbar-nyc.com
+040a2943-4dd0-5c75-887a-83908b1e1a82,"Aria Wine Bar",e67fb0b1-a411-4602-ae65-a2beaf72bded,"George King",managers@aria-wine-bar.com
+24fb4723-e1e2-5523-bd1b-751e4419161d,"Tandoor Oven",9ac54c38-24f2-46dc-ac99-2e4f9e2efcf0,"Mark Ross",managers@tandoor-oven.com
+6ffb55c3-f849-5e62-8640-38ccf256f8e5,"Harbs SoHo",5f06c701-d982-4551-991f-8873ec22f102,"Emma Nguyen",managers@harbs-soho.com
+25214d41-79df-53d6-b74a-3ef5ee70b014,"JOE & THE JUICE",18c08f7f-7751-4c43-bf4a-dbfb9ded11f5,"James Wright",managers@joe-the-juice-4.com
+3d60280c-a88e-5dae-802f-679b987e2749,"Pizza Plus",a4bd56f9-6eb9-4720-be70-e44dc427a1d3,"Larry Kelly",managers@pizza-plus.com
+483d0fe4-f97d-5cb5-a877-caf9fd00a7ff,"Modern Bread and Bagel",a781c140-f420-4bf4-b926-f694adb74847,"Christine Gomez",managers@modern-bread-and-bagel.com
+2d481d56-a7d2-5247-beef-9e20220acc87,"Holy Schnitzel (Upper West Side)",a386f8a5-6afb-4848-ae0b-8d9304e5423f,"Jerry Foster",managers@holy-schnitzel-upper-west-side.com
+4d8a0e2a-b757-5f96-b68f-d393167bb123,"Casa Koko Restaurant",d4488be5-b21a-4ae1-ad61-d4bbf4d4c091,"Emma Clark",managers@casa-koko-restaurant.com
+2315fca9-7284-5a13-8034-6543b45f4ff3,"JOE & THE JUICE",310503dd-7b26-421a-8f8e-8b780e2966c7,"Emily Thomas",managers@joe-the-juice-5.com
+7a130f51-d2cc-5177-838a-5e065a5691f1,"Yi Ji Shi Mo",69468724-9be8-4945-9250-22bf878d9fcc,"Shirley Adams",managers@yi-ji-shi-mo.com
+5f38cd34-2550-57e3-b9c1-17f83928e336,"Korean Express",6384c5f4-32e5-4446-af28-102911b6cfff,"John Patel",managers@korean-express.com
+868536c8-1265-5d3c-b08c-2321566cea4c,"Angaar",6b546848-4b4a-4278-a6f9-7ac79bb407b1,"Benjamin Martin",managers@angaar.com
+2589175d-660d-5731-a799-4c9d317c20a5,"99¢ Pizza",3a6411ee-edaf-4a0b-b3af-95a6d36e65ef,"John Ortiz",managers@99-pizza.com
+91db7e78-108a-5f05-a94b-019bcd1704d6,"SUGARFISH by sushi nozawa",088c73d2-27d8-4978-be26-554459f64930,"Karen Mitchell",managers@sugarfish-by-sushi-nozawa.com
+169fedf3-8407-5487-bd3f-4a9e02b8b254,"Fumo Upper West Side",b516bb93-22cc-46c3-9a6e-c98e28c55a69,"Amy Flores",managers@fumo-upper-west-side.com
+7f9803f3-9c7a-5319-b0ec-ad79f32bd6a7,"Van Leeuwen Ice Cream",a69b831f-5568-42d7-816d-0c5d5dc4439d,"Margaret Patel",managers@van-leeuwen-ice-cream-2.com
+41f02bf6-c60e-53ae-9d71-9ea8a2923255,"Van Leeuwen Ice Cream",a410242e-414e-4858-a7e8-c60b464968c9,"Patricia Anderson",managers@van-leeuwen-ice-cream-3.com
+5916522d-fb78-544d-9116-893ed8a3e654,"Dunkin'",a32dcae7-0127-41f1-a348-e46bea982dbc,"Timothy Richardson",managers@dunkin-17.com
+f81e0bc7-826a-52ec-b507-d8433ba4d0a8,"Penny Jo's",37fa0062-5b74-48b0-a786-3edf09834fe8,"Lisa Gutierrez",managers@penny-jos.com
+d481e0e7-f114-5a8f-84b6-9aa7be897026,"Kung Fu Little Steamed Buns Ramen",10eedc94-7d3e-41e8-a76a-c79fb78a3ac8,"Mark Hall",managers@kung-fu-little-steamed-buns-ramen.com
+87805d89-add0-5fd3-8ac9-8b664e0b210d,"Racquet & Tennis Club",ca7af7ac-f225-49e8-9fce-d16978f071bb,"Lisa Hall",managers@racquet-tennis-club.com
+f995e6d7-5963-5917-bcc3-c625bcf1f3f5,"The Long Acre Tavern",c5eb6620-1e4c-487e-8bcd-7f4895b08c6b,"Kathleen Lewis",managers@the-long-acre-tavern.com
+f0aabd73-ba82-5fad-ae71-2b1068f6b720,"Little Italy Pizza",8d83d4cc-d313-48a0-ad7d-1c13317cdb00,"William Foster",managers@little-italy-pizza.com
+e2597642-542c-5aeb-b8bd-ea42aced8ca1,"The Best Sichuan 39 一品成都",32ca5333-9e0e-464f-917f-5dcf87e28921,"Melissa Clark",managers@the-best-sichuan-39.com
+78794d4f-984a-557e-87a0-ba18c9c90d85,"Dunkin'",2b6f418c-8bdb-4014-b48b-83b493ea3511,"Jeffrey Bailey",managers@dunkin-18.com
+42f97e87-d0ff-5f0d-8ea1-a9fa98c0afce,"Dunkin'",6d53b450-a232-4962-b3b2-e052f4321707,"Anthony Smith",managers@dunkin-19.com
+4e492276-49b4-5624-9137-d273565065ce,"Au Cheval",6694c1c7-7d80-48fa-aca8-df03c0e81f66,"Heather Howard",managers@au-cheval.com
+7bc18a7a-0888-5d4e-b28a-f0a06991268c,"RPM Underground",7279eae1-6e52-4d52-9dbb-333e1ba3be64,"Raymond Miller",managers@rpm-underground.com
+fd83c598-963a-5e6c-957c-674e8bbd8cc7,"Buena Vista Restaurant & Bar",ac670742-4760-495f-9920-b1142f41dabf,"Paul Stewart",managers@buena-vista-restaurant-bar.com
+1c433fe3-d17a-5755-ba37-e7d8b90595ca,"Ponche Taqueria",39e9a7a8-7d66-4952-83eb-0965fd3c147d,"Laura Collins",managers@ponche-taqueria.com
+4e354d3e-c716-54fe-9e2d-8c2e2fa23600,"Dunkin'",3f07b3c4-bf4a-46a0-9f82-2b273b6aed4e,"Samuel Cook",managers@dunkin-20.com
+1ab6e564-5f65-579b-b9d8-4182c5012479,"Buona Notte",cbe06f45-08c6-4770-b89f-4373f26979e4,"John Thomas",managers@buona-notte.com
+70b9794a-58f0-5420-80a7-75132d3ce65c,"Insomnia Cookies",b14afb22-5bed-4563-b58a-bf5dc1a277db,"Larry Parker",managers@insomnia-cookies.com
+553d0a3b-1e3c-520d-b6d1-68bd149f327a,"Dunkin'",02a80eed-d557-45d4-8717-9c3d1288a377,"Daniel Morales",managers@dunkin-21.com
+9046b68c-46ed-5f13-a526-210c6739e8ae,"Dunkin'",1b00ce86-82b8-46d5-98c4-eea2dca2b5e3,"Jennifer Howard",managers@dunkin-22.com
+7c5eea4b-16f9-52c5-af2a-c1464c033a6a,"Ludlow House",8f2fd8d8-0cc5-4d5b-ae69-4a828c842ab2,"Sarah Bailey",managers@ludlow-house.com
+66f23132-b6a9-5813-ac60-a3d374b1a2e0,"Sushi of Gari UWS (Gari Columbus)",744f8580-4a90-464a-873e-b4e78480bd66,"Brenda Williams",managers@sushi-of-gari-uws-gari-columbus.com
+b325da02-9627-56f5-8844-4f21466c5e7e,"The Calaveras NYC",3922a56c-9e17-475e-8ec6-e93d218dbe43,"Richard Lopez",managers@the-calaveras-nyc.com
+970ec4b2-ef14-5096-abc3-5e33f9c16be7,"El Nuevo Valle Seafood Restaurant",3e0f0506-0ca8-4c9a-b7da-a1cf5edd80a5,"Jessica Adams",managers@el-nuevo-valle-seafood-restaurant.com
+46351ce6-4fe0-5aff-8b9a-a1ac794c60be,"FIELDTRIP",004b2816-3af1-49a6-9d69-5afb4f4a5a52,"Gary Roberts",managers@fieldtrip.com
+b3f7f149-989c-531b-acb8-a7e984c7e39d,"Pinkberry",4ec0bb7c-09f9-40eb-b03d-6510dd2ff2fd,"Robert Thompson",managers@pinkberry.com
+a2dc7936-041b-59d0-8425-b4f652611997,"Kung Fu Tea",27641f84-5886-43b8-b67c-b8ff377271d9,"Lisa Gutierrez",managers@kung-fu-tea.com
+bf26ecf9-8110-58a3-9406-56f118ade79a,"Whistle & Fizz",81bc3c3f-51d0-43d0-9b16-5b2a039d4d8c,"Ryan Williams",managers@whistle-fizz.com
+61cf48e3-26fc-5413-8307-8b7aaab0d406,"Kennedy's Fried Chicken & Pizza",27fd098e-8c38-46bf-9f7c-1df9daa06edd,"Joseph Kim",managers@kennedys-fried-chicken-pizza.com
+ce88bdf8-053f-507b-a040-bd18216c77a4,"Jackdaw",2e120ca4-3c84-4104-8448-a143b6d9136a,"Jessica Adams",managers@jackdaw.com
+540bfe3b-d6fc-57da-bb31-8ec747750350,"Ollie’s To Go: Upper East Side",487b9198-a5ab-4c80-8f51-efbf9866d638,"Barbara Ruiz",managers@ollie-s-to-go-upper-east-side.com
+6f64b621-259c-57d5-9e1c-7738ca674c33,"Dunkin'",c800560b-1131-49e3-9f64-c9f30a9e6738,"Helen Morris",managers@dunkin-23.com
+4be2d67a-a5c7-5832-99bf-a240e5bba09a,"Cocteleria Perla Negra",e1c3b168-1a96-4a50-a9dc-3da1904c81ad,"Tyler Chavez",managers@cocteleria-perla-negra.com
+34164784-662d-5986-a06b-78ab6a1aad3d,"Burger King",9df9acb0-3994-415f-bafc-63b49e78ac81,"Pamela Stewart",managers@burger-king-2.com
+1f2df9ed-1af3-505d-a4b7-ab485444e2ed,"Stage Door Delicatessen",ab5738a8-5efa-414f-85aa-9c6dfe5f23b3,"David Thompson",managers@stage-door-delicatessen.com
+757c8361-aeba-52c6-8b91-3797edb993b8,"Ayada",c3a27476-4bd9-447a-be61-aa769adc1dc9,"Kevin Foster",managers@ayada.com
+4893b296-0752-57fb-a4e1-af686c0790f1,"Da Andrea Greenwich Village",eba27513-03c0-4c30-8925-5cada04ae1e2,"Larry Thompson",managers@da-andrea-greenwich-village.com
+4db99184-505a-5731-9c9d-b6a454d6208f,"Levain Bakery",46088c5f-ca0a-4177-9b5b-761569a7be18,"Amanda Cook",managers@levain-bakery.com
+a907a6fc-d8d6-5fe2-af06-0820f45161c6,"River",2428802a-e8c6-4a29-8118-2dfbc43dc6c8,"Raymond Lewis",managers@river.com
+15c9ea8c-4f69-561b-b728-2c812af38ac8,"Sushi & Co-Downtown",5766f302-903c-4e07-a9a7-603cc031938c,"Barbara Clark",managers@sushi-co-downtown.com
+bfed49f4-6507-5257-9ab8-447a7eaff413,"Chick-fil-A",e0af40b2-b3a2-4321-9de9-b8457d0684b9,"Angela Anderson",managers@chick-fil-a.com
+013e2692-0450-5dff-bc29-6bcf30e54d9b,"Green Garden Village",29329a24-8071-4ba5-9e26-2f160dec451f,"Anthony Harris",managers@green-garden-village.com
+32cfa6f3-e8a9-5aa4-bb74-f02b9f8b4e45,"Nami Nori West Village",a19b39b5-90e5-4650-b4d7-dd2c50d88055,"Jeffrey Cox",managers@nami-nori-west-village.com
+5cd3c5b6-d1fc-5e64-a082-6309d508d348,"Koronet Pizza",1d0cdda1-4358-4bf8-b451-12cb690bb784,"Carol Morgan",managers@koronet-pizza.com
+1280aaf8-cbc9-508b-a87d-7d3285510435,"Jiang Nan NYC",6c315dcf-6955-4880-84cf-b4959f518168,"Maria Peterson",managers@jiang-nan-nyc.com
+ffec953a-29fb-59f2-a991-4b7d1cc27dc4,"OBAO | Midtown Thai & Vietnamese Restaurant",a82762ad-99eb-4128-aa26-b670a99748c8,"Maria Chavez",managers@obao-midtown-thai-vietnamese-restaurant.com
+4260e5ce-7d3a-5694-af8b-16a2c434b6bf,"Chick-fil-A",a076bba9-3b0f-4bd0-bb3e-c414c6504a6f,"Timothy Mendoza",managers@chick-fil-a-2.com
+362f3520-69ae-537c-b3a9-aa8e33dc79c3,"Yama Ramen",84558bfd-a62e-4ab0-9e95-44ad5bd5ea20,"Carol Ramirez",managers@yama-ramen.com
+d77a81f0-ffdb-5bd9-a75c-5971ea00cdc3,"LOS TACOS No.1",1f13efc1-15d3-4360-adb3-7d68ef0ff0ab,"Raymond Sanchez",managers@los-tacos-no-1.com
+f7d61f67-1e01-5372-8eb8-ad449a98c743,"Gong Cha",a1f76d50-aaf2-4616-9ef3-da298f70b662,"Helen Nelson",managers@gong-cha-2.com
+539fa722-eb3f-51ca-b05e-cd0f76d58c98,"Dim Sum Palace",4eaea0fe-1f58-4a94-9458-3a2b200eca1f,"Emma Hernandez",managers@dim-sum-palace.com
+f6cdc7e3-5270-541b-baff-70a189e9f951,"sweetgreen - Healthy Salads, Wraps, and Bowls",b82e517c-e001-4360-8e12-b0f7dd7d389a,"Susan Flores",managers@sweetgreen-healthy-salads-wraps-and-bowls-3.com
+c1836e27-7484-56b1-aef1-448756b5a1a1,"Little Branch",eb1939db-35f2-45e0-a653-e23b48cb0cb4,"Mark Baker",managers@little-branch.com
+f9e19e8f-0e8f-5931-9a36-9a3b813a07bf,"Havana Tacos",164c8f58-b156-4491-a91e-6506379fd120,"Stephen Diaz",managers@havana-tacos.com
+d86d4063-9d64-5567-8272-9f9558833ecc,"Quality Bistro",34d3c5d8-df6c-405d-969f-909d5bc205f0,"Margaret Allen",managers@quality-bistro.com
+3d05cd18-99b4-54df-a635-364b9303ad2d,"El Valle",3f0c97ff-9bfa-4984-8719-44da43d2f098,"Joseph Kim",managers@el-valle.com
+6afe4d8f-27bc-5f08-ad7a-cded819fecfd,"Baodega 小杨生煎",883ac8ed-ee87-4698-91d4-cc65f245b6c0,"Timothy Walker",managers@baodega.com
+0253afe3-28dc-5769-ab91-f3202d5d02fc,"Taco Bell",c9201b44-bacb-4f41-b8da-90e40f370b62,"Melissa Williams",managers@taco-bell-2.com
+28042823-2834-556d-8149-b60d7f435e79,"Udon Lab",4893e0fd-7a84-493e-8daf-6ca5ef05299f,"Thomas White",managers@udon-lab.com
+87cbb8fc-7c89-5f1b-9c2a-3938b0b4f9ab,"Hawa Smoothies & Bubble Tea",da6ed9d9-0bbb-410f-bb4d-d23d809b1402,"Karen Kelly",managers@hawa-smoothies-bubble-tea-2.com
+367c84df-c1ca-591d-bd43-bf26d4c16a2e,"Bareburger",a1701c6d-bcef-4026-892c-bc59c7c56852,"Shirley Adams",managers@bareburger.com
+6ef17d59-d2b5-5d60-b196-a018b2b0cc7b,"Chez Nick",7530d84d-1b4e-4ce9-983f-1f21b11f6410,"Kathleen Nelson",managers@chez-nick.com
+e325b571-5447-57ca-be77-aaa981284b1c,"The Consulate - UWS",34ea309b-7584-4493-9524-7a94b5493586,"Sandra Bailey",managers@the-consulate-uws.com
+226291ca-9cf2-5ea5-8915-0264744eae35,"Italian Village Pizza & Restaurant",a10cffa6-4753-4f39-a656-4110adea6873,"Gregory Martin",managers@italian-village-pizza-restaurant.com
+d8a26959-1db8-54bf-9732-d53ada786d9f,"El Azteca & El Guanaco",2299d441-1a3b-4c4b-9140-f55d750d2cad,"Deborah Nelson",managers@el-azteca-el-guanaco.com
+d762a449-82ad-58e5-9dab-f22ef7847ce7,"Thai Super",966c4579-6afa-46e7-82d4-87ab3df2bfb3,"Timothy Foster",managers@thai-super.com
+6c79eda1-91e6-511c-b96e-5278eea41b55,"Lucky King",b60c8e47-252e-4cad-a343-e9cd13efef64,"Nancy Smith",managers@lucky-king.com
+a000ec1d-6773-503e-b02a-88ec9ae1fb15,"Dim Sum Chelsea",779ab8f7-b07f-40e3-8ff3-36f25ff4b88a,"Charles Price",managers@dim-sum-chelsea.com
+e117e01f-9001-563c-a917-511ff7d49d3b,"Soom Soom",f1cb1761-af24-4461-8efb-a948628e1d58,"Karen Long",managers@soom-soom.com
+05770a12-991a-510b-8426-52543177b901,"Milk Bar",13427c0d-e57e-40d2-9c6b-c37c24661d30,"James Jimenez",managers@milk-bar.com
+18384e66-0dc7-5bf7-b35a-2f602007bafc,"Dunkin'",3039c305-821d-4cae-999f-f7db6b920d79,"Charles Young",managers@dunkin-24.com
+1d4393b0-aa42-580f-a796-d4e6faab27cd,"LENWICH",026c64e6-de4f-4bdd-8b78-437309099c02,"Emily Thomas",managers@lenwich-3.com
+18ad955a-d755-5731-b38c-941b301afa4f,"Dagon",2dfd6c3e-bf21-4410-9c62-02e0dda15ae1,"Linda Stewart",managers@dagon.com
+678c6f9e-18b4-547e-bc2b-5657502d39a1,"Village creperie",d930ae2b-3720-4838-8532-5d086507082b,"Maria Long",managers@village-creperie.com
+018cb56a-d00a-5342-b58d-3ed7bb093ae5,"Raku it's Japanese",eb3fe319-a40c-44ba-8bf3-cd57b670f4c4,"Richard Morris",managers@raku-its-japanese.com
+37da826d-c22a-5f90-ab9e-eca79e65b35c,"Sarabeth's Central Park South",f3bb0d86-c821-4296-8795-060b4bbb8a40,"Stephanie Adams",managers@sarabeths-central-park-south.com
+f1f43596-0641-59d2-b1f0-b0c081d3242d,"Izakaya Toribar",d2cb7bb1-0eb2-4785-bcec-8a030713dd97,"Michelle Gonzalez",managers@izakaya-toribar.com
+2088219c-86a5-5f9b-b386-0ac01257945e,"Gardenia Terrace",ea53be27-a2ae-4329-8459-d66dbd3c74c3,"Kathleen Phillips",managers@gardenia-terrace.com
+fb354597-2d83-5c22-b865-17e92192a79a,"I’Milky 沐白 - Midtown",8338c715-da52-4dd7-978f-fd3c0e02e49f,"Cynthia Lopez",managers@i-milky-midtown.com
+a64c4ecd-3021-54c3-a6ed-d4801368c04f,"Breads Bakery - Rockefeller Center",a829b0f0-2a2a-466b-92cd-86df8372650f,"Margaret Howard",managers@breads-bakery-rockefeller-center.com
+2261616b-6948-54c7-b6df-5bc265688504,"Paris Baguette",dad2a381-4f21-4e6a-9f4f-0f9cda472ca8,"Jeffrey Cox",managers@paris-baguette-2.com
+0c4be8c7-4fd1-56d0-92ad-585b50885d69,"Soothr",51d42bdc-8ddf-4359-9779-48156799a118,"David Sanders",managers@soothr.com
+d8e6f966-9685-5041-a699-bbc8f9f787bd,"El Gallo Taqueria",3645464a-2ead-44c8-a5d2-521df26de9c8,"Sharon Mitchell",managers@el-gallo-taqueria-2.com
+021d8066-46dc-5a06-8ccd-f3ae14455679,"Senn Thai Comfort Food",6321edc6-2ba8-44f3-93be-da7486cc005b,"Brian Collins",managers@senn-thai-comfort-food.com
+d64adaa1-6d2f-568a-a175-1066a3f8481f,"Karamelo",da092839-8c2d-4775-88d3-131eccb30c0f,"Donna Ramirez",managers@karamelo.com
+36f792c8-4d89-57e8-bdd6-78efb6d50723,"Salento Colombian Restaurant, Coffee & Bakery",0ca54cc7-2ad0-4df4-bbf1-97208673adb9,"Edward Williams",managers@salento-colombian-restaurant-coffee-bakery.com
+e1c7dd67-74ce-5f2b-a8c0-1edf8428de55,"Ost Cafe",f6ea925d-c6b5-4df3-8946-7fa6c97ee596,"Kimberly Myers",managers@ost-cafe.com
+592cd7e3-a4fc-58c3-80e0-c50a52af749d,"Jajaja Mexicana",8ab218b8-32dc-4354-bf5f-0dc18821234a,"Catherine Nelson",managers@jajaja-mexicana.com
+99064629-e6b2-5e88-b72e-3e862055fa57,"Industry Bar",fe7b6fa1-6302-4dc1-944b-cbf1aa707a72,"Deborah Jackson",managers@industry-bar.com
+f92c086c-add0-5b6d-b467-50ff55d64734,"Vito's Slices and Ices",5bd4e3bd-f54e-4aa5-aca1-f220cb2cf35c,"Charles Torres",managers@vitos-slices-and-ices.com
+9a2b0254-f842-5d36-bebc-6f977d77696c,"Remi43 Flower & Coffee",008b869d-aaa9-420a-969e-f2c60e3300dd,"Lisa Diaz",managers@remi43-flower-coffee.com
+93292ff5-1e85-5439-a642-e2c9a72c63cc,"Tonii's Fresh Rice Noodle",e6fd4945-3e55-4196-a00d-311fc91b8d95,"Carol Evans",managers@toniis-fresh-rice-noodle.com
+c2aefbf5-317e-5705-bceb-b0f1555fd11f,"Chip City",6420b2c8-91a1-4dec-ab70-88ebf43b0e00,"John Garcia",managers@chip-city.com
+7ae89520-ece7-545a-83e9-ad42b8992602,"Le Pain Quotidien",a74e9763-d806-4e7d-af25-28758d7e2bbc,"Daniel Turner",managers@le-pain-quotidien.com
+dd44759d-edce-50e8-bc63-97ca3ae383b0,"The Good Good",3646f601-6d0d-4b10-85fc-535cdb094e57,"Joshua Martin",managers@the-good-good.com
+a0efe78b-dd28-5bb5-acb3-8bc75056d783,"16 Handles",7f429007-44e6-42f3-9521-11ced9dc8a43,"Brandon Gonzalez",managers@16-handles.com
+8a0a7165-c847-5ea6-897c-3e6fadcadab8,"Le Pain Quotidien",23b7640b-3bd5-4abd-8f73-5ec44bd4b0fb,"Mary Thomas",managers@le-pain-quotidien-2.com
+15849d27-98f3-5269-b152-37326b06535e,"Osteria La Baia",5c58fc31-2e0b-47ec-9090-de598d63423a,"Lisa Williams",managers@osteria-la-baia.com
+26bb8040-4e01-5059-be2c-cff84d961e0b,"Calaveras Corner",7e1b56f7-2d49-4c61-aecc-749f1d793ebd,"Larry Collins",managers@calaveras-corner.com
+d90f25d1-f833-5f16-b823-ebc203554b92,"Smoove Ice Cream",b17c1db8-6cdf-41cb-8659-b2c295c8ed9b,"Rachel Reyes",managers@smoove-ice-cream.com
+862bcf1b-a7df-505e-886c-0b70f07031e5,"Frenchette Bakery",27483844-246b-487a-a395-ca22dd6bd8c3,"Shirley Gomez",managers@frenchette-bakery.com
+04428746-2c09-5113-9fcb-7ad61ebf7bac,"Popeyes Louisiana Kitchen",39fef156-c3b8-4bbf-94ab-ac91d6f3c72c,"Helen Ramos",managers@popeyes-louisiana-kitchen-3.com
+96d7cac0-89c4-5463-af4c-73c66952b409,"New York Sal's Pizza II",f9d3d5f8-0197-414d-b44c-f4d22eb32313,"Samantha Clark",managers@new-york-sals-pizza-ii.com
+f773d510-0d25-5d86-8e4d-39f1756702e4,"Wingstop",23eaa9f9-1220-4ec2-9776-12b44a6acba6,"Justin Kim",managers@wingstop.com
+0aa3cb1d-5dbd-584e-849b-24cf19ea4831,"Little Beet",468df908-e9d4-4e14-b11d-1282809ede6a,"Ashley Carter",managers@little-beet-2.com
+8dea2cb7-1b6f-5245-bb6d-70c86c515803,"Terrific Wings Tacos & Things",b41ad657-440e-4cc6-9b34-0ae688990610,"Charles Martinez",managers@terrific-wings-tacos-things.com
+193130c0-69a4-59b5-bbcc-585960c1d564,"Wimpys",2a01479b-5ad4-482e-ae78-d411d23fb03c,"Margaret Allen",managers@wimpys.com
+43b219bb-7bd1-56cf-8266-e54fd56b37e8,"Noi Due Cafe",c432e938-505f-4d21-8bff-9bee555cefb7,"Eric Collins",managers@noi-due-cafe.com
+3a325b9f-9468-5f64-b9a4-637b1fbea6d3,"Champion Pizza - 5th Ave",49dac8ee-df86-4ae8-a55b-e6c049772a09,"Jeffrey Nguyen",managers@champion-pizza-5th-ave.com
+04e25fca-9fbb-5707-b101-b4a2248f7cc3,"Bánh",6e6eb007-e6f5-414b-b55b-77b730bb06f3,"Ashley Myers",managers@b-nh.com
+1b878bc0-cfdc-51d5-a3f3-b6389ec7f167,"OM",9a065acd-7fd6-4102-9a5e-cfe820c615eb,"Catherine Phillips",managers@om.com
+00a39a12-a0a1-5fe2-a10d-fca352fc87b3,"Counter & Bodega",5e5fe4cf-db18-4837-b3e4-6e29be4f61a9,"Elizabeth Baker",managers@counter-bodega.com
+4580b3fb-7c11-56b2-972d-6fe1481fa7fc,"Chick-fil-A",3290a8b6-277f-4121-8f32-25bd1dcc2193,"Helen Hill",managers@chick-fil-a-3.com
+e5cc0a31-e92b-51b2-9485-9e584f8c0267,"Starbucks",c7973502-e87b-4c0a-981a-0aafdcff1115,"Sharon Foster",managers@starbucks-2.com
+e0d1c368-ee86-5c47-97d3-7c60ba6c11c6,"Dunkin'",6181c778-bca3-48d1-a1a2-5133e05763b0,"Edward Cook",managers@dunkin-25.com
+d7480970-e508-59ca-94b5-e13f99c55841,"5ive Spice Tacos & Banh Mi",4d439b1b-b9b8-403b-a28d-c20a28c84e76,"Rachel Brown",managers@5ive-spice-tacos-banh-mi.com
+562b73da-cc7e-55dc-a9f1-542603ed8c38,"KFC",23e355ea-0ae2-4a70-a46d-373b01fcc05b,"Jacob Miller",managers@kfc.com
+394a08ae-2ff8-5563-ad0d-8b5f4a0e2bbc,"ROCCO'S PIZZA",8754160e-d2bc-47e8-8afb-9e198c43ce9b,"Tyler Nguyen",managers@roccos-pizza.com
+180994aa-c85a-51a6-b685-ea41022a13c6,"Zucker’s Bagels & Smoked Fish",da0d772c-3ffe-4c31-8031-6cdd19823520,"Margaret Sanchez",managers@zucker-s-bagels-smoked-fish.com
+1223516e-e5fe-5f55-b51e-15000d6b4294,"Chef Yu",389e6ad3-2943-4c90-83e6-60842f969d03,"Joseph Ruiz",managers@chef-yu.com
+37d40003-09c2-5237-a016-233bb8a37a70,"Gabby O'Haras",1ff6318c-552e-4488-aded-471dec1943ac,"Thomas Jones",managers@gabby-oharas.com
+e07c40e4-913c-5714-9b4e-253aa98ba8a5,"Milk & Hops",ec755e3c-bfdf-4b1e-bf12-cb8ea508c540,"Timothy Harris",managers@milk-hops.com
+bb470663-3eec-59b8-a4cc-0177df93a51e,"Upside Pizza",6c0399bc-164a-434b-ab98-a647182a66cc,"Maria James",managers@upside-pizza-2.com
+96f15790-ed01-56e9-9334-47f8902a5226,"Le Pain Quotidien",b835f8d5-161b-441d-b133-9f3305266ec3,"Emma Mendoza",managers@le-pain-quotidien-3.com
+f9e1f3ad-e376-57b5-b4f8-a2399d7bf8f1,"Lindens",7665d724-9533-487e-924d-c32fb1126b9e,"Paul Brown",managers@lindens.com
+70bd18d0-2ba1-543b-b711-6537e211e50a,"Felix Roasting Co.",caa746eb-cba0-4c99-ba53-ec1f2a9924f7,"James Jimenez",managers@felix-roasting-co.com
+fa9e4af0-97d8-547f-a12c-d1d503c9ab94,"Le Pain Quotidien",cdee8628-7eb5-442f-b641-823ef9f31c38,"Diane Baker",managers@le-pain-quotidien-4.com
+1c41bc73-9366-5079-915c-e26a2ef3a2fb,"Çka Ka Qëllue",2049d571-b645-4c11-8840-6e23d5128d20,"Larry Gutierrez",managers@ka-ka-q-llue.com
+a6758ee5-85c4-57e3-b70b-fc5d3814c182,"Hay Hay Roasted",bb9658e7-bda2-475f-8b30-09532601f906,"Dorothy Ramirez",managers@hay-hay-roasted.com
+59ca7bac-fb72-5591-86a6-0c640fa9fc6c,"Supreme Restaurant",b4437c43-7c28-4e07-bbe5-9e6f57de6c9e,"Diane Clark",managers@supreme-restaurant.com
+8cc1c3aa-0f5a-5564-80fd-ae9e7dff7299,"Royal Seafood",11397245-8f38-476c-81da-76d98cf0c190,"Mary Edwards",managers@royal-seafood.com
+1d40ac47-d0b5-55d1-a0c2-f14610f9a659,"Insomnia Cookies",8bfb7df8-771a-4c62-88f6-40df2292d1f8,"Linda Gonzalez",managers@insomnia-cookies-2.com
+359146ce-82b3-5349-a9d6-23a695928b39,"Baya Bar - Acai & Smoothie Shop",fd3e6003-5384-4d7e-85a1-1f0f3d58cd9d,"Janet Rodriguez",managers@baya-bar-acai-smoothie-shop.com
+89845e2e-9e0f-5a76-bd48-20eb0cd69f0f,"Nelly’s Chicken & Pizza",df569e86-e844-49ae-aadc-193df79a02d3,"Kevin Torres",managers@nelly-s-chicken-pizza.com
+6ae53db6-7b90-5a0f-acce-96c6994e3112,"Electric Burrito",96290c63-f3ba-49ff-a737-4dacb3a3ef5c,"Mark Williams",managers@electric-burrito.com
+010d52c6-8907-5fe9-8a05-9b6594d167be,"Spice Mantra",d4a1527d-0bd1-4d81-b02c-db5e40647723,"Elizabeth Williams",managers@spice-mantra.com
+70bf3b5f-19e1-56fc-9077-bab65dc4699e,"SUGARFISH by sushi nozawa",4e1ddf83-0d79-4dae-8729-ec9d6d22ffbf,"George Kelly",managers@sugarfish-by-sushi-nozawa-2.com
+250d521b-031c-51e8-980d-de3cc564db80,"IL Postino",bfb2a22b-d3f9-4094-a3ae-0c154567853c,"Stephanie Young",managers@il-postino.com
+3b0d1038-cac0-5d2c-a56a-54770a53777f,"WOK IN THE CLOUDS",452a5aba-a8f3-4180-a59a-67c956d34b52,"Joseph Diaz",managers@wok-in-the-clouds.com
+20221a84-1dec-5586-9dca-917665c50c16,"Chipotle Mexican Grill",ef4427b9-d417-4936-8f0d-e8308ee83c23,"Matthew Jones",managers@chipotle-mexican-grill-18.com
+fe256fcf-2265-5b49-b13d-6aefd68f98de,"Cafe Luna",426baad2-018f-4de6-8afe-584d86a4e8bd,"Matthew Kim",managers@cafe-luna.com
+d8caf909-72cb-5c8d-873f-b19b78922289,"Oriental Chinese Restaurant",7f9838ee-97af-48c5-93ae-6a801504fb4c,"Brandon Morales",managers@oriental-chinese-restaurant.com
+26b53c61-7b9f-5c79-aa7c-8316375bf244,"Doaba Deli",1c828c6f-a062-4cf0-ad9c-45c5385c9326,"Nicholas Wright",managers@doaba-deli.com
+d7859544-84ec-5502-8811-a9150a6e5b77,"Suram Sushi & Ramen",c3ef0081-e65b-47ef-8931-a7834a9ad657,"Maria Watson",managers@suram-sushi-ramen-2.com
+303a2eeb-8d05-5139-8147-095b1b52ed93,"Pizza Palace",3fa1c836-2c0f-4606-8e56-f56f08d9b7f3,"Michael Reed",managers@pizza-palace.com
+9fe3ab4d-eba7-51d2-95ee-164af361832e,"Tavern On Reade",156218e8-5c7f-4bde-ae93-2ea706e3c9b8,"Ashley Jones",managers@tavern-on-reade.com
+a2abee52-b6c6-5b6b-9dab-81b8ae8c8002,"Paquita",32e2bb98-d610-4013-89e9-c78dda0c825b,"Ashley Campbell",managers@paquita.com
+5e1d979b-3b06-5298-a2e2-1d2e82310da3,"Flame Hibachi",cdc6cd32-c725-417c-b7c3-ebdc4867ee7c,"Sharon Bennett",managers@flame-hibachi.com
+bee23856-137d-503b-98ed-cab926d21013,"Bondi Sushi",109d506c-fbbc-4d40-a5a8-2b7dc9a3d14a,"Mary Robinson",managers@bondi-sushi.com
+31562051-b634-5563-911b-095533863255,"Guac Time Mexican Grill",f7a6e70a-65f4-46d4-8713-2482dc1ae055,"Nicholas Ward",managers@guac-time-mexican-grill.com
+5436480b-2b8e-5155-996f-6e64ca06afd8,"BONSAII Tapas & Wine Bar",9ad97b6e-73c9-4e6f-8a01-5e3c12f79719,"Samantha Flores",managers@bonsaii-tapas-wine-bar.com
+c20b9531-c00f-5a9e-bc16-f1fdf680069a,"The Mary Lane",1e72c079-d3ce-4b0c-8c86-bd2e04711ba4,"Jonathan Turner",managers@the-mary-lane.com
+71a3c834-a685-5fb0-935b-c3bed1188cd6,"Le Pain Quotidien",e3892941-e5ac-406a-9761-73fb5c303523,"Elizabeth Ruiz",managers@le-pain-quotidien-5.com
+82060810-2a26-5f8b-bf1f-2954a30230f0,"Café China",10a54474-ae1b-40bc-b190-90cedad6a1b0,"Kenneth Evans",managers@caf-china.com
+301e61b5-9f34-5bcd-a07e-6c555a6700b4,"Burgermania",7da51db2-884b-426b-ad97-9525a4124b1f,"Donna Johnson",managers@burgermania.com
+8d3f57ab-40b0-5abf-be92-3ec6b7ea8692,"Ella's Cafe Espresso & Wine Bar",c725301a-5c23-4641-a84d-ce5499305a2b,"Mary Howard",managers@ellas-cafe-espresso-wine-bar.com
+f7ee03d0-a2a6-5fde-9c6f-9afc8dcebc50,"Steak & Hoagies",7217dac5-99a3-46fc-9d33-bc0ed0588fb0,"Steven Bailey",managers@steak-hoagies.com
+bac1159e-a82e-527c-a53f-1c014955cae2,"Daily Provisions",8eb28671-0cf4-4694-8372-5cd444dc690b,"Amanda Gutierrez",managers@daily-provisions.com
+47cabb4b-684e-51c4-94d9-8f6973ecb3c2,"El Gallo Taqueria",755fd278-6349-44e5-b896-642739626374,"Kenneth Stewart",managers@el-gallo-taqueria-3.com
+175d7457-6517-55a7-b3a1-30aa612245ac,"Dunkin'",c2b96a3d-4dd0-4e6d-a5af-064e1130693a,"Patrick Price",managers@dunkin-26.com
+36b2dc19-b715-5bb1-8d61-b4a60b5882da,"Emmett's on Grove",14d02087-1c97-4fe8-ac74-539470da6e8d,"Jeffrey Campbell",managers@emmetts-on-grove.com
+930b6654-0168-5d6c-a180-9223542a4c46,"Sefton",9120453c-a003-4aab-8d2f-969eda9b6266,"Nicole Sanchez",managers@sefton.com
+b8f83679-2b52-59df-9813-8dd06d4e4850,"Chez Josephine",119849b3-66bd-44c6-8b8d-d38cdf75c3f9,"Sharon Kim",managers@chez-josephine.com
+e2ad7bbc-7597-5bf7-b7d8-865e89185cd0,"LumLum",d685de82-a144-441c-863a-5416ccac554d,"Jonathan Rivera",managers@lumlum.com
+db017436-97e3-5fff-a75d-0fb623bddc71,"Burger Joint",56491ff9-ccd2-4784-9626-2d1b8c9456c3,"William Taylor",managers@burger-joint.com
+905a09ff-2e9d-5f72-8c36-552b42e61a0f,"ALIDORO",4bd0e4fa-9ea7-4d0c-ac5d-0244605ce75c,"Jack King",managers@alidoro.com
+524d04d6-050a-54f0-828e-972bea464bc6,"House of Joy",1ed2b84c-47a9-4b7b-9334-b428a59899f6,"Eric Rogers",managers@house-of-joy.com
+7bb2c2c1-9b71-5f47-ba9d-da2b672eb15d,"Lee Lee's Baked Goods",667e1e09-412d-4869-80af-cf8871e6fca4,"Jessica Wilson",managers@lee-lees-baked-goods.com
+c137ba15-d157-5309-b23b-3338d21c9097,"Chelsea Bagel & pizzeria",3d066b14-b771-4523-8e56-319e0a3f6f67,"Amanda Rogers",managers@chelsea-bagel-pizzeria.com
+658712bd-d962-5244-994e-197e656490c0,"Tu Sabor Latino Restaurant",dfe5c9b9-51c9-4d1c-a4bc-0bd151f3ef18,"Heather Ramos",managers@tu-sabor-latino-restaurant.com
+e8706a0d-4858-5ab2-af8b-0e012dfbe0d8,"Avoca",70951f6f-ca9e-41f2-8a5a-3334f720fac6,"Kevin Johnson",managers@avoca.com
+ed887c4a-e720-5a6f-91c1-b8a4c031bd94,"Jiang's Kitchen 疆湖 - Halal Chinese Food",6552d8e9-e527-4b7b-b498-e84baea4873b,"Patricia Wilson",managers@jiangs-kitchen-halal-chinese-food.com
+8a6945e9-7118-5d01-8392-9c825f776b7e,"Sushi W - UWS",381c00ea-6407-4f80-ad70-66955fbad30a,"Rachel Davis",managers@sushi-w-uws.com
+0b7b2904-0b66-5ee4-8436-76cda5a68528,"Soho Room",179b7833-aec5-4d4a-bbee-0478af09c284,"Maria Wilson",managers@soho-room.com
+1f45482a-abe9-5f99-a9b4-cfbb81f4f99f,"Barry's East 86th",c81d3535-d5c0-428d-9222-ea8f62ff3fd3,"Jason Morris",managers@barrys-east-86th.com
+546745d8-f99d-53b6-bd47-35397d3ba957,"Smashburger",3c2b780e-7466-470f-b6cd-694c0c64d75f,"Angela Jackson",managers@smashburger.com
+c94054e6-2fad-5d17-bb3a-ac62c699c03f,"T-swirl Crepe",e12dac4f-aaf3-443d-91a3-1204621797fe,"Barbara Parker",managers@t-swirl-crepe.com
+0b88e940-7139-5043-bb6c-9ef82a73604f,"Tropical Sensation",43a33cc0-d92e-4299-8dea-858482ad8ca7,"Benjamin Ramirez",managers@tropical-sensation.com
+61cf6c2e-c144-5b29-b611-8ad9742fec67,"Xi'an Famous Foods 西安名吃 | Financial District",77bdd4f6-5196-4989-b77e-f48824ee88ab,"Patricia Carter",managers@xian-famous-foods-financial-district.com
+478fb185-3c07-552b-9214-fffcbed9a108,"The Long Pour",d77e4b1d-90d5-40ed-89ab-1ac3f241f2db,"Edward Turner",managers@the-long-pour.com
+2024d162-3b39-585d-842b-a6ef59ddc76a,"Dunkin'",03074cb3-e451-40b7-b428-c997b52c0389,"Anthony Ramirez",managers@dunkin-27.com
+afbdcaca-c6f9-551b-8b51-8b0ac665492d,"Mezcali",46593f28-932c-45e2-ae01-33d2cd59cf15,"Karen Lopez",managers@mezcali.com
+9f824a3c-5418-539d-8a3e-e154490046ed,"Anytime Street",f4e7ba41-53a8-4d7f-a346-65f44e7e9f14,"Anna Sanders",managers@anytime-street.com
+1c08f3d9-dac6-5219-a294-4a2e5bda8c93,"Gadfly Bar",d446a884-6561-4120-a9c8-1b9d986c8be7,"Nancy Martin",managers@gadfly-bar.com
+db616e43-143d-5540-8eba-04fa8ab0c682,"Maestro",e6209dbe-a934-45d2-9bfd-e21aad8487e4,"Justin Jones",managers@maestro.com
+4f20e3b9-ce1f-5b17-a633-69c6d63eec0d,"Sol Maya Restaurant",0bcef9a9-d83a-4b92-a7f6-8a588cda1f89,"Jonathan Ruiz",managers@sol-maya-restaurant.com
+63327d75-016a-54f1-8bd3-23d1e74023b1,"McDonald's",ab483578-1871-4a50-b53d-8875df1f0d09,"Anna Lee",managers@mcdonalds-3.com
+67eff10e-7f9a-5f62-8160-b6db9f197683,"Birria LES",fb4244a6-f427-41f4-8bfe-32b4df34e42a,"Katherine Brooks",managers@birria-les.com
+0fc50ed3-b42f-525d-8e0b-e1e375d5a917,"Starbucks Coffee Company",53506c14-dbc4-4bf9-90b4-f606bcb4efef,"Jessica Thompson",managers@starbucks-coffee-company-22.com
+180c19e1-9698-5257-b97d-73ecc7ffb5c6,"Zou Zou’s",20002f3a-9723-475a-9f08-b2a6fb44ee7c,"Anthony Richardson",managers@zou-zou-s.com
+d7de3e35-d09a-5eac-8f8c-1ffaf6c1dd81,"The Smith",64b53055-a1ae-4c82-9c6d-668311a1be32,"David Gonzalez",managers@the-smith-3.com
+02c7f07d-79b9-5fa8-890a-b649a1cd00f5,"Bella Union",299bcd85-41a1-44d8-bc29-1f9ec41491af,"Debra Kelly",managers@bella-union.com
+9162d6c4-5a7c-5d54-8e23-130170cfb6e4,"Gregorys Coffee",0b72cfbf-a56a-49eb-9afc-5085c177f8ac,"Samuel Thomas",managers@gregorys-coffee-5.com
+59d64aa5-5f0f-5f84-9cbb-5238e84fdc2a,"Noglu",c2f4d3b9-2fe5-459d-b423-308b6a7a8122,"Brian Foster",managers@noglu.com
+3edb2308-0e61-5d52-907b-2a4604c9ce8f,"Daddies",d0ccb55c-256b-464f-ad89-fe8228549f72,"Emma Phillips",managers@daddies.com
+876f421f-b4f9-519d-9d07-5765ba192d3b,"White Castle",b0a55ded-353e-418f-acf7-482800fb4f69,"Kevin Lewis",managers@white-castle.com
+7daf3cbb-7b60-5f58-b112-e213d154c2bd,"Rothschild TLV",60996edc-2d01-4b80-a823-f9b0508b50eb,"Mary Torres",managers@rothschild-tlv.com
+e8d8677f-271a-5e94-985d-d9281df945c3,"ZAZA",c70adee4-f056-443f-b477-4a1ae24e9447,"Timothy Martin",managers@zaza.com
+b587ba08-b670-5f58-b42a-149af58980d3,"Subway",e64313ac-9798-41c3-875d-68f415d14d29,"Shirley Allen",managers@subway-5.com
+b8b3ab3d-0fcf-5128-a489-277f263943e5,"Rice To Riches",034a805e-1b4c-4ac4-bf49-128b380c0ef3,"Scott Miller",managers@rice-to-riches.com
+ad176986-12cf-55d8-a58c-def1a20e120a,"Momoya SoHo",99372faf-21ea-4bae-88a5-e7acd495722d,"Elizabeth Green",managers@momoya-soho.com
+702c3ef8-4d68-55a8-8f6c-b125419cd53d,"Le Dive",77637970-0e34-4e33-a5a7-99f7416629c4,"Cynthia Murphy",managers@le-dive.com
+5b1977e8-62cb-57f2-85a0-174d17f02a9c,"Charlotte Cafe",feac5c45-b42b-42b1-b128-fec4b4a957d5,"Raymond White",managers@charlotte-cafe.com
+647a0f9d-1dee-53d7-a465-8ed1bbdc6918,"The Spotted Dog",5fc7cda8-8e1f-4378-8f47-e71e71871f94,"Emily Miller",managers@the-spotted-dog.com
+307aed62-9432-5249-8eaa-ffcce4ca2796,"Bear Donut",4731b2da-9a2c-471a-8e57-ff6771d62d4a,"Thomas Roberts",managers@bear-donut.com
+b7aa7a81-a882-5d1d-b4c7-cd23e4b4bf60,"{petite} maman",571bf928-6df5-4e3d-951c-e77665e49096,"Michelle Hughes",managers@petite-maman.com
+f0809977-6a69-5c1f-872f-b5280154d7cf,"One Two Thai",ca865605-4e1c-4d55-b5b7-178e4574fabe,"Raymond Patel",managers@one-two-thai.com
+e8cb5cfb-f330-5807-a47f-6166d0b3b755,"Raj's Indian Kitchen FiDi",c5fb1b5a-2432-4a98-8513-d170b6c77f98,"Angela Green",managers@rajs-indian-kitchen-fidi.com
+1cd09c56-4dda-5e30-a3b5-89c12b2af608,"El Linaje",7814551e-4298-4252-a151-7cd644fd51e8,"Brian Brooks",managers@el-linaje.com
+5742ad04-2ed6-52b4-b229-a6a3d61a20b2,"Chick-fil-A",595b48f5-8e52-474c-87f4-3255d724d05f,"Maria Ortiz",managers@chick-fil-a-4.com
+ee9a2a41-6cff-5e80-8968-4c38cc2f1548,"Playa Bowls",a9be74dc-f6e2-42c9-b4d8-cb26a94f08e3,"Carol Howard",managers@playa-bowls.com
+8e97145b-b414-5b66-87cd-e5941c43cdad,"Homemade Taqueria Columbus",3d2130bc-3f18-401b-a07c-14d3999d2c3a,"Justin Diaz",managers@homemade-taqueria-columbus.com
+abdfe0c9-bfd7-5102-81b5-3720a558b82e,"Hawa Smoothies & Bubble Tea",1740ba31-4a0e-4d61-bede-f2157675f8ba,"Samantha Campbell",managers@hawa-smoothies-bubble-tea-3.com
+0e0a0980-57df-573d-9a18-3542fb9330a7,"Oxford Cafe",999c3af5-d95a-4f15-84c8-2439f319d2ce,"Nancy Chavez",managers@oxford-cafe.com
+f9a52b5f-5a8d-58bf-b7eb-c55dd5f09cb1,"The Naked Pig",c38f90dc-a353-44e5-b0dc-60b5657a24f8,"Jacob Ramos",managers@the-naked-pig.com
+f8f8528c-6e12-50d8-9cae-c0176e02b820,"Popeyes Louisiana Kitchen",8df13676-ca0f-430f-955a-cbe5de3e6aee,"Sharon Foster",managers@popeyes-louisiana-kitchen-4.com
+2e9956f9-ff36-57fb-ad6f-4cee1db53e23,"Lissette Restaurant",8ebd723d-a943-4983-ac16-c1e967056e95,"Stephen Lee",managers@lissette-restaurant.com
+91a665ac-c70e-5e3d-9b97-facf0fb04353,"La Marchande",01e7a8ae-e141-4f8a-ae7c-372efb3bb779,"Carolyn Nguyen",managers@la-marchande.com
+5762f5cb-8e54-5b1a-bbf5-b04c36bd77ae,"Super Nice Coffee and Bakery",af513514-d88f-4694-aa4d-e5c17278e660,"Benjamin Perez",managers@super-nice-coffee-and-bakery.com
+47f2ad3e-5c06-50b3-8451-23ec4b27d415,"McDonald's",c7a93f35-64e8-4453-83b0-2c345a584a0d,"Samuel Brooks",managers@mcdonalds-4.com
+afbbb9db-9a0f-57c7-be55-9a24c443e51f,"Gai Chicken & Rice",de4091ef-0b1b-4810-a8a8-5149cea56cf6,"Jack Walker",managers@gai-chicken-rice.com
+268c945e-4ed3-5897-a7ac-9da736b7022d,"Genki Omakase | Sushi • Japanese",fe1ea497-b357-491e-b2f4-1c93051d0584,"Robert Reyes",managers@genki-omakase-sushi-japanese.com
+4425d6b2-95d6-5e36-95fc-f1f43671106a,"Bagel Pub",21ecb09e-ff84-41be-a6cc-3de3aa8b5bfb,"Joseph Davis",managers@bagel-pub.com
+16a8a471-0e3e-526d-bcf4-bab5415e9ad4,"Blank Street",00959e4a-1862-48f4-8aac-af3ccdccf1b4,"Margaret Myers",managers@blank-street.com
+48cd8151-faed-5fdd-94e1-87075d37f870,"Blank Street",f10a4de1-acd3-4199-8ccb-d874d395f304,"Anna Turner",managers@blank-street-2.com
+6a156e4d-f843-5ba7-b2f9-d39553356d8e,"Steam",41725238-bb28-407e-8ec6-68d4bf729cc1,"Patrick Morales",managers@steam.com
+5cab3f12-1af3-5db6-8059-7a5e5ccfd272,"Il Monello",a3d880f6-7ad1-41ad-8bae-55ef5b3d0820,"Edward Johnson",managers@il-monello.com
+22c2cc57-5e15-5e0f-b9fa-252326930602,"J's Kitchen New York",886a0fa0-3d03-466a-b4a1-8ebfae023318,"Amanda Baker",managers@js-kitchen-new-york.com
+20bc8c71-130d-5d47-9ae8-7550510358a7,"Taco Bell Cantina",be3fb1a4-e392-4b31-ae17-14119ca0e62f,"Stephen Martin",managers@taco-bell-cantina.com
+3bc13843-3c6b-5024-85ca-00671111ebcd,"ENLY",44fcec39-7d88-4e37-a27a-ee80ae54e1c8,"Dorothy Howard",managers@enly.com
+3a97287e-1d0a-571b-b6fb-25390d797fb9,"Great Hong Kong",7a005a50-f74e-4545-9daf-d2b1d097a3ee,"Benjamin Watson",managers@great-hong-kong.com
+de7473df-720d-562f-b004-d4e97a999dc3,"Krunchy Cueritos",1427ab27-0f14-4e38-9103-972a07a9ac47,"Sarah Price",managers@krunchy-cueritos.com
+43563fde-2da4-52d9-b94e-a787b838b9ac,"Mochi Dolci",0b314841-2829-4a23-a594-0bbedd17d321,"Rebecca Hall",managers@mochi-dolci.com
+d0dddaa7-8391-5b00-8f13-b87152bef44c,"Bird In Hand",e9be18ab-d7da-44a2-8e0b-bc723fbd3a94,"Anthony James",managers@bird-in-hand.com
+20640af2-dff9-55b7-8619-2dcb88ab091b,"Garden Cafe",5a3f0826-1bd2-4af6-975b-979b50a67e8b,"Donna Howard",managers@garden-cafe.com
+f5e9f5fc-7162-5bb9-a7d7-6285409cd3d5,"Crispiano",563b4f04-edaf-4e8f-87e6-297573dc913e,"Mark Rivera",managers@crispiano.com
+5c11b253-8be5-55d4-b3d3-b84083305c3e,"Domino's Pizza",6a0f5410-ef56-40bf-b710-748e74c3b9e6,"Samuel Reyes",managers@dominos-pizza-5.com
+469f7207-1b09-5de0-bce0-0ca52c49a337,"Fellini Coffee Chelsea",e6221d15-89c2-4b8e-a4b2-ec0bbd81750e,"Charles Collins",managers@fellini-coffee-chelsea.com
+37e97769-fba7-5bbf-ac81-847647b498f5,"Blank Street",6306b1c7-5649-4468-bebf-2e61d6302368,"Jeffrey Williams",managers@blank-street-3.com
+9721ed82-5015-5725-9682-0d8493ec0694,"Stage Star Deli",61564ac3-d740-4513-8730-fec914373567,"Kevin Richardson",managers@stage-star-deli.com
+8ccffaec-6e65-59a0-9126-675e2a1360d7,"Koré Coffee",94ac4383-a6c2-45e7-acbd-508404e32654,"Timothy Parker",managers@kor-coffee.com
+bfebbd29-3156-592b-bb1f-569080cf98e4,"Tada",1ed2b872-5ec9-48a4-96d5-35bec4be26a0,"Charles Morales",managers@tada.com
+84b58033-7517-5772-bd00-ee853a96a410,"West New Malaysia",e15cf2c3-868b-4a12-97d2-26ad3319b62c,"Ronald Peterson",managers@west-new-malaysia.com
+ce075e81-c292-517e-a4dc-40f250ede264,"Arthur's Tavern",132c62dc-65f5-481a-bf8c-f57deeb8e670,"Kenneth Diaz",managers@arthurs-tavern.com
+9f89f67e-82b9-5688-b580-c3eca18a1cad,"Just Salad",1aa5812a-994c-444d-ad24-9a2e39383f70,"Joshua Smith",managers@just-salad-4.com
+d7151a73-6994-5f33-99d7-0efec0e29e0c,"Cazuela Mexicana",7bae2e8e-a27b-4f90-a3e4-2570785cda17,"Sandra Collins",managers@cazuela-mexicana.com
+246df7ee-26c2-51af-9451-bc9fbc89d8a0,"MayRee",1f4503c3-31bd-449b-b3d5-c3f85608a1b1,"Jacob Davis",managers@mayree.com
+39ae64dd-63b5-5772-9303-210d058130a9,"Modern Bread and Bagel",1e4a7681-4eb0-4e8f-a768-aacb21f1c1b0,"Lisa Cook",managers@modern-bread-and-bagel-2.com
+9dc30471-0654-5a2f-91a8-354e17525019,"Lysée",ad5a803d-b8fb-47d9-81b2-be68ade1d8f5,"Edward Brooks",managers@lys-e.com
+7ee678b4-a1b0-539c-b601-c6ef3b329630,"Kyuramen - Times Square",235a6962-23b6-42dc-a87c-950bfd91b6e4,"Paul Young",managers@kyuramen-times-square.com
+c8aea6c3-c5be-5ac4-b414-c6eb7d078e48,"Trudy's Ice Cream",ab4e1b67-62cd-4e08-a5b3-703a5af39ba4,"Gary Collins",managers@trudys-ice-cream.com
+fe04f5d5-421d-554d-a2db-a1d45115f9be,"Blank Street",3fad9e17-b58b-4322-ba85-9a04790bf42f,"David Ross",managers@blank-street-4.com
+9f5097aa-23b0-5ec2-a647-09915301d83f,"Blank Street",7013349c-9b87-4aeb-8076-650783539ac6,"Melissa Edwards",managers@blank-street-5.com
+7b81ca53-85e8-5759-87fb-c8347655c65a,"Dunkin'",a2473319-6a86-49f2-8af3-f98c25a8e74a,"Patricia Gray",managers@dunkin-28.com
+8b5dbc81-6df7-5fb4-97e5-8743fbd520b7,"Alamo Drafthouse Cinema Lower Manhattan",f490864f-c66c-4202-8449-5ae242279e91,"Brandon Gutierrez",managers@alamo-drafthouse-cinema-lower-manhattan.com
+664462d0-3fa6-517c-9605-ef93165e46b6,"Nan Xiang Xiao Long Bao",618cd2a2-ae55-4655-b586-b4a3ffe939f9,"Carolyn Kelly",managers@nan-xiang-xiao-long-bao.com
+26283109-9e73-5bd1-a916-85443dced3a7,"Amore Pizza Café",fc3a5a53-b545-4e5f-bec5-a0f2f9b0c71c,"Nicole White",managers@amore-pizza-caf.com
+64e1670d-069b-58c0-9ef1-b664cd8cb839,"Matto Espresso",6b8c00d2-ca27-4db3-b072-1de9a7913fa1,"Shirley Green",managers@matto-espresso.com
+12fbb2b5-56da-5959-afb9-7a59fe09a54c,"Jin Ramen Hamilton Heights",5a81f0e7-0c51-4264-a6c2-5fd512ba323b,"Jonathan Sanchez",managers@jin-ramen-hamilton-heights.com
+3c28f646-513b-5ab9-8403-b1ae89ecd0b6,"maman",4b2a1df9-44f7-43da-87ce-bb7cdb8fb8ee,"Debra Hill",managers@maman-2.com
+f7186027-7f06-5580-95a6-bdc8b311c557,"Milo Coffee Shop",ff0265a9-35ee-4c76-bed6-b779c13a14de,"Karen Thompson",managers@milo-coffee-shop.com
+9ec4ba7e-fe51-5a7c-b3b7-3f03f93eb568,"Juice Vitality",4e735dc5-c19f-4f3d-8866-93a5558c1c91,"Sarah Hernandez",managers@juice-vitality.com
+a2d663de-d195-5e12-a0e5-3c5a449dafa7,"Maison Close Restaurant",39a54c7b-2300-40e4-af1c-3663094a0181,"Amy Wood",managers@maison-close-restaurant.com
+2f181ecf-acc8-5721-a7b9-5bfff89a6a0a,"Pico De Gallo Bar & Kitchen",13d782bf-cd38-4dc2-adf9-a34590eff7c2,"Tyler Peterson",managers@pico-de-gallo-bar-kitchen.com
+ebaf98f8-95d6-5674-b4ee-1221f3c26eee,"Burger & Shake Co.",b554ba0d-a6b5-431a-bcc5-6108687a34ca,"Jennifer Cook",managers@burger-shake-co.com
+6435e255-7c93-581a-9fd7-8eed9bb155e3,"Cafe Grumpy",e9559448-da01-4549-90ac-9a8e5c53d144,"Benjamin Mitchell",managers@cafe-grumpy.com
+98dc3139-e0fc-5939-ae3d-58a26b184881,"Domino's Pizza",88521816-a1ad-4d1e-9627-8df1d5c7601e,"Benjamin Howard",managers@dominos-pizza-6.com
+13a499d0-134c-5ed1-9068-5a4594986c34,"Cocina Del Sur",cc46794f-3e4f-4b6b-932f-da73225dabd8,"Deborah Parker",managers@cocina-del-sur.com
+d8412fcf-6f92-57eb-95bd-b6c1cd5436ee,"Hang Lee",0c6b0c86-a4d2-47ab-aa06-7d34d115faa3,"Kenneth Patel",managers@hang-lee.com
+420c823a-27f9-5a65-968b-d36a15cef005,"Taco Bell",4eaa2353-b121-4267-9573-c1a75424de5b,"Rebecca Morales",managers@taco-bell-3.com
+f9f25233-7ad1-5ffb-b28d-41f3c34c126f,"Mughlai Indian Cuisine",09db1d8a-c241-4ebc-9180-7986e9706296,"Kimberly Rogers",managers@mughlai-indian-cuisine.com
+d911d69a-aa42-53c3-8611-2ac59329d612,"Van Leeuwen Ice Cream",51aea918-fabd-4af5-b2ab-6a541039a3f3,"Karen Davis",managers@van-leeuwen-ice-cream-4.com
+654bd07f-bf78-5a16-8fb9-fd3c6131298b,"Vanilla Gorilla Cafe",c9433153-7afc-4b38-a087-72bbd20c610a,"Anthony Morales",managers@vanilla-gorilla-cafe.com
+20778074-f77e-59b7-9bb2-23ab72b6d64f,"The Dickens",37bbf94b-2041-430c-9b6f-9a644a121c39,"Karen Lewis",managers@the-dickens.com
+4689cbf6-1f56-5623-bdf6-9a762e687bcb,"5 Estrellas Bakery & Cafe",c30e2367-d074-4646-bfcf-d1fa0c782be8,"Jeffrey Martin",managers@5-estrellas-bakery-cafe.com
+05e0e001-8b22-5f4a-8bdb-2009516282f5,"Ainslie Bowery",d02e0a27-6ab5-4765-bc53-2e349ac86be7,"Brenda Martinez",managers@ainslie-bowery.com
+668ad623-cb5d-506b-b711-5ff278fd6d7c,"Sushi & Co-Midtown",7d239e1a-2763-44ae-a501-6d621ecc16e2,"Dorothy Morris",managers@sushi-co-midtown.com
+1a4d6ff3-8972-515a-a0a4-9345a8838e89,"Bangrak - Thai Cuisine",c886b326-6469-4b00-94b5-eac225e4434c,"Susan Brown",managers@bangrak-thai-cuisine.com
+139ac8a2-c3dc-59bf-ac99-1d3e7b8c8806,"Subway",da367bec-a67e-4049-97fa-c6b6d89e6367,"Eric Alvarez",managers@subway-6.com
+82649cc5-e137-5727-9d02-aa1403f0d62e,"BB Juice Bar Empanadas",3bcbed2d-7439-430d-89f8-3deebedce315,"George Baker",managers@bb-juice-bar-empanadas.com
+72e66621-9108-5381-acf4-3a4bc29c302c,"Taco Bell",fdb79a68-14b1-4b5a-8e3e-01debac42b66,"Dorothy Hughes",managers@taco-bell-4.com
+c5a9630d-e2ae-51e9-8048-acf925ef69c2,"Do Not Disturb",f8b2fc7f-d253-49fe-b3f8-e4552f6b6d4a,"Dennis Williams",managers@do-not-disturb.com
+4ff0ca40-7e1f-5630-b9e8-667f39ee4c7f,"Cellini Italian Restaurant in Midtown Manhattan",9e2b4e90-66c0-44d5-8726-b1600b0bca34,"Charles Ortiz",managers@cellini-italian-restaurant-in-midtown-manhattan.com
+5a28f78f-cc88-56c0-8110-f6e393eb9317,"All'Antico Vinaio",ccfa4ba2-4ef3-455a-b25c-ecc68ba54663,"Sarah Hughes",managers@allantico-vinaio.com
+b2735145-2f62-5f97-aa77-0e723ffbf0ac,"Mikado",582e8344-b1c6-43c1-873a-e6bc15beffbf,"Michael Sanchez",managers@mikado.com
+331b6983-eece-547d-8041-10ae73535dc9,"Sweet Chick",9afa8ff4-9fd7-4020-84f8-2628ca4a1bc2,"Amanda Garcia",managers@sweet-chick.com
+da5e6d56-51ad-515d-98b3-5e4805640248,"Arthur and Sons NY Italian",95cc02db-1a87-41ae-8805-aa7fe9ed5230,"Kimberly Morgan",managers@arthur-and-sons-ny-italian.com
+db8a14c0-310d-5354-aeb4-5a718941924e,"TBar",234a5a9f-81e4-41f8-abfc-cb2c055e63d9,"Anthony Hill",managers@tbar.com
+ac9a3443-db2a-5a0f-afb2-c6cf9f5845f2,"314 - pizza,pasta&cocktailbar",19b0f081-3668-4c5e-9cbc-990580b5c664,"Sharon Stewart",managers@314-pizza-pasta-cocktailbar.com
+b632e3b5-3253-5a8b-97a1-e250016f45a3,"Pranakhon",f20c5729-1c9f-49f7-b9ed-ca8ab9c14ccf,"Thomas Thomas",managers@pranakhon.com
+36c5ae7b-750e-5593-aec1-2c2499403db5,"Aubi & Ramsa",183e70f8-b05e-4c43-933f-9aefaf19f2b2,"Donna Jackson",managers@aubi-ramsa.com
+779953f3-b720-5987-8582-a7a5da65a1cd,"Picky Barista",7c373c1b-a3e1-44c8-9e62-e424d51e3cb4,"Jason Ramirez",managers@picky-barista.com
+8fe435db-410e-5e59-b865-753d3d3fd1dd,"AURA Tapas & Cocktail Bar",b252403b-acb0-444b-aff2-8db338f38fbc,"Donna Perez",managers@aura-tapas-cocktail-bar.com
+c65dfd58-fc56-5b65-a47b-714a0ef67407,"Cafe Bloom",1b3af9cd-fdd3-4c7f-8849-25edd8f0307e,"Timothy Parker",managers@cafe-bloom.com
+cd16db40-7d90-572c-940d-d0ad15699d05,"Shake Shack Hudson Yards",db1cab1f-6bd7-4556-ab03-dadf9dc97e8f,"David Thompson",managers@shake-shack-hudson-yards.com
+691bbca9-67d8-54f2-ae5a-97002404774e,"Le Cafe Coffee",9c35606a-9e4c-434c-ad0c-fcbdb082126e,"Timothy Smith",managers@le-cafe-coffee-2.com
+bfec6354-c6ef-5f30-869a-907b6008f978,"Bagel to Sandwich",6ba29376-dee9-4cbc-b95f-358de273491b,"Nicole Myers",managers@bagel-to-sandwich.com
+319d9b52-1c92-59db-9372-7e733a4a7d60,"Little Italy pizza",31571466-494a-4525-8a57-cbf7cf86a995,"Sandra Lee",managers@little-italy-pizza-2.com
+b2b7f942-40fe-5407-818c-d3528ad1e756,"Eataly Caffè - Rockefeller Center",b0c720ac-1d28-4835-829f-d1971158814c,"Margaret Hall",managers@eataly-caff-rockefeller-center.com
+8f368161-59f1-595d-8c83-ae5487e5172d,"Andy's Restaurant",875abf28-13cd-41a1-8f50-f52eacba89bb,"Barbara Ramirez",managers@andys-restaurant.com
+bec653e7-f1e1-5f8d-a944-3edf45c829b8,"Panera Bread",82b490e5-7e14-4f4d-877b-1a65731f0c5a,"Heather Ramos",managers@panera-bread.com
+6f2ea213-b82a-5bee-90b0-da4b32735fae,"Rigor Hill Market",377b4f4c-2d27-4343-a9de-385e42f139b3,"Kathleen Torres",managers@rigor-hill-market.com
+14b9dc3c-dd40-5ae9-99e0-69c7e9e8be6e,"7th Street Burger Upper West Side",25073b77-d4f7-4ab6-84f1-fdbd58b14700,"Angela Kelly",managers@7th-street-burger-upper-west-side.com
+abe5b185-4736-5088-ba95-da764230815a,"Scarr's Pizza",b84e9697-39ee-4ef6-9f71-70f518b713eb,"Jerry Flores",managers@scarrs-pizza.com
+f92b25b5-7e0d-5ca1-92a1-5ad13649ee56,"Green Mandala",c14d2e00-b0e1-4182-b944-f2d0c0aaf9b0,"Richard Peterson",managers@green-mandala.com
+b83ea62e-aea3-5a9d-9370-a39fd29496bb,"Half Moon",39a52863-5de7-4268-8280-43bfc1a6da73,"Brenda King",managers@half-moon.com
+ab3ff55b-71da-5958-b04a-7cc45a3708d6,"Karakatta ramen",1847be3e-426e-4fb7-b232-3b2d08763af7,"Brian Ruiz",managers@karakatta-ramen.com
+6c232fc2-7ddf-5d6e-a09f-b12a4aa01785,"Shake Shack Lower East Side",040d903a-6681-4601-b8ad-55e1700814b2,"Stephanie Adams",managers@shake-shack-lower-east-side.com
+71b7ec5b-1e4e-5926-ba3b-0bc1f401bfb8,"Treasure Club",a9331b3e-3e82-41e4-b956-ff17c0127e89,"Elizabeth Williams",managers@treasure-club.com
+cf2baf00-d023-5b6a-9c9f-baa643584ef8,"Traviata Pizza II",0e8a0141-931d-4167-84af-e18561a2be08,"Lisa Hernandez",managers@traviata-pizza-ii.com
+715219c0-f4bb-5716-845d-3262f00dc37b,"East Season Restaurant",67ac1903-fafd-45b1-98a6-e2a0bece8197,"Jeffrey James",managers@east-season-restaurant.com
+f910f959-6a65-53c0-a4ca-e50833374b47,"Bedford Studio",6f207484-b850-483d-88a2-3672b5bc76ae,"Angela Myers",managers@bedford-studio.com
+49d3d31d-f02d-5e9e-9b57-6c8fcc78c243,"Dunkin'",6747fd66-c8c6-4df9-9d7a-7c3618808462,"Heather Gomez",managers@dunkin-29.com
+6e5fe3ba-7d08-5fc2-bc4d-c0a1718b600b,"Chalong Southern Thai",86fc1067-5cde-4fd8-b0f3-23fcbb722be1,"Debra Allen",managers@chalong-southern-thai.com
+c294a3b2-fc6f-5575-b721-9cf39dacbd43,"Koji Chicken",865605ab-d678-4625-a61c-78e10356ccbb,"Amanda Martinez",managers@koji-chicken.com
+c0a9cc54-220d-55ad-873b-aed3a4646907,"Phoshime",8b718dbf-c67d-475c-af2f-1499458e84dd,"Michelle Garcia",managers@phoshime.com
+f1deff46-3b22-5411-b832-451206b2328b,"Pizza Hut",96affbf9-83d4-4da4-81aa-eb7e729a2d5f,"Emma Ruiz",managers@pizza-hut.com
+7a7d21fd-5521-5719-92dd-cbfe40df59ab,"Dim Sum Palace",63834a1a-2f97-4bd7-bdb8-88cb128d7bb2,"Sandra Allen",managers@dim-sum-palace-2.com
+790be5d1-dd82-5be0-bf01-8bc7361c6c64,"M&D Cafe",d7b41d89-1697-4cdf-9421-677e28007b4b,"Kimberly Harris",managers@m-d-cafe.com
+3846dc2f-50d4-55df-bf92-fc4eacc65acc,"Wondee Siam",ab758aea-2c68-4346-bfbd-0665fc1c9fd5,"Debra Adams",managers@wondee-siam.com
+5a41b48f-e19f-5b45-92fb-4e6faebea927,"Tompkins Square Bagels | Union Square Bagel Shop",5941308b-48de-491e-8b3a-448614acd084,"William Carter",managers@tompkins-square-bagels-union-square-bagel-shop.com
+dac0e3fe-407f-5bd8-8685-e52ec8a54682,"Five Iron Golf",de00e05a-e1c6-47d9-a2fc-649a9e38b85b,"Janet Ortiz",managers@five-iron-golf.com
+409638ab-3576-5158-897d-2f2d74900a51,"Wonder Upper West Side",11979222-b45a-4c9a-b3e6-52e04942803b,"Frank Davis",managers@wonder-upper-west-side.com
+2c37056e-8cac-5fa2-8583-2dfe42380cda,"Legacy Bar & Grill",f6152d22-14f6-49bd-9b09-6097530c5247,"Jason Ruiz",managers@legacy-bar-grill.com
+3d646740-a7ba-5b9b-834f-25fd1bc495ae,"Tabata Ramen",8c23d1c2-f4e5-47e2-bf06-e893ddbee104,"Angela Lewis",managers@tabata-ramen.com
+663d3920-c8b9-5e6a-9f01-0b9e55d5d564,"LTD Pizza and Bar",38541000-af62-4969-9c16-47129822654c,"Samantha Evans",managers@ltd-pizza-and-bar.com
+a7e10d03-d3ac-5866-a9ba-8d35706806e4,"Effy's Cafe",0ed1419b-e707-4810-b0b4-29aeb9838edf,"Rebecca Bailey",managers@effys-cafe.com
+b54f1014-6e0c-5dfb-a6e7-6cc1c013097e,"JOE & THE JUICE",395ac954-2743-47f3-a928-120d9ea125ed,"Melissa Edwards",managers@joe-the-juice-6.com
+87b33ea1-d16c-55ae-acac-48891e9afacc,"Cafe Paradiso",113d29ce-ca96-4984-ba66-f8539f78c368,"Donald Jones",managers@cafe-paradiso.com
+0644d134-d2ab-500f-a312-6332cdc84b54,"Don Ceviche",489551c0-df17-4f3c-9a7f-b6e2848b57c3,"Gregory Peterson",managers@don-ceviche.com
+c6828f0f-c9c6-5fb0-b83b-b988789d4183,"Red House",9ef12ce0-4bf5-437f-8824-79d3bba063c4,"George Hughes",managers@red-house.com
+1263ab72-419d-5337-995a-59700a88bbe3,"La Cocina de Mama",4e7c3f76-9899-48df-a9c4-0f62444ffcff,"Debra Brown",managers@la-cocina-de-mama.com
+feae1c76-d0b2-5a35-abb5-c73ead6cd8e0,"Gelatoville Gelataria & Coffee",efcea324-79cf-4b99-9e96-b3e7552628ab,"Heather Martin",managers@gelatoville-gelataria-coffee.com
+b1517809-db62-554f-9ca5-c9f5be0d0687,"Kanyakumari",24135ead-89fb-489a-aeaf-488c7c4636e8,"Sarah Richardson",managers@kanyakumari.com
+1f50bfaf-a711-504f-9f9b-7e74a0a923cd,"Panera Bread",b5194f06-dbce-4690-88bf-1b3261dc13bd,"Dorothy Nelson",managers@panera-bread-2.com
+54543bd7-b227-5333-830e-e7f81e671259,"LaVista Pizza (10th Ave)",5458128b-4d49-41b2-925e-8970e6b078de,"Brandon Wood",managers@lavista-pizza-10th-ave.com
+507edff6-d43e-516a-9e72-2485f1a1e460,"all & sundry",f0187969-9c14-4596-ae24-c14420998d36,"Daniel Lopez",managers@all-sundry.com
+73356432-428d-5154-8133-672e44442f3e,"Matto Espresso",0d2b4f99-91d8-4821-8745-9b02c8a9320a,"Charles Phillips",managers@matto-espresso-2.com
+89dcdf77-779f-50a9-8782-a92174a43fdd,"Serafina Madison 38th (Midtown)",21663cb2-56ac-4643-99c3-102c23594827,"Anthony Jackson",managers@serafina-madison-38th-midtown.com
+42be7269-cc0b-5902-b697-92baf2f52d0d,"Imm Thai NYC",cb3fa1de-c5d5-4f8a-aa88-9f6b147cb8d4,"Helen Morris",managers@imm-thai-nyc.com
+37b680cd-29a6-531c-b917-f09c56d93858,"Playa Bowls",4abbc128-be75-49ae-8c05-7ebeb0d7a28f,"Kathleen Price",managers@playa-bowls-2.com
+cbff426b-8113-530a-9312-994658d9d3b3,"Häagen-Dazs",a2733a4a-9ee7-48c0-8651-ead43ffb1647,"Brandon Howard",managers@h-agen-dazs-2.com
+63af6d2c-e3b7-5dd8-b566-0ea4011f2f51,"7th Street Burger",d285744f-d789-4868-9c36-ab0ed7579e7c,"Emily Reyes",managers@7th-street-burger.com
+a287196b-720d-5a02-9574-c926511274b5,"Subway",a95d2d03-0ea8-4a2f-9337-5c2e02c835f9,"Timothy Martinez",managers@subway-7.com
+073fa1af-ee5b-58f6-9822-d1a1ffad694e,"Popup Bagels",863bf27f-d509-46ad-8c66-67f676caa1b8,"Katherine Evans",managers@popup-bagels.com
+415791dd-fc55-5b13-aa38-e0ac84891fc6,"Cantina Cubana",7d154daa-32c2-4897-9bc8-beb98cb6f545,"Emily Jimenez",managers@cantina-cubana.com
+584026fc-f1ac-53f3-a767-80a403742e94,"Matchaful",c069eb4a-7473-48d5-baa7-3f81acf52a4b,"Jessica Jones",managers@matchaful.com
+fa6063f1-d274-5429-9874-560d64ae48af,"Paddy Reilly's Music Bar",4d53e979-524c-40cb-9581-d1686a9e99d4,"Elizabeth Reyes",managers@paddy-reillys-music-bar.com
+6d20b6a7-dcdc-5d40-a7d6-0d8f2b7f7038,"El Nuevo Rincon Del Sabor",88d0d6d0-9524-496f-ab60-070b1c545aec,"Mark Castillo",managers@el-nuevo-rincon-del-sabor.com
+73535392-2e96-5f59-baa7-497bb73b6b41,"iPizzaNY",d84e297c-a844-4cce-9f1b-dc692f800bde,"Michelle Parker",managers@ipizzany.com
+adaedf33-5597-5d82-9bd2-c9df535cb674,"Gregorys Coffee",49997737-18d3-4bd9-ac97-1dd22ec4c031,"Carolyn Richardson",managers@gregorys-coffee-6.com
+f291ec1a-3b20-5e7b-927d-228ebd29dc7c,"Song' E Napule",42aff1cc-c6be-4485-8955-f393bf9a5bd5,"Susan Martinez",managers@song-e-napule.com
+daab9be7-8a53-51c0-9700-80a9b9092482,"Steak Frites Bistro",e5c55150-e4f3-4004-9125-b0f08fd906dd,"Lisa Ward",managers@steak-frites-bistro.com
+a9d1cce2-b453-5ed2-9b7d-fd132b83cc99,"Moono",74100c0d-25fe-427e-97dd-b83cf3ef3282,"Eric Alvarez",managers@moono.com
+d3b69db2-85c5-50b7-8b3e-b512175a11f6,"Senza Gluten by Jemiko - 100% Gluten Free Restaurant",0a94bcb0-93d0-468c-9844-0b1480cc0431,"Andrew Robinson",managers@senza-gluten-by-jemiko-100-gluten-free-restaurant.com
+6d53920d-55f2-5b7c-81fc-7c9f84713648,"Holydog Pilates and Cafe",294d5a3c-3fb5-4a26-81f3-9638abbabffe,"Patrick Bennett",managers@holydog-pilates-and-cafe.com
+4b26d988-1b74-573e-b572-eb0377ec86db,"Chick-fil-A",cc9153e0-913a-4a17-86ff-00de09df6e90,"Donna Taylor",managers@chick-fil-a-5.com
+04a11996-3134-55a8-b80f-1b103bb1267a,"Kong Sihk Tong",5d76c426-603b-4fc0-8e4f-ec8ffe006f3f,"Amanda Martin",managers@kong-sihk-tong.com
+dbb43660-ed76-549c-b602-7f1a093e17f3,"Mamazul Mexican Grill",f1dce729-093e-4a82-b66c-6598b29d268c,"Joshua Reed",managers@mamazul-mexican-grill.com
+aa0770b8-3172-5a75-9407-c8a3e38a5fc5,"Sogno Toscano Cafe´& Wine Bar",cd4d4fc7-f265-4fd0-b91b-8903950f6882,"Kenneth Parker",managers@sogno-toscano-cafe-wine-bar.com
+f4f60652-6118-5e49-b8d0-5ae70659ee71,"Jade Garden",53773e38-1028-4237-9cbf-dffb2f0fa7cd,"Alexander Kelly",managers@jade-garden.com
+e2731a39-052d-577d-abf0-3868ebc404ae,"Baya Bar",1b606863-4977-41ad-9b6b-e47ceda73d89,"Nancy Morgan",managers@baya-bar.com
+83e9c32d-a37f-5383-9271-ad1f7bb1c7f4,"Florentin",2053c980-5e07-43f4-bf06-989d246ee16c,"Laura Nguyen",managers@florentin.com
+9610d9bb-49e3-5cd5-ae38-d267afc6e8c1,"I LOVE BIBIMBAP",ef48210e-a576-462b-a30b-be1ceebb11fc,"Susan Gonzalez",managers@i-love-bibimbap.com
+ec0c61e6-f087-5cbd-8b2b-d8525ba227ad,"Marumi",930e2fec-127b-4fcc-9f5e-060e9733ff99,"Scott Gonzalez",managers@marumi.com
+23ff419d-6bb5-51d5-a5e3-a4d4508cfef1,"Thai Food Near Me",468571f8-8747-471f-8fd6-23150f3847f7,"Dorothy Phillips",managers@thai-food-near-me.com
+2cd87e50-766f-5511-bf1c-c13bdb7452e6,"A-Jiao",7ebd32b3-48b3-47cb-92e0-f9e1b80bd0dc,"Margaret Mitchell",managers@a-jiao.com
+8345d62b-7d35-5a4e-b1fa-02c2a7671417,"Wolf forest cafe",c33b8385-6b3b-4708-8159-8bff0901128f,"Donald Nelson",managers@wolf-forest-cafe.com
+b59aa817-cae9-5c2c-bb59-e3f1e273bf54,"Maraca NYC",567b9989-3b8c-4925-b18b-2ebd6fa3c42d,"Patricia Morris",managers@maraca-nyc.com
+ce5f3f95-83c0-5cb7-9261-71fef8862bae,"Kolkata Chai Co - Nolita",bbc607d1-ff61-4acb-9cee-44e6532ad5e7,"Donald Wright",managers@kolkata-chai-co-nolita.com
+0dd2ed1f-138e-59a8-af3f-e12639bff758,"LaVista Pizza (2nd Ave)",e8192457-671a-408b-9caa-1f11717bd770,"Christine Murphy",managers@lavista-pizza-2nd-ave.com
+e4dc6450-5cea-5d5a-85ae-b29a7c75f276,"Sin City Burger",01488dab-e476-4509-ac6d-e08e6412423b,"Mary Sanchez",managers@sin-city-burger.com
+4dc0e3a4-628d-5081-a941-99f9a1d3f0d3,"Dunkin'",3f5bb77e-8674-4cc4-8200-429bbe7e4464,"Ashley King",managers@dunkin-30.com
+e698999a-b407-5427-9acd-eaf691c90388,"Mama Mezze",eb28fbec-300d-49c2-a1b0-8e1b76def9c9,"Anthony Gonzalez",managers@mama-mezze.com
+fc53dbe8-9ff8-52e5-a757-0ac8364b50b8,"Kailash Parbat",674b5d34-4cbe-475b-8036-03291f5aabf8,"Dennis Bailey",managers@kailash-parbat.com
+6b1b60c2-2413-576c-937f-3faace062404,"Nogari Korean Gastropub | Midtown Manhattan",29bdc98f-3137-4a72-9392-f74d62f6fb1c,"Raymond Young",managers@nogari-korean-gastropub-midtown-manhattan.com
+d641b904-08b9-5b77-a002-5f0a1c3fb400,"Subway",2ff9693c-9324-4dda-acb2-c391c96c7a79,"Pamela Thompson",managers@subway-8.com
+1be8929f-f602-5910-8a18-36ce5ab12f65,"Carnegie Diner & Cafe",02f7ae10-5681-4085-bdc0-06dd02e27875,"Brian White",managers@carnegie-diner-cafe.com
+da95b6a1-7ac8-5815-a509-b596f7b55d9e,"Juice Generation",a02b5d76-52b9-4b72-a342-dbab4b5dbaaa,"Carolyn Jackson",managers@juice-generation-4.com
+53476426-58fd-55ec-99dd-e0366ffe3d1a,"Casetta",e231a562-f0f2-4d5c-a086-8070b3cda1b2,"Pamela Nelson",managers@casetta.com
+eab3ac71-5a1e-5fa6-9ceb-c697dfa69e13,"Chip City",49e323a6-3caf-4800-afeb-9d431fc62e98,"Michael Peterson",managers@chip-city-2.com
+1a1ae483-c9fb-535d-824c-6af8fe8110e4,"Mangia SoHo - Italian Restaurant, Lunch & Corporate Catering",e235ec23-4a36-4e86-9632-f0c6fed199ce,"Barbara Morales",managers@mangia-soho-italian-restaurant-lunch-corporate-catering.com
+929b7274-0f3e-5d3a-bb79-b8262a722e5c,"Thai Terminal",23d6a19f-0726-407f-b431-67b4561ad355,"Anthony Baker",managers@thai-terminal.com
+31060b96-3489-5843-979b-91ad804aaa4e,"Glace NY",58b95522-703a-449a-a3ba-6d0cfd5b3010,"Justin Kelly",managers@glace-ny.com
+ef260da6-d716-5abd-b80a-7272b3f85d70,"Van Leeuwen Ice Cream",cdcc38a7-0b3c-4b91-bb17-c825ecba1150,"Michelle Lewis",managers@van-leeuwen-ice-cream-5.com
+f5e09e41-3450-5c18-8711-43bef5914954,"Cauldron Chicken",52c646a8-57be-46cc-9b2d-23c658ce8c7f,"Ronald Thomas",managers@cauldron-chicken.com
+478469c3-106e-5118-88de-a8d56d7e55e1,"Long Island Dumplings",27badaff-3a0a-4720-a47a-cabb34f027be,"Mark Morris",managers@long-island-dumplings.com
+d751d8b1-1db3-5a29-b69c-f930ff737b3e,"Diner 24 NYC",6e380104-f238-40d1-b27d-3be3f361adec,"William Diaz",managers@diner-24-nyc.com
+d522cea5-fc51-5ca1-b55b-6e87fb22e946,"Amali",3a56e6d5-8834-484f-989a-44903a72a41d,"Robert Green",managers@amali.com
+a17656e7-3428-57d0-b1fd-630b085d8961,"Dunkin'",c5ddf59a-d54b-40aa-b152-dc9a0974223d,"Lisa Ramirez",managers@dunkin-31.com
+37980c30-a214-5d5b-abb9-cea696e2594f,"Super Taste",00fdaf0a-481e-495e-a1cb-bebda8aa590b,"Jessica Miller",managers@super-taste.com
+f4b97aef-16ef-51d4-8833-d09ec6f98841,"Vesuvio Bakery Moynihan Train Hall",5b6d44bf-843f-4122-9bb7-d657e66123a0,"George Murphy",managers@vesuvio-bakery-moynihan-train-hall.com
+53d0f848-e685-525e-97c1-1145b7e1fd07,"Mabu",8c17525c-166e-4efb-86e9-8ba3a780e8e3,"Jerry Thompson",managers@mabu.com
+2fb2ff71-183f-5031-bdee-07881a43e942,"Tasty Hand - Pulled Noodles",258e4295-2f23-469f-94fd-9280e3ad646c,"Brandon Hill",managers@tasty-hand-pulled-noodles.com
+3a531eea-a620-5d2d-86cb-dc65dc62835c,"Do Not Feed Alligators",9826850f-9d2e-4d6e-ac9f-0dfc89bb9bbf,"Kenneth Gray",managers@do-not-feed-alligators.com
+bdd94503-3872-514c-9a1a-a5a91006a421,"Charles Pan-Fried Chicken",d34970f8-b35d-4b34-8766-d22034da4708,"Katherine Bailey",managers@charles-pan-fried-chicken.com
+d0472da6-9b7e-547b-8ba2-cbf2ea686c16,"The Ivy Coffee & Tea & Bakery",f5a8cc6a-4ef8-43b6-b0e5-5b8ed8ffd47e,"Shirley Cooper",managers@the-ivy-coffee-tea-bakery.com
+62470260-e85a-55cd-99ca-2745dd445bd3,"Isabelle's Osteria",f61afb90-995d-46c6-8a23-f159c7df3c4f,"Brandon Mendoza",managers@isabelles-osteria.com
+ae1706ad-750f-5e23-9f56-75b31d5af106,"Subway",fd5932f5-1707-4746-8d2c-e0e995a4e2e6,"Angela Jimenez",managers@subway-9.com
+d156290b-c720-5f62-aed5-e4b80efc143a,"Panera Bread",42b14944-f640-4fba-92fb-669aa7fc2822,"Jeffrey Carter",managers@panera-bread-3.com
+b94dc55d-5928-57fb-b9b1-6f6d628d8c6d,"Da Andrea Chelsea",3c022937-80c0-4b3d-8340-2c877cef10ae,"Katherine Bailey",managers@da-andrea-chelsea.com
+c3815063-0a27-5585-84dc-7637b195487f,"KazuNori: The Original Hand Roll Bar",0551e3e0-9af3-4b83-86b1-7971c22a25a7,"Ronald Rivera",managers@kazunori-the-original-hand-roll-bar.com
+5ab55b74-fc45-59d8-a3ec-1f96bc02fdfb,"Pizza Park",01b78654-ba25-427a-b728-8aa247af3bc5,"Dorothy Reyes",managers@pizza-park.com
+c01346ef-af3c-515c-9b52-d798d98a3843,"Gemina Coffee Shop",aea45c86-6132-4e1e-a325-c3931a242de8,"Donna Jackson",managers@gemina-coffee-shop.com
+88efc312-fb7d-5283-a174-17396d1e9d78,"Dunkin'",3dfa95a1-4433-413a-bcbd-84223c39bb8b,"Jason Torres",managers@dunkin-32.com
+8277726a-88e5-550a-a2f0-d42097596b70,"Cloves Indian Cuisine",8bfa2f79-8bfb-4354-886b-b86d1e41b701,"Janet Jones",managers@cloves-indian-cuisine.com
+0c8e395f-17a5-5033-a307-7c27ece4e680,"Pollo Campero",2f28c5c1-4a47-4ac0-8bae-bf2df318300a,"Michael Sanders",managers@pollo-campero.com
+2c7844f2-a1dc-56ef-899c-cf510e4dce79,"Sushi Hayashi",52a11f0e-a463-430f-b34c-11e2e638072c,"Rebecca Robinson",managers@sushi-hayashi.com
+6063879c-d3d7-5b03-b12b-581a62ceaee5,"McDonald's",b3b7413c-f243-4425-8b31-fcde73bc68b6,"Jerry Walker",managers@mcdonalds-5.com
+31b4f1fc-3a01-5c8e-9caf-e913d4d88f75,"McDonald's",1a49dcb1-3df0-4432-860b-7fd160564b65,"Nicole Lopez",managers@mcdonalds-6.com
+f72a19b2-a93a-5ff1-9cca-c7843cd40850,"Sony Hall",a8da7d98-d34a-4f42-9cba-a8f06810760a,"Kathleen James",managers@sony-hall.com
+795a5518-0f34-57dd-a081-2e8a366b2b00,"Shanghai Time",9e2a6311-b3b5-4d7c-9d21-79e1ee9f8f03,"Rachel Nelson",managers@shanghai-time.com
+cfe15185-5580-5e84-91e3-a05d3a54c704,"Romeos",d09ec771-f7ac-4bc1-beb9-30d8ab371cfb,"Catherine Walker",managers@romeos.com
+eb0629a7-a342-57bc-8dac-f4bc60cd039d,"Spice Symphony Times Square",6e99f16e-b1b7-42bf-9623-2294fa4b2e58,"William Hughes",managers@spice-symphony-times-square.com
+ffd82f59-3916-5231-be4c-bb26b7797180,"Popeyes Louisiana Kitchen",83ac864a-c8b8-4137-9fd4-5b8b6f9f469a,"Jerry Jones",managers@popeyes-louisiana-kitchen-5.com
+944f69c5-1277-52d8-9ed5-d3b49968b937,"Lucia Pizza Of SoHo",d65b2427-188d-4e89-9e6b-3c3d9819cc3c,"Frank Rivera",managers@lucia-pizza-of-soho.com
+4052fdaa-fb3a-57b0-940f-cc9f9fce35e1,"konban NYC",b8be45dc-7e90-41ac-b7b9-ad13a7271ab7,"Matthew Anderson",managers@konban-nyc.com
+182db230-e33c-534c-b13e-b620e09c77f6,"Rocco's Sports & Rec",c9b3f060-b030-43f8-9945-a7aae7219f37,"Timothy Ruiz",managers@roccos-sports-rec.com
+5de190ab-3fd1-504b-b7cf-134a736f8337,"KOBA Korean BBQ",c9ffb9f7-7a65-4f3a-864a-b1ef19212a98,"Andrew Gray",managers@koba-korean-bbq.com
+3d504243-ad09-5129-be89-87743fccb421,"Sir Henry’s",2b151adb-2126-494d-bb72-b5c51763754e,"Joseph Reed",managers@sir-henry-s.com
+71f7db22-f296-5459-a716-ebd06db14e29,"Soledad",db94e3ea-5f8d-4309-887a-04fb74117dca,"Shirley Walker",managers@soledad.com
+9746d1d6-a506-56a7-a320-4ee22916ef80,"AKIMORI",ecc2afe6-1400-422a-8947-af6c7dd1ba6b,"Andrew Collins",managers@akimori.com
+b5ba174f-0158-57b7-977f-3e5c4d2877f9,"LENOXTHAI",d3a4b20c-ed27-475a-8034-ca3d4c887273,"Justin Gomez",managers@lenoxthai.com
+b6734246-f32d-5c8e-85ac-d153e9e5323d,"T-Time Boba",157631ec-7378-4a84-abea-48a5d27bb234,"William Thomas",managers@t-time-boba.com
+cb43e3ba-ceee-572b-870c-fcd2466cd9c6,"Pret A Manger",9392fb79-7115-4331-9d74-881205427c49,"Helen Brown",managers@pret-a-manger.com
+c252d09a-5117-5fa9-9357-45aeb7960345,"100 Market Place",becbbc8e-85fa-4918-9f49-9cb0b0f123cf,"Christine Morris",managers@100-market-place.com
+0fae39db-8f04-5979-9c19-f6478d208fe3,"Wonder Upper East Side",f21728a3-9261-44a8-9515-5a421b4151e6,"Brandon Stewart",managers@wonder-upper-east-side.com
+2e2998a2-27e9-55fd-a102-6aba85a0883f,"Sip&Guzzle",7c94c23b-919f-4304-b735-b935fc25387b,"Steven Cook",managers@sip-guzzle.com
+199a96f8-ff60-5af0-b510-fb9602e373ad,"JR Sushi",adcacf03-d171-4e2d-b992-77659008ac9a,"Tyler Castillo",managers@jr-sushi.com
+c261e4ed-0605-539a-99e9-6e97fad0652c,"Travelers Poets & Friends",7eee0b68-08d9-4a80-98ea-dd0139f8ae0e,"Amanda Allen",managers@travelers-poets-friends.com
+0d23a4aa-7d34-5e90-91db-79bffee0c12f,"Cold Stone Creamery",11c49b6a-5984-4c48-a828-2d611d3e0f3b,"Katherine Long",managers@cold-stone-creamery.com
+48cd104c-b7ac-55db-b500-72ea94ce67e0,"Tang Pavilion 川悦食府",1f1b493b-6bf5-49eb-9381-d71ab41a25ae,"Amy Myers",managers@tang-pavilion.com
+f558474a-e5c6-57e8-92c3-83d0541825b5,"Buffalo Wild Wings GO",d7b9badc-9df7-4cdd-867b-2b1b5039afc5,"Helen Jackson",managers@buffalo-wild-wings-go.com
+a81697d5-19f6-5124-85ee-090f5d1a5f9e,"Poke Bowl NY",3d1de12e-d819-4d7d-8563-0f9714835baf,"Jennifer Evans",managers@poke-bowl-ny.com
+1367f336-45d4-5d47-89ff-23419ed4711e,"Oriental Palace",8cab8540-f5e8-43aa-8484-0a30ebd40617,"Nancy Myers",managers@oriental-palace.com
+6d98c1b9-8b7d-51bb-bfc7-e11bfbf90d52,"Dos Toros - Burritos, Bowls, and Tacos",455053e0-9882-4bb5-8fcd-7422cb111c15,"Kevin James",managers@dos-toros-burritos-bowls-and-tacos.com
+adef95b7-ba4e-5ae6-86ec-4a3931fa72b6,"Lucky Tiger",2365eb70-742d-46ab-84e2-b739703fae84,"Brenda Hughes",managers@lucky-tiger.com
+5f0455b4-5be8-50a7-ad05-58ed62d41a4d,"China Red Gourmet",dc677005-8be4-44a2-8664-269d3d6ff029,"Rachel Bailey",managers@china-red-gourmet.com
+fb630e97-1f34-544a-816e-f954f9ee6e57,"Otani",d16325bc-4ed8-4acd-b709-0cd45dd92421,"Ronald Kim",managers@otani.com
+d0ca0c6c-36a2-555a-9e04-d99ebd9c6051,"Island Rolls N Bowls",a9d268fb-1566-4a3e-b82a-793baf2a7462,"Joseph Sanchez",managers@island-rolls-n-bowls.com
+43a55aa9-2763-5a9c-b2b6-ef188251f3d9,"Mikado Sushi",31c308d7-7c28-4dfa-90bf-6c3be17e3959,"Emily Kelly",managers@mikado-sushi.com
+fa53aed6-8d86-5cdc-bd1c-370cdfbcd17c,"Apollo Bagels",c78a0b16-ebdf-41da-ad59-ef8230b4b87c,"Susan White",managers@apollo-bagels.com
+11388972-5042-5563-8acf-df46a976250d,"1915 Lanzhou Hand Pulled Noodles",add8901b-ecae-4a81-8d5f-24e93a464624,"Alexander Lopez",managers@1915-lanzhou-hand-pulled-noodles.com
+f4e3dfe5-3880-5320-891d-5134ae3a5397,"Roscioli NYC",3074a608-b913-408b-aeed-30738d12080f,"Nicole Nguyen",managers@roscioli-nyc.com
+b5c79998-36e0-5153-83d5-413f5f103f03,"Sushi Tokoro the handroll bar",6ec8a84e-3fd3-4436-94ec-e696d6c87c49,"Robert Hernandez",managers@sushi-tokoro-the-handroll-bar.com
+85d65841-33fc-5ae6-94b0-f538c4a3dd19,"Pizza Spot hells kitchen",5c202057-de60-400e-ad69-d0b4aa5cf818,"Linda Patel",managers@pizza-spot-hells-kitchen.com
+344f4ed1-490e-5ced-9ec8-e38b33f6aa86,"Fat Boys Burgers",89264826-40d5-489c-8aca-50699b863685,"Nicole Howard",managers@fat-boys-burgers.com
+1273617b-306d-57f0-b674-28480ed80672,"Harmonie Club",56ba5376-f4e3-4870-87ed-112bc7c72d09,"Alexander Wright",managers@harmonie-club.com
+05ba826b-a764-5866-be99-07605181db27,"Angelina Bakery HSQ",223d3b7c-3353-4797-b6df-3f1fc874b5e5,"Donald Brown",managers@angelina-bakery-hsq.com
+42144899-d83e-5b85-806e-3f74eecafe37,"G’s Cheesesteaks",76fdc068-9ebd-4ca4-979e-8020a64a4f23,"Elizabeth Jackson",managers@g-s-cheesesteaks.com
+21fae90d-df0d-5b41-9539-d28fc3706b4b,"Charlotte Cafe",6852717e-1d50-4bc3-8645-b6662f042fb2,"Benjamin Diaz",managers@charlotte-cafe-2.com
+841f0888-4e17-5adb-9a1e-2cc9c211e15a,"Oishi Bay",b4186d27-bb36-4ec5-a3f3-87410eb1fe7f,"Kevin Gutierrez",managers@oishi-bay.com
+85f1e8c9-23c9-5027-9118-3e487ca020c4,"Tha Phraya",b88b0e47-01a8-4127-afd8-51a8e595e1e8,"Debra Davis",managers@tha-phraya.com
+e7b65d5c-4d04-58ac-951d-7938e0b15b1b,"Commodore II",d0119c14-1608-45c4-b777-e7ddd8f86448,"Brian Ward",managers@commodore-ii.com
+db38f385-e518-586d-a442-38244e921769,"The One Trick Pony",c85c6f6d-4afb-4d74-a1f2-54eb0a702957,"Cynthia Sanders",managers@the-one-trick-pony.com
+68a77dfa-6597-5d29-b0d6-95786c6db8a4,"Buffalo Wild Wings GO",aaef1c4e-19a7-427e-8ab0-0bab49bfa6fd,"Joshua Gutierrez",managers@buffalo-wild-wings-go-2.com
+7f58c5a5-828c-5ef4-9afd-d279ea51fd18,"Blue Bottle Coffee",b695149d-7abc-442b-9616-0608724d8dea,"Angela King",managers@blue-bottle-coffee.com
+aa33d66b-ad2a-5536-85dd-ef4bfe93b83e,"Mayas Snack Bar",ea314a18-65bb-4695-bf67-c286180c8956,"Steven Chavez",managers@mayas-snack-bar.com
+c9cd4714-bce7-5353-a70a-378469af5b67,"Amber 80st",359c1767-bbcb-413c-95d0-21932f114afa,"David Ramos",managers@amber-80st.com
+5767ac8b-66d4-509f-ac51-ca40f6f76d04,"Kosmic Community Anti Bar & Coffee Shop",5888e362-07c4-40f4-8ab7-be7de9b35c78,"Diane Lopez",managers@kosmic-community-anti-bar-coffee-shop.com
+d57da8d0-b6ab-596c-8245-f81f3414f0f6,"Gotta Getta Bagel",fde395f2-f3b8-4d6c-b1c1-8c594d9a5d82,"Michelle Phillips",managers@gotta-getta-bagel.com
+ce744e1a-ec40-50d2-a708-6bf743db766f,"REGULAR NYC",34147d58-2d42-41a1-98cc-05163129f657,"Stephen Thompson",managers@regular-nyc.com
+6a025223-423e-56a6-a66a-8a1817da86ca,"White Noise Coffee - Coffee Shop & Roastery",8e8eb42d-b5eb-4944-a746-4833224bbf68,"Catherine Rivera",managers@white-noise-coffee-coffee-shop-roastery.com
+b925a61b-1061-548c-a946-f286a484bca9,"Five Guys",45dceedc-cb01-419a-ba8f-990e4c19d1b3,"Michelle Rodriguez",managers@five-guys-3.com
+85bb6675-6054-5865-adb6-b3f57c84c678,"Convene 810 Seventh Avenue",f6df9a6f-0351-47ae-b50e-e93272e30ae1,"Steven Evans",managers@convene-810-seventh-avenue.com
+47874ea6-82e4-5b6a-9786-363417d2bdfd,"Friedman's",33b1fe38-7c18-452b-a6a4-fe860627fb35,"Edward Myers",managers@friedmans.com
+7a9c59b1-4b2c-566b-ad4e-934bc6861d01,"NARI",d0b1c2b7-06d9-435b-9215-46c0154543e6,"Jack Clark",managers@nari.com
+21a05220-8be7-5186-8554-1211ab99e239,"Electric Shuffle NYC",b9c4ce4c-1d1a-49d8-a93a-18154cb47fc2,"Diane Wilson",managers@electric-shuffle-nyc.com
+da0f1d5d-0ddd-50a0-8ced-709f5ad305d5,"Bar Primi Penn District",fb756500-56d7-4d69-b0fc-64f1213b356c,"Gregory Cruz",managers@bar-primi-penn-district.com
+a5b15652-b764-5507-8bf8-fbec8f433b68,"Sahola Cafe",08e9e83a-29aa-4c86-a39f-73d176664e0f,"Brian Morris",managers@sahola-cafe.com
+bd078873-1b85-5a2d-8227-e8f6b4d4c8b2,"Claude Bakery West Village",4a05a6bf-713e-4fe5-a3a7-04502b25846d,"Diane Nguyen",managers@claude-bakery-west-village.com
+b79fe1e2-4b5d-50cb-a352-8e73bf9380fe,"D' LA PARA PICA POLLO - DYCKMAN",902c9db5-1868-4493-9646-886b965cbe03,"Emma Long",managers@d-la-para-pica-pollo-dyckman.com
+82da25f2-13a7-5070-a256-92087ebbed42,"Wildflower",54d29364-a3b0-4e27-822b-40a6f1cc7ac7,"Nicole Campbell",managers@wildflower.com
+66df1376-8301-5f20-8678-49decbb9622a,"L’incontro by Rocco",3f67afd5-831b-4087-9e81-a0a836e300cd,"Jacob Smith",managers@l-incontro-by-rocco.com
+9ab89e92-6ccd-59a0-b8e9-b5af890a75be,"Mala Town",dd0ecd57-fdd5-417c-8c63-c503ec5fceee,"George Hernandez",managers@mala-town.com
+9e3e1865-10c6-5634-8089-1231fe8da18b,"Hey Yogurt",a80a97ac-97b7-4e7c-832a-fc023eae9b95,"Sharon Mendoza",managers@hey-yogurt.com
+35f9c591-4539-5297-9914-a78f1416b811,"Son del North",a65dda51-8495-41f9-9508-a6357b6080d4,"Elizabeth Diaz",managers@son-del-north.com
+e8bf1149-da6f-56fd-9c2e-49ce4cbdd204,"Little Hen",6935cebf-e7c5-4099-821e-c4e8c8b76966,"Jacob Peterson",managers@little-hen.com
+2d6c77f5-7f4f-58a6-8d85-21515a1a402c,"Paleteria La Michoacanita",c703e592-47fb-4093-a06b-1f089fd9011a,"Donald Collins",managers@paleteria-la-michoacanita.com
+f3b22902-103e-5a50-8fc4-467b0106f136,"Rosa’s Pizza",5108998e-c4a5-4e11-a8b6-e8ff30159ffc,"Robert Sanchez",managers@rosa-s-pizza.com
+48f4d455-68c6-5da2-b129-c51ea7979762,"Orange Moon Cafè",8b71ca43-64a9-4c4c-be38-11891f547810,"Linda Robinson",managers@orange-moon-caf.com
+291e53ac-b84c-5043-a895-a5756cc99def,"H&H Bagels",2478b939-f61e-4304-8e95-228eb5f2bddc,"Samantha Lee",managers@h-h-bagels.com
+db4c9089-f7e5-51c8-9267-df859e221ddd,"Ziggle Tofu & Grill",a7b7905e-806b-415e-9b4d-9c97285b1007,"Linda Cruz",managers@ziggle-tofu-grill.com
+6d0b898f-b515-505b-87d9-f30e299b3ffc,"Bluestone Lane 55 Hudson Yards Café",089f7c45-69a2-49a4-bfb6-ec6a88a881ee,"John Morris",managers@bluestone-lane-55-hudson-yards-caf.com
+134f6490-6c18-5d4b-84f8-477fb720babd,"Point Seven",f05e2f94-a0ab-44c0-a1a5-8803877f8d3e,"Laura Campbell",managers@point-seven.com
+7c79e91b-4b88-577b-a8a1-e53ca80f4e8a,"Fattoush",ab4fd702-4802-4cd0-bb8e-bf04d8d986f0,"Jessica Allen",managers@fattoush.com
+f2e61e89-50cd-5530-8d96-29fa8fc6f185,"Pizzazz",44569346-8002-47a0-b6e5-75793ae94c4c,"Amy Jackson",managers@pizzazz.com
+8fc9bbdf-1774-5960-8a40-b693bbc322a2,"Supreme Pizza NY",e8122637-165f-4e9d-b4a3-e789f8eb78a6,"Nicole Foster",managers@supreme-pizza-ny.com
+0ed57207-cda4-514a-9e89-43e18671579c,"Bagel Express II",f9d70c14-c0b2-41ca-8863-dacecac81a8e,"Kathleen Parker",managers@bagel-express-ii.com
+05a15a8e-c154-581b-87d1-c50959a9204b,"Five Boys Fresh Pizza",11279313-d6a2-4a2a-b882-fb3fae668365,"Jennifer Gray",managers@five-boys-fresh-pizza.com
+6087d2d3-a9b5-5e0a-a2fd-abd2e0cce2a1,"Oxford Cafe",08ccb130-aceb-4dd5-899d-1157f408e4d5,"Tyler Bennett",managers@oxford-cafe-2.com
+0db7d81d-a2dc-5fc3-957e-ed4b4fe3fa9b,"Hell's Kitchen Pickleball",fb8b6216-f053-4eae-ad34-862e9a77889d,"Elizabeth Lewis",managers@hells-kitchen-pickleball.com
+c01e88a4-84d2-5e8b-81f3-b2cf7d598e52,"El Cibao Restaurant",020256ab-e173-496c-93ef-79aea9dc4a69,"Heather Martinez",managers@el-cibao-restaurant.com
+65f10104-4e51-596e-85cc-fc2dc670ffa0,"Ayada",43c3dbc9-857d-4153-b4ef-3af671902f5d,"Helen Bailey",managers@ayada-2.com
+dbe6c8f9-1a5e-5631-b44b-57448985075a,"Serpentine",fb45bd78-b61f-4ca9-b5e0-0544a1ba689c,"Joseph Walker",managers@serpentine.com
+c813b368-6352-5748-81ee-4fb2db50ef6b,"Alison",0bb69844-8f5d-45d2-9f16-aa3ed9ce3944,"Jack Ruiz",managers@alison.com
+13b2be53-03ea-57e0-a64e-3dd1f73271ca,"Gelateria Gentile",0dd37318-c723-4ed4-820d-435fde5092a6,"Steven Alvarez",managers@gelateria-gentile.com
+0aa802cf-a57b-5f82-bf2e-fb84e02e6255,"Wendy's",153328af-49e3-4bbe-9b2c-ab68cda4595a,"Dennis Garcia",managers@wendys-2.com
+27bc988e-246d-507d-a83a-2d4b6faa4b7f,"Wendy's",f324e2cb-59eb-4ef8-9774-e60085071356,"Pamela Morgan",managers@wendys-3.com
+8505fb9c-f34a-580a-9f0f-bae7274063f4,"Moshe's falafel",cda6afcd-24b1-4de5-94a3-a353f2b8fdfd,"Gary Flores",managers@moshes-falafel.com
+b4057611-9e89-5dd9-ad78-df3fb9b0ba65,"The Mermaid Inn",1626d6dc-5af3-4313-9c0a-bab1b438504e,"Jerry Brown",managers@the-mermaid-inn.com
+ac4e045b-0311-5e14-b71b-048d55e3f0ae,"SUGARFISH by sushi nozawa",292bee35-ec46-4f68-9449-ac90edcad2b2,"John Brooks",managers@sugarfish-by-sushi-nozawa-3.com
+75099a16-d2b2-56d6-8df1-081c913a1583,"KFC",eb3cae82-cda9-4eb7-b968-72b8b7681487,"Steven Myers",managers@kfc-2.com
+3758fd3f-b0d6-5c40-91c7-3400db8542dc,"Emperor Dumpling",0d28bac6-7c32-4975-96d6-b77d9a56bce2,"Katherine Rivera",managers@emperor-dumpling.com
+d91306b2-ffcf-584b-b753-26087139933f,"Chicha San Chen",e87e5496-5b35-4dcd-9b8c-8349ef2313b0,"Steven Castillo",managers@chicha-san-chen.com
+3b9287a2-857f-568b-a2f3-92d2e47ef1ba,"Harlem Shark Bar",e81bdb61-1e82-4a3a-93b6-90c24e9f5148,"Jack Kelly",managers@harlem-shark-bar.com
+eeb2ae56-5427-5d93-98dd-3e2f091edd64,"Subway",9b254856-ce7a-4f3a-b0a9-9072e78f00b6,"Kenneth Jones",managers@subway-10.com
+776f7f8d-7ff4-543c-a146-252fb945e75b,"Blue Bottle Coffee",d3af60aa-eca0-4d4c-9b47-c06d7136941e,"Edward Murphy",managers@blue-bottle-coffee-2.com
+a98cb18f-8856-5bfd-8455-0da27edf64cd,"Sachi Asian Bistro",d3fd14b5-bf0f-449d-ae53-f4fd4b2e7453,"Helen Cooper",managers@sachi-asian-bistro.com
+ee6cfb74-db9f-5cdd-9259-b56c1a56b988,"Blue Bottle Coffee",2e361d8e-79d6-41ee-8a3f-32fbadc5c77d,"Michelle Jones",managers@blue-bottle-coffee-3.com
+607ebf10-67cb-58d8-8830-4a4e060debc0,"El Nuevo Capri #3 Restaurant",e2b0908f-0bb8-4275-a542-ce2f12b821f3,"Dorothy Price",managers@el-nuevo-capri-3-restaurant.com
+b9d5647e-3b4d-56c5-a765-e1bec6a5db08,"Dragon 105",6097b530-95fb-4c4b-8d48-4adb8d919b58,"Scott Perez",managers@dragon-105.com
+6f143426-ce33-5736-bd96-5227cbdda576,"Casa Tua New York",608e7cbf-890d-4165-bf4c-ceb9a6aed58b,"Linda Baker",managers@casa-tua-new-york.com
+7233c5cc-243f-5ed6-a8bc-2667bab68dec,"FROZEN LOVE",9f00d9c2-a6b4-4a2e-8534-39f3473528a7,"Tyler James",managers@frozen-love.com
+69967f8a-d2ad-5be6-9de9-0bca1aafeabd,"Holy Burger LES",cf892083-ec74-43db-99db-4ae7dac6423c,"Donald Bennett",managers@holy-burger-les.com
+c62b4863-6ee1-5221-9e55-b2d0f9883243,"Ceci's",a3e3ae1c-d5ae-4fa2-bf91-2d98f08d657e,"John Rodriguez",managers@cecis.com
+4a5f7b54-5fd7-53c9-9c96-8b041748b950,"Sushi Damo",b8247239-0312-4754-a235-08e210bba76c,"Helen Gutierrez",managers@sushi-damo.com
+75e3c43d-8172-5d44-af03-1e1d4e46559a,"Tara Rose | NYC",854f58c1-4e8d-4fc9-a6af-0d2521027e52,"Mary Mendoza",managers@tara-rose-nyc.com
+8bcb71e8-d27b-5440-a6e4-85400d1a06f4,"T.S.Q. Food Court",fa58eb33-3d79-4bad-ba59-654d3835e294,"William Castillo",managers@t-s-q-food-court.com
+7c1b274c-487e-5abe-a87d-a11278babf3c,"Teriyaki R Us - Times Square",58058626-f214-48bf-b029-8c07db5531f1,"Scott Wright",managers@teriyaki-r-us-times-square.com
+a67da7a7-9c92-5f27-acd5-8d88680dc04f,"Ly Ly Vietnam Cookhouse",32c02ee8-5ab8-4f1e-9a58-067d603ce431,"Samantha Watson",managers@ly-ly-vietnam-cookhouse.com
+8083f1ad-4387-5dad-9072-24c6a98b6351,"Mori Coffee",1507e12f-4960-4716-9ca5-92996791950a,"Tyler Sanchez",managers@mori-coffee.com
+30a39416-210c-5bba-a1c6-c68b8748ef9d,"Sadie’s Ward",06e10340-4b01-43f3-88a9-f67341d70f69,"Patricia Harris",managers@sadie-s-ward.com
+e721500f-42e6-55bf-9559-505da9212817,"Leon's",b62ffabe-1b57-4095-8ed1-fb747e0ffc4a,"Jeffrey Alvarez",managers@leons.com
+bb8f4bb4-2a6e-54be-8396-5e7a6f3c27a4,"Sake Bar Asoko",24e0ee84-239b-4bc1-9892-07480704cb57,"Scott Stewart",managers@sake-bar-asoko.com
+59881571-7e81-5cf8-8a88-9feed10728dd,"Bolivar Bakery",71f52f08-4ae9-4da9-a741-0194c9374ab5,"Eric Cruz",managers@bolivar-bakery.com
+5400cc56-2abf-5ab7-8946-d4233359cc9c,"Wonder Phở",0b7facd7-6f21-45ef-99b1-6a66c70eae7f,"Sarah Thompson",managers@wonder-ph.com
+f66401c7-f17f-5a59-95ac-bc23a72e509d,"Holy Cow Burgers",25008c43-a1c8-4b0a-ab1c-f036ab6aba0d,"Gregory Turner",managers@holy-cow-burgers.com
+de4392f6-f404-56cb-8362-be2a90f59779,"Saranda Cafe",5083e9c1-2571-45b6-b1e7-231015776a87,"Kevin Wood",managers@saranda-cafe.com
+a868c741-3f0f-53a4-ac0c-4466ab2e2c48,"Little More",32a2c7bd-1de1-4d9b-a18a-7e6f64e406a0,"Samuel Scott",managers@little-more.com
+056a17d5-246c-5ca0-8a72-0c77a94bd23e,"Dubai Lounge & Restaurant",1e77cf4b-4878-4725-8a82-19d1ca8dd6f3,"Brenda Harris",managers@dubai-lounge-restaurant.com
+2d77c1e4-8ced-583c-9445-d26cf6bc33df,"Bagel RX",974df4f3-3df2-4824-b3cc-973639c31c71,"David Gray",managers@bagel-rx.com
+845bbbd4-a19a-52f4-b8f7-3cbfd98ed3d5,"Bibliotheque",487485c9-9de3-4b69-8e8e-c9baf3740e51,"Jacob Lopez",managers@bibliotheque.com
+fc14e869-3ebb-5d72-be36-1e63e2010bae,"Bánh Mì Cô Út 2",4a390fd8-d0a6-40b2-aac8-5ac540dbec45,"Mary Rivera",managers@b-nh-m-c-t-2.com
+12e5d0c7-f0be-5528-a447-cde82a74bb54,"Dark Matter Coffee - Adios Amigos",2e05eeb6-2efa-4da4-9a5f-fbfd316bfc64,"Patricia Miller",managers@dark-matter-coffee-adios-amigos.com
+c702b829-cb01-5c79-9f80-3259763dbc02,"Chez Margaux",222ef9f5-64a8-48b1-998e-a45da3cf8761,"Jacob Morales",managers@chez-margaux.com
+0808a8ef-72ed-5468-afbc-97332c2a3760,"Wingstop",b203f80b-363e-4b65-a5ae-2c5f121295e9,"Raymond Perez",managers@wingstop-2.com
+32cd4c2a-8a30-5761-bc39-3b522a984178,"Xi'an Famous Foods 西安名吃 | 74th&Amsterdam UWS",89ce923d-745c-4dc4-bc76-60fb26ce8ba1,"Jeffrey Thompson",managers@xian-famous-foods-74th-amsterdam-uws.com
+86f0f668-415e-54a6-8a9d-1628d756e60b,"YongChuan",0ca16775-c203-417a-a3d4-cf131e5c0321,"Ronald Carter",managers@yongchuan.com
+a309640e-14a0-5575-acc2-580ddfb1fe54,"Malta Coffee",8d6f8068-2e9b-46f8-a7c5-019b0bb3581d,"John Jackson",managers@malta-coffee.com
+032ab452-17d5-5d13-a20a-6aa835231ed0,"Tortilleria & Rosticeria El Guerrerence",c5139248-88b3-408a-8380-d91d60e2ff9e,"Thomas Anderson",managers@tortilleria-rosticeria-el-guerrerence.com
+7df8e26e-fd37-5d28-a3c3-954e4548b5f1,"Fountain House and Body Cafe",7b18f251-7be3-4dca-bfb6-ac08a6a2bb52,"Donald Myers",managers@fountain-house-and-body-cafe.com
+18bb455f-4255-5308-a7aa-a8e34ca92727,"Madras Dosa Co.",2820e21c-5d5a-4657-a4fb-c42833c40f9e,"Shirley Johnson",managers@madras-dosa-co.com
+c0d7d744-b758-52b9-bc00-52a89b6bc94d,"Subway",e60188db-a3b6-4226-8ab5-4b48e372b06c,"William Martin",managers@subway-11.com
+0913172e-c1ee-52fe-a9de-56cfd1410838,"Joe & The Juice",230b858e-6bf2-42ba-91e4-de5ca5e37abe,"Dorothy Hernandez",managers@joe-the-juice-7.com
+db79f76e-5e02-5e49-a7db-5897ec2b130d,"Fay Da Bakery",68686d6c-2156-46ab-9f1e-57d1a84e3811,"Stephen Kelly",managers@fay-da-bakery.com
+d9625cb1-97ab-5c96-b816-17f5ca56396b,"Cucina Italian tavern",474a67d5-694d-47c3-ae6b-75def934f1c6,"Mark Long",managers@cucina-italian-tavern.com
+56d644af-817e-5435-a70a-31d300c9cb9b,"Dough Doughnuts UES",e58d68bf-5eba-4324-834e-389b380c2b14,"Heather Reed",managers@dough-doughnuts-ues.com
+cea20ff9-3979-5428-b922-c627b1241117,"Alabama Chicken & Burger",f0010a3e-0adc-48c9-9783-c3ea30ed6d28,"Eric Mendoza",managers@alabama-chicken-burger.com
+bdd214eb-cc77-51dc-9d64-127422081242,"Daily Provisions - Brookfield Place",2a5772a7-7010-4cb3-b2e7-2fc65ac7b402,"Christine Baker",managers@daily-provisions-brookfield-place.com
+4b4b1d14-4f9b-5cd1-8c48-cab18addd776,"Bar Revival",29b81f62-f244-4c27-aef7-db0805cfb4d8,"Mary Phillips",managers@bar-revival.com
+f7c627e8-4b37-5339-944b-69129f239541,"Yunnan Rice Noodle",0620b3c2-3b7e-4508-9f13-f4d35cfea286,"Kimberly Gonzalez",managers@yunnan-rice-noodle.com
+c51da2f5-a214-51dd-95f4-3afa2df249a6,"Coma Bueno",de0650b4-ac64-4060-adea-c62460b7f3f6,"Eric Wood",managers@coma-bueno.com
+2d85a377-bf73-5429-b4da-38d5430b404b,"LOS TACOS No.1",9a8daab8-00a1-4f0e-a71c-3a092d2e6399,"Susan Brown",managers@los-tacos-no-1-2.com
+58529b33-4dd4-5483-a792-79e62315ef1c,"$1.50 Fresh Pizza",82ebadf3-484d-4fc0-9bac-8d227bb568e8,"Debra Harris",managers@1-50-fresh-pizza.com
+87b34eba-8a41-5a1a-ab40-5883e6a89a1c,"Marlow East",1ea78770-5968-44fe-ad40-45e21dd3c917,"Barbara Cox",managers@marlow-east.com
+e32bcbbc-2fb0-5b54-8ed0-d7cfd4aed216,"Pasta Lab NYC",a6ce8a37-08ec-4d39-a09f-8c41f0bbcc8f,"Timothy Stewart",managers@pasta-lab-nyc.com
+e8fef908-d2ed-51ae-9f84-7a0f2c69ab4b,"Rivareno Gelato",1f52a95d-cee3-49c2-86d1-8662d42a1160,"Shirley Hughes",managers@rivareno-gelato.com
+0d40bfa1-eb77-5b32-8c6d-c5d373f30b77,"Dagg Thai Restaurant",a33f4557-feab-4eac-a9d6-77cd3fedf329,"Michelle Howard",managers@dagg-thai-restaurant.com
+5a86e831-cd04-53a1-acd7-5dff0f880e82,"Bravo Pizza (K)",4c746de6-da75-476b-9fd6-9114b852bf03,"Donald Murphy",managers@bravo-pizza-k.com
+a1f1605a-fe48-57ac-ab3a-1a15bbbe62e7,"Dunkin'",89c024fe-f243-4f8b-8398-9a2fa7ce61b9,"Laura Wright",managers@dunkin-33.com
+02b05e49-653e-5d75-aec6-aab0494bd88b,"Lucy's",eb723af4-4196-47d2-9b37-391143cdf6ba,"Sarah Taylor",managers@lucys.com
+18765595-24cc-53b8-8d58-b5b18713b56c,"Boongs Korean Fried Chicken",83293dc4-5c9e-4db5-a149-afd2f772d646,"Stephen Kim",managers@boongs-korean-fried-chicken.com
+58ec975e-fed0-5167-b6b4-f45cda76935d,"Nai Brother Sauerkraut Fish",4ebe0da3-8d48-49b9-a1ad-be53e7a3eef1,"Lisa Castillo",managers@nai-brother-sauerkraut-fish.com
+274c2c59-0af5-564d-9dde-106bd31545fa,"Fortuna NYC",53767285-fb74-4fc3-9f37-47b48dfb0a9b,"Stephen Gutierrez",managers@fortuna-nyc.com
+7c9da8c3-bfa2-57d0-8245-e5b03d5e3c31,"City Tavern & Table",f52d4819-1ed9-4389-abd7-cdce5b2d58a9,"Scott Green",managers@city-tavern-table.com
+c7b73dd6-53b4-5fba-82cb-607cbbec0e86,"Made In New York Pizza",7ef033d3-aeb7-4415-a761-703a39c2a78c,"Sarah Castillo",managers@made-in-new-york-pizza.com
+9f401937-4082-53f1-baa0-c5ff73aec8dc,"La Tienda de Jordi",9f59809f-8f65-42a6-9ac3-6894766414d9,"Anthony Green",managers@la-tienda-de-jordi.com
+01646f47-01f7-531b-b47a-1fd444592db7,"NY SOHO COFFEE",86abfe84-bfa4-49f5-897b-56125327e001,"Samuel Hughes",managers@ny-soho-coffee.com
+48d140df-6cfd-5e92-ac8e-99d2625d0e44,"Kebab Express | Halal Grill Flatiron",a405857e-0689-4f1e-9d35-0e2acff51cb0,"Brian Howard",managers@kebab-express-halal-grill-flatiron.com
+eff019e1-b99e-5846-8acb-08966ed1af96,"Exclusive Pizza",da5eed3f-440f-41b0-b9bf-6b039371876e,"Dennis King",managers@exclusive-pizza.com
+2ebfd286-9925-5a70-b335-1191d14a188f,"BKK New York",b6c889b8-2ec4-4dbb-92a3-95baa72c7f2c,"Eric Mendoza",managers@bkk-new-york.com
+354ff846-48ac-5143-afca-d12adf81de6e,"FifthSip.",689b2e2e-71ff-410a-9bb0-09923444510d,"Michael Baker",managers@fifthsip.com
+21ceb561-537a-5e6b-afcf-6837c447c9d7,"Figo Il Gelato Italiano",90cbb8c3-8f42-4570-a646-25f503417096,"Gary Howard",managers@figo-il-gelato-italiano.com
+91bf3689-f04e-593b-b2d8-b3bf7761ff4d,"Little Italy Pizza",fa867a17-5947-4c08-b241-50568b1f6866,"Rachel Miller",managers@little-italy-pizza-3.com
+eec76877-df32-5510-ad00-031a8bdf50a9,"Spice Lamb",d87d5589-a5d4-456e-8e21-25ddc95dbeff,"Mary Morales",managers@spice-lamb.com
+53f9e1a6-4a07-5678-99ff-0a1ef1bcdd12,"Ziyan Chicken 紫燕百味鸡 (Manhattan)",5c27f5cf-249c-445e-8341-4c288180169a,"John Roberts",managers@ziyan-chicken-manhattan.com
+7691260f-7351-5390-8109-a587eea9455e,"Fat Boys Burgers",5107b2f3-ebb1-4c58-85f7-a2efce8c3ad4,"Ronald Ramos",managers@fat-boys-burgers-2.com
+144bc324-13ff-520f-9cca-4e90de02d841,"Hi Sunny Restaurant Salad&Dimsum 花园轻食",fb254467-4781-4542-8851-1cdd9eb4df02,"Ronald Robinson",managers@hi-sunny-restaurant-salad-dimsum.com
+56555fab-bc0f-55a7-8ca8-209ddfb1267f,"DOOKKI Topokki",50b5a51f-7a2f-466d-af2b-16e06362e944,"Charles Campbell",managers@dookki-topokki.com
+75ebcd4d-5f2e-550d-aba5-c15c58b40552,"Spoto Pizza & Gelato",d09979ee-3726-414d-8466-6e4d72c85707,"Helen Campbell",managers@spoto-pizza-gelato.com
+beb262ff-17a6-5815-a889-8c7899510b74,"PopUp Bagels",aebf110e-0042-4023-b663-4ec2974c1aae,"Nicole Rogers",managers@popup-bagels-2.com
+bfcfb97a-3c80-557a-97d1-aab8789a7bbe,"1915 Lanzhou Hand Pulled Noodles & Dumplings",fe3ee8c3-6af2-4988-a29b-26da7bcf1b58,"Melissa Wood",managers@1915-lanzhou-hand-pulled-noodles-dumplings.com
+fc0bc9b3-6c31-500e-9f86-4b39a6cfce91,"Kabab Town",be19be33-ef91-4161-8ac2-67c42b60bf1e,"Donald Martin",managers@kabab-town.com
+3fa0eabb-7270-537b-a69d-681a9f9fdcf5,"Taqueria Condesa",148e0b2f-55ec-40c9-9dc7-e36d909f71ef,"Gregory Hughes",managers@taqueria-condesa.com
+847b8839-0e13-573d-9b74-58320a10b9c2,"12 Matcha",147a0587-4c35-46cc-bb85-fe47ec25883c,"Dennis Brooks",managers@12-matcha.com
+ea9c1123-bd3a-58cb-b1fd-bd90e92ade2f,"Xi'an Famous Foods 西安名吃 | Columbia University UWS",f503bf3b-0139-4f64-a384-877084d4fcb0,"Shirley Flores",managers@xian-famous-foods-columbia-university-uws.com
+6638ad00-2feb-5f82-a65a-a2d90955a556,"Dream Talk",6b2f6963-9193-4068-8e35-ae4609515d53,"Samuel Jimenez",managers@dream-talk.com
+b0ee4059-cae4-53da-a07e-97100e29fb96,"JOE & THE JUICE",233b04d6-46f5-4997-86e6-d11dd36bb13d,"Lisa Gutierrez",managers@joe-the-juice-8.com
+68f4b333-d953-5358-9033-b13cef49a2df,"Starbucks Coffee Company",19ae3b0e-349b-4330-acbb-bafad70ced26,"Gregory Phillips",managers@starbucks-coffee-company-23.com
+af5e706b-97df-5b55-8e40-53de4e1982a7,"District Tap House",b90453f1-d69b-4d8f-864a-e5590f0cccb8,"Janet Morgan",managers@district-tap-house.com
+95462187-e271-503e-9f0a-b83bb70e1d9e,"Le Cafe Coffee",bc9dd111-1221-43ae-a0e1-29cf44595946,"Timothy Bailey",managers@le-cafe-coffee-3.com
+19766253-33fe-568e-95fe-23e359790159,"Dumpling Xi 喜家德水饺",b0c180cb-3a28-4840-b70e-6513d69d34ac,"Jennifer Taylor",managers@dumpling-xi.com
+5eeab00f-eb30-53d0-b917-9df0ead5858f,"Boongs Korean Fried Chicken",802297a2-2d23-4884-b904-4e244c98e872,"Daniel Cooper",managers@boongs-korean-fried-chicken-2.com
+4941f4e7-18dd-5b99-bbfa-d53c3b843d11,"JPMorgan Chase & Co.",e6655689-ff59-4d80-bb89-df92f3547ea7,"Janet Bennett",managers@jpmorgan-chase-co.com
+d7dd11a9-706f-50a9-b7cb-cddb1208ed4c,"Alfie's Kitchen & Craft Beer Bar",a02ef6b5-5bb2-4997-9c98-f07a30e9ddda,"Rebecca Peterson",managers@alfies-kitchen-craft-beer-bar.com
+a9c30934-3026-52bf-b541-a1851948be83,"Juice Time عصير تايم منهاتن",d5d09e46-4089-4da7-b26c-dfa80996ac0c,"Brian Miller",managers@juice-time.com
+c09857eb-8c3e-5481-9c02-7083c034c57f,"NeroLab Times Square",be6d9099-253e-4b5d-b521-c8016923fa5c,"Anthony Jackson",managers@nerolab-times-square.com
+e0363a11-a833-57f3-9142-3c893bd6f718,"Kith Manhattan",dad902a0-b034-4786-94ac-0177fc199f71,"Gregory Thomas",managers@kith-manhattan-2.com
+192edab9-33e3-504c-8958-56a76466816a,"The Ripple Room",53746809-feec-447c-a58b-f75806c65ebd,"Rebecca Johnson",managers@the-ripple-room.com
+f91196e4-7041-5227-8f80-4322be19e197,"WatchHouse Chrysler Building",aeb3da85-f1d4-40e6-bf23-3f273ba24ada,"Alexander Harris",managers@watchhouse-chrysler-building.com
+f6def066-9e72-59e0-b615-da43f2017b83,"Impact Kitchen",147622e2-7ba9-43d1-af0c-06e3bce4d58f,"Linda Roberts",managers@impact-kitchen.com
+1d7ffc5d-b277-5965-a425-001495803570,"Wok In Duane",4c3be440-56cf-44bf-85f7-3c0c6dcbb076,"Emma Green",managers@wok-in-duane.com
+0e4ddbe0-c38f-5d98-a85a-5ea80066ab74,"% Arabica New York Nolita",07e2ddee-f91f-498b-91fc-5e386acf7011,"Emily King",managers@arabica-new-york-nolita.com
+915cb1ec-34ef-5ef3-aeec-0dcc4b900a78,"Deii Cibao Coffee Shop",b5a30059-0e7f-4541-8b1b-b415042fd57b,"Angela Cruz",managers@deii-cibao-coffee-shop.com
+4fd7f9e7-9d04-574f-9337-980fc23d6a4a,"Baya Bar - Acai & Smoothie Shop",b4a5422b-e6bb-4386-8e2a-21dca4487b6f,"Jerry Foster",managers@baya-bar-acai-smoothie-shop-2.com
+d3a83410-ef95-5e83-a80d-239e76dfd9f0,"Los Munchies",07bdd9fa-1e56-4b04-9aaa-d782d5a046ca,"Cynthia Harris",managers@los-munchies.com
+804f0a5d-e0f9-5437-80a5-2e44990037da,"Earthbar",db924bbc-9063-467e-9fd3-1ab4419d34a6,"Dorothy Nguyen",managers@earthbar.com
+869e4566-7389-5f9f-a31a-3919f8863e0c,"Easy Joy (Hot Pot, BBQ Skewers, Dim Sum) 意中人火锅烧烤点心",927f366e-a57b-4c95-9bba-4c3bb736f147,"Sarah Perez",managers@easy-joy-hot-pot-bbq-skewers-dim-sum.com
+bcc71075-5bae-55ed-bf16-66b67e6e29c9,"Wonder Washington Heights",608425ac-6285-4070-bd92-d53e003d60e9,"Donna Bailey",managers@wonder-washington-heights.com
+760b31b9-d576-5c9a-9923-fc4f17a686e5,"Cardio Bakery",90efa3d6-db3b-482a-8df5-f5fd8e9afe4f,"Jacob Ortiz",managers@cardio-bakery.com
+fdddff04-bb2e-590d-8111-509a7bfee5cb,"Nino's Restaurant",4011b2f1-7a39-4c5b-b62e-b45d0777072d,"Rachel Morris",managers@ninos-restaurant.com
+f7de3b91-3460-5044-b99c-8a23f8d463a3,"Roma Pizza",b0b6e3ac-a164-4ae6-b810-27168665b186,"Kevin Ross",managers@roma-pizza.com
+6338f935-49b0-5811-946b-714e990e2203,"Metro Private Cinema - Chelsea",6f6649f9-d0cd-4883-aebc-540a5277d017,"Nicole Ortiz",managers@metro-private-cinema-chelsea.com
+c5e61a14-dee5-50d3-b3ac-a70de915ca95,"ARK Bagels",432976a0-4e97-4de0-9650-5141af9c40e7,"Robert Kelly",managers@ark-bagels.com
+0436f1fc-5c03-59ca-8a72-36d78978c67c,"Cookies by Jackie",2b4252fd-7e37-4fd7-b620-31c60986d40e,"Dennis Phillips",managers@cookies-by-jackie.com
+8e549923-78ad-554a-9fc8-741d60f9bc58,"Baker Falls",bad3c845-b2bc-480d-960f-91eee7909105,"Diane Miller",managers@baker-falls.com
+a58b6518-3765-5147-9bae-e6f58ee19d84,"The Yard's Pub NYC",20b9fc7b-a5da-41fc-8c8d-1eea4af81d4f,"Jacob Clark",managers@the-yards-pub-nyc.com
+64b3c86c-e629-5a92-ac19-a790e2ff6ec5,"Bareburger",7696db51-25e2-41b9-85e0-4ee33d84a09e,"Pamela Hall",managers@bareburger-2.com
+24f05ecc-e8ce-5276-b9cb-0106980bf2ce,"Derby Cup Coffee",5edd7e70-b8fa-4870-9fca-b1bec91c5ffc,"Sharon Rodriguez",managers@derby-cup-coffee.com
+6eeb3bb1-960b-5916-ae7d-27c673a51756,"Keki Modern Cakes",c54d1434-094d-41a3-b208-b34b929ad029,"Samantha Thompson",managers@keki-modern-cakes.com
+e7cfc1b7-8845-568f-b2ee-5946ca3058b8,"Eataly Caffè - Hudson Yards",4ae3f1f1-57aa-4e6d-a404-0f66ed85d77d,"Karen Smith",managers@eataly-caff-hudson-yards.com
+2f64f599-7f8f-5f8c-baf0-5f340dcbc471,"Asphalt Green - Upper East Side campus",d8e68378-31eb-498a-9fa2-38259c7501bf,"Samantha Jimenez",managers@asphalt-green-upper-east-side-campus.com
+1a0bdc89-1d3f-58be-9e62-3f0e46af66a2,"The Oven's Slice",f0b2eef4-2e73-467a-8814-63ccd0524bc9,"Elizabeth Myers",managers@the-ovens-slice.com
+98458b13-97fa-5e2e-803f-7ac6ba849c10,"Tawny",0b8e25cb-a5c7-47ea-9de5-8fb3e02b8aa9,"William Johnson",managers@tawny.com
+20194087-c31f-5612-baa5-bd9a118a78ba,"Sanku Maots'ai 三顾冒菜",7f27d239-26b7-4564-ba47-3f4a38fe0447,"Ashley Sanchez",managers@sanku-maotsai.com
+0fa5d862-c96a-5ead-8be9-bfcfaba8c5a6,"Earthbar",c14e9c3b-049f-44ea-92ab-e6412e0dc315,"Barbara Jackson",managers@earthbar-2.com
+206f6894-028f-5cf7-96e0-9a16982f0b43,"MOKAFÉ",13d3262d-988e-484a-9e3f-22110d42a725,"James Richardson",managers@mokaf.com
+bcc97228-5838-59bf-b1b9-3ad0df404b28,"Go Go Curry Times Square",47113d12-a77d-4119-b9bc-6afbfcaacfc5,"Anna Walker",managers@go-go-curry-times-square.com
+dec4c656-7be3-5960-95d9-6cd8244679aa,"DD Soup Dumpling & FuJi Hibachi",5a53af93-7aab-4892-81ec-8af3bc2fd5a5,"Kathleen Alvarez",managers@dd-soup-dumpling-fuji-hibachi.com
+fa0b41af-c2d4-5914-9c89-ff2d98970a7b,"Bareburger",f708d3bb-e6bc-4712-8efa-884ee26fd410,"Pamela Morales",managers@bareburger-3.com
+17d2030a-deae-5c14-b34a-d3a4e7e10d58,"Earthbar",01ca8e1a-9c4f-4833-8b1c-c2a4cee2b32e,"Nancy Scott",managers@earthbar-3.com
+5bbdfd9f-df9d-541c-af1a-17ceeffe5dc4,"Fasano Restaurant New York",e8dd8656-731b-4ec3-bc2e-cdf211a19015,"Sarah Alvarez",managers@fasano-restaurant-new-york.com
+8997e3f5-d463-52ad-97ce-ceaa168a0f6e,"Mi Casa Restaurant",7ac83804-c7b9-404b-bf8b-bccc4e96907c,"Rebecca Johnson",managers@mi-casa-restaurant.com
+ff5ecfb4-f705-56a3-a2d1-541c6c3f6113,"Chubby Cattle BBQ | New York",4c9b63a9-26b7-4b21-b359-13f4f58b6001,"Catherine Rodriguez",managers@chubby-cattle-bbq-new-york.com
+a47b2336-ded9-5886-a8fc-f681596ddf85,"Luckin Coffee",96b2d433-6d50-4a6d-942c-e48913f5b7b8,"Ashley Allen",managers@luckin-coffee.com
+f85f83c0-6afa-5c50-bc56-5be9f2bdbab1,"Armada",8cb5c5c7-71f0-4cf9-a997-06e2984f0ffd,"Emily Sanchez",managers@armada.com
+1f75f744-5270-5027-8b79-236a6dbef142,"Zara Pizza",57b1f0e1-de41-477b-98ab-d30941b402cc,"Eric Rogers",managers@zara-pizza.com
+cd74d234-c71a-5285-bc97-39128bffdc16,"Sofia's of Little Italy",80447927-ee18-4031-8fc4-272a117b6c89,"Sarah Morgan",managers@sofias-of-little-italy.com
+e6ba6298-942b-558a-9661-f1efa6834cee,"House of Domes",397536fe-28a4-4942-a03f-e204825563c2,"Charles Thompson",managers@house-of-domes.com
+1ebd7258-655c-5a46-81da-6d8d8930750c,"Corner Bistro East",8413e048-d8a3-4407-b924-ba63d29d2d3d,"Eric Kelly",managers@corner-bistro-east.com
+28c735f1-10fb-5366-ae05-1490cfa74ae6,"The C Cafe & Wine",cefe5a70-5c13-4947-8bd9-a89967cff32d,"Barbara Ward",managers@the-c-cafe-wine.com
+99f270c0-ba0e-5c15-9483-f511ec5203f5,"Gramercy Bagels",a6a3594c-7cd7-45a7-8617-f8fffde445d7,"Amy Torres",managers@gramercy-bagels.com
+3708745d-a40e-54b2-98ab-05aab367d414,"Carmela Coffee - West Village",9487c25c-2e22-45a4-b079-50c1e8f788e8,"Angela Rogers",managers@carmela-coffee-west-village.com
+66ec5b70-92f8-5d6d-891d-a38be09d6444,"Taquería el Chato",44e05a47-da82-409b-ac14-997e8f93b3d2,"Dennis Adams",managers@taquer-a-el-chato.com
+024c0acc-b3a7-5d22-a49a-ffbb0908a5ff,"Variety Coffee Roasters",93d4f272-494d-439b-9d77-71df16258bd6,"Nicholas Stewart",managers@variety-coffee-roasters-2.com
+fee4182e-aa28-5d90-8741-d893e0a4ccd4,"Little Cupcake Bakeshop",c346bb22-ac43-4e0f-9370-6df0c3906d65,"Patricia Davis",managers@little-cupcake-bakeshop.com
+e0ad2754-b883-5069-a7a4-08d5bcf3964d,"Felix Empanadas",76b00f17-e89e-4ba8-ac2d-38f953e7077d,"Debra Bailey",managers@felix-empanadas.com
+50371905-2226-5302-be71-e6b6f39fe8a0,"Elpis Pizza & Gourmet Food",c9d67cc5-447d-43ac-8c95-7c95990c400c,"Eric Lopez",managers@elpis-pizza-gourmet-food.com
+8fceee9b-7d2b-585a-871a-c06fefebffdc,"Babbo",2a5ad464-f20e-44fc-ae22-e72a5acc116c,"Jessica Collins",managers@babbo.com
+85d95f9c-8963-50e0-b199-cfda5ccd6000,"Moonburger",f91e1530-2f49-4612-9b9e-53e18bb662de,"David Gonzalez",managers@moonburger.com
+cc141502-6eb9-5436-80f2-589873156aac,"Barfly",56771cd2-f47e-479f-9c51-9f49092af842,"Barbara Rivera",managers@barfly.com
+b6d747c7-243f-5224-817c-b0f645196d35,"Simpl Coffee",870f4d8b-4a4d-4139-a4e7-cfc21e072cdf,"Nicole Mendoza",managers@simpl-coffee.com
+ef2b49e9-a85c-5bf3-87a6-572a79309c25,"Yard House",cff1416c-c67b-4629-ba54-0e343a925763,"Kenneth Thompson",managers@yard-house.com
+1470c072-fe81-5c58-9a47-464639c3d857,"The Oasis Cafe",209c798d-1e37-46c0-ad09-ea2baca3d6f4,"Ryan Hill",managers@the-oasis-cafe.com
+e165e14d-ed61-58fe-82c5-df622b66900a,"Bub's Bakery NYC",b0755309-c9ca-4668-af43-cd0f44edb95f,"Gary Taylor",managers@bubs-bakery-nyc.com
+5a729c5f-676f-5886-b68b-23cf84e7577f,"Durar caffe inc",6c675d1c-258d-47ef-a330-7baa865d75ca,"Donna Williams",managers@durar-caffe-inc.com
+bf782026-0ee4-5919-81f5-155dd19130e5,"Gnocchi on 9th",b648ccde-c498-4a35-bbd7-3c17e07c257e,"William Campbell",managers@gnocchi-on-9th.com
+24fcb7bd-0b52-53d1-8853-1e00319585fe,"Miriam West Village",93b5cd9f-a01c-464b-9531-f628e548a93a,"Melissa Wilson",managers@miriam-west-village.com
+0b1685f2-30be-5c2f-8a7e-43991c4b3884,"Best Damn Breakfast Burrito",f6c1a121-78fb-42df-b42c-794dc24003f5,"Jason Martinez",managers@best-damn-breakfast-burrito.com
+379186b3-88a3-5bbb-b1ef-81aea4d08f94,"El Nuevo Jaya Restaurant",e22b952c-8d84-41dc-a1ef-eea69099bc34,"Kenneth Myers",managers@el-nuevo-jaya-restaurant.com
+b2697f97-5479-5629-8284-c56e913e5722,"Cheese Wheel Pastas",da6a3715-ea70-4a00-a25a-9315c9adba61,"Richard Turner",managers@cheese-wheel-pastas.com
+016d68e9-c7fc-56d1-b466-49fede45d49f,"D' LA PARA PICA POLLO - DYCKMAN",f5955f26-60ce-46af-88f6-ab28d6114202,"Cynthia Carter",managers@d-la-para-pica-pollo-dyckman-2.com
+aa8bd793-c895-5150-8731-cf643ba355fe,"El-Taco NYC",93aad775-d7d1-45af-b510-6880e0b88b3f,"Samuel Taylor",managers@el-taco-nyc.com
+9ff4a410-e336-5719-9536-c3fa1450cb42,"Mapo Asian restaurant & Bar -Time Square 周麻婆",4962a7a8-7bd2-4abe-894a-11af0d6335c7,"Mary Thompson",managers@mapo-asian-restaurant-bar-time-square.com
+c23ca971-da72-56ec-8947-61b11d2e8c7a,"La Boca at Faena",3541c97b-4234-4936-851d-45dcebae18d6,"Stephanie Alvarez",managers@la-boca-at-faena.com
+c11bf6e2-7dc7-5ed6-a091-1d1a860b6f3d,"La Mercerie",578f08ba-c359-4be0-83b4-8661e06812e4,"Ryan Price",managers@la-mercerie.com
+5ba86fe2-12ae-5794-b1a4-76dfe3f8ce5f,"Fermento Pizza NYC",c3663a6d-dea8-4b3a-858d-7a2d8b5e4cfb,"Brenda James",managers@fermento-pizza-nyc.com
+c4dd8c20-0614-5a6f-a7bf-8b2af9d02062,"Cibao",acae27bb-8898-4d65-a7e0-038a048105aa,"Edward Rivera",managers@cibao.com
+42eef9f4-9dca-5076-af16-3cc1e744f62b,"Vegano Fish Market & Restaurant",e60879d4-fdfc-4180-871e-5df8c8393e6d,"Ronald Mitchell",managers@vegano-fish-market-restaurant.com
+32935952-d9ab-5b94-b134-62b1639dbb3b,"La Bomboniera",161c18af-edf4-4003-925f-90bdfa5e15cd,"Helen Kim",managers@la-bomboniera.com
+a64a92e9-34cb-5ae9-8971-2847e11939e4,"La Perla Nascosta",4f6e80b8-9149-4208-b1f9-c747c716717e,"Jacob Reyes",managers@la-perla-nascosta.com
+46afb21e-7465-5cc3-9f8a-c7f714ab37b5,"ChaHalo 茶话弄 - East Village",b5c55639-fbe4-4e8a-af64-4abf3e41943f,"Patricia Gomez",managers@chahalo-east-village.com
+3fb82b66-73be-5447-bc47-3232aa999a9d,"The Cafe at Cornell Tech",a70ce1f5-0542-4a71-8b6d-f45abe79e68a,"Frank Ward",managers@the-cafe-at-cornell-tech.com
+b1777d4a-ebd2-575b-bcdd-12b599b4d455,"Randy's Donuts",3dc3b8f7-7753-48b7-b0cb-a4ecef5b0d42,"Robert Bailey",managers@randys-donuts.com
+269801a4-3bf3-5945-b64e-60dc7b52e47d,"Tinto Café and Bar",32005411-92b6-4b4a-a40a-7ae513fcbbc9,"Ryan Stewart",managers@tinto-caf-and-bar.com
+465797ad-5f15-57cc-9aa8-dbd8c428373f,"Aria Nova Pizzeria",c9db28b2-a272-49f9-9fbe-9982cbdae340,"Alexander White",managers@aria-nova-pizzeria.com
+182a11a0-5451-5b20-95f6-da134de520be,"Luckin Coffee",9025f24a-1def-46f4-b386-66d04e91a5db,"Heather Anderson",managers@luckin-coffee-2.com
+82323533-96d3-5412-b608-5443b5fec943,"Pica Pollo 809",e1728f59-3f64-4a2a-ab00-5593c857a6c2,"Brenda Hill",managers@pica-pollo-809.com
+7eb0a35a-7d00-5918-abd6-a9cf271b61db,"The Irish Exit",683efdd0-7866-49e5-94a0-66587a82639d,"Kimberly Brown",managers@the-irish-exit.com
+4ada732f-4863-5223-b7e6-e7d645b91e05,"Georgie’s Cafe & Bar",08c209be-6918-4acf-b6c6-bc5cb3729db0,"Jennifer Rodriguez",managers@georgie-s-cafe-bar.com
+d496984c-596f-5ebc-9d12-58ee024f01f0,"Hidden Lane Bar",54548871-ac54-4e17-8b28-06ed50da827b,"Gary Price",managers@hidden-lane-bar.com
+fc6000a7-f970-5772-98ae-c9c360b34da1,"maman",723ec8d0-5f19-46e2-b99f-abf77a8c0a32,"Kathleen Brooks",managers@maman-3.com
+9dab2732-4fb8-5103-bb8e-79a6750d02c4,"Sweet Rehab",f12927e4-5406-4c22-89cc-bd9e34a36654,"Joseph Davis",managers@sweet-rehab.com
+44c793f3-4efa-5510-b652-9552c6fa5dc1,"Maison Brew",98ad0a20-2937-4838-a9e3-19a6316b1600,"Timothy Lee",managers@maison-brew.com
+e71c9664-5a1a-52ce-8f73-c491258ee96c,"Bao Noodle House 包之面",8f7cacda-56b5-4a94-ac52-82ea43488717,"Samuel Davis",managers@bao-noodle-house.com
+0b6fb2d9-2f31-574f-ace1-7f0187741812,"The Maze NYC",d8bb0b91-c07d-4ff0-99b7-6c93fee9b820,"Melissa Lee",managers@the-maze-nyc.com
+67466d6f-0289-525c-afb0-55a72880b583,"Punta Cana to go Manhattan",eaa24204-ac20-4acc-afbf-759a535efbe5,"Helen Torres",managers@punta-cana-to-go-manhattan.com
+fb69658d-3341-55e1-a281-4636e9422cb0,"IHOP",f0d58b3a-8529-4b0c-9188-e6c492a36046,"Melissa Brooks",managers@ihop.com
+08ce0b20-da99-57a6-9590-9997564c10c3,"La Vita",1d584dc1-eaba-434a-a15d-9ed89c5b8877,"Diane Ruiz",managers@la-vita.com
+d1a0ae6c-c147-5685-bebe-c4ab4548f68b,"Hawa Smoothies & Bubble Tea",810d5bb9-3d84-4547-9e0d-d7a77bd9c6e3,"Gregory Myers",managers@hawa-smoothies-bubble-tea-4.com
+d6c622df-e697-5577-9a97-98e906995d5c,"97 Happy KTV Inc",039d20f0-74e2-4d46-8062-75e22d8c2b2d,"Ronald Reed",managers@97-happy-ktv-inc.com
+5b2f0637-c517-5b58-95ed-72fad4b1e1fc,"BAZU! by Superwow Coffee",66509466-6343-43f9-abff-fbd2a3353c3b,"Kathleen Green",managers@bazu-by-superwow-coffee.com
+43812132-c46c-5859-a8d1-a66499a854ea,"The Studio Museum in Harlem",b73e4d6b-f95a-4d41-bd29-f9a861f44b80,"Benjamin Scott",managers@the-studio-museum-in-harlem.com
+5a4c8b68-94f4-5729-a8da-c2e2ebc918c1,"Fitness Factory Health Club Harlem",007e24da-2647-4d2b-91c8-96f39454d54a,"Patrick Nelson",managers@fitness-factory-health-club-harlem.com
+1552f835-debe-58df-98d9-28ebec79d792,"Kennedy Chicken & Burgers",116dc2dc-ef7d-4d67-97c1-79de50570ff7,"Cynthia Watson",managers@kennedy-chicken-burgers.com
+8aa141e5-f6f3-5060-b088-694f8d29e7b8,"Loong Ramen",f33643f8-1019-4a22-87c7-d3506813dd72,"Eric Kelly",managers@loong-ramen.com
+310d94e6-7659-5be4-8af0-35441320e952,"Eats on 57 Marketplace",fc46dee8-2f5b-4b70-8eb0-477d665c932b,"Donald Long",managers@eats-on-57-marketplace.com
+cea6ed98-db70-5d1c-8440-47fd058ba330,"CAVA",07ee3049-be59-4815-8aae-ff824006bb28,"Michael Nelson",managers@cava-2.com
+4e85c4ea-0afe-581d-b2d5-fe771294a7e0,"Aura D’Or",5d7c5a0a-9413-48f4-8b7d-fe600a1cbc27,"Charles Garcia",managers@aura-d-or.com
+982dd4f4-7da7-5ae7-9fad-b6db7057815b,"El Sabroso",cd470982-f4e6-41f4-a44e-03693438dd4a,"Larry Morris",managers@el-sabroso.com
+3e7cdc7c-30f8-5262-9d45-9da5fcaa75d4,"Que Rico Restaurant",7702cb3c-6f5a-4351-8361-a9385ba9be6e,"Deborah Adams",managers@que-rico-restaurant.com
+2acbda01-9610-5794-945e-385e18f81b81,"Visit Sicily NYC",2e815764-1ac8-4c53-a0ee-ba7c7d3e02c3,"Brandon Rogers",managers@visit-sicily-nyc.com
+660d7e0f-3592-599f-b666-09037118a4ea,"Chopped",54e62fe1-b8cc-48f4-ab5b-5ac55884e120,"Paul Kim",managers@chopped.com
+04a517a6-f869-53f2-ab23-165360740d9d,"Boobliq Bagels and Bar",d642575d-9f65-40fd-a56a-b3350dbb75e6,"Eric Evans",managers@boobliq-bagels-and-bar.com
+a1682b3a-2df0-5936-ae4c-63ace8bbad18,"Pizza Point",d850f1e9-1d6c-4d58-9833-f5cdf74e3e3e,"Elizabeth Hall",managers@pizza-point.com
+a69f2b7b-5907-540c-a12e-c669b33811e6,"Menkoi Sao",d14fb219-6e8a-420a-a12d-2ad24b597a28,"Heather Thompson",managers@menkoi-sao.com
+1f7a8d53-1d8b-560a-a385-ac9dd039aa69,"Surf City Pizzeria 3",e30f9429-975f-4086-9544-55939c1f6eba,"Michelle Chavez",managers@surf-city-pizzeria-3.com
+6d918bb5-3356-580e-8c67-c24a898e2c46,"Casita of Brooklyn",a8ecba81-98dc-4573-9e9f-af758d2ef789,"Michael Thompson",managers@casita-of-brooklyn.com
+3c6f8f04-46fc-5e04-ba02-6bc18bd49339,"Fu Wing",1b073778-7eb6-4b63-8e8d-e11cd79d161a,"Nicholas Green",managers@fu-wing.com
+038149ac-1b07-544e-a8b3-56fb63f5679a,"Coffee + Cocktails",d356ea96-e840-4e1a-a19d-58995018b463,"Samuel Morris",managers@coffee-cocktails.com
+0eb99d43-54f6-556f-a56e-b7d868194778,"egg cellent tacos Mexican cuisine",dfda9a5f-5f1d-4e99-af7d-4ecfb63075b7,"Helen Hernandez",managers@egg-cellent-tacos-mexican-cuisine.com
+fec0f31e-c03e-53f4-90bd-946a4bc31f5e,"Dunkin'",ee919656-2759-43da-bb84-ab8cd8326f03,"Robert Morgan",managers@dunkin-34.com
+16a39643-c48d-50a0-b630-80f83b255954,"HYDERABADI ZAIQA",970a83c1-f1aa-44fc-b443-6c2846b2a46a,"Emily Myers",managers@hyderabadi-zaiqa.com
+bde82b8e-2002-51c9-8022-003d8bdfd2df,"Nova Pizza & Grill",94fdfad8-3646-4bec-a373-0c6370d56f6a,"Stephanie Ortiz",managers@nova-pizza-grill.com
+c147c98a-74e5-51d1-a893-39d05965d953,"Liquid Bar & Restaurant",84ea88fa-309b-4a18-a485-6299990563c2,"Amanda Moore",managers@liquid-bar-restaurant.com
+6076db99-10b5-5858-861c-cf575ccb4524,"Original Roma Pizza",a65ee5ea-7873-49ec-85f7-552b7bb209da,"Dennis Reyes",managers@original-roma-pizza.com
+e5a6e5d1-b800-58c3-857e-c23c7d1d07cd,"McDonald's",3cf8a2e1-1868-4723-9e3d-f6ed5e5c020c,"Jeffrey Ward",managers@mcdonalds-7.com
+19687040-1206-522a-b4bd-673d3b6e6020,"fresh&co",df4ede34-de8b-48e6-a9d2-c0f7f23c39a1,"Michael Sanchez",managers@fresh-co-2.com
+d87f819b-0d50-572b-8f54-62cd2289c574,"Profit Chinese Restaurant II",eea11e04-76c5-4924-bb4a-cd92dba37c72,"Daniel Gonzalez",managers@profit-chinese-restaurant-ii.com
+2153d30f-88cb-5a32-9f5d-7414c96836cf,"Joe's Pizza Broadway",bacf06d1-e38c-4dff-adb8-3f63dffb99d2,"Amy Ward",managers@joes-pizza-broadway.com
+eba39417-6693-58de-a553-42343309b1fe,"Little Italy Pizza",38d62ea3-f4ef-4572-802e-790aa9f18ad4,"Joshua Jackson",managers@little-italy-pizza-4.com
+c4fa94ee-4f32-52fc-8277-83b31a027e3f,"Parker & Quinn",64550b6f-2f7d-49a8-aa6e-ede6e3a5cb6a,"Catherine Stewart",managers@parker-quinn.com
+5c68229d-e7e6-562f-8f71-e88c7b96d222,"Dawson 39 Restaurant & Bar",f545219d-9f4a-4c90-9744-303eedd87560,"Linda Cruz",managers@dawson-39-restaurant-bar.com
+93847c45-046f-5781-b3d1-69a0c4cc4d60,"Connolly's",ffd4a412-0ebe-4fed-8188-916bf2e5a881,"William Evans",managers@connollys.com
+7249b410-e35a-520c-8858-9ff5f8ec5dd6,"The Perfect Pint",8bf15e4f-5367-4960-beea-bc7879e6bcef,"Ryan Ramirez",managers@the-perfect-pint-2.com
+1fc58919-ee8f-5e5f-8a78-91ee2c1dff94,"The Independent",7444cc38-1d15-4cbe-82f9-5eabbdcc228d,"Timothy Thomas",managers@the-independent.com
+0dc1cd48-6d55-5252-990f-568a54759fa0,"Artichoke Basille's Pizza",220de307-ae36-453e-bb8c-c4904e8f66ef,"Larry Parker",managers@artichoke-basilles-pizza.com
+4d61ed45-d7f2-578c-b21e-5a0b39f7712d,"Ten Thousand Coffee",87e86f23-8436-4c7f-bc17-8b9c89fd381f,"Rebecca Evans",managers@ten-thousand-coffee.com
+413d6d46-53f6-5f6a-9c57-d6f5aa6df27b,"LOLITA",d7537b75-db71-4393-a513-062ef10f43c7,"Alexander Young",managers@lolita.com
+9134be90-9f84-559a-8d68-7246f65038b6,"Gong Cha",aa399203-cbc1-47dd-ace0-4403c93b6e7f,"Gregory Cox",managers@gong-cha-3.com
+de3068b2-7e3b-5232-b84b-00a9bd7e9a6c,"Subway",e40466d0-c1cf-4325-8dc7-bf6345f194ab,"Lisa Wilson",managers@subway-12.com
+2c06c66f-4ead-5d9f-94ce-5b1aeef63979,"McDonald's",107982e5-ba68-4886-b1c1-e5e23a3043a5,"Eric Thompson",managers@mcdonalds-8.com
+347b14c2-95fe-5094-86ac-c12de1a7ffc4,"Joys' Cafe",28134b6a-5e15-460a-8d9e-de827d6b1bf7,"Gary Stewart",managers@joys-cafe.com
+3de81a25-8e90-5da3-8b46-974c14cb24e9,"Sozai Japanese Restaurant (Izakaya Ramen)",1003c986-1ce6-4b32-9145-0f28a711de7e,"Scott Price",managers@sozai-japanese-restaurant-izakaya-ramen.com
+364c7d58-cad1-5b01-92ce-db0db36eff2d,"Margon",7f0d3f7b-661c-45fc-a2b0-ebbf2e4eb8c1,"Matthew Rodriguez",managers@margon.com
+5cbc03db-0787-5696-aa4f-57c07039b934,"Bourke Street Bakery",c7e2a3b2-59b6-4ba8-ae47-b3f5fbaf110c,"Stephen Allen",managers@bourke-street-bakery.com
+54a91651-e106-592d-8b4d-5d49395bcaf9,"Ground Central Coffee Company",d2c90c69-2721-4294-800e-c6a495edec22,"Samuel Cox",managers@ground-central-coffee-company.com
+f0aed33e-6dad-5536-adca-ebfa39be005d,"Emperor Dumpling",989b622b-d1f9-4288-ad65-b0b6798aca64,"Cynthia Turner",managers@emperor-dumpling-2.com
+c82b4c66-5344-5107-a20c-fd8209370640,"Bar Orai",24ca9df9-2e67-4250-810e-30a5b1e3d212,"Melissa Garcia",managers@bar-orai.com
+98aa7c08-0a77-58d0-bbd6-da5b7954c2e8,"The Red Flame",c53ccd65-e6c4-4116-8fdd-82af9a2ebc5d,"Benjamin Diaz",managers@the-red-flame.com
+f9eb039b-b7de-55d6-8ea5-44b1be0bf7bb,"Harvard Club of New York City",e3c88c48-8560-4032-b300-63e499456a6e,"Dennis Martinez",managers@harvard-club-of-new-york-city.com
+aaca6a8d-fb8c-5883-81d9-9132ff1bd996,"Gregorys Coffee",f5f4d93a-5dea-439b-bb2d-5335990bc94c,"Sharon Walker",managers@gregorys-coffee-7.com
+287aae21-ff74-5245-b779-03656d5be503,"Le Cafe Coffee",1a6ae1a4-6106-442f-89ca-8b3d46f03ad3,"Angela Stewart",managers@le-cafe-coffee-4.com
+d4174575-3483-5d5e-99a4-036f5b050fce,"Stout NYC",0a246ca8-6b87-4315-9bec-6919f5a1e113,"Patrick Murphy",managers@stout-nyc.com
+5e347c30-1af2-5038-b642-8edea9460834,"Black Iron Burger",04f00cc7-1111-4e7c-824b-f96f8f736d67,"Kenneth Hall",managers@black-iron-burger.com
+243f5e51-9f71-57c0-8af4-7badcbed925a,"Jimmy's Corner",d313b4cd-5931-4eee-918b-b8c3ad88e8bd,"John Ross",managers@jimmys-corner.com
+98ba656d-c115-5b8d-a086-ad16b07773f9,"Chazz Palminteri Italian Restaurant",2ca72d8b-73ee-444e-9f0c-a6db785ed483,"Raymond Lewis",managers@chazz-palminteri-italian-restaurant.com
+1d118513-ff62-5507-9f60-60b3d6f7979f,"Jane Doe Bar & Restaurant",9fc560a9-78ae-431c-9f85-4cdccd5c5923,"Ashley Robinson",managers@jane-doe-bar-restaurant.com
+a4597181-82b3-5069-ae5b-66eba42f0331,"SALSWEE",99d5bc75-acbb-4616-82a1-29347cf42a34,"Patrick Myers",managers@salswee.com
+76555cfd-f5cf-577e-8120-477b45b1a531,"Mitr Thai Restaurant",c90f2ab1-f37c-4da2-b424-038a501d84af,"Angela Walker",managers@mitr-thai-restaurant.com
+5c6d4eb9-2488-5071-8f84-8598a61c3d91,"CoCo Bubble Tea - Times Square",89ccc058-4648-457a-8a6f-463838337102,"Frank Wood",managers@coco-bubble-tea-times-square.com
+dc3bd4b3-eab7-580d-b6f5-6029cba82ee0,"Poke Bowl NY",31abcc27-581f-445d-9732-b26bdc98d051,"Ronald Parker",managers@poke-bowl-ny-2.com
+27e7064f-89e1-5c1a-afa3-16805a01bc06,"Mala Hot Pot",e2c35957-cb7e-44fd-b066-9e3c718e7c45,"Nicole Perez",managers@mala-hot-pot.com
+5dd69ce4-5225-554d-b51d-d5144461c6e1,"Schnipper's",9ee9e5a3-cb4b-4697-b413-945110238199,"Benjamin Rodriguez",managers@schnippers.com
+f087922f-72d4-5c3d-aa02-0d4cca334954,"Toast Cafe Brasserie",cbe20f44-1e6d-4752-83fd-1e8dd7537912,"Kimberly Sanders",managers@toast-cafe-brasserie.com
+e4d37ef4-7011-5428-8e76-e2e536c09045,"Fresh Kitchen",b97304a6-56a4-4e4d-a96e-da28fe01966c,"Janet Gutierrez",managers@fresh-kitchen.com
+8d7ebbaf-9971-5a50-a07e-0229106789af,"Stout NYC",6e43e985-c856-45ee-b4c7-5370908a687e,"Jessica Thomas",managers@stout-nyc-2.com
+ba01586a-2541-5ed4-a518-c68399e2868b,"Dunkin'",12f816f5-a0dd-471e-ab8b-af1c15811ab2,"Katherine King",managers@dunkin-35.com
+4f55ac0f-723f-5cd0-a7bd-5871cd33035a,"Starbucks Coffee Company",be936124-ac57-4a89-aebe-7580a7bf7a5a,"Debra Mitchell",managers@starbucks-coffee-company-24.com
+e3d3287e-2c27-5305-ab12-f8eaadbc80be,"Sweet Churros",de6c9a9d-6f1b-4332-8131-5daa33183852,"Brenda Castillo",managers@sweet-churros.com
+e71f50f7-73cc-53f9-8291-c55dfd1c1b03,"OLIO E PIÙ Bryant Park",7c885e07-d3cc-4c60-94ce-352917729139,"Jack Price",managers@olio-e-pi-bryant-park.com
+3a561a04-b663-5c8e-b630-667040ac8c8b,"Sweetea",c6a620aa-6299-4395-b66c-aaa1709949c0,"Barbara Allen",managers@sweetea.com
+291a3aa1-ad2b-528f-9078-7afba6dc3bad,"Chor Bazaar",c91d9076-4e55-4b4d-8de8-729c09be67ce,"Kenneth Smith",managers@chor-bazaar.com
+c49a0c7a-fec1-5189-93ff-ec59e0d72347,"Xing Fu Tang Ktown",0f9908d7-9c47-431c-bc32-088dce9b6b18,"Ashley Gonzalez",managers@xing-fu-tang-ktown.com
+2668ab32-3ef2-5f16-b1e0-77bb2ef4194a,"Rancho Tequileria",ca64cc08-a3c0-4fa4-8cdc-987de98e07cf,"Nicole Ramirez",managers@rancho-tequileria.com
+4f391ae9-6f5e-598a-ac54-de2f939ba6bd,"Sauce Pizzeria - Moynihan Food Hall",d2ce4df7-6f9a-49c1-b969-1c42136fc5e4,"Nancy Perez",managers@sauce-pizzeria-moynihan-food-hall.com
+9abe19bf-1490-5054-8803-5e25470bca84,"Healthy Choice Gourmet Deli & Pizza",45bac051-fddf-4c8c-96cd-39c51532b402,"Frank Kelly",managers@healthy-choice-gourmet-deli-pizza.com
+3b4c59cb-cfb8-5158-b984-164d757cdd72,"Paris Baguette",b623e130-5852-4c47-acae-2d575602e15a,"Rebecca Anderson",managers@paris-baguette-3.com
+916513af-f728-5aa8-bbe3-f5dd1a69891a,"The Mill",1e92d119-4630-4a75-8031-43552b398dc1,"Ryan Gonzalez",managers@the-mill.com
+327c694f-59fc-50b8-a290-b83a74ef725b,"Powerhouse Gym 158 W. 27th Street Manhattan",9ef7a870-6ec9-4cd4-b0e6-706da74adcb4,"Karen Jimenez",managers@powerhouse-gym-158-w-27th-street-manhattan.com
+d1b851f1-8d35-5eb0-8e5b-6398d4c70848,"Mari.ne Handroll",df458b02-eee6-443b-9b05-a434c92599f4,"Brian Rodriguez",managers@mari-ne-handroll.com
+c270f33d-0dc3-56ef-94ac-e923e135f12c,"Kona Coffee Roasters | Midtown",29bd4a32-ae2e-4860-8fe5-8350b778a25c,"Christine Diaz",managers@kona-coffee-roasters-midtown.com
+6cc86a66-8149-58ae-b42b-95a98c478497,"Take Care",3fa596ff-5e48-4de7-9e21-0c64f3c58e76,"Dennis Garcia",managers@take-care.com
+a2e77184-683a-5978-b52e-3ec2f5f7b03e,"sweetgreen - Healthy Salads, Wraps, and Bowls",345e8446-244c-4efc-b443-9536223c1985,"Mary Baker",managers@sweetgreen-healthy-salads-wraps-and-bowls-4.com
