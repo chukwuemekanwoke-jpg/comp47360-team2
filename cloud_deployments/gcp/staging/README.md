@@ -6,10 +6,24 @@ greenfield design. The goal of the import step below is to get Terraform
 state to match reality with **zero** actual infrastructure changes. Only
 `tabl-app-staging` is covered; `tabl-app-prod` is a separate, later exercise.
 
+## Status
+
+| Step | Done? |
+| --- | --- |
+| `.tf` files written from live `gcloud` state | Yes (2026-07-28) |
+| Terraform installed | Yes — `winget install Hashicorp.Terraform` (v1.15.8) |
+| `terraform init` | Yes — Google provider v6.50.0, `.terraform.lock.hcl` committed |
+| `terraform validate` / `terraform fmt` | Yes, clean — see "Bugs found during validation" below |
+| `terraform.tfvars` created (real DB password set) | **No** — still a placeholder, not committed |
+| `terraform import` (any resource) | **No** — nothing has been imported yet |
+| `terraform plan` reviewed | **No** |
+| `terraform apply` | **No, and shouldn't happen casually — see below** |
+
 ## Prerequisites
 
 ```bash
-# Terraform itself
+# Terraform itself — already installed in this dev environment via:
+#   winget install --id Hashicorp.Terraform --source winget
 terraform -version   # need >= 1.5
 
 # Already done in this environment, but if starting fresh elsewhere:
@@ -20,7 +34,7 @@ gcloud config set project tabl-app-staging
 ## Setup
 
 ```bash
-cd terraform/staging
+cd cloud_deployments/gcp/staging
 cp terraform.tfvars.example terraform.tfvars
 # edit terraform.tfvars: set tabl_app_db_password to the REAL current
 # tabl_app Cloud SQL password (Cloud SQL never exposes it via gcloud —
@@ -29,6 +43,25 @@ cp terraform.tfvars.example terraform.tfvars
 
 terraform init
 ```
+
+## Bugs found during validation
+
+Written from `gcloud` output before ever running Terraform against it, so
+two things didn't survive first contact with `terraform validate` —fixed
+now, documented here so the "why" isn't lost:
+
+- **`require_ssl` on `google_sql_database_instance.ip_configuration`** —
+  doesn't exist on provider v6 (superseded by `ssl_mode`, which was already
+  set correctly). Removed.
+- **`maintenance_window.day` must be `1–7`** (Monday=1…Sunday=7) — the raw
+  value copied from `gcloud`'s output was `0`, which the provider rejects.
+  Set to `7` (Sunday) to match the original intent; worth double-checking
+  against the actual Console setting once the real `terraform import` runs,
+  in case `0` meant something else (e.g. "no preference") that just has no
+  valid Terraform equivalent.
+
+`terraform fmt` also normalized alignment across a few files — cosmetic
+only, no behavior change.
 
 ## Import — run these in order
 
