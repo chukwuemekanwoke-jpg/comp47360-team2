@@ -1,0 +1,7 @@
+project_id = "tabl-app-staging"
+region     = "europe-west1"
+
+# Real value goes in terraform.tfvars (gitignored), or export
+# TF_VAR_tabl_app_db_password instead of putting it in a file at all.
+# Must be alphanumeric only — see variables.tf for why.
+tabl_app_db_password = "CHANGE_ME"
