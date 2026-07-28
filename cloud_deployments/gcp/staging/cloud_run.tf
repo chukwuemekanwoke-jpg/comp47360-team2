@@ -102,9 +102,9 @@ resource "google_cloud_run_v2_service" "api_gateway" {
           port = 8080
         }
         initial_delay_seconds = 1
-        period_seconds         = 10
-        failure_threshold      = 3
-        timeout_seconds        = 1
+        period_seconds        = 10
+        failure_threshold     = 3
+        timeout_seconds       = 1
       }
 
       volume_mounts {
@@ -186,9 +186,9 @@ resource "google_cloud_run_v2_service" "ml_service" {
           port = 8080
         }
         initial_delay_seconds = 1
-        period_seconds         = 10
-        failure_threshold      = 3
-        timeout_seconds        = 4
+        period_seconds        = 10
+        failure_threshold     = 3
+        timeout_seconds       = 4
       }
     }
   }

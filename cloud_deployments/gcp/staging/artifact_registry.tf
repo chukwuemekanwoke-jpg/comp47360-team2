@@ -31,11 +31,11 @@ resource "google_artifact_registry_repository" "gcr_io" {
 # services pull from the two repos above instead. Worth deciding later
 # whether to migrate the Cloud Build triggers to push here, or delete it.
 resource "google_artifact_registry_repository" "tabl_app" {
-  project        = var.project_id
-  location       = var.region
-  repository_id  = "tabl-app"
-  format         = "DOCKER"
-  description    = "Docker images for TABL app services (api-gateway, ml-service) — staging environment"
+  project       = var.project_id
+  location      = var.region
+  repository_id = "tabl-app"
+  format        = "DOCKER"
+  description   = "Docker images for TABL app services (api-gateway, ml-service) — staging environment"
   docker_config {
     immutable_tags = false
   }

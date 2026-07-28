@@ -30,21 +30,25 @@ resource "google_sql_database_instance" "tabl_db_staging" {
     }
 
     maintenance_window {
-      day          = 0 # Sunday
+      # Raw gcloud output reported day=0; the SQL Admin API's own field is
+      # 1-7 (Monday=1...Sunday=7) and the provider enforces that range, so 0
+      # doesn't validate. Using 7 (Sunday) to match — verify against the
+      # actual Console setting after import in case 0 meant something else
+      # (e.g. "any day") that just doesn't have a valid Terraform equivalent.
+      day          = 7 # Sunday
       hour         = 0
       update_track = "canary"
     }
 
     ip_configuration {
-      ipv4_enabled    = true
-      ssl_mode        = "ENCRYPTED_ONLY"
-      require_ssl     = false
+      ipv4_enabled = true
+      ssl_mode     = "ENCRYPTED_ONLY"
     }
 
     password_validation_policy {
-      enable_password_policy     = true
-      min_length                 = 8
-      complexity                 = "COMPLEXITY_DEFAULT"
+      enable_password_policy      = true
+      min_length                  = 8
+      complexity                  = "COMPLEXITY_DEFAULT"
       disallow_username_substring = true
     }
 

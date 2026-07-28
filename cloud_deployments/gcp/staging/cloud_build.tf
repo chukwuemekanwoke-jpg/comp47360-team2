@@ -66,8 +66,8 @@ resource "google_cloudbuild_trigger" "api_gateway_deploy" {
     }
     images = ["$_AR_HOSTNAME/$_AR_PROJECT_ID/$_AR_REPOSITORY/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA"]
     options {
-      logging               = "CLOUD_LOGGING_ONLY"
-      substitution_option   = "ALLOW_LOOSE"
+      logging             = "CLOUD_LOGGING_ONLY"
+      substitution_option = "ALLOW_LOOSE"
     }
   }
 }
