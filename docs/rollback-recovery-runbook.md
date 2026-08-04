@@ -11,7 +11,7 @@ TABL-507 asks for three things. Honest status on each, as of 2026-07-11:
 |---|---|
 | Document rollback steps: git revert + redeploy | **Partially done.** `git revert` mechanics documented and timed for real (below). The "redeploy" half is **blocked** — see [Prerequisites](#prerequisites). |
 | Test recovery from staging backup | **Not done — blocked.** No Cloud SQL automated backup is confirmed configured anywhere (repo, config, or docs). There is nothing to test recovery *from* yet. |
-| Ensure <2 min rollback time | **Not achievable yet, and not with the mechanism the ticket implies.** A git-revert-triggers-CI-rebuild-redeploy path cannot hit 2 minutes — `ci.yml` alone runs 5 jobs that each realistically take 2-5 minutes. The actual sub-2-minute mechanism is Cloud Run's built-in revision traffic-shift (no rebuild needed), but it's unconfirmed whether Cloud Run is even the live deploy target for `api-gateway`/`ml-service` today (this is [R-03](../RISK_REGISTER.md)/[R-04](../RISK_REGISTER.md) in the risk register — Critical severity, already escalated). This runbook documents the *intended* fast path so it's ready to verify and use once that's confirmed, rather than presenting an untested claim as fact. |
+| Ensure <2 min rollback time | **Not achievable yet, and not with the mechanism the ticket implies.** A git-revert-triggers-CI-rebuild-redeploy path cannot hit 2 minutes — `ci.yml` alone runs 5 jobs that each realistically take 2-5 minutes. The actual sub-2-minute mechanism is Cloud Run's built-in revision traffic-shift (no rebuild needed), but it's unconfirmed whether Cloud Run is even the live deploy target for `api-gateway`/`ml-service` today (this is [R-02](../RISK_REGISTER.md)/[R-03](../RISK_REGISTER.md) in the risk register — Critical severity, already escalated). This runbook documents the *intended* fast path so it's ready to verify and use once that's confirmed, rather than presenting an untested claim as fact. |
 
 ## Purpose
 
@@ -20,7 +20,7 @@ Roll back a bad deploy of the TABL app (web frontend, `api-gateway`, or `ml-serv
 ## Prerequisites
 
 - [ ] **GCP Console access** to `tabl-app-staging` — needed to confirm the two open questions below before this runbook can be fully exercised.
-- [ ] **Confirm the actual deploy mechanism for `api-gateway`/`ml-service`.** `deploy-staging.yml`'s comment claims a "Cloud Build trigger... configured directly on the Cloud Run service," but this is unverified from the repo (R-03). If confirmed, note whether it deploys on every push to `develop` or requires a manual trigger — this changes the rollback path entirely (see [Step 2](#step-2-redeploy-the-backendml-service-two-possible-paths)).
+- [ ] **Confirm the actual deploy mechanism for `api-gateway`/`ml-service`.** `deploy-staging.yml`'s comment claims a "Cloud Build trigger... configured directly on the Cloud Run service," but this is unverified from the repo (R-02). If confirmed, note whether it deploys on every push to `develop` or requires a manual trigger — this changes the rollback path entirely (see [Step 2](#step-2-redeploy-the-backendml-service-two-possible-paths)).
 - [ ] **Confirm whether Cloud SQL automated backups are enabled** on `tabl-db-staging`. Not found anywhere in repo config; may not be provisioned. Check via:
   ```
   gcloud sql instances describe tabl-db-staging --project=tabl-app-staging --format="value(settings.backupConfiguration)"
@@ -138,7 +138,7 @@ If Path A traffic-shift causes a *different* problem (e.g. the "previous" revisi
 
 | Situation | Contact | Method |
 |---|---|---|
-| Rollback mechanism itself is unconfirmed/unavailable mid-incident | chukwuemekanwoke-jpg | Direct — this is the owner of R-03/R-04 |
+| Rollback mechanism itself is unconfirmed/unavailable mid-incident | chukwuemekanwoke-jpg | Direct — this is the owner of R-02/R-03 |
 | DB data loss suspected, no backup to restore from | chukwuemekanwoke-jpg | Direct — treat as highest severity, this runbook cannot currently resolve it |
 | Migration rollback needs data-level judgment | Whoever authored the migration | Check `git blame` on the migration file |
 
@@ -146,4 +146,4 @@ If Path A traffic-shift causes a *different* problem (e.g. the "previous" revisi
 
 | Date | Run By | Notes |
 |---|---|---|
-| 2026-07-11 | Claude (for chukwuemekanwoke-jpg) | Initial runbook written. `git revert` step timed for real (~200ms, scratch branch, no effect on `integrate`). Path A (Cloud Run traffic-shift) and the DB backup restore section are documented but **not yet exercised** — both blocked on GCP Console verification (R-03/R-04). Do not treat the <2 min target as met until Path A is confirmed available and timed end-to-end. |
+| 2026-07-11 | Claude (for chukwuemekanwoke-jpg) | Initial runbook written. `git revert` step timed for real (~200ms, scratch branch, no effect on `integrate`). Path A (Cloud Run traffic-shift) and the DB backup restore section are documented but **not yet exercised** — both blocked on GCP Console verification (R-02/R-03). Do not treat the <2 min target as met until Path A is confirmed available and timed end-to-end. |
