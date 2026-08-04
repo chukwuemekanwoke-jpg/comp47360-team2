@@ -98,4 +98,99 @@ describe("createCampaignOffers", () => {
       ["campaign-1", "user-a", 900]
     );
   });
+
+  it("enforces accessibility constraints when ML is unavailable", async () => {
+    const client = mockClient({
+      candidates: [
+        {
+          id: "sensory-user",
+          requires_sensory_friendly: true,
+          distance_meters: 100,
+        },
+        {
+          id: "wheelchair-user",
+          requires_wheelchair_access: true,
+          distance_meters: 200,
+        },
+        {
+          id: "no-access-needs-user",
+          distance_meters: 300,
+        },
+      ],
+      insertIds: ["offer-1", "offer-2"],
+    });
+
+    callMlMatch.mockRejectedValue(new Error("connection refused"));
+
+    const offerIds = await createCampaignOffers(client, {
+      campaignId: "campaign-1",
+      restaurant: {
+        ...restaurant,
+        is_wheelchair_accessible: true,
+        sensory_friendly: false,
+      },
+      tableQuota: 2,
+    });
+
+    expect(offerIds).toEqual(["offer-1", "offer-2"]);
+    expect(client.query).not.toHaveBeenCalledWith(
+      expect.stringContaining("INSERT INTO offers"),
+      expect.arrayContaining(["sensory-user"])
+    );
+    expect(client.query).toHaveBeenCalledWith(expect.stringContaining("INSERT INTO offers"), [
+      "campaign-1",
+      "wheelchair-user",
+      900,
+    ]);
+    expect(client.query).toHaveBeenCalledWith(expect.stringContaining("INSERT INTO offers"), [
+      "campaign-1",
+      "no-access-needs-user",
+      900,
+    ]);
+  });
+
+  it("rejects unknown, duplicate, and ineligible ids returned by ML", async () => {
+    const client = mockClient({
+      candidates: [
+        {
+          id: "eligible-user",
+          distance_meters: 200,
+        },
+        {
+          id: "ineligible-user",
+          requires_wheelchair_access: true,
+          distance_meters: 300,
+        },
+      ],
+      insertIds: ["offer-1"],
+    });
+
+    callMlMatch.mockResolvedValue({
+      matchedUserIds: [
+        "ineligible-user",
+        "unknown-user",
+        "eligible-user",
+        "eligible-user",
+      ],
+      scores: [1, 0.9, 0.8, 0.7],
+    });
+
+    const offerIds = await createCampaignOffers(client, {
+      campaignId: "campaign-1",
+      restaurant: {
+        ...restaurant,
+        is_wheelchair_accessible: false,
+        sensory_friendly: false,
+      },
+      tableQuota: 4,
+    });
+
+    expect(offerIds).toEqual(["offer-1"]);
+    expect(client.query).toHaveBeenCalledTimes(2);
+    expect(client.query).toHaveBeenCalledWith(expect.stringContaining("INSERT INTO offers"), [
+      "campaign-1",
+      "eligible-user",
+      900,
+    ]);
+  });
 });

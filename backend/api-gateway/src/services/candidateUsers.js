@@ -37,6 +37,8 @@ async function findNearbyCandidates(client, { restaurant, limit }) {
        WHERE u.last_lat IS NOT NULL
          AND u.last_lng IS NOT NULL
          AND u.id IS DISTINCT FROM $4
+         AND (NOT p.requires_wheelchair_access OR $6 = TRUE)
+         AND (NOT p.requires_sensory_friendly OR $7 = TRUE)
      )
      SELECT id, budget_tier, dietary_tags, preferred_cuisines, dining_styles,
             requires_wheelchair_access, requires_sensory_friendly, distance_meters
@@ -50,10 +52,37 @@ async function findNearbyCandidates(client, { restaurant, limit }) {
       MATCH_RADIUS_M,
       restaurant.manager_user_id,
       limit,
+      restaurant.is_wheelchair_accessible ?? false,
+      restaurant.sensory_friendly ?? false,
     ]
   );
 
   return rows;
+}
+
+/**
+ * Accessibility needs are eligibility constraints, not ranking signals.
+ * Keep this application-level check even though the SQL query applies the
+ * same rules: it protects fallback behaviour and callers backed by mocks or
+ * alternative candidate sources.
+ */
+function satisfiesAccessibilityRequirements(row, restaurant) {
+  const requiresWheelchairAccess = row.requires_wheelchair_access ?? false;
+  const requiresSensoryFriendly = row.requires_sensory_friendly ?? false;
+
+  if (requiresWheelchairAccess && !restaurant.is_wheelchair_accessible) {
+    return false;
+  }
+
+  if (requiresSensoryFriendly && !restaurant.sensory_friendly) {
+    return false;
+  }
+
+  return true;
+}
+
+function filterEligibleCandidates(rows, restaurant) {
+  return rows.filter((row) => satisfiesAccessibilityRequirements(row, restaurant));
 }
 
 function toMlCandidates(rows) {
@@ -70,8 +99,9 @@ function toMlCandidates(rows) {
 }
 
 /**
- * Venue-side attributes the matcher scores candidate preferences against.
- * Raw values only — tier/threshold decisions belong to the scoring heuristic.
+ * Venue-side attributes the matcher uses after the gateway has enforced
+ * accessibility eligibility. Raw values only — ranking decisions belong to
+ * the scoring heuristic.
  */
 function toMlRestaurant(row) {
   return {
@@ -93,6 +123,8 @@ module.exports = {
   CAMPAIGN_TTL_SECONDS,
   MATCH_RADIUS_M,
   findNearbyCandidates,
+  satisfiesAccessibilityRequirements,
+  filterEligibleCandidates,
   toMlCandidates,
   toMlRestaurant,
 };

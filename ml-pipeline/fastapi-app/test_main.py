@@ -549,6 +549,75 @@ def test_match_users_returns_empty_result(
     }
 
 
+def test_match_users_excludes_unmet_accessibility_requirements(
+    client,
+):
+    response = client.post(
+        "/api/v1/match",
+        json={
+            "campaignId": "campaign-1",
+            "restaurantId": "restaurant-1",
+            "restaurant": {
+                "id": "restaurant-1",
+                "isWheelchairAccessible": True,
+                "sensoryFriendly": False,
+            },
+            "candidateLimit": 3,
+            "candidates": [
+                {
+                    "userId": "sensory-user",
+                    "requiresSensoryFriendly": True,
+                    "distanceMeters": 10,
+                },
+                {
+                    "userId": "wheelchair-user",
+                    "requiresWheelchairAccess": True,
+                    "distanceMeters": 100,
+                },
+                {
+                    "userId": "no-access-needs-user",
+                    "distanceMeters": 200,
+                },
+            ],
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["matchedUserIds"] == [
+        "wheelchair-user",
+        "no-access-needs-user",
+    ]
+
+
+def test_match_users_does_not_assume_missing_venue_accessibility(
+    client,
+):
+    response = client.post(
+        "/api/v1/match",
+        json={
+            "campaignId": "campaign-1",
+            "restaurantId": "restaurant-1",
+            "candidateLimit": 2,
+            "candidates": [
+                {
+                    "userId": "wheelchair-user",
+                    "requiresWheelchairAccess": True,
+                    "distanceMeters": 10,
+                },
+                {
+                    "userId": "no-access-needs-user",
+                    "distanceMeters": 100,
+                },
+            ],
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["matchedUserIds"] == [
+        "no-access-needs-user",
+    ]
+
+
 def test_match_candidate_score_is_deterministic(
     client,
 ):

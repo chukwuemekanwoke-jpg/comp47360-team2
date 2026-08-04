@@ -3,6 +3,8 @@ const {
   FLASH_DEAL_TTL_SECONDS,
   MATCH_RADIUS_M,
   findNearbyCandidates,
+  satisfiesAccessibilityRequirements,
+  filterEligibleCandidates,
   toMlCandidates,
   toMlRestaurant,
 } = require("../services/candidateUsers");
@@ -256,6 +258,8 @@ describe("cache and offer helper services", () => {
         latitude: 40.73,
         longitude: -73.99,
         manager_user_id: "manager-1",
+        is_wheelchair_accessible: true,
+        sensory_friendly: false,
       },
       limit: 2,
     });
@@ -266,6 +270,8 @@ describe("cache and offer helper services", () => {
       MATCH_RADIUS_M,
       "manager-1",
       2,
+      true,
+      false,
     ]);
     expect(client.query.mock.calls[0][0]).toContain(
       "JOIN user_preferences p ON p.user_id = u.id"
@@ -274,6 +280,12 @@ describe("cache and offer helper services", () => {
     expect(client.query.mock.calls[0][0]).toContain("p.dining_styles");
     expect(client.query.mock.calls[0][0]).toContain("p.requires_wheelchair_access");
     expect(client.query.mock.calls[0][0]).toContain("p.requires_sensory_friendly");
+    expect(client.query.mock.calls[0][0]).toContain(
+      "NOT p.requires_wheelchair_access OR $6 = TRUE"
+    );
+    expect(client.query.mock.calls[0][0]).toContain(
+      "NOT p.requires_sensory_friendly OR $7 = TRUE"
+    );
     expect(toMlCandidates(rows)).toEqual([
       {
         userId: "user-1",
@@ -285,6 +297,37 @@ describe("cache and offer helper services", () => {
         requiresSensoryFriendly: false,
         distanceMeters: 425,
       },
+    ]);
+  });
+
+  it("treats accessibility needs as hard eligibility constraints", () => {
+    const restaurant = {
+      is_wheelchair_accessible: true,
+      sensory_friendly: false,
+    };
+    const candidates = [
+      {
+        id: "wheelchair-user",
+        requires_wheelchair_access: true,
+        requires_sensory_friendly: false,
+      },
+      {
+        id: "sensory-user",
+        requires_wheelchair_access: false,
+        requires_sensory_friendly: true,
+      },
+      {
+        id: "no-access-needs-user",
+        requires_wheelchair_access: false,
+        requires_sensory_friendly: false,
+      },
+    ];
+
+    expect(satisfiesAccessibilityRequirements(candidates[0], restaurant)).toBe(true);
+    expect(satisfiesAccessibilityRequirements(candidates[1], restaurant)).toBe(false);
+    expect(filterEligibleCandidates(candidates, restaurant).map((row) => row.id)).toEqual([
+      "wheelchair-user",
+      "no-access-needs-user",
     ]);
   });
 

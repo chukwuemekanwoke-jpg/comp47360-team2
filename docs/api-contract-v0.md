@@ -275,6 +275,8 @@ Create consumer after dummy login.
   "dietaryTags": ["vegan"],
   "preferredCuisines": ["Italian", "Japanese"],
   "diningStyles": ["casual"],
+  "requiresWheelchairAccess": true,
+  "requiresSensoryFriendly": false,
   "lastLat": 40.758,
   "lastLng": -73.9855
 }
@@ -289,6 +291,7 @@ Create consumer after dummy login.
 - `dietaryTags`: dietary restrictions such as `vegan`, `halal`, or `gluten-free`
 - `preferredCuisines`: categorized cuisine preferences
 - `diningStyles`: dining contexts such as `casual`, `family`, `date-night`, or `business`
+- `requiresWheelchairAccess` and `requiresSensoryFriendly`: boolean accessibility needs. When true, campaign matching treats the corresponding restaurant capability as a hard eligibility constraint, including when the ML service is unavailable.
 
 #### `GET /api/v1/users/me`
 
