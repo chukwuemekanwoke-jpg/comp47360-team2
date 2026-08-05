@@ -1,0 +1,13 @@
+# Same rules as cloud_deployments/gcp/staging/.gitignore.
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+terraform.tfvars
+*.auto.tfvars

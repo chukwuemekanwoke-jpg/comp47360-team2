@@ -1,0 +1,12 @@
+location      = "westeurope" # placeholder
+environment   = "staging"
+github_owner  = "chukwuemekanwoke-jpg"
+github_repo   = "comp47360-team2"
+github_branch = "develop"
+
+db_admin_username = "tabl_app"
+db_name           = "tabl_app"
+
+# Real value goes in terraform.tfvars (gitignored), or export
+# TF_VAR_db_admin_password instead of putting it in a file at all.
+db_admin_password = "CHANGE_ME"

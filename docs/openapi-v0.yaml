@@ -903,10 +903,10 @@ components:
             type: string
         requiresWheelchairAccess:
           type: boolean
-          description: Diner needs step-free access.
+          description: Diner needs step-free access; matching excludes venues that do not provide it.
         requiresSensoryFriendly:
           type: boolean
-          description: Diner needs a low-stimulation room.
+          description: Diner needs a low-stimulation room; matching excludes venues that do not provide it.
         createdAt:
           type: string
           format: date-time
@@ -999,8 +999,10 @@ components:
             type: string
         requiresWheelchairAccess:
           type: boolean
+          description: Hard matching constraint requiring a wheelchair-accessible venue.
         requiresSensoryFriendly:
           type: boolean
+          description: Hard matching constraint requiring a sensory-friendly venue.
         lastLat:
           type: number
         lastLng:

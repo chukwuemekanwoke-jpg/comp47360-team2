@@ -1,0 +1,18 @@
+# Terraform local state and cache — contains resource details, sometimes
+# secret-adjacent (e.g. connection strings by reference). Never commit.
+# (.terraform.lock.hcl is NOT listed here on purpose — that one should be
+# committed, it pins provider versions for reproducible plans.)
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Real values go in terraform.tfvars, which is gitignored; only the .example
+# template (no real secrets) is committed.
+terraform.tfvars
+*.auto.tfvars

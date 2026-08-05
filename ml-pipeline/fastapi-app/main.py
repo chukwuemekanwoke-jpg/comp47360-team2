@@ -298,7 +298,8 @@ class MatchRestaurant(BaseModel):
     Venue-side attributes scored against candidate preferences.
 
     Optional on the request so older gateway builds that send only
-    restaurantId keep working.
+    restaurantId keep working. Candidates with declared accessibility needs
+    are ineligible when the venue capability cannot be verified.
     """
 
     id: str
@@ -352,13 +353,16 @@ def get_service(request: Request) -> BusynessModelService:
 
 def score_candidate(
         candidate: MatchCandidate,
-        restaurant:MatchRestaurant | None
+        restaurant: MatchRestaurant | None,
     ) -> float:
     """
     Existing deterministic flash-deal candidate heuristic.
 
     This is separate from the restaurant busyness XGBoost model.
     """
+    if not candidate_meets_accessibility_requirements(candidate, restaurant):
+        return 0.0
+
     distance_factor = max(
         0.0,
         1.0 - min(
@@ -373,8 +377,6 @@ def score_candidate(
         score += 0.2
     if restaurant and (restaurant.isWheelchairAccessible and candidate.requiresWheelchairAccess):
         score += 0.1
-    elif restaurant and ((not restaurant.isWheelchairAccessible) and candidate.requiresWheelchairAccess):
-        score = 0
     if restaurant and (restaurant.sensoryFriendly and candidate.requiresSensoryFriendly):
         score += 0.1
 
@@ -383,6 +385,22 @@ def score_candidate(
         min(1.0, max(0.0, score)),
         4,
     )
+
+
+def candidate_meets_accessibility_requirements(
+        candidate: MatchCandidate,
+        restaurant: MatchRestaurant | None,
+    ) -> bool:
+    """Return whether the venue can satisfy the candidate's declared needs."""
+    if candidate.requiresWheelchairAccess:
+        if restaurant is None or not restaurant.isWheelchairAccessible:
+            return False
+
+    if candidate.requiresSensoryFriendly:
+        if restaurant is None or not restaurant.sensoryFriendly:
+            return False
+
+    return True
 
 
 # =========================================================
@@ -625,13 +643,19 @@ def match_users(payload: MatchRequest):
             scores=[],
         )
 
+    eligible_candidates = (
+        candidate
+        for candidate in payload.candidates
+        if candidate_meets_accessibility_requirements(candidate, payload.restaurant)
+    )
+
     ranked = sorted(
         (
             (
                 candidate.userId,
                 score_candidate(candidate, payload.restaurant),
             )
-            for candidate in payload.candidates
+            for candidate in eligible_candidates
         ),
         key=lambda item: item[1],
         reverse=True,

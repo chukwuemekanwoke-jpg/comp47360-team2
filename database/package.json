@@ -14,7 +14,8 @@
     "seed:real": "node scripts/seed.js --real",
     "seed:taxi-demand": "node scripts/seed.js --taxi-demand",
     "generate:seed": "node scripts/generate-seed.js",
-    "enrich:places": "node scripts/enrich-places.js"
+    "enrich:places": "node scripts/enrich-places.js",
+    "db:backup": "bash scripts/backup-local-db.sh"
   },
   "dependencies": {
     "dotenv": "^16.4.7",

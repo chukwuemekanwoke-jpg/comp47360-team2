@@ -44,7 +44,7 @@ export const ACCESS_NEEDS: {
     field: "requiresSensoryFriendly",
     label: "Sensory friendly",
     icon: "leaf-outline",
-    hint: "Prefer quieter, low-stimulation rooms",
+    hint: "Only match venues with a low-stimulation room",
   },
 ];
 
