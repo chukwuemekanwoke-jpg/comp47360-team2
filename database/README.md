@@ -13,6 +13,8 @@
 | [migrations/011_create_user_preferences.sql](./migrations/011_create_user_preferences.sql) | One-to-one categorized `user_preferences` table + legacy compatibility mirror |
 | [migrations/012_create_historical_taxi_demand.sql](./migrations/012_create_historical_taxi_demand.sql) | Empty schema for year/month/weekday/hour taxi-demand aggregates |
 | [migrations/013_add_restaurant_rating_reviews.sql](./migrations/013_add_restaurant_rating_reviews.sql) | Nullable restaurant aggregate rating and review count |
+| [migrations/013_add_user_accessibility_preferences.sql](./migrations/013_add_user_accessibility_preferences.sql) | Diner-side `requires_wheelchair_access`/`requires_sensory_friendly` on `user_preferences`, enforced as a hard filter in flash-deal matching |
+| [migrations/014_add_restaurant_busyness_updated_at.sql](./migrations/014_add_restaurant_busyness_updated_at.sql) | `restaurants.busyness_updated_at` — last ml-service refresh, drives stale-venue rescoring in `GET /restaurants/nearby` |
 
 ## Prerequisites
 

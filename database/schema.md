@@ -1,6 +1,6 @@
 # Tablé database schema v1 (BE-2)
 
-Entity-relationship overview for MVP. Implementation: `migrations/001_initial_schema.sql`.
+Entity-relationship overview for MVP. Base implementation: `migrations/001_initial_schema.sql`; schema has evolved through `migrations/014_add_restaurant_busyness_updated_at.sql` (14 migrations total as of 2026-08-05 — see `migrations/` for the full, current list, since this doc summarizes rather than enumerates every one).
 
 ## ER diagram
 
@@ -29,6 +29,8 @@ erDiagram
     text_array dietary_restrictions
     text_array preferred_cuisines
     text_array dining_styles
+    boolean requires_wheelchair_access
+    boolean requires_sensory_friendly
   }
 
   restaurants {
@@ -39,6 +41,7 @@ erDiagram
     int capacity
     text cuisine
     int hold_window_minutes
+    timestamptz busyness_updated_at
   }
 
   campaigns {
@@ -85,6 +88,7 @@ erDiagram
 | **5.2** Dashboard | Campaign `active` → `completed` when quota filled | `campaigns.table_quota`, `campaigns.tables_claimed`, `campaigns.status`; trigger revokes pending `offers` |
 | **5.1** RevPASH | Revenue per available seat hour | `restaurants.opens_at`, `closes_at`, `avg_check_per_cover`; `bookings.party_size`, `seated_at`, `check_amount`, `duration_minutes` |
 | Historical traffic proxy | Store yearly taxi-demand aggregates for model features | `historical_taxi_demand.source_year`, `taxi_zone_id`, `month`, `weekday`, `hour`, `dropoff_count` |
+| **EDI** | Diner accessibility requirements enforced as a hard filter in flash-deal candidate matching (not just schema-ready — live since migration 013 / PR #119) | `user_preferences.requires_wheelchair_access`, `requires_sensory_friendly` (diner side); `restaurants.is_wheelchair_accessible`, `sensory_friendly` (venue side); enforced in `candidateUsers.js`'s SQL filter + `satisfiesAccessibilityRequirements` |
 
 ### P1 (schema-ready, optional for demo data)
 
@@ -93,7 +97,6 @@ erDiagram
 | 2.2 Manual neighborhood search | `restaurants.neighborhood` |
 | 4.2 Cancel after accept | `bookings.status = 'cancelled'`, decrement logic in API |
 | 5.1 Discount 10–50% | `campaigns.discount_percent` CHECK constraint |
-| EDI | `restaurants.is_wheelchair_accessible`, `restaurants.sensory_friendly` |
 
 ## Table summaries
 
@@ -115,6 +118,7 @@ One-to-one categorized preference record keyed by `user_id`.
 - `dietary_restrictions`: requirements such as vegan, halal, or gluten-free
 - `preferred_cuisines`: explicit cuisine choices used by onboarding/matching
 - `dining_styles`: casual, family, date-night, or business contexts
+- `requires_wheelchair_access` / `requires_sensory_friendly`: diner-side accessibility needs (migration 013); enforced as a hard filter against `restaurants.is_wheelchair_accessible` / `sensory_friendly` during flash-deal candidate matching, not just a display preference — see `candidateUsers.js`
 
 ### `restaurants`
 
@@ -128,6 +132,7 @@ Venue master data for Manhattan prototype.
 - `opens_at` / `closes_at`: local operating hours (RevPASH denominator)
 - `avg_check_per_cover`: benchmark average spend per cover until POS data exists
 - `busyness_score`: optional 0–1 signal from ML pipeline
+- `busyness_updated_at`: timestamp of the last successful ml-service refresh (migration 014); `NULL` means never scored. Drives `GET /restaurants/nearby`'s stale-venue refresh (only re-scores venues past a TTL, not every venue on every request) — deliberately separate from `updated_at`-style triggers, since `available_table_count` changes far more often than busyness should trigger a re-score
 - `rating`: nullable external aggregate score constrained to 0.0–5.0
 - `reviews`: nullable non-negative external aggregate review count
 - `manager_user_id`: links B-side dashboard to a user row
