@@ -1,6 +1,6 @@
 # Tablé Integration Strategy
 
-**Status:** Sprint 4 · **Owners:** Scrum Master + Backend Lead
+**Status:** Sprint 4 (action items closed 2026-08-05 — see §8; current sprint not tracked in this repo) · **Owners:** Scrum Master + Backend Lead
 **Related:** [ADR-001](./adr/ADR-001.md) · [api-contract-v0.md](./api-contract-v0.md) · [openapi-v0.yaml](./openapi-v0.yaml) · [data-strategy.md](./data-strategy.md) · [frontend-strategy.md](./frontend-strategy.md) · [deployment-guide.md](./deployment-guide.md)
 
 ---
@@ -130,15 +130,17 @@ Per §5 and [deployment-guide.md](./deployment-guide.md), promotion is a deliber
 
 ---
 
-## 8. Sprint 4 action items
+## 8. Sprint 4 action items — closed 2026-08-05
 
-| Owner | Task |
-|---|---|
-| Backend Lead | Implement `PATCH /bookings/:id/status`, `GET /restaurants/:id/revpash`, ~~`GET /campaigns/:campaignId/offers`~~ (shipped) |
-| Backend Lead | Implement `POST /bookings/:id/cancel` (Story 4.2) |
-| Web Lead | Remove stale "Needs backend" comments in `apiSlice.ts` as routes ship; keep UI fallbacks until RevPASH/offers endpoints exist |
-| Scrum Master | Keep Postman collection (`docs/postman/`) in sync with shipped routes for staging smoke tests |
-| All leads | Route PRs through `integrate`; run five CI checks before promotion |
+> **Archival:** every backend item below shipped between 2026-07-12 and 2026-07-21; kept here for history only, same treatment as §7. Open a new section for the current sprint's action items rather than reopening this one.
+
+| Owner | Task | Status |
+|---|---|---|
+| Backend Lead | Implement `PATCH /bookings/:id/status`, `GET /restaurants/:id/revpash`, ~~`GET /campaigns/:campaignId/offers`~~ (shipped) | ✅ Shipped 2026-07-12 (`81f3aba`, `3d6f03b`) |
+| Backend Lead | Implement `POST /bookings/:id/cancel` (Story 4.2) | ✅ Shipped 2026-07-12 (`dcfa08a`) |
+| Web Lead | Remove stale "Needs backend" comments in `apiSlice.ts` as routes ship; keep UI fallbacks until RevPASH/offers endpoints exist | ⚠️ **Not done.** A live instance found 2026-08-05: `OverviewView.jsx`'s campaign-cancel 404 fallback ("pending backend support") was added 2026-07-23 — 12 days *after* the route it claims is missing (`POST .../campaigns/:campaignId/cancel`, shipped 2026-07-11) — so it was already wrong when written. Spun off as a separate frontend cleanup task rather than fixed as part of this doc review. |
+| Scrum Master | Keep Postman collection (`docs/postman/`) in sync with shipped routes for staging smoke tests | Ongoing process item, not a one-time task |
+| All leads | Route PRs through `integrate`; run five CI checks before promotion | Ongoing process item — still the standing practice per [deployment-guide.md](./deployment-guide.md) |
 
 ---
 
@@ -149,3 +151,4 @@ Per §5 and [deployment-guide.md](./deployment-guide.md), promotion is a deliber
 | v0 | 2026-06-24 | Initial integration strategy |
 | v1 | 2026-07-03 | Added §7 current integration plan: pending branch inventory, conflict surface, merge order into `integrate`, and promotion timing for `integrate` → `develop` → `main` |
 | v2 | 2026-07-12 | JWT primary auth; React+Vite web stack; Google Routes API; mark §7 as archival; refresh Sprint 4 action items |
+| v3 | 2026-08-05 | Reviewed against current codebase: all §8 backend action items confirmed shipped 2026-07-12, section marked archival (closed); flagged a live stale-fallback-text bug found in the process (`OverviewView.jsx`, spun off separately); flagged the header's "Status: Sprint 4" line as no longer tracked |
