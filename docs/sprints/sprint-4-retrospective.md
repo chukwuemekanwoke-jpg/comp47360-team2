@@ -2,7 +2,7 @@
 
 COMP47360 Team 2
 
-*Sprint Period: July 22, 2026 | Prepared by: Chukwuemeka Nwoke (Integration Lead / Scrum Master)*
+*Snapshot as of: July 22, 2026 | Prepared by: Chukwuemeka Nwoke (Integration Lead / Scrum Master)*
 
 
 ## Executive Summary
