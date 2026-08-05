@@ -1,327 +1,190 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
   TextInput,
+  TouchableOpacity,
   SafeAreaView,
-  Alert
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
-import { router } from "expo-router";
-import { useProfile } from "@/context/ProfileContext";
-import { useCreateUserMutation, useUpdatePreferencesMutation } from "@shared/apiSlice";
-import { setUserId } from "@shared/authSlice";
-import { useAppDispatch } from "@shared/hooks";
+import { Redirect, Stack, router } from "expo-router";
+import { useLoginMutation, useRegisterMutation } from "@shared/apiSlice";
+import { setSession } from "@shared/authSlice";
+import { useAppDispatch, useAppSelector } from "@shared/hooks";
+import { ApiError } from "@shared/types";
 import { registerForPushNotificationsAsync } from "@/services/pushNotifications";
+import { navColors } from "@/theme";
 
-type DiningStyle =
-  | "casual"
-  | "family"
-  | "date-night"
-  | "business";
+type Mode = "login" | "register";
 
-type BudgetTier = "TIER_1" | "TIER_2" | "TIER_3";
+function extractErrorMessage(err: unknown): string {
+  const apiError = (err as { data?: ApiError })?.data;
+  return apiError?.error?.message ?? "Something went wrong. Please try again.";
+}
 
-const CUISINES = [
-  "Italian",
-  "Indian",
-  "Japanese",
-  "Mexican",
-  "Thai",
-];
-
-export default function OnboardingScreen() {
-  const { setProfile } = useProfile();
+export default function AuthScreen() {
   const dispatch = useAppDispatch();
-  const [step, setStep] = useState(0);
-  const [name, setName] = useState("");
-  const [favoriteCuisines, setFavoriteCuisines] = useState<string[]>([]);
-  const [maxPriceLevel, setMaxPriceLevel] = useState(2);
-  const [diningStyle, setDiningStyle] =
-    useState<DiningStyle>("casual");
+  const sessionUserId = useAppSelector((state) => state.auth.userId);
+  const colors = navColors[useAppSelector((state) => state.settings.theme)];
 
-  const [radiusKm, setRadiusKm] = useState(10);
+  const [mode, setMode] = useState<Mode>("login");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
 
-  const toggleCuisine = (cuisine: string) => {
-    setFavoriteCuisines((current) =>
-      current.includes(cuisine)
-        ? current.filter((c) => c !== cuisine)
-        : [...current, cuisine]
-    );
-  };
+  const [login, { isLoading: loggingIn }] = useLoginMutation();
+  const [register, { isLoading: registering }] = useRegisterMutation();
+  const isSubmitting = loggingIn || registering;
 
-  function mapPriceToBudgetTier(level: number): BudgetTier {
-    if (level <= 1) return "TIER_1";
-    if (level === 2) return "TIER_2";
-    return "TIER_3";
+  // Already signed in (e.g. hot reload) — skip the gate.
+  if (sessionUserId) {
+    return <Redirect href="/tabs/MapTab" />;
   }
 
-// RTK Query Mutation hooks
-  const [triggerCreateUser] = useCreateUserMutation();
-  const [triggerUpdatePreferences] = useUpdatePreferencesMutation();
+  const handleSubmit = async () => {
+    setFormError(null);
 
-  const finishOnboarding = async () => {
-    if (!name.trim()) {
-      Alert.alert("Validation Error", "Please enter a display name.");
+    if (!email.trim() || !password) {
+      setFormError("Please enter your email and password.");
+      return;
+    }
+    if (mode === "register" && !displayName.trim()) {
+      setFormError("Please enter a display name.");
       return;
     }
 
     try {
-      // 1. Fire user creation with your existing dummyId mapped to the required header input
-      const userResponse = await triggerCreateUser({  
-        displayName: name,   // Payload body
-      }).unwrap();
+      const session =
+        mode === "login"
+          ? await login({ email: email.trim(), password }).unwrap()
+          : await register({
+              email: email.trim(),
+              password,
+              displayName: displayName.trim(),
+            }).unwrap();
 
-      // Provide some pause
-      const realUserId = userResponse.id;
-      dispatch(setUserId(realUserId));
+      dispatch(
+        setSession({
+          userId: session.userId ?? session.user.id,
+          token: session.token,
+          displayName: session.user.displayName,
+        })
+      );
 
       // Push notification integration point — stub only, see mobile-app/push-notifications.md
-      registerForPushNotificationsAsync(realUserId);
+      registerForPushNotificationsAsync(session.userId ?? session.user.id);
 
-      // 2. Fire preference mutations using the real userId
-      await triggerUpdatePreferences({
-        userId: realUserId,
-        budgetTier: mapPriceToBudgetTier(maxPriceLevel),
-        dietaryTags: [...favoriteCuisines, diningStyle],
-        lastLat: 53.3498, // Fallback location context
-        lastLng: -6.2603,
-      }).unwrap();
-
-      // 3. Update your local client-side profile state provider
-      setProfile({
-        id: realUserId,
-        name,
-        favoriteCuisines,
-        maxPriceLevel,
-        diningStyle,
-        radiusKm,
-      });
-
-      Alert.alert("Welcome!", `Your profile has been created.`);
-    } catch (error) {
-      console.error("Onboarding server error:", error);
-      Alert.alert("Error", "Could not complete registration. Please try again.");
+      // New accounts (and returning users who never finished onboarding)
+      // go through the preference wizard; everyone else lands on the map.
+      if (mode === "register" || !session.user.budgetTier) {
+        router.replace("/onboarding");
+      } else {
+        router.replace("/tabs/MapTab");
+      }
+    } catch (err) {
+      setFormError(extractErrorMessage(err));
     }
-    router.replace("/tabs/MapTab");
   };
 
   return (
     <SafeAreaView className="flex-1 bg-table-canvas">
-      <View className="flex-1 px-6 py-8 justify-between">
-        <View>
-          <Text className="text-table-gold text-xs font-bold uppercase tracking-[0.25em] mb-2">
-            Step {step + 1} / 5
+      <Stack.Screen options={{ headerShown: false }} />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        className="flex-1"
+      >
+        <View className="flex-1 px-6 justify-center">
+          <Text className="text-5xl font-bold text-table-cream text-center mb-2">
+            Tablé
+          </Text>
+          <Text className="text-sm text-table-gold text-center mb-10">
+            Find your table
           </Text>
 
-          <Text className="text-3xl font-bold text-table-cream mb-8">
-            Welcome to Tablé
-          </Text>
-          {/* NOTE: Eventually Step 1 should be some sign-in, during MVP there is no backend auth */}
-          {/* Onboarding - STEP 1 */}
-          {step === 0 && (
-            <>
-              <Text className="text-lg font-bold text-table-cream mb-3">
-                {"What's your name?"}
-              </Text>
-
-              <TextInput
-                value={name}
-                onChangeText={setName}
-                placeholder="Enter your name"
-                placeholderTextColor="#888"
-                className="border border-table-border bg-table-surface rounded-xl px-4 py-3 text-table-cream"
-              />
-            </>
+          {mode === "register" && (
+            <TextInput
+              value={displayName}
+              onChangeText={setDisplayName}
+              placeholder="Display name"
+              placeholderTextColor="#888"
+              autoCapitalize="words"
+              className="border border-table-border bg-table-surface rounded-xl px-4 py-3 text-table-cream mb-3"
+            />
           )}
 
-          {/* STEP 2 */}
-          {step === 1 && (
-            <>
-              <Text className="text-lg font-bold text-table-cream mb-4">
-                Favourite cuisines
-              </Text>
+          <TextInput
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Email"
+            placeholderTextColor="#888"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoComplete="email"
+            className="border border-table-border bg-table-surface rounded-xl px-4 py-3 text-table-cream mb-3"
+          />
 
-              <View className="flex-row flex-wrap gap-2">
-                {CUISINES.map((cuisine) => {
-                  const selected =
-                    favoriteCuisines.includes(cuisine);
+          <TextInput
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Password"
+            placeholderTextColor="#888"
+            secureTextEntry
+            className="border border-table-border bg-table-surface rounded-xl px-4 py-3 text-table-cream mb-4"
+          />
 
-                  return (
-                    <TouchableOpacity
-                      key={cuisine}
-                      onPress={() => toggleCuisine(cuisine)}
-                      className={`px-4 py-3 rounded-xl border ${
-                        selected
-                          ? "border-table-teal"
-                          : "border-table-border"
-                      }`}
-                      style={
-                        selected
-                          ? { backgroundColor: "#00f2fe18" }
-                          : undefined
-                      }
-                    >
-                      <Text
-                        className={
-                          selected
-                            ? "text-table-teal font-bold"
-                            : "text-table-cream"
-                        }
-                      >
-                        {cuisine}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </>
+          {formError && (
+            <Text className="text-red-400 text-xs mb-4 text-center">{formError}</Text>
           )}
 
-          {/* STEP 3 */}
-          {step === 2 && (
-            <>
-              <Text className="text-lg font-bold text-table-cream mb-4">
-                Preferred price range
-              </Text>
-
-              <View className="flex-row gap-3">
-                {[1, 2, 3, 4].map((level) => (
-                  <TouchableOpacity
-                    key={level}
-                    onPress={() => setMaxPriceLevel(level)}
-                    className={`px-5 py-4 rounded-xl border ${
-                      maxPriceLevel === level
-                        ? "border-table-teal"
-                        : "border-table-border"
-                    }`}
-                  >
-                    <Text
-                      className={
-                        maxPriceLevel === level
-                          ? "text-table-teal font-bold"
-                          : "text-table-cream"
-                      }
-                    >
-                      {"$".repeat(level)}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </>
-          )}
-
-          {/* STEP 4 */}
-          {step === 3 && (
-            <>
-              <Text className="text-lg font-bold text-table-cream mb-4">
-                Dining style
-              </Text>
-
-              {[
-                "casual",
-                "family",
-                "date-night",
-                "business",
-              ].map((style) => (
-                <TouchableOpacity
-                  key={style}
-                  onPress={() =>
-                    setDiningStyle(style as DiningStyle)
-                  }
-                  className={`p-4 rounded-xl border mb-3 ${
-                    diningStyle === style
-                      ? "border-table-teal"
-                      : "border-table-border"
-                  }`}
-                >
-                  <Text
-                    className={
-                      diningStyle === style
-                        ? "text-table-teal font-bold"
-                        : "text-table-cream"
-                    }
-                  >
-                    {style
-                      .replace("-", " ")
-                      .replace(/\b\w/g, (c) =>
-                        c.toUpperCase()
-                      )}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </>
-          )}
-
-          {/* STEP 5 */}
-          {step === 4 && (
-            <>
-              <Text className="text-lg font-bold text-table-cream mb-4">
-                Search radius
-              </Text>
-
-              {[5, 10, 20, 50].map((radius) => (
-                <TouchableOpacity
-                  key={radius}
-                  onPress={() => setRadiusKm(radius)}
-                  className={`p-4 rounded-xl border mb-3 ${
-                    radiusKm === radius
-                      ? "border-table-teal"
-                      : "border-table-border"
-                  }`}
-                >
-                  <Text
-                    className={
-                      radiusKm === radius
-                        ? "text-table-teal font-bold"
-                        : "text-table-cream"
-                    }
-                  >
-                    {radius} km
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </>
-          )}
-        </View>
-
-        {/* Navigation */}
-        <View className="flex-row justify-between">
           <TouchableOpacity
-            disabled={step === 0}
-            onPress={() => setStep((s) => s - 1)}
-            className={`px-5 py-3 rounded-xl ${
-              step === 0
-                ? "bg-table-surface"
-                : "bg-table-interactive"
-            }`}
+            onPress={handleSubmit}
+            disabled={isSubmitting}
+            className="bg-table-teal rounded-xl py-3.5 items-center justify-center flex-row gap-2"
+            activeOpacity={0.8}
+            style={{ opacity: isSubmitting ? 0.7 : 1 }}
           >
-            <Text className="text-table-cream font-bold">
-              Back
+            {isSubmitting && <ActivityIndicator size="small" color={colors.canvas} />}
+            <Text className="text-table-canvas text-sm font-bold uppercase tracking-widest">
+              {isSubmitting
+                ? "One moment…"
+                : mode === "login"
+                ? "Sign In"
+                : "Create Account"}
             </Text>
           </TouchableOpacity>
 
-          {step < 4 ? (
+          <View className="flex-row justify-center mt-6">
+            <Text className="text-xs text-table-gold">
+              {mode === "login" ? "Don't have an account? " : "Already have an account? "}
+            </Text>
             <TouchableOpacity
-              onPress={() => setStep((s) => s + 1)}
-              className="px-5 py-3 rounded-xl bg-table-teal"
+              onPress={() => {
+                setMode((m) => (m === "login" ? "register" : "login"));
+                setFormError(null);
+              }}
             >
-              <Text className="text-table-canvas font-bold">
-                Next
+              <Text className="text-xs text-table-teal font-bold">
+                {mode === "login" ? "Create one" : "Sign in"}
               </Text>
             </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              onPress={finishOnboarding}
-              className="px-5 py-3 rounded-xl bg-table-teal"
-            >
-              <Text className="text-table-canvas font-bold">
-                Continue
-              </Text>
-            </TouchableOpacity>
-          )}
+          </View>
+
+          {/* Guest browsing — no session is created; user-specific screens
+              (profile, inbox, booking) gate themselves on auth.userId. */}
+          <TouchableOpacity
+            onPress={() => router.replace("/tabs/MapTab")}
+            className="border border-table-border rounded-xl py-3 items-center mt-8"
+            activeOpacity={0.8}
+          >
+            <Text className="text-table-gold text-xs font-bold uppercase tracking-widest">
+              Continue without signing in
+            </Text>
+          </TouchableOpacity>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

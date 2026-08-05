@@ -1,155 +1,145 @@
-import { useMemo, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
-import MapView, { Marker, Callout } from "react-native-maps";
-import { useRouter } from "expo-router";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, RefreshControl } from "react-native";
+import MapView, { Marker, Callout, Region } from "react-native-maps";
+import {
+  FOCUS_DELTA,
+  FULL_DETAIL_ZOOM,
+  MapBounds,
+  regionToViewport,
+  selectMapMarkers,
+} from "@/lib/mapDisplay";
+import { useFocusEffect, useRouter } from "expo-router";
 import { useAppSelector } from "@shared/hooks";
 import { useGetNearbyRestaurantsQuery } from "@shared/apiSlice";
+import { DISCOVERY_RADIUS_M, SEAT_AVAILABILITY_POLL_MS } from "@shared/constants";
+import { applyRestaurantFilters, busynessColor, busynessLabel } from "@shared/restaurantFilters";
 import { RestaurantSummary } from "@shared/types";
-import PreferenceFilters from "@/components/PreferenceFilters";
+import FilterBar, { FilterSheet } from "@/components/FilterBar";
+import DraggableSheet from "@/components/DraggableSheet";
 import LocationComponent from "@/components/LocationComponent";
+import RatingBadge from "@/components/RatingBadge";
+import { formatCuisine } from "@/lib/cuisineImages";
+import { formatDistance, formatRating } from "@/lib/format";
 import BookingModal from "@/components/BookingCheckout";
-
-function busynessColor(score: number) {
-  if (score < 0.4) return "#10b981";
-  if (score < 0.7) return "#f59e0b";
-  return "#ef4444";
-}
-
-function busynessLabel(score: number) {
-  if (score < 0.4) return "Quiet";
-  if (score < 0.7) return "Busy";
-  return "Packed";
-}
-
-function formatDistance(meters: number): string {
-  if (meters < 1000) return `${Math.round(meters)} m`;
-  return `${(meters / 1000).toFixed(1)} km`;
-}
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { navColors } from "@/theme";
 
 export default function MapScreen() {
   const router = useRouter();
-  const [showFilters, setShowFilters] = useState(false);
   const [selectedRestaurant, setSelectedRestaurant] = useState<RestaurantSummary | null>(null);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filtersTop, setFiltersTop] = useState(0);
+  const mapRef = useRef<MapView>(null);
 
   const location = useAppSelector((state) => state.user.location);
-  const selectedCuisines = useAppSelector((state) => state.user.filters.cuisines);
+  const filters = useAppSelector((state) => state.user.filters);
+  const theme = useAppSelector((state) => state.settings.theme);
+  const colors = navColors[theme];
 
-  const { data, isLoading } = useGetNearbyRestaurantsQuery(
-    { lat: location!.lat, lng: location!.lng, radiusM: 1500 },
-    { skip: !location }
+  const { data, isLoading, refetch } = useGetNearbyRestaurantsQuery(
+    location
+      ? { lat: location.lat, lng: location.lng, radiusM: DISCOVERY_RADIUS_M }
+      : skipToken,
+    { pollingInterval: SEAT_AVAILABILITY_POLL_MS }
   );
 
-  const restaurants = useMemo(() => {
-    const all = data?.restaurants ?? [];
-    if (selectedCuisines.length === 0) return all;
-    return all.filter((r) => selectedCuisines.includes(r.cuisine.toLowerCase()));
-  }, [data, selectedCuisines]);
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refetch();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetch]);
+
+  // Shared search/cuisine/busyness pipeline over the cached response.
+  const restaurants = useMemo(
+    () => applyRestaurantFilters(data?.restaurants ?? [], filters),
+    [data, filters]
+  );
 
   const mapCenter = location
     ? { latitude: location.lat, longitude: location.lng }
     : { latitude: 40.7589, longitude: -73.9851 };
 
+  const initialRegion = { ...mapCenter, latitudeDelta: 0.02, longitudeDelta: 0.02 };
+
+  // Current map extent + approximate zoom, updated as the user pans/zooms.
+  const [viewport, setViewport] = useState<{ bounds: MapBounds; zoom: number } | null>(null);
+  const effectiveViewport = viewport ?? regionToViewport(initialRegion);
+
+  // Client-side selection over the cached list — zoomed out shows only the
+  // top picks, zoomed in shows everything in view with top picks highlighted.
+  // Panning/zooming never re-queries the backend.
+  const markers = useMemo(
+    () => selectMapMarkers(restaurants, effectiveViewport.bounds, effectiveViewport.zoom),
+    [restaurants, effectiveViewport.bounds, effectiveViewport.zoom]
+  );
+
+  const zoomedOut = effectiveViewport.zoom < FULL_DETAIL_ZOOM;
+
+  // Tapping a row in the nearby list drives the camera to that restaurant.
+  // The id is tracked purely so the tapped row can show it's the focused one —
+  // the list is long enough that the map moving on its own is easy to miss.
+  const [focusedId, setFocusedId] = useState<string | null>(null);
+
+  const focusOnMap = useCallback((r: RestaurantSummary) => {
+    setFocusedId(r.id);
+    mapRef.current?.animateToRegion(
+      {
+        latitude: r.latitude,
+        longitude: r.longitude,
+        latitudeDelta: FOCUS_DELTA,
+        longitudeDelta: FOCUS_DELTA,
+      },
+      400
+    );
+  }, []);
+
+  // initialRegion only applies once, at mount — when a real GPS fix lands
+  // after that (the common case, since location resolves asynchronously),
+  // animate the camera to it instead of leaving the map on the fallback.
+  useEffect(() => {
+    if (!location) return;
+    mapRef.current?.animateToRegion(
+      { latitude: location.lat, longitude: location.lng, latitudeDelta: 0.02, longitudeDelta: 0.02 },
+      500
+    );
+  }, [location]);
+
+  // The user dot below is a custom child view, which react-native-maps draws by
+  // rasterising it into the native annotation. Switching tabs detaches this
+  // screen's native views and the bitmap is never redrawn on the way back, so
+  // the dot returns blank — the restaurant pins are unaffected because they use
+  // the built-in pin (pinColor) rather than a child view. Remount the marker on
+  // every focus, and let it track view changes just long enough to redraw:
+  // flipping tracking back off is what forces the final icon update, and
+  // leaving it on would re-rasterise the dot every frame.
+  const [dotEpoch, setDotEpoch] = useState(0);
+  const [dotTracking, setDotTracking] = useState(true);
+
+  useFocusEffect(
+    useCallback(() => {
+      setDotEpoch((n) => n + 1);
+      setDotTracking(true);
+      const settle = setTimeout(() => setDotTracking(false), 800);
+      return () => clearTimeout(settle);
+    }, [])
+  );
+
   return (
     <View className="flex-1 bg-table-canvas">
 
-      {/* Header card */}
-      <View className="mx-4 mt-4 bg-table-surface border border-table-border rounded-2xl px-4 py-3 flex-row items-center justify-between">
-        <View>
-          <Text className="text-sm font-bold text-table-cream">Live Restaurant Map</Text>
-          <View className="flex-row items-center gap-1.5 mt-0.5">
-            <View className="w-1.5 h-1.5 rounded-full bg-table-teal" />
-            <Text className="text-[9px] font-bold uppercase tracking-widest text-table-teal">
-              Real-time feed
-            </Text>
-          </View>
-        </View>
-        <TouchableOpacity
-          onPress={() => setShowFilters((v) => !v)}
-          className={`px-3 py-1.5 rounded-lg border ${
-            showFilters
-              ? "bg-table-teal/10 border-table-teal/30"
-              : "bg-table-interactive border-table-border"
-          }`}
-          activeOpacity={0.7}
-        >
-          <Text className={`text-[10px] font-bold uppercase tracking-widest ${
-            showFilters ? "text-table-teal" : "text-table-cream"
-          }`}>
-            Filters
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Filters panel */}
-      {showFilters && (
-        <View className="mx-4 mt-3 bg-table-surface border border-table-border rounded-2xl p-4">
-          <PreferenceFilters />
-          <View className="mt-3 border-t border-table-border pt-3">
-            <LocationComponent />
-          </View>
-          <TouchableOpacity
-            className="mt-3 bg-table-teal rounded-xl py-2.5 items-center"
-            onPress={() => setShowFilters(false)}
-            activeOpacity={0.8}
-          >
-            <Text className="text-table-canvas text-xs font-bold uppercase tracking-widest">
-              Apply
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* Map */}
-      <View className="mx-4 mt-3 rounded-2xl overflow-hidden border border-table-border" style={{ height: 240 }}>
-        <MapView
-          style={{ flex: 1 }}
-          region={{
-            ...mapCenter,
-            latitudeDelta: 0.02,
-            longitudeDelta: 0.02,
-          }}
-          customMapStyle={darkMapStyle}
-        >
-          {restaurants.map((r) => (
-            <Marker
-              key={r.id}
-              coordinate={{ latitude: r.latitude, longitude: r.longitude }}
-              pinColor={busynessColor(r.busynessScore)}
-              onCalloutPress={() => setSelectedRestaurant(r)}
-            >
-              <Callout tooltip={false}>
-                <View style={{ width: 150, padding: 8 }}>
-                  <Text style={{ fontWeight: "700", fontSize: 13 }}>{r.name}</Text>
-                  <Text style={{ fontSize: 11, color: "#71717a", marginTop: 2 }}>{r.cuisine}</Text>
-                  <Text style={{ fontSize: 11, marginTop: 4 }}>
-                    {busynessLabel(r.busynessScore)} · {r.availableTableCount} free
-                  </Text>
-                  <Text style={{ fontSize: 10, color: "#00f2fe", marginTop: 4, fontWeight: "600" }}>
-                    Tap to book →
-                  </Text>
-                </View>
-              </Callout>
-            </Marker>
-          ))}
-        </MapView>
-
-        {/* Loading overlay */}
-        {isLoading && (
-          <View className="absolute inset-0 items-center justify-center bg-table-canvas/60">
-            <ActivityIndicator color="#00f2fe" />
-          </View>
-        )}
-
-        {/* List view toggle */}
-        <TouchableOpacity
-          className="absolute bottom-3 right-3 bg-table-canvas/80 border border-table-border px-3 py-1.5 rounded-lg"
-          onPress={() => router.push("/tabs/CardTab")}
-          activeOpacity={0.8}
-        >
-          <Text className="text-table-cream text-[10px] font-bold uppercase tracking-widest">
-            List View
-          </Text>
-        </TouchableOpacity>
+      {/* Search + filter toggle — the panel itself overlays the screen below */}
+      <View
+        className="mx-4 mt-4"
+        onLayout={(e) =>
+          setFiltersTop(e.nativeEvent.layout.y + e.nativeEvent.layout.height + 12)
+        }
+      >
+        <FilterBar active={filtersOpen} onToggle={() => setFiltersOpen((v) => !v)} />
       </View>
 
       {/* No location prompt */}
@@ -162,72 +152,218 @@ export default function MapScreen() {
         </View>
       )}
 
-      {/* Nearby list */}
-      <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold mx-4 mt-5 mb-2">
-        {restaurants.length > 0 ? `${restaurants.length} Nearby` : "Nearby"}
-      </Text>
-
-      <ScrollView
-        className="px-4"
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 24 }}
-      >
-        {isLoading && restaurants.length === 0 && (
-          <View className="items-center py-8">
-            <ActivityIndicator color="#00f2fe" />
-          </View>
-        )}
-
-        {!isLoading && restaurants.length === 0 && location && (
-          <Text className="text-table-gold text-xs text-center py-8">
-            No available restaurants within range.
-          </Text>
-        )}
-
-        {restaurants.map((r) => (
-          <View
-            key={r.id}
-            className="bg-table-surface border border-table-border rounded-2xl p-4 mb-3"
+      {/* Map fills the rest, with the nearby list draggable over it */}
+      <View className="flex-1 mt-3">
+        <View className="flex-1 mx-4 rounded-2xl overflow-hidden border border-table-border">
+          <MapView
+            // Keyed by theme so the map fully reloads when light mode is
+            // toggled — customMapStyle doesn't reliably re-apply in place.
+            key={theme}
+            ref={mapRef}
+            style={{ flex: 1 }}
+            initialRegion={initialRegion}
+            onRegionChangeComplete={(region: Region) => setViewport(regionToViewport(region))}
+            customMapStyle={theme === "dark" ? darkMapStyle : undefined}
           >
-            <View className="flex-row items-start justify-between mb-2">
-              <View className="flex-1 mr-3">
-                <Text className="text-sm font-bold text-table-cream">{r.name}</Text>
-                <Text className="text-xs text-table-gold mt-0.5">
-                  {r.cuisine} · {formatDistance(r.distanceMeters)}
-                </Text>
-              </View>
-              <View
-                className="px-2 py-1 rounded-lg"
-                style={{ backgroundColor: busynessColor(r.busynessScore) + "18" }}
+            {/* Where results are measured from. Drawn for any user location,
+                GPS or a manually chosen neighbourhood, so the reference point
+                stays visible when the area picker is used instead of GPS. */}
+            {location && (
+              <Marker
+                key={`user-dot-${dotEpoch}`}
+                coordinate={{ latitude: location.lat, longitude: location.lng }}
+                anchor={{ x: 0.5, y: 0.5 }}
+                zIndex={20}
+                tracksViewChanges={dotTracking}
               >
-                <Text
-                  className="text-[10px] font-bold uppercase tracking-widest"
-                  style={{ color: busynessColor(r.busynessScore) }}
-                >
-                  {busynessLabel(r.busynessScore)}
-                </Text>
-              </View>
-            </View>
+                <View
+                  style={{
+                    width: 18,
+                    height: 18,
+                    borderRadius: 9,
+                    backgroundColor: colors.teal,
+                    borderWidth: 3,
+                    borderColor: "#ffffff",
+                  }}
+                />
+                <Callout tooltip={false}>
+                  <View style={{ width: 150, padding: 8 }}>
+                    <Text style={{ fontWeight: "700", fontSize: 13 }}>
+                      {location.label ? `${location.label}, Manhattan` : "You are here"}
+                    </Text>
+                    <Text style={{ fontSize: 11, color: "#71717a", marginTop: 2 }}>
+                      {location.label
+                        ? "Browsing this area"
+                        : `${location.lat.toFixed(4)}°N, ${Math.abs(location.lng).toFixed(4)}°W`}
+                    </Text>
+                  </View>
+                </Callout>
+              </Marker>
+            )}
 
-            <View className="flex-row items-center justify-between border-t border-table-border pt-2 mt-1">
-              <View className="flex-row gap-4">
-                <Text className="text-xs text-table-gold">
-                  🪑 <Text className="text-table-live font-bold">{r.availableTableCount} free</Text>
-                </Text>
-              </View>
-              <TouchableOpacity
-                onPress={() => setSelectedRestaurant(r)}
-                className="bg-table-teal px-3 py-1.5 rounded-lg"
-                activeOpacity={0.8}
+            {markers.map(({ restaurant: r, highlighted }) => (
+              <Marker
+                key={r.id}
+                coordinate={{ latitude: r.latitude, longitude: r.longitude }}
+                pinColor={highlighted ? "#f5b014" : busynessColor(r.busynessScore)}
+                zIndex={highlighted ? 10 : 0}
+                onCalloutPress={() => setSelectedRestaurant(r)}
               >
-                <Text className="text-table-canvas text-[10px] font-bold uppercase tracking-widest">
-                  Book
-                </Text>
-              </TouchableOpacity>
+                <Callout tooltip={false}>
+                  <View style={{ width: 150, padding: 8 }}>
+                    <Text style={{ fontWeight: "700", fontSize: 13 }}>
+                      {highlighted ? "★ " : ""}{r.name}
+                    </Text>
+                    <Text style={{ fontSize: 11, color: "#71717a", marginTop: 2 }}>
+                      {formatCuisine(r.cuisine)}
+                    </Text>
+                    {/* Plain "★" rather than <RatingBadge>: the callout is
+                        rasterised by react-native-maps, which renders icon
+                        fonts blank on Android. Colours are hardcoded here for
+                        the same reason the rest of this callout is — it sits
+                        on the map's own surface, not the themed canvas. */}
+                    {r.rating != null && (
+                      <Text style={{ fontSize: 11, color: "#b45309", marginTop: 2, fontWeight: "600" }}>
+                        {formatRating(r.rating, r.reviews)}
+                      </Text>
+                    )}
+                    <Text style={{ fontSize: 11, marginTop: 4 }}>
+                      {busynessLabel(r.busynessScore)} · {r.availableTableCount} free
+                    </Text>
+                    <Text style={{ fontSize: 10, color: "#00f2fe", marginTop: 4, fontWeight: "600" }}>
+                      Tap to book →
+                    </Text>
+                  </View>
+                </Callout>
+              </Marker>
+            ))}
+          </MapView>
+
+          {/* Hint that more spots appear as you zoom in */}
+          {zoomedOut && restaurants.length > markers.length && (
+            <View className="absolute top-2 self-center bg-table-canvas/80 border border-table-border px-3 py-1 rounded-full">
+              <Text className="text-table-cream text-[9px] font-bold uppercase tracking-widest">
+                Top picks · Zoom in for more
+              </Text>
             </View>
-          </View>
-        ))}
-      </ScrollView>
+          )}
+
+          {/* Loading overlay */}
+          {isLoading && (
+            <View className="absolute inset-0 items-center justify-center bg-table-canvas/60">
+              <ActivityIndicator color={colors.teal} />
+            </View>
+          )}
+
+          {/* List view toggle — top-right, clear of the draggable sheet */}
+          <TouchableOpacity
+            className="absolute top-2 right-2 bg-table-canvas/80 border border-table-border px-3 py-1.5 rounded-lg"
+            onPress={() => router.push("/tabs/CardTab")}
+            activeOpacity={0.8}
+          >
+            <Text className="text-table-cream text-[10px] font-bold uppercase tracking-widest">
+              List View
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Nearby list — mirrors exactly what the map is showing */}
+        <DraggableSheet
+          handle={
+            <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold">
+              {markers.length > 0 ? `${markers.length} On the map` : "On the map"}
+            </Text>
+          }
+        >
+          <ScrollView
+            className="px-4 pt-2"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 24 }}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor={colors.teal}
+                colors={[colors.teal]}
+              />
+            }
+          >
+            {isLoading && markers.length === 0 && (
+              <View className="items-center py-8">
+                <ActivityIndicator color={colors.teal} />
+              </View>
+            )}
+
+            {!isLoading && markers.length === 0 && location && (
+              <Text className="text-table-gold text-xs text-center py-8">
+                No restaurants in this map area. Pan or zoom out to see more.
+              </Text>
+            )}
+
+            {markers.map(({ restaurant: r, highlighted }) => (
+              <TouchableOpacity
+                key={r.id}
+                onPress={() => focusOnMap(r)}
+                activeOpacity={0.85}
+                accessibilityRole="button"
+                accessibilityLabel={`Show ${r.name} on the map`}
+                className={`bg-table-surface border rounded-2xl p-4 mb-3 ${
+                  focusedId === r.id ? "border-table-teal" : "border-table-border"
+                }`}
+              >
+                <View className="flex-row items-start justify-between mb-2">
+                  <View className="flex-1 mr-3">
+                    <Text className="text-sm font-bold text-table-cream">
+                      {highlighted ? "★ " : ""}{r.name}
+                    </Text>
+                    <Text className="text-xs text-table-gold mt-0.5">
+                      {formatCuisine(r.cuisine)} · {formatDistance(r.distanceMeters)}
+                    </Text>
+                  </View>
+                  <View
+                    className="px-2 py-1 rounded-lg"
+                    style={{ backgroundColor: busynessColor(r.busynessScore) + "18" }}
+                  >
+                    <Text
+                      className="text-[10px] font-bold uppercase tracking-widest"
+                      style={{ color: busynessColor(r.busynessScore) }}
+                    >
+                      {busynessLabel(r.busynessScore)}
+                    </Text>
+                  </View>
+                </View>
+
+                <View className="flex-row items-center justify-between border-t border-table-border pt-2 mt-1">
+                  <View className="flex-row items-center gap-4">
+                    <Text className="text-xs text-table-gold">
+                      <MaterialCommunityIcons name="seat-outline" size={12} color={colors.gold} />{" "}
+                      <Text className="text-table-live font-bold">{r.availableTableCount} free</Text>
+                    </Text>
+                    <RatingBadge rating={r.rating} reviews={r.reviews} />
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => setSelectedRestaurant(r)}
+                    className="bg-table-teal px-3 py-1.5 rounded-lg"
+                    activeOpacity={0.8}
+                  >
+                    <Text className="text-table-canvas text-[10px] font-bold uppercase tracking-widest">
+                      Book
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </DraggableSheet>
+      </View>
+
+      <FilterSheet
+        isVisible={filtersOpen}
+        top={filtersTop}
+        onClose={() => setFiltersOpen(false)}
+      >
+        <LocationComponent />
+      </FilterSheet>
 
       {/* Booking modal */}
       <BookingModal

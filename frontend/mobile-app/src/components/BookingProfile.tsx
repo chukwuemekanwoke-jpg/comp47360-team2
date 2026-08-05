@@ -1,16 +1,28 @@
-import React, { useState } from "react";
+import React, { ReactElement, useState } from "react";
 import { FlatList, View, Text, ActivityIndicator, Alert } from "react-native";
 import { useGetMyBookingsQuery, useCancelBookingMutation } from "@shared/apiSlice"
+import { useAppSelector } from "@shared/hooks";
 import BookingCard from "./BookingCard";
-import { DUMMYID } from "@/context/UserContext";
 
-export default function BookingsProfile() {
+interface BookingsProfileProps {
+  // ProfileTab passes its header cards / sign-out button here so this
+  // FlatList is the single page scroller (no nested VirtualizedLists) and
+  // the bookings list gets the full remaining height.
+  ListHeaderComponent?: ReactElement;
+  ListFooterComponent?: ReactElement;
+}
+
+export default function BookingsProfile({
+  ListHeaderComponent,
+  ListFooterComponent,
+}: BookingsProfileProps) {
+  const userId = useAppSelector((state) => state.auth.userId);
   const { data, isLoading, refetch } = useGetMyBookingsQuery(
-    { userId: DUMMYID ?? "" },
-    { skip: !DUMMYID }
+    { userId: userId ?? "" },
+    { skip: !userId }
   );
   const [cancelBooking] = useCancelBookingMutation();
-  
+
   // Local state to isolate loading animations to specific cards
   // Used for conditional check isCancelling
   const [cancellingId, setCancellingId] = useState<string | null>(null);
@@ -28,10 +40,11 @@ export default function BookingsProfile() {
           style: "destructive",
           onPress: async () => {
             try {
+              if (!userId) return;
               setCancellingId(bookingId); // Turn on loading indicator for this ID
-              await cancelBooking({ 
-                    bookingId, 
-                    userId: DUMMYID
+              await cancelBooking({
+                    bookingId,
+                    userId
                 }).unwrap();
             } catch (err) {
               console.error("Failed to cancel booking:", err);
@@ -45,14 +58,6 @@ export default function BookingsProfile() {
     );
   };
 
-  if (isLoading && bookingsList.length === 0) {
-    return (
-      <View className="flex-1 justify-center items-center bg-table-canvas">
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
-
   return (
     <View className="flex-1 bg-table-canvas px-4 pt-4">
       <FlatList
@@ -60,16 +65,31 @@ export default function BookingsProfile() {
         keyExtractor={(item) => item.id}
         refreshing={isLoading}
         onRefresh={refetch}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 24 }}
+        ListHeaderComponent={
+          <View>
+            {ListHeaderComponent}
+            <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold mb-3">
+              Your Bookings
+            </Text>
+          </View>
+        }
+        ListFooterComponent={ListFooterComponent}
         ListEmptyComponent={
-          <Text className="text-table-gold text-center mt-8 text-xs">
-            No bookings found.
-          </Text>
+          isLoading ? (
+            <View className="items-center py-8">
+              <ActivityIndicator size="large" />
+            </View>
+          ) : (
+            <Text className="text-table-gold text-center py-6 text-xs">
+              No bookings found.
+            </Text>
+          )
         }
         renderItem={({ item }) => (
           <BookingCard
             booking={item}
-            restaurantName="Restaurant Details" // Hardcoded fallback or database map lookups
-            restaurantCuisine="Dinner"
             onCancelPress={handleCancelRequest}
             isCancelling={cancellingId === item.id} // Evaluates to true only for the target card
           />

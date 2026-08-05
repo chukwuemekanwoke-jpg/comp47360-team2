@@ -2,16 +2,21 @@ const { Router } = require("express");
 const asyncHandler = require("../../middleware/asyncHandler");
 const requireUser = require("../../middleware/requireUser");
 const requireRestaurantManager = require("../../middleware/requireRestaurantManager");
-const { AppError } = require("../../errors");
+const { writeRateLimiter } = require("../../middleware/rateLimit");
+const { AppError, isUuid } = require("../../errors");
 const { getPool } = require("../../db/pool");
 const { toCampaignJson } = require("../../utils/serialize");
 const { validateCampaignBody } = require("../../utils/validate");
 const { createCampaignOffers } = require("../../services/createCampaignOffers");
+const { getCampaignOffers } = require("../../services/getCampaignOffers");
+const { getCampaignRevpashLift } = require("../../services/getCampaignRevpashLift");
+const { expireOverdueCampaigns } = require("../../services/expireCampaigns");
 
 const router = Router({ mergeParams: true });
 
 const CAMPAIGN_COLUMNS = `
-  id, restaurant_id, status, table_quota, tables_claimed, discount_percent, created_at
+  id, restaurant_id, status, table_quota, tables_claimed, discount_percent,
+  created_at, expires_at
 `;
 
 router.use(requireUser);
@@ -21,6 +26,8 @@ router.get(
   "/active",
   asyncHandler(async (req, res) => {
     const pool = getPool();
+    await expireOverdueCampaigns(pool, { restaurantId: req.restaurantId });
+
     const { rows } = await pool.query(
       `SELECT ${CAMPAIGN_COLUMNS}
        FROM campaigns
@@ -40,6 +47,8 @@ router.get(
   "/",
   asyncHandler(async (req, res) => {
     const pool = getPool();
+    await expireOverdueCampaigns(pool, { restaurantId: req.restaurantId });
+
     const { rows } = await pool.query(
       `SELECT ${CAMPAIGN_COLUMNS}
        FROM campaigns
@@ -49,24 +58,29 @@ router.get(
     );
 
     res.status(200).json({
-      campaigns: rows.map(toCampaignJson),
+      campaigns: rows.map((row) => toCampaignJson(row)),
     });
   })
 );
 
 router.post(
   "/",
+  writeRateLimiter,
   asyncHandler(async (req, res) => {
     const pool = getPool();
-    const { tableQuota, discountPercent } = validateCampaignBody(req.body);
+    const { tableQuota, discountPercent, ttlSeconds } = validateCampaignBody(req.body);
 
     const client = await pool.connect();
 
     try {
       await client.query("BEGIN");
 
+      await expireOverdueCampaigns(client, { restaurantId: req.restaurantId });
+
       const { rows: restaurantRows } = await client.query(
-        `SELECT id, latitude, longitude, manager_user_id
+        `SELECT id, latitude, longitude, manager_user_id, capacity,
+                cuisine, neighborhood, avg_check_per_cover,
+                is_wheelchair_accessible, sensory_friendly
          FROM restaurants
          WHERE id = $1
          FOR UPDATE`,
@@ -79,11 +93,36 @@ router.post(
 
       const restaurant = restaurantRows[0];
 
+      if (tableQuota > restaurant.capacity) {
+        throw new AppError(
+          400,
+          "VALIDATION_ERROR",
+          `tableQuota cannot exceed restaurant capacity (${restaurant.capacity})`
+        );
+      }
+
+      const { rows: activeRows } = await client.query(
+        `SELECT id
+         FROM campaigns
+         WHERE restaurant_id = $1 AND status = 'active'
+         LIMIT 1
+         FOR UPDATE`,
+        [req.restaurantId]
+      );
+
+      if (activeRows.length > 0) {
+        throw new AppError(
+          409,
+          "CONFLICT",
+          "An active campaign already exists for this restaurant"
+        );
+      }
+
       const { rows: campaignRows } = await client.query(
-        `INSERT INTO campaigns (restaurant_id, table_quota, discount_percent)
-         VALUES ($1, $2, $3)
+        `INSERT INTO campaigns (restaurant_id, table_quota, discount_percent, expires_at)
+         VALUES ($1, $2, $3, NOW() + ($4 * INTERVAL '1 second'))
          RETURNING ${CAMPAIGN_COLUMNS}`,
-        [req.restaurantId, tableQuota, discountPercent]
+        [req.restaurantId, tableQuota, discountPercent, ttlSeconds]
       );
 
       const campaign = campaignRows[0];
@@ -92,10 +131,112 @@ router.post(
         campaignId: campaign.id,
         restaurant,
         tableQuota,
+        ttlSeconds,
       });
 
       await client.query("COMMIT");
       res.status(201).json(toCampaignJson(campaign));
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
+    }
+  })
+);
+
+router.get(
+  "/:campaignId/offers",
+  asyncHandler(async (req, res) => {
+    const pool = getPool();
+    const { campaignId } = req.params;
+
+    if (!campaignId || !isUuid(campaignId)) {
+      throw new AppError(400, "VALIDATION_ERROR", "Invalid campaignId format");
+    }
+
+    await expireOverdueCampaigns(pool, { restaurantId: req.restaurantId });
+
+    const offers = await getCampaignOffers(pool, {
+      restaurantId: req.restaurantId,
+      campaignId,
+    });
+
+    res.status(200).json({ offers });
+  })
+);
+
+router.get(
+  "/:campaignId/revpash-lift",
+  asyncHandler(async (req, res) => {
+    const pool = getPool();
+    const { campaignId } = req.params;
+
+    if (!campaignId || !isUuid(campaignId)) {
+      throw new AppError(400, "VALIDATION_ERROR", "Invalid campaignId format");
+    }
+
+    const lift = await getCampaignRevpashLift(pool, {
+      restaurantId: req.restaurantId,
+      campaignId,
+    });
+
+    res.status(200).json(lift);
+  })
+);
+
+router.post(
+  "/:campaignId/cancel",
+  asyncHandler(async (req, res) => {
+    const pool = getPool();
+    const { campaignId } = req.params;
+
+    if (!campaignId || !isUuid(campaignId)) {
+      throw new AppError(400, "VALIDATION_ERROR", "Invalid campaignId format");
+    }
+
+    const client = await pool.connect();
+
+    try {
+      await client.query("BEGIN");
+
+      await expireOverdueCampaigns(client, { restaurantId: req.restaurantId });
+
+      const { rows } = await client.query(
+        `SELECT ${CAMPAIGN_COLUMNS}
+         FROM campaigns
+         WHERE id = $1 AND restaurant_id = $2
+         FOR UPDATE`,
+        [campaignId, req.restaurantId]
+      );
+
+      if (rows.length === 0) {
+        throw new AppError(404, "NOT_FOUND", "Campaign not found");
+      }
+
+      const campaign = rows[0];
+      if (campaign.status !== "active") {
+        throw new AppError(409, "CONFLICT", "Only active campaigns can be cancelled");
+      }
+
+      const { rows: updatedRows } = await client.query(
+        `UPDATE campaigns
+         SET status = 'cancelled',
+             cancelled_at = NOW()
+         WHERE id = $1
+         RETURNING ${CAMPAIGN_COLUMNS}`,
+        [campaignId]
+      );
+
+      await client.query(
+        `UPDATE offers
+         SET status = 'revoked'
+         WHERE campaign_id = $1 AND status = 'pending'`,
+        [campaignId]
+      );
+
+      await client.query("COMMIT");
+      res.status(200).json(toCampaignJson(updatedRows[0]));
     } catch (err) {
       await client.query("ROLLBACK");
       throw err;

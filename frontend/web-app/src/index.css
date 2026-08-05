@@ -12,13 +12,36 @@
   --table-interactive: #1e293b;
   --table-text: #f8fafc;
   --table-text-muted: #a8b3c7;
-  --table-text-subtle: #64748b;
+  /* WCAG AA fix: #64748b only hit 3.73:1 against --table-surface/--table-canvas
+     (needs 4.5:1) — #8896ab holds the same "dimmer than muted" hierarchy at 5.91:1. */
+  --table-text-subtle: #8896ab;
   --table-primary: #31d5d5;
   --table-primary-hover: #67e8f9;
   --table-offer: #f59e0b;
   --table-success: #10b981;
   --table-warning: #f59e0b;
   --table-danger: #ef4444;
+
+  /* R-23: same colors as raw "R G B" triples, so tailwind.config.js can build
+     opacity-capable utilities (bg-table-primary/10, shadow-table-danger/30,
+     etc.) via rgb(var(--table-primary-rgb) / <alpha-value>). The hex vars
+     above stay as-is for direct var(--table-primary) references (BrandMark,
+     login glow) — this is additive, not a replacement. Keep in sync with the
+     hex values above; there's no single source of truth between the two. */
+  --table-canvas-rgb: 15 23 42;
+  --table-surface-rgb: 17 24 39;
+  --table-surface-elevated-rgb: 23 32 51;
+  --table-border-rgb: 36 48 68;
+  --table-interactive-rgb: 30 41 59;
+  --table-text-rgb: 248 250 252;
+  --table-text-muted-rgb: 168 179 199;
+  --table-text-subtle-rgb: 136 150 171;
+  --table-primary-rgb: 49 213 213;
+  --table-primary-hover-rgb: 103 232 249;
+  --table-offer-rgb: 245 158 11;
+  --table-success-rgb: 16 185 129;
+  --table-warning-rgb: 245 158 11;
+  --table-danger-rgb: 239 68 68;
 }
 
 [data-theme='light'],
@@ -38,6 +61,21 @@
   --table-success: #059669;
   --table-warning: #d97706;
   --table-danger: #dc2626;
+
+  --table-canvas-rgb: 248 250 252;
+  --table-surface-rgb: 255 255 255;
+  --table-surface-elevated-rgb: 241 245 249;
+  --table-border-rgb: 203 213 225;
+  --table-interactive-rgb: 226 232 240;
+  --table-text-rgb: 15 23 42;
+  --table-text-muted-rgb: 71 85 105;
+  --table-text-subtle-rgb: 100 116 139;
+  --table-primary-rgb: 8 145 178;
+  --table-primary-hover-rgb: 14 116 144;
+  --table-offer-rgb: 217 119 6;
+  --table-success-rgb: 5 150 105;
+  --table-warning-rgb: 217 119 6;
+  --table-danger-rgb: 220 38 38;
 }
 
 html, body, #root {
@@ -45,9 +83,12 @@ html, body, #root {
   color: var(--table-text);
   margin: 0;
   padding: 0;
-  height: 100%;
+  min-height: 100%;
   width: 100%;
-  overflow: hidden;
+  /* Was overflow: hidden — fine for LoginView (designed to fit exactly one
+     viewport) but silently blocked scrolling on every page whose content
+     is taller than the screen, e.g. MerchantDashboard's stacked widgets. */
+  overflow-y: auto;
 }
 
 @layer base {
@@ -80,22 +121,6 @@ html, body, #root {
 
   ::-webkit-scrollbar-thumb:hover {
     background: rgba(100, 116, 139, 0.5);
-  }
-}
-
-/* App-wide Layout Overrides to enforce manager branding alignments */
-@layer components {
-  /* Forces the navigation header layout to render using the deep navy canvas blueprint */
-  header, nav, [role="navigation"] {
-    background-color: var(--table-canvas) !important;
-    border-color: var(--table-border) !important;
-  }
-
-  /* Forces the main sign-in button to be high-visibility prominent cyan instead of grayed-out */
-  button[type="submit"], .bg-table-primary, button.bg-cyan-500 {
-    background-color: var(--table-primary) !important;
-    color: var(--table-canvas) !important;
-    opacity: 1 !important;
   }
 }
 

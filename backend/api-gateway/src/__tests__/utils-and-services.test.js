@@ -3,7 +3,10 @@ const {
   FLASH_DEAL_TTL_SECONDS,
   MATCH_RADIUS_M,
   findNearbyCandidates,
+  satisfiesAccessibilityRequirements,
+  filterEligibleCandidates,
   toMlCandidates,
+  toMlRestaurant,
 } = require("../services/candidateUsers");
 const { insertOffersForUsers } = require("../services/offerInsert");
 const { expirePendingOffers } = require("../services/offers");
@@ -95,6 +98,14 @@ describe("validation utilities", () => {
     expect(validateCampaignBody({ tableQuota: 2, discountPercent: 20 })).toEqual({
       tableQuota: 2,
       discountPercent: 20,
+      ttlMinutes: 15,
+      ttlSeconds: 900,
+    });
+    expect(validateCampaignBody({ tableQuota: 2, discountPercent: 20, ttlMinutes: 30 })).toEqual({
+      tableQuota: 2,
+      discountPercent: 20,
+      ttlMinutes: 30,
+      ttlSeconds: 1800,
     });
     expect(requireNonEmptyString(" Tablé ", "name")).toBe("Tablé");
   });
@@ -114,6 +125,9 @@ describe("validation utilities", () => {
     expect(() => validateCampaignBody({ tableQuota: 1, discountPercent: 99 })).toThrow(
       "discountPercent must be an integer"
     );
+    expect(() => validateCampaignBody({ tableQuota: 1, discountPercent: 20, ttlMinutes: 5 })).toThrow(
+      "ttlMinutes must be an integer between 10 and 60"
+    );
     expect(() => requireNonEmptyString("", "displayName")).toThrow("displayName is required");
   });
 });
@@ -130,6 +144,8 @@ describe("serialization utilities", () => {
       capacity: 24,
       cuisine: "Omakase",
       busyness_score: "0.42",
+      rating: "4.7",
+      reviews: 362,
       is_wheelchair_accessible: true,
       sensory_friendly: false,
       distance_meters: "452.6",
@@ -141,6 +157,8 @@ describe("serialization utilities", () => {
       latitude: 40.73,
       longitude: -73.99,
       busynessScore: 0.42,
+      rating: 4.7,
+      reviews: 362,
       distanceMeters: 453,
     });
     expect(toRestaurantDetail(restaurantRow)).toMatchObject({
@@ -225,6 +243,10 @@ describe("cache and offer helper services", () => {
             id: "user-1",
             budget_tier: "TIER_2",
             dietary_tags: ["vegan"],
+            preferred_cuisines: ["italian"],
+            dining_styles: ["date-night"],
+            requires_wheelchair_access: true,
+            requires_sensory_friendly: false,
             distance_meters: "425.4",
           },
         ],
@@ -236,6 +258,8 @@ describe("cache and offer helper services", () => {
         latitude: 40.73,
         longitude: -73.99,
         manager_user_id: "manager-1",
+        is_wheelchair_accessible: true,
+        sensory_friendly: false,
       },
       limit: 2,
     });
@@ -246,15 +270,96 @@ describe("cache and offer helper services", () => {
       MATCH_RADIUS_M,
       "manager-1",
       2,
+      true,
+      false,
     ]);
+    expect(client.query.mock.calls[0][0]).toContain(
+      "JOIN user_preferences p ON p.user_id = u.id"
+    );
+    expect(client.query.mock.calls[0][0]).toContain("p.preferred_cuisines");
+    expect(client.query.mock.calls[0][0]).toContain("p.dining_styles");
+    expect(client.query.mock.calls[0][0]).toContain("p.requires_wheelchair_access");
+    expect(client.query.mock.calls[0][0]).toContain("p.requires_sensory_friendly");
+    expect(client.query.mock.calls[0][0]).toContain(
+      "NOT p.requires_wheelchair_access OR $6 = TRUE"
+    );
+    expect(client.query.mock.calls[0][0]).toContain(
+      "NOT p.requires_sensory_friendly OR $7 = TRUE"
+    );
     expect(toMlCandidates(rows)).toEqual([
       {
         userId: "user-1",
         budgetTier: "TIER_2",
         dietaryTags: ["vegan"],
+        preferredCuisines: ["italian"],
+        diningStyles: ["date-night"],
+        requiresWheelchairAccess: true,
+        requiresSensoryFriendly: false,
         distanceMeters: 425,
       },
     ]);
+  });
+
+  it("treats accessibility needs as hard eligibility constraints", () => {
+    const restaurant = {
+      is_wheelchair_accessible: true,
+      sensory_friendly: false,
+    };
+    const candidates = [
+      {
+        id: "wheelchair-user",
+        requires_wheelchair_access: true,
+        requires_sensory_friendly: false,
+      },
+      {
+        id: "sensory-user",
+        requires_wheelchair_access: false,
+        requires_sensory_friendly: true,
+      },
+      {
+        id: "no-access-needs-user",
+        requires_wheelchair_access: false,
+        requires_sensory_friendly: false,
+      },
+    ];
+
+    expect(satisfiesAccessibilityRequirements(candidates[0], restaurant)).toBe(true);
+    expect(satisfiesAccessibilityRequirements(candidates[1], restaurant)).toBe(false);
+    expect(filterEligibleCandidates(candidates, restaurant).map((row) => row.id)).toEqual([
+      "wheelchair-user",
+      "no-access-needs-user",
+    ]);
+  });
+
+  it("maps a restaurant row to the ML payload shape", () => {
+    expect(
+      toMlRestaurant({
+        id: "restaurant-1",
+        cuisine: "italian",
+        neighborhood: "Midtown",
+        avg_check_per_cover: "48.50",
+        is_wheelchair_accessible: true,
+        sensory_friendly: false,
+      })
+    ).toEqual({
+      id: "restaurant-1",
+      cuisine: "italian",
+      neighborhood: "Midtown",
+      avgCheckPerCover: 48.5,
+      isWheelchairAccessible: true,
+      sensoryFriendly: false,
+    });
+  });
+
+  it("defaults missing restaurant attributes in the ML payload", () => {
+    expect(toMlRestaurant({ id: "restaurant-2" })).toEqual({
+      id: "restaurant-2",
+      cuisine: null,
+      neighborhood: null,
+      avgCheckPerCover: null,
+      isWheelchairAccessible: false,
+      sensoryFriendly: false,
+    });
   });
 
   it("inserts offers for matched users and ignores conflict rows", async () => {

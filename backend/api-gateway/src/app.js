@@ -9,6 +9,10 @@ const apiV1Router = require("./routes/apiV1");
 function createApp() {
   const app = express();
 
+  // Cloud Run / reverse proxies set X-Forwarded-For; needed so rate limits key
+  // on the client IP rather than the shared load-balancer address.
+  app.set("trust proxy", 1);
+
   app.use(
     cors({
       origin: config.corsOrigins,

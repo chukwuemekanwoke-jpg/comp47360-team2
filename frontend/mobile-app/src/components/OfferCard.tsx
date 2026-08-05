@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { OfferInboxItem } from "@shared/types";
 
 interface OfferCardProps {
@@ -48,7 +49,7 @@ export default function OfferCard({ offer, onAccept, isAccepting }: OfferCardPro
         style={{ backgroundColor: isExpired ? "#27272a" : "#f59e0b18" }}
       >
         <View className="flex-row items-center gap-2">
-          <Text style={{ fontSize: 14 }}>⚡</Text>
+          <Ionicons name="flash-outline" size={14} color={isExpired ? "#71717a" : "#f59e0b"} />
           <Text
             className="text-xs font-bold uppercase tracking-widest"
             style={{ color: isExpired ? "#71717a" : "#f59e0b" }}
@@ -104,7 +105,7 @@ export default function OfferCard({ offer, onAccept, isAccepting }: OfferCardPro
             className="text-xs font-bold uppercase tracking-widest"
             style={{ color: isExpired ? "#71717a" : "#09090b" }}
           >
-            {isAccepting ? "Claiming..." : isExpired ? "Unavailable" : "Claim Offer"}
+            {isAccepting ? "Claiming..." : isExpired ? "Unavailable" : "Claim & Book Now"}
           </Text>
         </TouchableOpacity>
       </View>

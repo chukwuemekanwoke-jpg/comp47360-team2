@@ -1,30 +1,34 @@
 import React from "react";
-import { Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import { Alert, Linking, Platform, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { Booking, TransportMode } from "@shared/types";
+import { useGetRestaurantDetailQuery } from "@shared/apiSlice";
+import { useAppSelector } from "@shared/hooks";
+import { navColors } from "@/theme";
+import { buildDirectionsUrl } from "@/lib/directions";
+import { TRAVEL_METHODS } from "@shared/constants";
 
 interface BookingCardProps {
   booking: Booking;
-  restaurantName: string;
-  restaurantCuisine?: string;
   onCancelPress: (bookingId: string, restaurantName: string) => void;
   isCancelling: boolean;
 }
 
-const TRANSPORT_MAP: Record<TransportMode, { label: string; icon: string }> = {
-  walking: { label: "Walking", icon: "🚶" },
-  driving: { label: "Driving", icon: "🚗" },
-  transit: { label: "Transit", icon: "🚇" },
-  cycling: { label: "Cycling", icon: "🚴" },
-};
+type IconName = keyof typeof Ionicons.glyphMap;
 
 export default function BookingCard({
   booking: b,
-  restaurantName,
-  restaurantCuisine,
   onCancelPress,
   isCancelling,
 }: BookingCardProps) {
-  
+  // GET /users/me/bookings has no restaurant join — resolve name/cuisine
+  // client-side. RTK Query dedupes and caches per restaurant id.
+  const colors = navColors[useAppSelector((state) => state.settings.theme)];
+  const { data: restaurant } = useGetRestaurantDetailQuery(b.restaurantId);
+  const restaurantName = restaurant?.name ?? "Loading restaurant…";
+  const restaurantCuisine = restaurant?.cuisine;
+  const restaurantNeighborhood = restaurant?.neighborhood;
+
   const getStatusStyles = (status: string) => {
     switch (status.toUpperCase()) {
       case "CONFIRMED":
@@ -39,13 +43,41 @@ export default function BookingCard({
   };
 
   const statusStyle = getStatusStyles(b.status);
-  const transport = TRANSPORT_MAP[b.transportMode] || { label: b.transportMode, icon: "📍" };
+  const travelMethod = TRAVEL_METHODS.find((t) => t.mode === b.transportMode);
+  const transport: { label: string; icon: IconName } = travelMethod
+    ? { label: travelMethod.label, icon: travelMethod.icon as IconName }
+    : { label: b.transportMode, icon: "location-outline" };
 
   const bookingTime = b.confirmedAt ? new Date(b.confirmedAt) : new Date(b.holdExpiresAt);
   const formattedTime = bookingTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   const formattedDate = bookingTime.toLocaleDateString([], { month: "short", day: "numeric" });
 
   const isActive = b.status.toUpperCase() === "CONFIRMED" || b.status.toUpperCase() === "PENDING";
+
+  // Needs the restaurant detail response for the coordinates, which arrives a
+  // moment after the card first paints.
+  const canRoute = restaurant != null;
+
+  const openDirections = async () => {
+    if (!restaurant) return;
+    const url = buildDirectionsUrl(
+      {
+        latitude: restaurant.latitude,
+        longitude: restaurant.longitude,
+        label: restaurant.name,
+      },
+      b.transportMode
+    );
+    try {
+      await Linking.openURL(url);
+    } catch {
+      // No registered handler for https — rare, but happens on bare simulators.
+      const message = "Could not open a maps app on this device.";
+      // Alert.alert is a no-op on react-native-web.
+      if (Platform.OS === "web") window.alert(message);
+      else Alert.alert("Directions unavailable", message);
+    }
+  };
 
   return (
     <View className="bg-table-surface border border-table-border rounded-2xl p-4 mb-3">
@@ -54,7 +86,10 @@ export default function BookingCard({
         <View className="flex-1 mr-2">
           <Text className="text-sm font-bold text-table-cream">{restaurantName}</Text>
           {restaurantCuisine && (
-            <Text className="text-xs text-table-gold mt-0.5">{restaurantCuisine}</Text>
+            <Text className="text-xs text-table-gold mt-0.5">
+              {restaurantCuisine}
+              {restaurantNeighborhood ? ` · ${restaurantNeighborhood}` : ""}
+            </Text>
           )}
         </View>
 
@@ -77,7 +112,9 @@ export default function BookingCard({
 
         <View className="flex-1 items-center">
           <Text className="text-[9px] font-bold uppercase tracking-widest text-table-gold mb-1">Transit</Text>
-          <Text className="text-xs font-bold text-table-cream">{transport.icon} {transport.label}</Text>
+          <Text className="text-xs font-bold text-table-cream">
+            <Ionicons name={transport.icon} size={12} color={colors.cream} /> {transport.label}
+          </Text>
         </View>
 
         <View className="w-px bg-table-border" />
@@ -89,17 +126,41 @@ export default function BookingCard({
       </View>
 
       {isActive && (
-        <TouchableOpacity
-          className="border border-red-500/30 bg-red-500/5 active:bg-red-500/10 rounded-xl py-2.5 items-center justify-center flex-row gap-2"
-          activeOpacity={0.7}
-          onPress={() => onCancelPress(b.id, restaurantName)}
-          disabled={isCancelling}
-        >
-          {isCancelling && <ActivityIndicator size="small" color="#ef4444" />}
-          <Text className="text-red-400 text-xs font-bold uppercase tracking-widest">
-            {isCancelling ? "Cancelling..." : "Cancel Reservation"}
-          </Text>
-        </TouchableOpacity>
+        <>
+          <TouchableOpacity
+            className="border border-table-border active:bg-table-border/30 rounded-xl py-2.5 mb-2 items-center justify-center flex-row gap-2"
+            activeOpacity={0.7}
+            onPress={openDirections}
+            disabled={!canRoute}
+            accessibilityRole="button"
+            accessibilityLabel={`Get directions to ${restaurantName}`}
+          >
+            <Ionicons
+              name="navigate-outline"
+              size={13}
+              color={canRoute ? colors.teal : colors.gold}
+            />
+            <Text
+              className={`text-xs font-bold uppercase tracking-widest ${
+                canRoute ? "text-table-teal" : "text-table-gold/40"
+              }`}
+            >
+              Directions
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className="border border-red-500/30 bg-red-500/5 active:bg-red-500/10 rounded-xl py-2.5 items-center justify-center flex-row gap-2"
+            activeOpacity={0.7}
+            onPress={() => onCancelPress(b.id, restaurantName)}
+            disabled={isCancelling}
+          >
+            {isCancelling && <ActivityIndicator size="small" color="#ef4444" />}
+            <Text className="text-red-400 text-xs font-bold uppercase tracking-widest">
+              {isCancelling ? "Cancelling..." : "Cancel Reservation"}
+            </Text>
+          </TouchableOpacity>
+        </>
       )}
     </View>
   );

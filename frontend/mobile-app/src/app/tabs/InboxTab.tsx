@@ -1,11 +1,17 @@
 import { useState } from "react";
 import { FlatList, View, Text, ActivityIndicator, Alert } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useGetOffersInboxQuery, useAcceptOfferMutation } from "@shared/apiSlice";
 import { useAppSelector } from "@shared/hooks";
 import OfferCard from "@/components/OfferCard";
+import OfferCheckout from "@/components/OfferCheckout";
+import SignInPrompt from "@/components/SignInPrompt";
+import { OfferInboxItem } from "@shared/types";
+import { navColors } from "@/theme";
 
 export default function InboxTab() {
   const userId = useAppSelector((state) => state.auth.userId);
+  const colors = navColors[useAppSelector((state) => state.settings.theme)];
 
   // Polling stands in for push notifications for now — a push received here
   // would call `refetch()` (or dispatch tableApi's cache invalidation) instead
@@ -17,6 +23,9 @@ export default function InboxTab() {
 
   const [acceptOffer] = useAcceptOfferMutation();
   const [acceptingId, setAcceptingId] = useState<string | null>(null);
+  // Offer awaiting confirmation. Accepting books a table immediately, so the
+  // card's button opens OfferCheckout rather than calling the mutation.
+  const [pendingOffer, setPendingOffer] = useState<OfferInboxItem | null>(null);
 
   const offers = data?.offers ?? [];
 
@@ -24,31 +33,32 @@ export default function InboxTab() {
     try {
       setAcceptingId(offerId);
       const result = await acceptOffer(offerId).unwrap();
+      setPendingOffer(null);
       Alert.alert(
         "Table Secured!",
-        `Your offer has been accepted and a table is confirmed. ETA: ${result.booking.etaMinutes} mins.`
+        `Your offer has been accepted and a table is confirmed for now. `
+          + `ETA: ${result.booking.etaMinutes} mins.`
       );
     } catch {
+      setPendingOffer(null);
       Alert.alert("Offer Unavailable", "This offer has expired or been revoked. Pull down to refresh.");
     } finally {
       setAcceptingId(null);
     }
   };
 
+  // Guest browsing — offers are matched per-user, so this is a
+  // user-specific route.
   if (!userId) {
     return (
-      <View className="flex-1 bg-table-canvas items-center justify-center px-6">
-        <Text className="text-table-gold text-sm text-center">
-          Complete onboarding to receive personalised flash deals.
-        </Text>
-      </View>
+      <SignInPrompt message="Sign in to receive personalised flash deals from nearby restaurants." />
     );
   }
 
   if (isLoading && offers.length === 0) {
     return (
       <View className="flex-1 bg-table-canvas items-center justify-center">
-        <ActivityIndicator size="large" color="#00f2fe" />
+        <ActivityIndicator size="large" color={colors.teal} />
       </View>
     );
   }
@@ -71,7 +81,7 @@ export default function InboxTab() {
           Exclusive Offers
         </Text>
         <Text className="text-xs text-table-cream/60">
-          1-to-1 flash deals matched to you. First come, first served.
+          1-to-1 flash deals matched to you. Claiming one books a table for right now.
         </Text>
       </View>
 
@@ -84,7 +94,7 @@ export default function InboxTab() {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View className="items-center mt-16 px-6">
-            <Text style={{ fontSize: 36, marginBottom: 12 }}>⚡</Text>
+            <Ionicons name="flash-outline" size={36} color={colors.gold} style={{ marginBottom: 12 }} />
             <Text className="text-table-cream text-sm font-bold text-center mb-2">
               No offers right now
             </Text>
@@ -96,10 +106,18 @@ export default function InboxTab() {
         renderItem={({ item }) => (
           <OfferCard
             offer={item}
-            onAccept={handleAccept}
+            onAccept={() => setPendingOffer(item)}
             isAccepting={acceptingId === item.id}
           />
         )}
+      />
+
+      <OfferCheckout
+        isVisible={pendingOffer !== null}
+        offer={pendingOffer}
+        onClose={() => setPendingOffer(null)}
+        onConfirm={handleAccept}
+        isAccepting={acceptingId !== null}
       />
     </View>
   );

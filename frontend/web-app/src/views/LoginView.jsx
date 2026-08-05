@@ -1,52 +1,83 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { isValidEmail } from '../utils/validation';
+import { useLoginMutation } from '../../../packages/shared/src/apiSlice.ts';
+import PasswordInput from '../components/PasswordInput';
+import BrandMark from '../components/BrandMark';
 
 export default function LoginView() {
   const navigate = useNavigate();
+  const { setSession } = useAuth();
+  const [login, { isLoading: isSubmitting }] = useLoginMutation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
 
-    console.log('Login attempt with:', { email, password });
+    if (!isValidEmail(email)) {
+      setError('Enter a valid email address.');
+      return;
+    }
 
-    // Staging gateway check for sprint evaluation and internal navigation testing
-    if (email === 'merchant@table.com' && password === 'password') {
+    try {
+      const session = await login({ email, password }).unwrap();
+      setSession(session);
       navigate('/merchant');
-    } else {
-      setError('Invalid authentication pairing. Use administrative credentials or register your node.');
+    } catch (err) {
+      setError(err?.data?.error?.message || 'Failed to sign in.');
     }
   };
 
   return (
-    <div 
-      className="h-[calc(100svh-73px)] w-full flex items-center justify-center bg-[#0A0A0A] relative overflow-hidden"
-      style={{
-        backgroundImage: `url('https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=2000&auto=format&fit=crop')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-[2px]"></div>
+    <div className="h-[calc(100svh-73px)] w-full flex items-center justify-center bg-table-canvas relative overflow-hidden">
+      {/* Manhattan hero photo, brought back per team request — dark overlay
+          keeps the card/text readable over it, glow blobs kept for depth
+          consistent with the rest of the dashboard's visual language. */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            "url('https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?q=80&w=2000&auto=format&fit=crop')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
+      <div className="absolute inset-0 bg-table-canvas/80 backdrop-blur-[2px] pointer-events-none" />
+      <div
+        className="absolute w-[420px] h-[420px] rounded-full blur-3xl opacity-20 -top-32 -left-24 pointer-events-none"
+        style={{ background: 'var(--table-primary)' }}
+      />
+      <div
+        className="absolute w-[360px] h-[360px] rounded-full blur-3xl opacity-15 -bottom-28 -right-16 pointer-events-none"
+        style={{ background: 'var(--table-offer)' }}
+      />
 
-      <div className="relative z-10 w-full max-w-md p-10 bg-table-surface/80 border border-zinc-800/80 rounded-2xl shadow-2xl backdrop-blur-md">
-        <div className="text-center mb-10 space-y-2">
-          <h1 className="text-5xl font-serif font-bold text-table-primary tracking-tighter">Tablé</h1>
-          <p className="text-table-textMuted font-sans text-sm tracking-wide">Secure User Access</p>
+      <div className="relative z-10 w-full max-w-md p-10 bg-table-surface/95 border border-table-border rounded-2xl backdrop-blur-sm shadow-2xl">
+        <div className="flex flex-col items-center gap-3 mb-10">
+          <BrandMark size={40} />
+          <div className="text-center space-y-1">
+            <h1 className="text-2xl font-display font-black text-table-text tracking-tight">Tablé</h1>
+            <p className="text-table-textSubtle font-mono text-[11px] uppercase tracking-[0.2em]">Secure Access</p>
+          </div>
         </div>
 
         {/* Informative Error Banner Alert UI */}
         {error && (
-          <div className="mb-6 p-4 bg-red-950/45 border border-red-500/30 text-red-400 rounded-xl text-xs font-mono leading-relaxed text-left">
+          <div role="alert" className="mb-6 p-4 bg-table-danger/10 border border-table-danger/30 text-table-danger rounded-xl text-xs font-mono leading-relaxed text-left">
             ⚠️ {error}
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-6">
+        {/* noValidate: native browser validation would block onSubmit (and
+            thus our styled, consistent error messages) before our own JS
+            validation ever runs — required/type=email stay for a11y/mobile
+            keyboard hints, but we own the actual validation UX. */}
+        <form onSubmit={handleLogin} noValidate className="space-y-6">
           <div className="space-y-2">
             <label htmlFor="email" className="block text-xs font-mono text-table-textMuted uppercase tracking-widest text-left">
               Email Address
@@ -57,8 +88,9 @@ export default function LoginView() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={isSubmitting}
               placeholder="your.name@provider.com"
-              className="w-full px-4 py-3 bg-black/40 border border-zinc-800 rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:ring-2 focus:ring-table-primary/50 focus:border-table-primary transition-all outline-none"
+              className="w-full px-4 py-3 bg-table-canvas border border-table-border rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:outline-none focus:border-table-offer transition-colors disabled:opacity-50"
             />
           </div>
 
@@ -67,37 +99,43 @@ export default function LoginView() {
               <label htmlFor="password" className="block text-xs font-mono text-table-textMuted uppercase tracking-widest text-left">
                 Password
               </label>
+              <Link
+                to="/forgot-password"
+                className="text-[11px] font-mono text-table-textSubtle hover:text-table-primary transition-colors"
+              >
+                Forgot password?
+              </Link>
             </div>
-            <input
+            <PasswordInput
               id="password"
-              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={isSubmitting}
               placeholder="••••••••"
-              className="w-full px-4 py-3 bg-black/40 border border-zinc-800 rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:ring-2 focus:ring-table-primary/50 focus:border-table-primary transition-all outline-none"
+              autoComplete="current-password"
+              inputClassName="w-full px-4 py-3 bg-table-canvas border border-table-border rounded-xl text-table-text font-sans placeholder:text-table-textSubtle focus:outline-none focus:border-table-offer transition-colors disabled:opacity-50"
             />
           </div>
 
           <div className="pt-4">
             <button
               type="submit"
-              className="w-full py-3.5 bg-table-primary text-[#0A0A0A] font-sans font-bold rounded-xl hover:bg-table-primaryHover transition-all duration-300 shadow-lg shadow-table-primary/10"
+              disabled={isSubmitting}
+              className="w-full py-3.5 bg-table-primary text-table-canvas font-mono font-bold text-xs uppercase tracking-wider rounded-xl hover:bg-table-primaryHover transition-colors shadow-lg shadow-table-primary/40 disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed"
             >
-              Sign In to Tablé
+              {isSubmitting ? 'Signing in...' : 'Sign In to Tablé'}
             </button>
           </div>
         </form>
 
-        {/* Dynamic Navigation Entry to Onboarding Interface */}
-        <div className="mt-8 pt-6 border-t border-zinc-800/80 text-center">
-          <button
-            type="button"
-            onClick={() => navigate('/register')}
-            className="text-xs font-mono font-bold text-table-primary hover:text-table-primaryHover transition-colors uppercase tracking-wider bg-transparent border-none p-0 cursor-pointer"
+        <div className="mt-8 pt-6 border-t border-table-border text-center">
+          <Link
+            to="/register"
+            className="text-xs font-mono font-bold text-table-primary hover:text-table-primaryHover transition-colors uppercase tracking-wider"
           >
             Create an account
-          </button>
+          </Link>
         </div>
       </div>
     </div>

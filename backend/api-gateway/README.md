@@ -26,6 +26,24 @@ npm run dev
 
 Server: `http://localhost:3001`
 
+## Authentication and rate limiting
+
+Protected routes require a JWT Bearer token in production. The legacy
+`X-User-Id` header is available by default only in development/test for local
+demo compatibility. Keep `ALLOW_LEGACY_USER_HEADER=false` in deployed
+environments; it may be explicitly set to `true` only for a controlled demo.
+
+Sensitive-route limits are in-memory (fine for single-instance Cloud Run /
+local MVP). Auth keys combine endpoint, client IP, and a hashed email or reset
+token, so unrelated users behind one carrier/NAT IP do not share one budget:
+
+| Scope | Default | Routes |
+|-------|---------|--------|
+| Auth | 20 / 15 min per endpoint + IP + identity | `POST /api/v1/auth/*` |
+| Writes | 60 / 15 min | `POST /bookings`, `POST /restaurants/:id/campaigns` |
+
+Exceeded → `429` `{ "error": { "code": "RATE_LIMITED", ... } }` plus standard `RateLimit-*` headers. Tunable via `RATE_LIMIT_*` in `.env` (see `.env.example`). Off automatically under `NODE_ENV=test`.
+
 ## Endpoints
 
 ### Infrastructure (BE-8)
@@ -34,30 +52,40 @@ Server: `http://localhost:3001`
 |--------|------|------|---------|
 | GET | `/health` | none | Liveness (BE-1) |
 | GET | `/api/v1/status` | none | Readiness + DB ping |
+| GET | `/api/v1/config/maps-key` | none | Google Maps browser key for the web app's location picker (404 if `MAPS_JS_API_KEY` unset) |
 
 ### Users & onboarding (BE-11)
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
 | POST | `/api/v1/users` | none | Create user (legacy onboarding) |
-| POST | `/api/v1/auth/register` | none | Register; returns JWT *(planned)* |
-| POST | `/api/v1/auth/login` | none | Login; returns JWT *(planned)* |
+| POST | `/api/v1/auth/register` | none | Register; returns JWT (rate-limited) |
+| POST | `/api/v1/auth/login` | none | Login; returns JWT (rate-limited) |
+| POST | `/api/v1/auth/forgot-password` | none | Request password reset link (logged in dev; rate-limited) |
+| POST | `/api/v1/auth/reset-password` | none | Set new password with reset token (rate-limited) |
+| POST | `/api/v1/auth/logout` | Bearer JWT | Invalidate current JWT |
+| POST | `/api/v1/auth/logout` | JWT | Invalidate current token (server-side logout) |
 | GET | `/api/v1/users/me` | JWT or `X-User-Id` | Current user profile |
-| PATCH | `/api/v1/users/me/preferences` | JWT or `X-User-Id` | Update budget, dietary tags, location |
+| PATCH | `/api/v1/users/me/preferences` | JWT or `X-User-Id` | Update categorized preferences and/or location |
 
 ### Discovery (BE-11)
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
-| GET | `/api/v1/restaurants/nearby` | optional `X-User-Id` | Restaurants within radius (`availableTableCount > 0`) |
+| GET | `/api/v1/restaurants/nearby` | optional `X-User-Id` | Restaurants within radius (`availableTableCount > 0`); optional `neighborhood` geocode fallback |
+| POST | `/api/v1/restaurants` | JWT or `X-User-Id` | Create restaurant (`manager_user_id` = caller) |
 | GET | `/api/v1/restaurants/:restaurantId` | none | Restaurant detail for booking screen |
+| PATCH | `/api/v1/restaurants/:restaurantId/settings` | manager JWT or `X-User-Id` | Update accessibility settings |
 | GET | `/api/v1/restaurants/:restaurantId/eta` | none | Travel time (Google Routes API, BE-12) + `canBook` vs hold window |
+| GET | `/api/v1/restaurants/:restaurantId/revpash` | manager JWT or `X-User-Id` | RevPASH summary (`?window=today\|week\|month`) |
 
 ### Bookings (BE-12, BE-16)
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
-| POST | `/api/v1/bookings` | JWT or `X-User-Id` | Confirm reservation; decrements table count |
+| POST | `/api/v1/bookings` | JWT or `X-User-Id` | Confirm reservation; one active booking per user; hold timeout + keep last 5; optional `partySize` (rate-limited) |
+| PATCH | `/api/v1/bookings/:bookingId/status` | manager JWT or `X-User-Id` | Update booking status (dashboard) |
+| POST | `/api/v1/bookings/:bookingId/cancel` | JWT or `X-User-Id` | Cancel booking; restore table count / offer state |
 | GET | `/api/v1/users/me/bookings` | JWT or `X-User-Id` | List the current user's bookings (newest first) |
 | GET | `/api/v1/restaurants/:restaurantId/bookings` | manager JWT or `X-User-Id` | List bookings for a restaurant (newest first) |
 
@@ -65,7 +93,10 @@ Server: `http://localhost:3001`
 
 | Method | Path | Auth | Purpose |
 |--------|------|------|---------|
-| POST | `/api/v1/restaurants/:restaurantId/campaigns` | manager JWT or `X-User-Id` | Create flash-deal campaign + ML/heuristic offers |
+| POST | `/api/v1/restaurants/:restaurantId/campaigns` | manager JWT or `X-User-Id` | Create flash-deal campaign + ML/heuristic offers (rate-limited) |
+| POST | `/api/v1/restaurants/:restaurantId/campaigns/:campaignId/cancel` | manager JWT or `X-User-Id` | Cancel active campaign; revoke pending offers |
+| GET | `/api/v1/restaurants/:restaurantId/campaigns/:campaignId/offers` | manager JWT or `X-User-Id` | List campaign offers for live tracker |
+| GET | `/api/v1/restaurants/:restaurantId/campaigns/:campaignId/revpash-lift` | manager JWT or `X-User-Id` | Organic-vs-deal RevPASH comparison for a campaign |
 | GET | `/api/v1/restaurants/:restaurantId/campaigns` | manager | List campaigns |
 | GET | `/api/v1/restaurants/:restaurantId/campaigns/active` | manager | Active campaign or `null` |
 | GET | `/api/v1/users/me/offers` | JWT or `X-User-Id` | Offer inbox (`?status=pending` optional) |
@@ -82,6 +113,29 @@ curl -X POST http://localhost:3001/api/v1/users \
   -H 'Content-Type: application/json' \
   -d '{"displayName":"Alex"}'
 
+# Login (demo manager after migration + seed)
+curl -X POST http://localhost:3001/api/v1/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"manager@demo.com","password":"password123"}'
+
+# Use Bearer token on protected routes (replace TOKEN)
+curl http://localhost:3001/api/v1/users/me/bookings \
+  -H 'Authorization: Bearer TOKEN'
+
+# Logout (invalidates JWT server-side)
+curl -X POST http://localhost:3001/api/v1/auth/logout \
+  -H 'Authorization: Bearer TOKEN'
+
+# Forgot password (check server logs for [password-reset] link in dev)
+curl -X POST http://localhost:3001/api/v1/auth/forgot-password \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"manager@demo.com"}'
+
+# Reset password (paste token from log link)
+curl -X POST http://localhost:3001/api/v1/auth/reset-password \
+  -H 'Content-Type: application/json' \
+  -d '{"token":"PASTE_TOKEN","newPassword":"newpassword123"}'
+
 # Demo consumer (after npm run seed in database/)
 curl http://localhost:3001/api/v1/users/me \
   -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001'
@@ -89,10 +143,13 @@ curl http://localhost:3001/api/v1/users/me \
 curl -X PATCH http://localhost:3001/api/v1/users/me/preferences \
   -H 'Content-Type: application/json' \
   -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001' \
-  -d '{"budgetTier":"TIER_2","dietaryTags":["vegan"],"lastLat":40.7589,"lastLng":-73.9851}'
+  -d '{"budgetTier":"TIER_2","dietaryTags":["vegan"],"preferredCuisines":["Japanese"],"diningStyles":["casual"],"lastLat":40.7589,"lastLng":-73.9851}'
 
 # Nearby discovery (Times Square demo origin)
 curl 'http://localhost:3001/api/v1/restaurants/nearby?lat=40.7589&lng=-73.9851'
+
+# GPS denied — geocode a Manhattan neighbourhood instead of lat/lng
+curl 'http://localhost:3001/api/v1/restaurants/nearby?neighborhood=Midtown'
 
 # Restaurant detail (replace with id from nearby response)
 curl http://localhost:3001/api/v1/restaurants/550e8400-e29b-41d4-a716-446655441001
@@ -110,8 +167,16 @@ curl -X POST http://localhost:3001/api/v1/bookings \
 curl http://localhost:3001/api/v1/users/me/bookings \
   -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001'
 
+# Cancel booking (replace BOOKING_ID from bookings list or create response)
+curl -X POST http://localhost:3001/api/v1/bookings/BOOKING_ID/cancel \
+  -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440001'
+
 # B-side: list restaurant bookings (Demo Manager on The Maple Room)
 curl http://localhost:3001/api/v1/restaurants/550e8400-e29b-41d4-a716-446655441001/bookings \
+  -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440002'
+
+# B-side: RevPASH summary (today)
+curl 'http://localhost:3001/api/v1/restaurants/550e8400-e29b-41d4-a716-446655441001/revpash?window=today' \
   -H 'X-User-Id: 550e8400-e29b-41d4-a716-446655440002'
 
 # B-side: create campaign (Demo Manager on The Maple Room)
@@ -172,6 +237,10 @@ backend/api-gateway/
 
 Business routes (`/restaurants`, `/bookings`, …) mount under `src/routes/apiV1/`.
 
+## Postman smoke tests
+
+Import [docs/postman/table-integration-journeys.postman_collection.json](../../docs/postman/table-integration-journeys.postman_collection.json) for C-side and B-side journey checks. See [docs/postman/README.md](../../docs/postman/README.md).
+
 ## Related tickets
 
 | Ticket | Status |
@@ -209,7 +278,7 @@ When a manager creates a campaign, the gateway:
 
 1. Queries nearby diners in Postgres (1.5 km radius)
 2. Calls FastAPI `POST {ML_SERVICE_URL}/api/v1/match` with `campaignId`, `restaurantId`, `candidateLimit`, and `candidates[]`
-3. Inserts `offers` for returned `matchedUserIds` (900s TTL)
+3. Inserts `offers` for returned `matchedUserIds` using the manager-selected `ttlMinutes` (default 15; same TTL as the campaign)
 4. Falls back to nearest-distance matching if ML is unreachable
 
 Start the ML service before testing campaigns:

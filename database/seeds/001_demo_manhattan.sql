@@ -7,7 +7,7 @@ BEGIN;
 -- ---------------------------------------------------------------------------
 -- Demo users
 -- ---------------------------------------------------------------------------
-INSERT INTO users (id, display_name, budget_tier, dietary_tags, last_lat, last_lng)
+INSERT INTO users (id, display_name, budget_tier, dietary_tags, last_lat, last_lng, email, password_hash)
 VALUES
   (
     '550e8400-e29b-41d4-a716-446655440001',
@@ -15,7 +15,9 @@ VALUES
     'TIER_2',
     ARRAY['vegan'],
     40.7589,
-    -73.9851
+    -73.9851,
+    NULL,
+    NULL
   ),
   (
     '550e8400-e29b-41d4-a716-446655440002',
@@ -23,14 +25,42 @@ VALUES
     NULL,
     '{}',
     NULL,
-    NULL
+    NULL,
+    'manager@demo.com',
+    '$2b$10$d6x4wB2hGK7ox5OQioj7VeJ9EYNJCoG.mKCvwFAB1I/Jewo7coF0K'
   )
 ON CONFLICT (id) DO UPDATE SET
   display_name = EXCLUDED.display_name,
   budget_tier = EXCLUDED.budget_tier,
   dietary_tags = EXCLUDED.dietary_tags,
   last_lat = EXCLUDED.last_lat,
-  last_lng = EXCLUDED.last_lng;
+  last_lng = EXCLUDED.last_lng,
+  email = EXCLUDED.email,
+  password_hash = EXCLUDED.password_hash;
+
+INSERT INTO user_preferences (
+  user_id, budget_tier, dietary_restrictions, preferred_cuisines, dining_styles
+)
+VALUES
+  (
+    '550e8400-e29b-41d4-a716-446655440001',
+    'TIER_2',
+    ARRAY['vegan'],
+    '{}',
+    '{}'
+  ),
+  (
+    '550e8400-e29b-41d4-a716-446655440002',
+    NULL,
+    '{}',
+    '{}',
+    '{}'
+  )
+ON CONFLICT (user_id) DO UPDATE SET
+  budget_tier = EXCLUDED.budget_tier,
+  dietary_restrictions = EXCLUDED.dietary_restrictions,
+  preferred_cuisines = EXCLUDED.preferred_cuisines,
+  dining_styles = EXCLUDED.dining_styles;
 
 -- ---------------------------------------------------------------------------
 -- Demo restaurants (Manhattan — fictional names, realistic coordinates)
@@ -180,5 +210,31 @@ ON CONFLICT (id) DO UPDATE SET
   is_wheelchair_accessible = EXCLUDED.is_wheelchair_accessible,
   sensory_friendly = EXCLUDED.sensory_friendly,
   manager_user_id = EXCLUDED.manager_user_id;
+
+-- RevPASH demo inputs (migration 006)
+UPDATE restaurants
+SET
+  opens_at = COALESCE(opens_at, '11:00'::time),
+  closes_at = COALESCE(closes_at, '22:00'::time),
+  avg_check_per_cover = COALESCE(
+    avg_check_per_cover,
+    CASE COALESCE(LOWER(cuisine), '')
+      WHEN 'french' THEN 85.00
+      WHEN 'italian' THEN 68.00
+      WHEN 'japanese' THEN 55.00
+      WHEN 'thai' THEN 42.00
+      WHEN 'cafe' THEN 32.00
+      WHEN 'american' THEN 48.00
+      ELSE 45.00
+    END
+    * CASE
+      WHEN neighborhood IN ('Midtown', 'Midtown East', 'Theater District', 'Upper East Side')
+        THEN 1.10
+      WHEN neighborhood IN ('Hell''s Kitchen', 'Murray Hill', 'Koreatown')
+        THEN 1.05
+      ELSE 1.00
+    END
+  )
+WHERE id::text LIKE '550e8400-e29b-41d4-a716-446655441%';
 
 COMMIT;

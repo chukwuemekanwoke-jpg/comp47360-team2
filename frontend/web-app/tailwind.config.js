@@ -8,26 +8,34 @@ export default {
     extend: {
       colors: {
         table: {
-          canvas: 'var(--table-canvas, #0F172A)',
-          surface: 'var(--table-surface, #111827)',
-          surfaceElevated: 'var(--table-surface-elevated, #172033)',
-          border: 'var(--table-border, #243044)',
-          interactive: 'var(--table-interactive, #1E293B)',
-          text: 'var(--table-text, #F8FAFC)',
-          textMuted: 'var(--table-text-muted, #A8B3C7)',
-          textSubtle: 'var(--table-text-subtle, #64748B)',
-          primary: 'var(--table-primary, #31D5D5)',
-          primaryHover: 'var(--table-primary-hover, #67E8F9)',
-          offer: 'var(--table-offer, #F59E0B)',
-          success: 'var(--table-success, #10B981)',
-          warning: 'var(--table-warning, #F59E0B)',
-          danger: 'var(--table-danger, #EF4444)',
+          // R-23: these used to be plain `var(--table-primary, #hex)` strings,
+          // which Tailwind can't inject an opacity modifier into — every
+          // bg-table-x/10, shadow-table-x/30, etc. silently produced fully
+          // transparent output. The `rgb(... / <alpha-value>)` form lets
+          // Tailwind substitute the modifier (or 1, with none given) into
+          // <alpha-value>; the RGB triples themselves live in index.css as
+          // --table-x-rgb, alongside (not replacing) the hex vars that
+          // direct var(--table-x) references (BrandMark, login glow) use.
+          canvas: 'rgb(var(--table-canvas-rgb, 15 23 42) / <alpha-value>)',
+          surface: 'rgb(var(--table-surface-rgb, 17 24 39) / <alpha-value>)',
+          surfaceElevated: 'rgb(var(--table-surface-elevated-rgb, 23 32 51) / <alpha-value>)',
+          border: 'rgb(var(--table-border-rgb, 36 48 68) / <alpha-value>)',
+          interactive: 'rgb(var(--table-interactive-rgb, 30 41 59) / <alpha-value>)',
+          text: 'rgb(var(--table-text-rgb, 248 250 252) / <alpha-value>)',
+          textMuted: 'rgb(var(--table-text-muted-rgb, 168 179 199) / <alpha-value>)',
+          textSubtle: 'rgb(var(--table-text-subtle-rgb, 136 150 171) / <alpha-value>)',
+          primary: 'rgb(var(--table-primary-rgb, 49 213 213) / <alpha-value>)',
+          primaryHover: 'rgb(var(--table-primary-hover-rgb, 103 232 249) / <alpha-value>)',
+          offer: 'rgb(var(--table-offer-rgb, 245 158 11) / <alpha-value>)',
+          success: 'rgb(var(--table-success-rgb, 16 185 129) / <alpha-value>)',
+          warning: 'rgb(var(--table-warning-rgb, 245 158 11) / <alpha-value>)',
+          danger: 'rgb(var(--table-danger-rgb, 239 68 68) / <alpha-value>)',
 
           // Backwards-compatible aliases for existing components.
           // New code should prefer table-text and table-primary.
-          cream: 'var(--table-text, #F8FAFC)',
-          gold: 'var(--table-primary, #31D5D5)',
-          live: 'var(--table-success, #10B981)',
+          cream: 'rgb(var(--table-text-rgb, 248 250 252) / <alpha-value>)',
+          gold: 'rgb(var(--table-primary-rgb, 49 213 213) / <alpha-value>)',
+          live: 'rgb(var(--table-success-rgb, 16 185 129) / <alpha-value>)',
 
           light: {
             canvas: '#F8FAFC',

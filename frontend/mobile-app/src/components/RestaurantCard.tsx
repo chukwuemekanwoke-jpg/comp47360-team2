@@ -1,59 +1,65 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import { memo } from "react";
+import { ImageBackground, Text, TouchableOpacity, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { RestaurantSummary } from "@shared/types";
+import { busynessColor, busynessLabel } from "@shared/restaurantFilters";
+import { useAppSelector } from "@shared/hooks";
+import { cuisineImage, formatCuisine } from "@/lib/cuisineImages";
+import { formatDistance } from "@/lib/format";
+import RatingBadge from "@/components/RatingBadge";
+import { navColors } from "@/theme";
 
 interface RestaurantCardProps {
   restaurant: RestaurantSummary;
   onBook?: (restaurant: RestaurantSummary) => void;
 }
 
-function formatDistance(meters: number): string {
-  if (meters < 1000) return `${Math.round(meters)} m`;
-  return `${(meters / 1000).toFixed(1)} km`;
-}
-
-function busynessColor(score: number) {
-  if (score < 0.4) return "#10b981";
-  if (score < 0.7) return "#f59e0b";
-  return "#ef4444";
-}
-
-function busynessLabel(score: number) {
-  if (score < 0.4) return "Quiet";
-  if (score < 0.7) return "Busy";
-  return "Packed";
-}
-
-export default function RestaurantCard({ restaurant: r, onBook }: RestaurantCardProps) {
+// memo: list rows must not re-render when the parent list re-renders
+// (e.g. opening the booking modal) unless their own data changed.
+function RestaurantCard({ restaurant: r, onBook }: RestaurantCardProps) {
+  const colors = navColors[useAppSelector((state) => state.settings.theme)];
   return (
     <View className="bg-table-surface border border-table-border rounded-2xl overflow-hidden mb-3">
-      {/* Placeholder header band */}
-      <View
-        className="h-20 items-center justify-between px-4 flex-row border-b border-table-border"
-        style={{ backgroundColor: "#18181b" }}
+      {/* Cuisine photo header band */}
+      <ImageBackground
+        source={cuisineImage(r.cuisine)}
+        resizeMode="cover"
+        className="h-24 border-b border-table-border"
       >
-        <Text className="text-2xl font-bold text-table-cream/20">
-          {r.name.charAt(0)}
-        </Text>
+        {/* Dark scrim keeps the badge legible over any photo */}
         <View
-          className="px-2.5 py-1 rounded-lg"
-          style={{ backgroundColor: busynessColor(r.busynessScore) + "20" }}
+          className="flex-1 items-end justify-between px-4 py-3 flex-row"
+          style={{ backgroundColor: "rgba(0,0,0,0.25)" }}
         >
           <Text
-            className="text-[10px] font-bold uppercase tracking-widest"
-            style={{ color: busynessColor(r.busynessScore) }}
+            className="text-xs font-bold uppercase tracking-widest"
+            style={{ color: "#ffffff", textShadowColor: "rgba(0,0,0,0.6)", textShadowRadius: 4 }}
           >
-            {busynessLabel(r.busynessScore)}
+            {formatCuisine(r.cuisine)}
           </Text>
+          <View
+            className="px-2.5 py-1 rounded-lg"
+            style={{ backgroundColor: "rgba(0,0,0,0.55)" }}
+          >
+            <Text
+              className="text-[10px] font-bold uppercase tracking-widest"
+              style={{ color: busynessColor(r.busynessScore) }}
+            >
+              {busynessLabel(r.busynessScore)}
+            </Text>
+          </View>
         </View>
-      </View>
+      </ImageBackground>
 
       {/* Body */}
       <View className="p-4">
         <View className="flex-row items-start justify-between mb-3">
           <View className="flex-1 mr-2">
             <Text className="text-sm font-bold text-table-cream">{r.name}</Text>
-            <Text className="text-xs text-table-gold mt-0.5">{r.cuisine}</Text>
+            <Text className="text-xs text-table-gold mt-0.5">{formatCuisine(r.cuisine)}</Text>
           </View>
+
+          <RatingBadge rating={r.rating} reviews={r.reviews} />
         </View>
 
         {/* Stats */}
@@ -74,7 +80,13 @@ export default function RestaurantCard({ restaurant: r, onBook }: RestaurantCard
               Access
             </Text>
             <Text className="text-xs font-bold text-table-cream">
-              {r.isWheelchairAccessible ? "♿ Yes" : "—"}
+              {r.isWheelchairAccessible ? (
+                <>
+                  <Ionicons name="accessibility-outline" size={12} color={colors.cream} /> Yes
+                </>
+              ) : (
+                "—"
+              )}
             </Text>
           </View>
 
@@ -100,10 +112,12 @@ export default function RestaurantCard({ restaurant: r, onBook }: RestaurantCard
           onPress={() => onBook?.(r)}
         >
           <Text className="text-table-canvas text-xs font-bold uppercase tracking-widest">
-            Book Table
+            Book Table Now
           </Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
+
+export default memo(RestaurantCard);

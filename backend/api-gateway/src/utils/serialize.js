@@ -4,6 +4,10 @@ function toUserJson(row) {
     displayName: row.display_name,
     budgetTier: row.budget_tier,
     dietaryTags: row.dietary_tags ?? [],
+    preferredCuisines: row.preferred_cuisines ?? [],
+    diningStyles: row.dining_styles ?? [],
+    requiresWheelchairAccess: row.requires_wheelchair_access ?? false,
+    requiresSensoryFriendly: row.requires_sensory_friendly ?? false,
     createdAt: row.created_at.toISOString(),
   };
 
@@ -12,6 +16,9 @@ function toUserJson(row) {
   }
   if (row.last_lng != null) {
     user.lastLng = Number(row.last_lng);
+  }
+  if (row.email != null) {
+    user.email = row.email;
   }
 
   return user;
@@ -28,6 +35,8 @@ function toRestaurantSummary(row) {
     capacity: row.capacity,
     cuisine: row.cuisine,
     busynessScore: row.busyness_score != null ? Number(row.busyness_score) : 0,
+    rating: row.rating != null ? Number(row.rating) : null,
+    reviews: row.reviews != null ? Number(row.reviews) : null,
     isWheelchairAccessible: row.is_wheelchair_accessible,
     sensoryFriendly: row.sensory_friendly,
   };
@@ -40,14 +49,25 @@ function toRestaurantSummary(row) {
 }
 
 function toRestaurantDetail(row) {
-  return {
+  const detail = {
     ...toRestaurantSummary(row),
     addressLine: row.address_line,
     holdWindowMinutes: row.hold_window_minutes,
   };
+
+  if (row.phone != null) {
+    detail.phone = row.phone;
+  }
+
+  return detail;
 }
 
-function toCampaignJson(row) {
+function toCampaignJson(row, now = new Date()) {
+  const expiresAt = row.expires_at ? new Date(row.expires_at) : null;
+  const secondsRemaining = expiresAt
+    ? Math.max(0, Math.floor((expiresAt.getTime() - now.getTime()) / 1000))
+    : null;
+
   return {
     id: row.id,
     restaurantId: row.restaurant_id,
@@ -56,6 +76,8 @@ function toCampaignJson(row) {
     tablesClaimed: row.tables_claimed,
     discountPercent: row.discount_percent,
     createdAt: row.created_at.toISOString(),
+    expiresAt: expiresAt ? expiresAt.toISOString() : null,
+    secondsRemaining,
   };
 }
 
@@ -77,6 +99,21 @@ function toOfferInboxItem(row, now = new Date()) {
   };
 }
 
+function toManagerOfferItem(row, now = new Date()) {
+  const expiresAt = new Date(row.expires_at);
+  const secondsRemaining = Math.max(0, Math.floor((expiresAt.getTime() - now.getTime()) / 1000));
+
+  return {
+    id: row.id,
+    campaignId: row.campaign_id,
+    userDisplayName: row.user_display_name,
+    status: row.status,
+    expiresAt: expiresAt.toISOString(),
+    secondsRemaining,
+    acceptedAt: row.accepted_at ? new Date(row.accepted_at).toISOString() : null,
+  };
+}
+
 function toBookingJson(row) {
   const booking = {
     id: row.id,
@@ -94,6 +131,10 @@ function toBookingJson(row) {
     booking.confirmedAt = row.confirmed_at.toISOString();
   }
 
+  if (row.cancelled_at) {
+    booking.cancelledAt = row.cancelled_at.toISOString();
+  }
+
   if (row.eta_source != null) {
     booking.source = row.eta_source;
   }
@@ -108,12 +149,28 @@ function toRestaurantBookingJson(row) {
   };
 }
 
+function toRevpashJson(summary) {
+  return {
+    restaurantId: summary.restaurantId,
+    window: summary.window,
+    revenue: roundMoney(summary.revenue),
+    availableSeatHours: roundMoney(summary.availableSeatHours),
+    revpash: roundMoney(summary.revpash),
+  };
+}
+
+function roundMoney(value) {
+  return Math.round(Number(value) * 100) / 100;
+}
+
 module.exports = {
   toUserJson,
   toRestaurantSummary,
   toRestaurantDetail,
   toCampaignJson,
   toOfferInboxItem,
+  toManagerOfferItem,
   toBookingJson,
   toRestaurantBookingJson,
+  toRevpashJson,
 };

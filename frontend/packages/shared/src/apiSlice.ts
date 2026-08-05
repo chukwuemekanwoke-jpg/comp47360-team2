@@ -1,7 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { 
+import {
   UserProfile, RestaurantSummary, RestaurantDetail, EtaResult,
-  Booking, OfferInboxItem, Campaign, TransportMode, BudgetTier
+  Booking, OfferInboxItem, Campaign, TransportMode, BudgetTier, BookingStatus,
+  RevpashSummary, RevpashWindow, AuthSession, ManagerOfferItem, CampaignRevpashLift,
+  PasswordResetResult, MapsConfig
 } from './types';
 
 // --- CROSS-PLATFORM URL RESOLVER ---
@@ -32,31 +34,43 @@ export const tableApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: getBaseUrl(),
     prepareHeaders: (headers, { getState }) => {
-      const state = getState() as { auth?: { userId: string | null } };
+      const state = getState() as { auth?: { userId: string | null; token: string | null } };
       let userId = state.auth?.userId;
-      
+
       // --- HYBRID WEB/MOBILE AUTH LINK PERSISTENCE ---
-      // FIXED: Now matching AuthContext.js exact key
-      if (!userId && typeof window !== 'undefined') {
-        userId = localStorage.getItem('table_user_id'); 
+      // React Native's global proxy throws a ReferenceError on access to
+      // browser-only globals like localStorage, even from a `typeof` check —
+      // so this has to be try/caught rather than feature-detected.
+      if (!userId) {
+        try {
+          userId = localStorage.getItem('table_user_id');
+        } catch {
+          // not available on this platform (e.g. React Native)
+        }
       }
-      
+
       if (userId) {
         headers.set('X-User-Id', userId);
       }
 
-      // FIXED: Now matching AuthContext.js exact key
-      if (typeof window !== 'undefined') {
-        const token = localStorage.getItem('table_merchant_token');
-        if (token) {
-          headers.set('Authorization', `Bearer ${token}`);
+      // JWT from the redux session (mobile login/register) takes priority;
+      // fall back to the web merchant token persisted by AuthContext.js.
+      let token = state.auth?.token;
+      if (!token) {
+        try {
+          token = localStorage.getItem('table_merchant_token');
+        } catch {
+          // not available on this platform (e.g. React Native)
         }
       }
-      
+      if (token) {
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+
       return headers;
     },
   }),
-  tagTypes: ['User', 'Restaurants', 'Bookings', 'Offers', 'Campaigns', 'Floorplan', 'Analytics'],
+  tagTypes: ['User', 'Restaurants', 'Bookings', 'Offers', 'Campaigns'],
   
   endpoints: (builder) => ({
     // --- API Contract 4.1 Health ---
@@ -75,8 +89,60 @@ export const tableApi = createApi({
       invalidatesTags: ['User'],
     }),
 
-    updatePreferences: builder.mutation<UserProfile, { userId: string; budgetTier: BudgetTier; dietaryTags: string[]; lastLat?: number; lastLng?: number }>({
-      query: ({ userId, ...body }: { userId: string; budgetTier: BudgetTier; dietaryTags: string[]; lastLat?: number; lastLng?: number }) => ({
+    // Real JWT merchant sign-up — POST /auth/register, no auth header needed.
+    register: builder.mutation<AuthSession, { email: string; password: string; displayName?: string }>({
+      query: (body) => ({
+        url: '/auth/register',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    // Real JWT sign-in — POST /auth/login, no auth header needed.
+    login: builder.mutation<AuthSession, { email: string; password: string }>({
+      query: (body) => ({
+        url: '/auth/login',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    // POST /auth/logout — bumps the user's token_version server-side, which
+    // revokes the current JWT (and any other active session for that user)
+    // rather than just clearing local state.
+    logout: builder.mutation<{ status: string }, void>({
+      query: () => ({
+        url: '/auth/logout',
+        method: 'POST',
+      }),
+      invalidatesTags: ['User', 'Restaurants', 'Bookings', 'Offers', 'Campaigns'],
+    }),
+
+    // Needs GET /config/maps-key on the backend (see handoff spec) — serves
+    // the Google Maps browser key from GCP Secret Manager at runtime, so it
+    // never sits in the frontend build/source control and can be rotated
+    // without a redeploy.
+    getMapsConfig: builder.query<MapsConfig, void>({
+      query: () => '/config/maps-key',
+    }),
+
+    updatePreferences: builder.mutation<
+      UserProfile,
+      {
+        userId: string;
+        budgetTier?: BudgetTier;
+        dietaryTags?: string[];
+        preferredCuisines?: string[];
+        diningStyles?: string[];
+        requiresWheelchairAccess?: boolean;
+        requiresSensoryFriendly?: boolean;
+        lastLat?: number;
+        lastLng?: number;
+      }
+    >({
+      query: ({ userId, ...body }) => ({
         url: '/users/me/preferences',
         method: 'PATCH',
         body,
@@ -170,8 +236,19 @@ export const tableApi = createApi({
     }),
 
     // --- API Contract 4.7 B-Side Campaigns ---
-    createCampaign: builder.mutation<Campaign, { restaurantId: string; tableQuota: number; discountPercent: number }>({
-      query: ({ restaurantId, ...body }: { restaurantId: string; tableQuota: number; discountPercent: number }) => ({
+    createCampaign: builder.mutation<
+      Campaign,
+      { restaurantId: string; tableQuota: number; discountPercent: number; ttlMinutes?: number }
+    >({
+      query: ({
+        restaurantId,
+        ...body
+      }: {
+        restaurantId: string;
+        tableQuota: number;
+        discountPercent: number;
+        ttlMinutes?: number;
+      }) => ({
         url: `/restaurants/${restaurantId}/campaigns`,
         method: 'POST',
         body,
@@ -179,142 +256,126 @@ export const tableApi = createApi({
       invalidatesTags: ['Campaigns'],
     }),
 
-    getRestaurantCampaigns: builder.query<{ campaigns: Campaign[] }, string>({
+    getActiveCampaign: builder.query<{ campaign: Campaign | null }, string>({
       query: (restaurantId: string) => `/restaurants/${restaurantId}/campaigns/active`,
       providesTags: ['Campaigns'],
     }),
 
-    // --- NEW: API Contract 4.8 Merchant Web Dashboard ---
-    
-    // ==========================================
-    // !!! MOCK DATA START (FOR DEMO PURPOSES) !!!
-    // ==========================================
-    getLiveBookings: builder.query<{ bookings: Booking[] }, string>({
-      // COMMENTED OUT FOR DEMO: query: (restaurantId: string) => `/restaurants/${restaurantId}/bookings`,
-      queryFn: () => {
-        return {
-          data: {
-            bookings: [
-              { id: 'b1', guestName: 'Alice', time: '19:00', partySize: 2, status: 'confirmed' },
-              { id: 'b2', guestName: 'Bob', time: '20:30', partySize: 4, status: 'pending' }
-            ]
-          }
-        };
-      },
-      providesTags: ['Bookings'],
+    // Pending backend: GET /restaurants/:id/campaigns/:campaignId/offers
+    getCampaignOffers: builder.query<{ offers: ManagerOfferItem[] }, { restaurantId: string; campaignId: string }>({
+      query: ({ restaurantId, campaignId }) => `/restaurants/${restaurantId}/campaigns/${campaignId}/offers`,
+      providesTags: ['Offers'],
     }),
-    // ==========================================
-    // !!! MOCK DATA END !!!
-    // ==========================================
 
-    updateRestaurantSettings: builder.mutation<any, { restaurantId: string; settings: any }>({
-      query: ({ restaurantId, settings }) => ({
-        url: `/restaurants/${restaurantId}/settings`,
-        method: 'PUT',
-        body: settings,
+    getCampaignHistory: builder.query<{ campaigns: Campaign[] }, string>({
+      query: (restaurantId: string) => `/restaurants/${restaurantId}/campaigns`,
+      providesTags: ['Campaigns'],
+    }),
+
+    cancelCampaign: builder.mutation<Campaign, { restaurantId: string; campaignId: string }>({
+      query: ({ restaurantId, campaignId }) => ({
+        url: `/restaurants/${restaurantId}/campaigns/${campaignId}/cancel`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Campaigns'],
+    }),
+
+    createRestaurant: builder.mutation<
+      RestaurantDetail,
+      {
+        name: string;
+        addressLine: string;
+        phone: string;
+        latitude: number;
+        longitude: number;
+        cuisine: string;
+        neighborhood?: string;
+        isWheelchairAccessible?: boolean;
+        sensoryFriendly?: boolean;
+      }
+    >({
+      query: (body) => ({
+        url: '/restaurants',
+        method: 'POST',
+        body,
       }),
       invalidatesTags: ['Restaurants'],
     }),
 
-    // ==========================================
-    // !!! MOCK DATA START (FOR DEMO PURPOSES) !!!
-    // ==========================================
-    getAnalytics: builder.query<any, string>({
-      // COMMENTED OUT FOR DEMO: query: (restaurantId: string) => `/restaurants/${restaurantId}/analytics`,
-      queryFn: () => {
-        return {
-          data: {
-            totalRevenue: 4500,
-            activeCampaigns: 2,
-            occupancyRate: 85,
-            popularTimes: ['18:00', '19:00', '20:00']
-          }
-        };
-      },
-      providesTags: ['Analytics'],
-    }),
-    // ==========================================
-    // !!! MOCK DATA END !!!
-    // ==========================================
-
-    // ==========================================
-    // !!! MOCK DATA START (FOR DEMO PURPOSES) !!!
-    // ==========================================
-    getFloorPlan: builder.query<any, string>({
-      // COMMENTED OUT FOR DEMO: query: (restaurantId: string) => `/restaurants/${restaurantId}/floorplan`,
-      queryFn: () => {
-        return {
-          data: {
-            // Updated to use defaultLabel/customLabel to match RoomConfigPanel.jsx
-            rooms: [
-              { id: 'r1', defaultLabel: 'Room 1', customLabel: 'Main Dining', tableCount: 3 },
-              { id: 'r2', defaultLabel: 'Room 2', customLabel: 'Patio', tableCount: 2 }
-            ],
-            // Un-nested tables into a separate top-level array to match MerchantDashboard.jsx
-            tables: [
-              { id: 't1', label: 'Table-1', type: 'Square', capacity: 4, status: 'Occupied', room: 'Main Dining' },
-              { id: 't2', label: 'Table-2', type: 'Round', capacity: 2, status: 'Available', room: 'Main Dining' },
-              { id: 't3', label: 'Table-3', type: 'Square', capacity: 6, status: 'Available', room: 'Main Dining' },
-              { id: 't4', label: 'Table-4', type: 'Square', capacity: 4, status: 'Available', room: 'Patio' },
-              { id: 't5', label: 'Table-5', type: 'Round', capacity: 2, status: 'Occupied', room: 'Patio' }
-            ]
-          }
-        };
-      },
-      providesTags: ['Floorplan'],
-    }),
-    // ==========================================
-    // !!! MOCK DATA END !!!
-    // ==========================================
-
-    // ==========================================
-    // !!! MOCK MUTATIONS START (FOR DEMO PURPOSES) !!!
-    // ==========================================
-    
-    createRoom: builder.mutation<any, { restaurantId: string; roomData: any }>({
-      // COMMENTED OUT FOR DEMO: query: ({ restaurantId, roomData }) => ({ url: `/restaurants/${restaurantId}/rooms`, method: 'POST', body: roomData }),
-      queryFn: (args) => {
-        // Simulate network delay and return the injected data with a fake ID
-        return { data: { id: `mock-room-${Date.now()}`, ...args.roomData } };
-      }
+    updateRestaurantSettings: builder.mutation<
+      RestaurantDetail,
+      { restaurantId: string; isWheelchairAccessible?: boolean; sensoryFriendly?: boolean }
+    >({
+      query: ({ restaurantId, ...body }) => ({
+        url: `/restaurants/${restaurantId}/settings`,
+        method: 'PATCH',
+        body,
+      }),
+      invalidatesTags: (_result, _error, arg) => [{ type: 'Restaurants', id: arg.restaurantId }],
     }),
 
-    updateRoom: builder.mutation<any, { roomId: string; roomData: any }>({
-      // COMMENTED OUT FOR DEMO: query: ({ roomId, roomData }) => ({ url: `/rooms/${roomId}`, method: 'PUT', body: roomData }),
-      queryFn: (args) => ({ data: args.roomData })
+    getRestaurantBookings: builder.query<{ bookings: Booking[] }, string>({
+      query: (restaurantId: string) => `/restaurants/${restaurantId}/bookings`,
+      providesTags: ['Bookings'],
     }),
 
-    deleteRoom: builder.mutation<any, string>({
-      // COMMENTED OUT FOR DEMO: query: (roomId: string) => ({ url: `/rooms/${roomId}`, method: 'DELETE' }),
-      queryFn: () => ({ data: { success: true } })
+    updateBookingStatus: builder.mutation<Booking, { bookingId: string; status: BookingStatus }>({
+      query: ({ bookingId, status }) => ({
+        url: `/bookings/${bookingId}/status`,
+        method: 'PATCH',
+        body: { status },
+      }),
+      invalidatesTags: ['Bookings'],
     }),
 
-    createTable: builder.mutation<any, { restaurantId: string; tableData: any }>({
-      // COMMENTED OUT FOR DEMO: query: ({ restaurantId, tableData }) => ({ url: `/restaurants/${restaurantId}/tables`, method: 'POST', body: tableData }),
-      queryFn: (args) => {
-        return { data: { id: `mock-table-${Date.now()}`, ...args.tableData } };
-      }
+    getRevpash: builder.query<RevpashSummary, { restaurantId: string; window?: RevpashWindow }>({
+      query: ({ restaurantId, window = 'today' }) => ({
+        url: `/restaurants/${restaurantId}/revpash`,
+        params: { window },
+      }),
+      providesTags: (_result, _error, arg) => [{ type: 'Restaurants', id: arg.restaurantId }],
     }),
 
-    updateTable: builder.mutation<any, { tableId: string; tableData: any }>({
-      // COMMENTED OUT FOR DEMO: query: ({ tableId, tableData }) => ({ url: `/tables/${tableId}`, method: 'PUT', body: tableData }),
-      queryFn: (args) => ({ data: args.tableData })
+    // Needs GET /restaurants/:id/campaigns/:campaignId/revpash-lift on the
+    // backend (see handoff spec) — Phase 2 of the RevPASH rollout, per-campaign
+    // organic-vs-deal RevPASH comparison. Blocked on TABL-118 (RISK_REGISTER
+    // R-09): no RevPASH schema/route exists anywhere yet, so this always 404s.
+    getCampaignRevpashLift: builder.query<CampaignRevpashLift, { restaurantId: string; campaignId: string }>({
+      query: ({ restaurantId, campaignId }) => `/restaurants/${restaurantId}/campaigns/${campaignId}/revpash-lift`,
+      providesTags: (_result, _error, arg) => [{ type: 'Campaigns', id: arg.campaignId }],
     }),
 
-    deleteTable: builder.mutation<any, string>({
-      // COMMENTED OUT FOR DEMO: query: (tableId: string) => ({ url: `/tables/${tableId}`, method: 'DELETE' }),
-      queryFn: () => ({ data: { success: true } })
+    // Needs POST /auth/forgot-password on the backend (see handoff spec) —
+    // generates a reset token and emails a reset link. No reset_token column,
+    // email-sending infra, or route exists anywhere yet.
+    forgotPassword: builder.mutation<PasswordResetResult, { email: string }>({
+      query: (body) => ({
+        url: '/auth/forgot-password',
+        method: 'POST',
+        body,
+      }),
     }),
 
-    // ==========================================
-    // !!! MOCK MUTATIONS END !!!
-    // ==========================================
+    // Needs POST /auth/reset-password on the backend (see handoff spec) —
+    // validates the token from the emailed link and sets a new password.
+    resetPassword: builder.mutation<PasswordResetResult, { token: string; newPassword: string }>({
+      query: (body) => ({
+        url: '/auth/reset-password',
+        method: 'POST',
+        body,
+      }),
+    }),
+
   }),
 });
 
 export const {
   useGetHealthQuery,
   useCreateUserMutation,
+  useRegisterMutation,
+  useLoginMutation,
+  useLogoutMutation,
+  useGetMapsConfigQuery,
   useUpdatePreferencesMutation,
   useGetProfileQuery,
   useGetNearbyRestaurantsQuery,
@@ -326,17 +387,16 @@ export const {
   useGetOffersInboxQuery,
   useAcceptOfferMutation,
   useCreateCampaignMutation,
-  useGetRestaurantCampaignsQuery,
-  
-  // --- NEW: Merchant Web Dashboard Hooks ---
-  useGetLiveBookingsQuery,
+  useGetActiveCampaignQuery,
+  useGetCampaignOffersQuery,
+  useGetCampaignHistoryQuery,
+  useCancelCampaignMutation,
   useUpdateRestaurantSettingsMutation,
-  useGetAnalyticsQuery,
-  useGetFloorPlanQuery,
-  useCreateRoomMutation,
-  useUpdateRoomMutation,
-  useDeleteRoomMutation,
-  useCreateTableMutation,
-  useUpdateTableMutation,
-  useDeleteTableMutation,
+  useGetRestaurantBookingsQuery,
+  useUpdateBookingStatusMutation,
+  useGetRevpashQuery,
+  useCreateRestaurantMutation,
+  useGetCampaignRevpashLiftQuery,
+  useForgotPasswordMutation,
+  useResetPasswordMutation,
 } = tableApi;

@@ -8,6 +8,13 @@
 | [migrations/001_initial_schema.sql](./migrations/001_initial_schema.sql)           | DDL v1                                        |
 | [migrations/001_initial_schema.down.sql](./migrations/001_initial_schema.down.sql) | Roll back v1 (dev only)                       |
 | [migrations/003_add_restaurant_capacity_cuisine.sql](./migrations/003_add_restaurant_capacity_cuisine.sql) | `restaurants.capacity`, `restaurants.cuisine` |
+| [migrations/006_add_revpash_fields.sql](./migrations/006_add_revpash_fields.sql) | RevPASH inputs on `restaurants` and `bookings` |
+| [migrations/008_add_password_reset.sql](./migrations/008_add_password_reset.sql) | Password reset token columns on `users` |
+| [migrations/011_create_user_preferences.sql](./migrations/011_create_user_preferences.sql) | One-to-one categorized `user_preferences` table + legacy compatibility mirror |
+| [migrations/012_create_historical_taxi_demand.sql](./migrations/012_create_historical_taxi_demand.sql) | Empty schema for year/month/weekday/hour taxi-demand aggregates |
+| [migrations/013_add_restaurant_rating_reviews.sql](./migrations/013_add_restaurant_rating_reviews.sql) | Nullable restaurant aggregate rating and review count |
+| [migrations/013_add_user_accessibility_preferences.sql](./migrations/013_add_user_accessibility_preferences.sql) | Diner-side `requires_wheelchair_access`/`requires_sensory_friendly` on `user_preferences`, enforced as a hard filter in flash-deal matching |
+| [migrations/014_add_restaurant_busyness_updated_at.sql](./migrations/014_add_restaurant_busyness_updated_at.sql) | `restaurants.busyness_updated_at` — last ml-service refresh, drives stale-venue rescoring in `GET /restaurants/nearby` |
 
 ## Prerequisites
 
@@ -34,7 +41,7 @@ docker compose ps
 psql "$DATABASE_URL" -c "\dt"
 ```
 
-Expected tables: `users`, `restaurants`, `campaigns`, `offers`, `bookings`, `availability_snapshots`, `schema_migrations`.
+Expected tables: `users`, `user_preferences`, `restaurants`, `campaigns`, `offers`, `bookings`, `availability_snapshots`, `historical_taxi_demand`, `schema_migrations`.
 
 | Command            | Action                                    |
 | ------------------ | ----------------------------------------- |
@@ -132,3 +139,21 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5433/table_dev
 ```
 
 Then run `npm run db:up` again.
+
+## Local backups
+
+`npm run db:backup` dumps the running `table-postgres` container to
+`database/backups/table_dev_<timestamp>.sql` via `pg_dump` inside the
+container (no local Postgres client needed).
+
+**`database/backups/` is gitignored — never commit a raw dump.** It contains
+every user's `password_hash` and real email addresses; committing it would
+put durable, crackable credentials in git history. Keep backups local, or
+move real backup/restore needs to Cloud SQL's own automated backups/exports
+once deployed.
+
+Restore a dump:
+
+```bash
+docker exec -i table-postgres psql -U postgres -d table_dev < database/backups/table_dev_20260728_120000.sql
+```

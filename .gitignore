@@ -56,3 +56,13 @@ ENV/
 .pypy/
 .ipynb_checkpoints/
 *.notebook
+
+# ==========================================
+# 5. Firebase CLI local cache
+# ==========================================
+.firebase/
+
+# ==========================================
+# 6. Local DB backups (contain password hashes / real user data — never commit)
+# ==========================================
+/database/backups/

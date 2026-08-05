@@ -189,7 +189,7 @@ flowchart LR
 | `rolling_busyness_7d` | `availability_snapshots` |
 | `neighborhood` | Dataset A |
 | `cuisine` | Dataset A |
-| `user.budget_tier`, `dietary_tags` | `users` (Story 1.1) |
+| `user.budget_tier`, categorized preference arrays | `user_preferences` (Story 1.1) |
 | `distance_meters` | Computed at match time |
 
 **Target options:**
@@ -222,7 +222,7 @@ flowchart LR
 | `restaurants.busyness_score` | Dataset B aggregates + ML |
 | `restaurants.available_table_count` | Simulation job − active bookings |
 | `availability_snapshots` | Append each simulation tick or hourly cron |
-| `users.dietary_tags`, `budget_tier` | App onboarding only |
+| `user_preferences` | App onboarding only |
 | `bookings` | Runtime API (reduces availability) |
 | `campaigns` / `offers` | B-side + ML match (not from open data) |
 
@@ -263,9 +263,98 @@ flowchart LR
 
 ---
 
+## 11. RevPASH metric — data acquisition
+
+RevPASH (`total_revenue / available_seat_hours`) measures whether flash deals
+lift off-peak revenue without diluting peak pricing. It needs new fields on
+`restaurants` and `bookings` (see `database/schema.md`); this table documents
+where each one comes from and whether it's real or simulated, following the
+same pattern as §2.3 above.
+
+| Data point | How it's gotten | Real or simulated |
+|---|---|---|
+| `restaurants.seat_capacity` | Merchant enters it once at onboarding (physical fact about the venue) | **Real** — one-time manual input |
+| `restaurants.opens_at` / `closes_at` | Merchant onboarding input, or enriched from Google Places' `regularOpeningHours` | **Real** — merchant-entered or externally sourced |
+| `restaurants.avg_check_per_cover` | No POS to pull this from yet — seeded from a cuisine/neighborhood benchmark, then updated from real `check_amount` averages as data accumulates | **Simulated at launch**, becomes real over time |
+| `bookings.party_size` | User enters it when booking a table | **Real** — direct user input |
+| `bookings.seated_at` | Ideally a real event (host taps "seated" at check-in); falls back to `confirmed_at` if that flow doesn't exist yet | **Real if check-in exists, simulated proxy otherwise** |
+| `bookings.check_amount` | No payment/POS integration exists — computed as `party_size × avg_check_per_cover × (1 − discount if campaign)` | **Simulated** — same category as `available_table_count`/`busyness_score` |
+| `bookings.duration_minutes` | No real turn-time tracking — defaulted to a constant (e.g. 90 min) unless a real `departed_at` is later captured | **Simulated** |
+
+**Takeaway:** capacity and hours are one-time facts, party size is genuinely
+real (typed in by the user) — the only two fields that must be faked are
+`check_amount` and turn-time, and both fall into the same "simulate until we
+have a real feed" bucket as `available_table_count` and `busyness_score`, so
+RevPASH doesn't introduce a new category of data problem.
+
+---
+
+## 12. Full entity classification — actual vs simulated
+
+§2.3 and §11 classify busyness/availability and RevPASH fields specifically.
+This section extends the same real-vs-simulated lens to every column across
+every table (BE-2 schema), as the single canonical reference — update it
+whenever a migration adds a field or an enrichment script (e.g.
+`enrich-places.js`) actually gets run and flips a column from simulated to
+real in practice.
+
+### `users` and `user_preferences`
+
+| Column | Classification | Why |
+|---|---|---|
+| `user_preferences.budget_tier`, `dietary_restrictions`, `preferred_cuisines`, `dining_styles` | **Actual** | Typed in by the user at onboarding |
+| `email`, `password_hash` | **Actual** | Real auth credentials |
+| `last_lat` / `last_lng` | **Actual** | Real device/browser location at last use |
+| `token_version`, `password_reset_token_hash` / `password_reset_expires_at` | **Actual** (system-generated, not a business signal) | Auth bookkeeping |
+
+### `restaurants`
+
+| Column | Classification | Why |
+|---|---|---|
+| `name`, `address_line`, `latitude` / `longitude`, `cuisine` | **Actual** | Sourced from the real NYC DOHMH inspection dataset via `generate-seed.js` |
+| `neighborhood` | **Actual** | Resolved from real NYC NTA boundary polygons (`database/scripts/geo/ntaLookup.js`), not a guess |
+| `phone`, `is_wheelchair_accessible` | **Hybrid** | Real wherever `enrich-places.js` has matched a restaurant via Places API (New) — **not yet run as of 2026-07-13**, so every value in production is currently still the deterministic simulated fallback |
+| `opens_at` / `closes_at` | **Actual** | Merchant-entered at registration, or Places-enriched |
+| `capacity` | **Actual** | Merchant-entered once at onboarding (§11) |
+| `avg_check_per_cover` | **Simulated at launch, becomes real over time** | No POS integration; seeded from a cuisine/neighborhood benchmark, intended to be replaced by real `check_amount` averages as bookings accumulate |
+| `hold_window_minutes`, `sensory_friendly`, `manager_user_id` | **Simulated/operational** | No public dataset backs these; deterministically seeded per restaurant |
+| `available_table_count` | **Simulated** | Simulation rule (§2.3) — no live POS/reservation feed exists |
+| `busyness_score` | **Hybrid, split by surface** | **Real** for the merchant detail view (`GET /restaurants/:id`) — computed live from NYC taxi-dropoff + pedestrian-count data via the ml-service. Still the **static seeded** value on the diner-facing `GET /restaurants/nearby` list (known gap — not yet wired, see RISK_REGISTER R-10) |
+| `rating`, `reviews` | **Actual when populated** | External aggregate rating and review count; nullable until a trusted enrichment/import process supplies them |
+
+### `campaigns` / `offers`
+
+All columns — **Actual**. Not derived from any open dataset; real B-side merchant actions (`table_quota`, `discount_percent`) and real system-generated inbox state (`status`, `expires_at`), per §7 ("not from open data").
+
+### `bookings`
+
+| Column | Classification | Why |
+|---|---|---|
+| `user_id`, `restaurant_id`, `status`, `transport_mode`, `hold_expires_at`, `confirmed_at` / `cancelled_at` | **Actual** | Real user actions and system state |
+| `eta_minutes` | **Hybrid** | Actual when the Google Routes API call succeeds (`source: "google"`); haversine `"estimate"` fallback otherwise |
+| `party_size` | **Actual** | Direct diner input (§11) |
+| `seated_at` | **Hybrid** | Real if a host check-in flow fires; falls back to `confirmed_at` as a proxy otherwise (§11) |
+| `check_amount` | **Simulated** | No payment/POS integration — computed as `party_size × avg_check_per_cover × discount` (§11) |
+| `duration_minutes` | **Simulated** | No real turn-time tracking — constant default (90 min) (§11) |
+
+### `availability_snapshots`
+
+| Column | Classification | Why |
+|---|---|---|
+| `available_table_count` | **Simulated** | Snapshot of the simulation rule's output, not real occupancy |
+| `busyness_score` | **Hybrid** | Real ml-service output when written via the merchant-detail busyness pipeline; simulated otherwise |
+
+### `restaurant_revpash_hourly` (view)
+
+**Derived**, not its own data — inherits its ingredients' classification. `total_revenue` is built from `check_amount` (simulated) × real `party_size`, so the RevPASH metric itself is currently a **simulated** number, in the same category as `available_table_count`.
+
+---
+
 ## Changelog
 
 | Version | Date | Notes |
 |---------|------|-------|
 | v0 | 2026-06-02 | Initial BE-5 strategy |
 | v1 | 2026-07-04 | Routes API naming; align with ADR-001 rev 4 |
+| v2 | 2026-07-06 | Add §11 RevPASH metric data acquisition (real vs simulated) |
+| v3 | 2026-07-13 | Add §12 full entity classification (actual vs simulated) across every table, consolidating the pattern from §2.3/§7/§11 |

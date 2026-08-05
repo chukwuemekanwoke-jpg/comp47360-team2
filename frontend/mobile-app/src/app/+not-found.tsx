@@ -1,18 +1,22 @@
 import { Link, Stack } from "expo-router";
 import { View, Text} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useAppSelector } from "@shared/hooks";
+import { navColors } from "@/theme";
 
 export default function NotFoundScreen() {
+  const colors = navColors[useAppSelector((state) => state.settings.theme)];
   return (
     <>
       <Stack.Screen options={{ title: "Not Found" }} />
       <View className="flex-1 bg-table-canvas items-center justify-center px-8">
-        <Text style={{ fontSize: 48, marginBottom: 16 }}>🍽️</Text>
+        <Ionicons name="restaurant-outline" size={48} color={colors.gold} style={{ marginBottom: 16 }} />
         <Text className="text-xl font-black text-table-cream mb-2">Table Not Found</Text>
         <Text className="text-xs text-table-gold text-center mb-8">
           {"This page doesn't exist — but there are plenty of great restaurants that do."}
         </Text> 
         <Link
-          href="/tabs/map-view"
+          href="/tabs/MapTab"
           className="bg-table-teal rounded-xl px-8 py-4"
         >
           <Text className="text-table-canvas text-sm font-bold uppercase tracking-widest">
