@@ -110,7 +110,7 @@ It fails (`exitCode = 1`) and lists two categories whenever they're non-empty:
 
 ## 3. Staging deploy — `.github/workflows/deploy-staging.yml`
 
-**Status as of 2026-08-05: broken, not yet observed failing.** `tabl-app-staging` (both the GCP project and the Firebase project riding on it) was deleted 2026-08-01. No push has hit `develop` since 2026-07-27, so this hasn't failed in a real run yet, but the next promotion will — logged as **R-26** in `RISK_REGISTER.md`.
+**Status as of 2026-08-05: confirmed broken.** `tabl-app-staging` (both the GCP project and the Firebase project riding on it) was deleted 2026-08-01. The next promotion after that (PR #120, `integrate`→`develop`) confirmed the failure in a live run: `build-web` and `build-backend` passed, but `deploy` failed at "Deploy to Firebase Hosting" — `FirebaseError: ... Project tabl-app-staging has been deleted.` ([run 30995772392](https://github.com/chukwuemekanwoke-jpg/comp47360-team2/actions/runs/30995772392)). Logged as **R-26** in `RISK_REGISTER.md`.
 
 **Trigger:** push to `develop`, or manual `workflow_dispatch`.
 
