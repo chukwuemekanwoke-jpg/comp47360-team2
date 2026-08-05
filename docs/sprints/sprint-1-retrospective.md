@@ -1,7 +1,10 @@
-# Sprint 1 Retrospective Summary
+# Tablé — Sprint 1 Retrospective
 
-**Sprint:** SCRUM Sprint 1
-**Period:** May 18, 2026 to June 5, 2026
+COMP47360 Team 2
+
+*Sprint Period: May 18, 2026 - June 5, 2026 | Prepared by: Chukwuemeka Nwoke (Integration Lead / Scrum Master)*
+
+
 **Goal:** Define user stories, mockups, technology selection, and early prototypes.
 
 Sprint 1 established the project foundation across backend, frontend, mobile, and team operations. The team made strong progress on architecture, documentation, mobile research, and early interface definition. At the same time, several important discovery and infrastructure items remained unfinished, especially in Data & ML and project tooling. Overall, the sprint produced meaningful groundwork, but completion was uneven across workstreams.
