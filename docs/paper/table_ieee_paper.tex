@@ -19,12 +19,23 @@
 % wrapped in \tbd{...} MUST be replaced with a real, measured value before
 % submission. Nothing rendered in red is a real finding.
 %
-% As of this revision the remaining placeholders are all in Section V-A:
-% figures that were planned against the staging deployment but not taken
-% before it was decommissioned on 2026-08-01 (detail-with-prediction,
-% booking creation, standalone ML latency, cold start, PostGIS comparison,
-% routing-cache reduction). Filling them requires either re-provisioned
-% infrastructure or an explicitly-caveated local measurement.
+% RESOLVED (2026-08-06): the service-performance placeholders below were
+% replaced with real values from the two k6 load-test runs executed against
+% staging on 2026-07-22, recorded in docs/performance-testing.md (Results
+% Log) before the environment was decommissioned:
+%   - discovery p95: 82.7 ms @ 30 VUs / 364.0 ms @ 100 VUs
+%   - ETA p95:       39.2 ms @ 30 VUs / 293.1 ms @ 100 VUs (mostly cache hits)
+%   - RevPASH p95:   55.4 ms @ 30 VUs / 227.5 ms @ 100 VUs
+%   - error rate:    0.00% in both runs
+%   - root cause of the 100-VU degradation: unconfigured node-postgres pool
+%     (default max 10), confirmed via Cloud SQL Insights (CPU ~20% peak)
+%
+% STILL OUTSTANDING, all in Section V-A: figures that were planned against
+% the staging deployment but not taken before it was deleted on 2026-08-01
+% (detail-with-prediction, booking creation, standalone ML latency, cold
+% start, PostGIS comparison, routing-cache reduction). Filling them requires
+% either re-provisioned infrastructure or an explicitly-caveated local
+% measurement.
 % ---------------------------------------------------------------------------
 \newcommand{\tbd}[1]{\textcolor{red}{[TBD: #1]}}
 
