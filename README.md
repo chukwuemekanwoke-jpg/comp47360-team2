@@ -39,7 +39,7 @@ This repository follows a Monorepo architecture to ensure high-efficiency collab
 
 ```text
 comp47360-team2/
-├── docs/                # Core documents (Business Plan, MVP ACs, API contract, ADR)
+├── docs/                # Core documents (Business Plan, MVP ACs, API contract, ADR, deployment guide)
 │   └── adr/             # Architecture Decision Records (ADR-001.md)
 ├── frontend/            # Frontend ecosystem
 │   ├── web-app/         # Responsive Web App (React + Vite)
@@ -50,7 +50,9 @@ comp47360-team2/
 ├── ml-pipeline/         # Machine Learning & Data Engine
 │   ├── fastapi-app/     # Algorithm Inference API (Python/FastAPI)
 │   └── notebooks/       # Data exploration & feature engineering workflows
-└── database/            # PostgreSQL migrations, seeds, Docker Compose
+├── database/            # PostgreSQL migrations, seeds, Docker Compose
+├── cloud_deployments/   # Terraform IaC per cloud provider (gcp/, aws/, azure/) — see status note below
+└── RISK_REGISTER.md     # Live project risk register, reviewed each sprint
 ```
 
 ## 👥 Team Roles
@@ -72,7 +74,30 @@ comp47360-team2/
 
 **1. Clone the Repository**
 ```bash
-git clone [https://github.com/YourOrganization/comp47360-team2.git](https://github.com/YourOrganization/comp47360-team2.git)
+git clone https://github.com/chukwuemekanwoke-jpg/comp47360-team2.git
 cd comp47360-team2
 ```
+
+**2. Install Dependencies**
+```bash
+npm install
+```
+This is an npm-workspaces monorepo — one install at the root wires up `database`, `backend/api-gateway`, `frontend/web-app`, `frontend/mobile-app`, and `frontend/packages/shared` together.
+
+**3. Start the Database**
+```bash
+npm run db:up      # docker compose up -d — Postgres on :5432
+npm run migrate
+npm run seed        # optional demo data
+```
+
+**4. Run the App**
+```bash
+npm run dev          # backend (api-gateway) + web app together
+npm run dev:mobile   # backend + Expo mobile app (tunnel mode)
+```
+
+### ☁️ Cloud Deployment Status
+
+Nothing in `cloud_deployments/` currently points at a live cloud environment — the app runs locally via Docker as shown above. The GCP staging/prod projects were decommissioned (deleted, billing closed) on **2026-08-01**; the `gcp/` Terraform is kept as a historical record only. The `aws/` and `azure/` configs are greenfield designs, never applied. See [`cloud_deployments/README.md`](cloud_deployments/README.md) for the full picture, including how to build and run the `api-gateway` and `ml-service` containers directly with Docker.
 
