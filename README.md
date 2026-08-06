@@ -59,12 +59,12 @@ comp47360-team2/
 
 | Name | Role | Responsibilities |
 | :--- | :--- | :--- |
-| **Yuhao Xu** | Product & UX Lead | Oversees product logic (`docs/`), UX design walkthroughs, and business value alignment. |
-| **Chukwuemeka Nwoke** | Scrum Master | Drives agile iterations, CI/CD pipeline integration, and GitHub compliance reviews. |
-| **Andrew Mitchell** | Web Frontend Lead | Leads `frontend/web-app` architecture and responsive UI implementation. |
-| **Milo Dennehy** | Mobile App Lead | Leads `frontend/mobile-app` cross-platform development and map component integration. |
-| **Yang Liu** | Backend Lead | Leads `backend/api-gateway`, database schema, and core API implementation. |
-| **Rui Xu** | Data & ML Lead | Leads `ml-pipeline/` recommendation algorithm modeling, data cleaning, and FastAPI deployment. |
+| **Yuhao Xu** | Product & UX Lead | Owns product logic and specs (`docs/product-spec.md`), UX design walkthroughs, and business value alignment; drives QA and product research — integration tests, API contract validation, accessibility testing, internal & external usability rounds, user interviews, feedback synthesis, and the final paper outline. |
+| **Chukwuemeka Nwoke** | Scrum Master / Integration Lead | Runs sprint ceremonies and retrospectives (`docs/sprints/`); owns the CI/CD pipeline — `ci.yml`, `deploy-staging.yml`, branch protection rules — and the `feature/* → integrate → develop → main` branch flow; maintains `RISK_REGISTER.md` and GitHub compliance reviews. |
+| **Andrew Mitchell** | Web Frontend Lead | Leads `frontend/web-app` architecture and responsive UI implementation — form validation, accessibility audits, the shared component library, merchant sign-up flow, JWT auth wiring, and usability/accessibility fixes. |
+| **Milo Dennehy** | Mobile App Lead | Leads `frontend/mobile-app` cross-platform development — map/discovery components, push notifications, Redux state management, bookings & settings UI, mobile JWT auth, and mobile accessibility fixes. |
+| **Yang Liu** | Backend Lead | Leads `backend/api-gateway` and the database schema — auth, bookings, restaurants, offers, campaigns, and ETA endpoints; booking-lifecycle hardening, rate-limiter fixes, and the database backup & recovery plan. |
+| **Rui Xu** *(Jack)* | Data & ML Lead | Leads `ml-pipeline/` — busyness prediction model, user-restaurant matching algorithm, and the FastAPI inference endpoint; model evaluation/tuning, RevPASH-informed retraining, drift monitoring, and the ML section of the final paper. |
 
 ---
 
