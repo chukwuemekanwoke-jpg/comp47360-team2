@@ -14,6 +14,20 @@
 \usepackage{tabularx}
 \usepackage{array}
 
+% ---------------------------------------------------------------------------
+% Placeholder macro for results not yet measured. Every quantitative claim
+% wrapped in \tbd{...} MUST be replaced with a real, measured value before
+% submission. Nothing rendered in red is a real finding.
+%
+% As of this revision the remaining placeholders are all in Section V-A:
+% figures that were planned against the staging deployment but not taken
+% before it was decommissioned on 2026-08-01 (detail-with-prediction,
+% booking creation, standalone ML latency, cold start, PostGIS comparison,
+% routing-cache reduction). Filling them requires either re-provisioned
+% infrastructure or an explicitly-caveated local measurement.
+% ---------------------------------------------------------------------------
+\newcommand{\tbd}[1]{\textcolor{red}{[TBD: #1]}}
+
 \begin{document}
 
 \title{Tabl\'{e}: A Web Application and Big Data Analytics Framework for Spatiotemporal Restaurant Busyness Prediction and Dynamic Yield Management in Manhattan}
@@ -409,26 +423,32 @@ Figure~\ref{fig:Busyness Category Composition Across Area, Turnover and Takeaway
 
 \section{Evaluation and Results}
 
-Every figure below is measured. Where a planned measurement was not taken before the staging environment was decommissioned, we say so rather than estimate.
+Every black figure below is measured; no number is invented. Quantitative slots planned but not yet measured are marked with an explicit red placeholder, each to be replaced with a real value before submission.
 
 \subsection{Service Performance}
 \label{sec:service-performance}
 
-We load-tested staging with k6 on 22 July 2026, before it was
-decommissioned. Each virtual user authenticated once, then looped
-discovery, ETA and RevPASH reads. At 30 users (1{,}583 journeys),
-95th-percentile latency was 82.7\,ms for discovery, 39.2\,ms for ETA and
-55.4\,ms for RevPASH. At 100 users (9{,}860 journeys) discovery rose to
-364.0\,ms and RevPASH to 227.5\,ms, overshooting the 200\,ms target; ETA
-reached 293.1\,ms, inside its 3.5\,s budget. Neither run failed a request.
-Cloud SQL Insights points to connection contention, not compute: CPU peaked
-near 20\% while connections hit the node-postgres default ceiling of ten
-per instance.
+API latency was benchmarked with scripted k6 load against the staging
+deployment on Cloud Run on 22 July 2026. Each virtual user authenticated
+once, then looped restaurant discovery, ETA computation and the RevPASH
+read. At 30 concurrent users (1{,}583 completed journeys), 95th-percentile
+latency was 82.7\,ms for discovery, 39.2\,ms for ETA and 55.4\,ms for
+RevPASH; at 100 users (9{,}860 journeys) discovery rose to 364.0\,ms and
+RevPASH to 227.5\,ms, overshooting the 200\,ms target, while ETA reached
+293.1\,ms, inside its 3.5\,s budget. Neither run failed a request. Cloud
+SQL Insights points to connection contention, not compute: CPU peaked near
+20\% while connections hit the node-postgres default ceiling of ten per
+instance. Note the ETA figures largely reflect cache hits, as the load
+script reuses coordinates.
 
-Three gaps remain. ETA latency reflects cache hits, as the script reuses
-coordinates. Booking creation was excluded because its write rate limiter
-distorts single-origin load. Inference latency was never isolated, though
-discovery reads a stored score rather than calling the model
+The remaining planned figures are outstanding: detail-with-prediction p95
+\tbd{ms}, booking creation p95 \tbd{ms} (its write rate limiter of 60
+requests per 15 minutes per IP must be lifted for the test window), ML
+\texttt{/predict/busyness} standalone p95 \tbd{ms}, cold-start penalty on
+scale-from-zero \tbd{ms}, query-time reduction from the optional PostGIS
+index \tbd{reduction}, and routing-API call volume saved by the ETA cache
+\tbd{reduction}. Discovery is insulated from the missing inference figures
+by design, since it reads a stored score rather than calling the model
 (Section~\ref{sec:busyness-persistence}).
 
 \subsection{Model Quality}
