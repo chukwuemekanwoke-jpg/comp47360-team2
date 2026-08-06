@@ -3,22 +3,22 @@
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
 \usepackage{graphicx}
+% Resolves architecture.png whether it sits beside the .tex (Overleaf root)
+% or in the repository's docs/assets/ directory, and fig4.x from image/.
+\graphicspath{{./}{image/}{assets/}{../assets/}}
 \usepackage{textcomp}
 \usepackage{xcolor}
+\usepackage{booktabs}
 \usepackage{url}
-
-% ---------------------------------------------------------------------------
-% Placeholder macro for results not yet measured. Every quantitative claim
-% wrapped in \tbd{...} MUST be replaced with a real, measured value before
-% submission. Nothing rendered in red is a real finding.
-% ---------------------------------------------------------------------------
-\newcommand{\tbd}[1]{\textcolor{red}{[TBD: #1]}}
+\usepackage{rotating}
+\usepackage{tabularx}
+\usepackage{array}
 
 \begin{document}
 
-\title{Table: A Web Application and Big Data Analytics Framework for Spatiotemporal Restaurant Busyness Prediction and Dynamic Yield Management in Manhattan}
+\title{Tabl\'{e}: A Web Application and Big Data Analytics Framework for Spatiotemporal Restaurant Busyness Prediction and Dynamic Yield Management in Manhattan}
 
-\author{\IEEEauthorblockN{Group Team 2}
+\author{\IEEEauthorblockN{Andrew Mitchell, Chukwuemeka Nwoke, Milo Dennehy, Rui Xu, Yang Liu, Yuhao Xu}
 \IEEEauthorblockA{\textit{MSc Computer Science (Conversion)} \\
 \textit{University College Dublin}\\
 Dublin, Ireland}}
@@ -26,67 +26,167 @@ Dublin, Ireland}}
 \maketitle
 
 \begin{abstract}
-Urban diners waste substantial time physically checking restaurant availability, while restaurants simultaneously lose walk-in revenue to perceived busyness and unpredictable operational lulls. This paper presents \textit{Table} (stylised Tabl\'{e}), a two-sided web and mobile marketplace that connects spontaneous diners in Manhattan with restaurants holding immediate table availability. Table ingests exclusively open civic datasets---New York City Taxi and Limousine Commission (TLC) trip records aggregated to hourly taxi-zone drop-off profiles, and New York City Department of Transportation (DOT) pedestrian volume counts from 114 fixed survey locations---to compute a normalised area-busyness factor for any coordinate pair in Manhattan at a given weekday and hour. This factor feeds a busyness-prediction service exposed through a FastAPI inference API, which is consumed by a Node.js API gateway orchestrating geospatial discovery, transit-validated (ETA-guarded) booking, and one-to-one ``flash deal'' matching for lull mitigation. The system is implemented as containerised microservices on Google Cloud Run with PostgreSQL, Redis, and a React/React Native client layer, and is deployed at \url{https://table-team2.web.app} (illustrative deployment URL). We describe the data engineering pipeline, the mathematical formulation of the area-busyness model and the candidate-matching heuristic, and an evaluation protocol covering API latency, prediction quality, and System Usability Scale testing, with measured results to be reported upon completion of the evaluation campaign.
+Urban diners waste time physically checking restaurant availability, and restaurants lose walk-in revenue to unpredictable operational lulls. We propose that this is an issue of information scarcity, or of high consumer search costs \cite{stigler1961economics}, which contribute to demand-supply frictions for dining. To alleviate these demand-supply frictions we developed \textit{Tabl\'{e}}, a two-sided web and mobile dynamic dining marketplace application, that connects diners with immediate table availability. The application curates spatially accessible dining opportunities for consumers, and serves as a marketplace for businesses to advertise tables through a heuristic matching system. Bookings are validated against a transit-aware estimated time of arrival, so a diner cannot hold a table they cannot reach before the hold expires, and merchants track the outcome through a revenue per available seat hour meter. A key element of this application is supply-demand prediction, in the form of restaurant busyness, which we model as a three-class ordinal classification problem. For this prediction task, we trained an XGBoost classifier on 367{,}437 restaurant hourly busyness observations covering 2{,}815 Manhattan restaurants across 60 taxi zones, using New York City Taxi and Limousine Commission drop-off volumes, venue attributes, and cyclical time encodings. Across five model families under a restaurant-disjoint split, gradient-boosted trees performed best, reaching 62.7\% accuracy, 0.624 weighted F1 and 0.599 quadratic weighted kappa on 105{,}937 observations from venues absent from training. Errors concentrate between adjacent classes: fewer than one in ten severely queued observations is labelled no wait. The classifier is served from a FastAPI container behind a Node.js gateway, with scores persisted under a one-hour refresh so discovery reads storage rather than blocking on inference, giving an 82.7\,ms 95th-percentile discovery latency at 30 concurrent users. No incumbent reservation platform we surveyed combines predicted busyness, immediate availability, arrival-time feasibility and private one-to-one lull mitigation.
 \end{abstract}
 
 \begin{IEEEkeywords}
-Data Analytics, Web Application, Software Architecture, Spatiotemporal Analysis, Urban Computing, Yield Management, Location-Based Services
+Data Analytics, Web Application, Software Architecture, Spatiotemporal Analysis, Urban Computing, Yield Management, Location-Based Services, Ordinal Classification
 \end{IEEEkeywords}
 
 \section{Introduction}
 
-Dining in a dense urban core such as Manhattan is characterised by a persistent information asymmetry. A diner standing on a street corner at 19:00 on a Friday cannot observe, without physically walking to each venue, which of the dozens of restaurants within reach currently has a free table, how long the wait is likely to be, or whether the surrounding area itself is so congested that the journey is not worth attempting. Conversely, a restaurant experiencing an unexpected mid-afternoon lull---a Sunday 15:00 dip, a rain-induced cancellation cluster---has no low-friction mechanism to attract nearby demand without resorting to public mass discounting, which dilutes brand equity and trains customers to wait for coupons. Existing reservation platforms overwhelmingly optimise for bookings planned days in advance; the walk-in and short-notice segment, which represents a substantial share of urban dining occasions, is served poorly by the current tooling landscape.
+Dining in a dense urban core such as Manhattan involves a persistent information asymmetry. A diner standing on a street corner at 19:00 on a Friday cannot observe, without walking to each venue, which restaurants within reach have a free table or how long the wait is likely to be. A restaurant experiencing an unexpected mid-afternoon lull has no low-friction way to attract nearby demand without public mass discounting, which dilutes brand equity and teaches customers to wait for coupons. There is a need for a solution for reducing these frictions for both restaurants and consumers, to better serve both.
 
-\textit{Table} addresses this gap as a two-sided, location-based marketplace. On the consumer side, the application performs geospatial discovery of restaurants within a 1.5\,km radius of the user's live position, filters them to those with a positive available-table count, and---critically---validates every booking attempt against a transit-mode-aware estimated time of arrival (ETA), blocking or warning on reservations the user cannot physically reach within the venue's 15-minute hold window. On the business side, a restaurant manager facing an unexpected lull can trigger the platform's matching engine to push an exclusive, time-boxed flash deal to the single best-suited nearby diner, rather than broadcasting a public discount. The offer expires after 900 seconds and the campaign auto-terminates once the released tables are claimed, closing the operational loop and preventing overbooking.
+Revenue Management is the process of optimizing profits and customer experiences, through management of price, time, and space, based on customer demand and preferences data. Frequently, this takes the form of dynamic pricing or controlling arrival and duration of customer flows \cite{kimes2004restaurant}. It is employed in industries which possess highly perishable goods or services, high fixed costs, and relatively fixed capacity \cite{kimes2015revenue}.  The restaurant industry is an example of these characteristics. Tables have high perishability and frequent turnover, restaurants have fixed capacity, and costs for labour and space are relatively fixed independent of demand.
 
-The analytical core of the platform is a spatiotemporal busyness model built entirely from open civic data. During project scoping we explicitly rejected commercial mobile-location foot-traffic products (SafeGraph, Placer.ai, Veraset) on cost and licensing grounds, and rejected scraping on ethical grounds; the system instead derives an area-level activity signal from two public sources: NYC TLC taxi drop-off records aggregated into hourly, taxi-zone-level demand profiles, and NYC DOT pedestrian volume counts collected at 114 fixed locations across the city in morning, midday, and evening windows. These two independent proxies for human presence are spatially resolved to any restaurant coordinate---by point-in-polygon assignment against the official taxi-zone shapefile and by radius-bounded nearest-neighbour averaging respectively---then normalised and fused into a single area-busyness factor in $[0,1]$. This design decision echoes the methodological posture of Chen \textit{et al.}~\cite{b1}, whose environmental analysis of New York bike sharing likewise derives city-scale behavioural insight from open spatiotemporal trip records rather than proprietary telemetry.
+As of 2024, yearly global food service expenditure reached € 2.916 trillion, rebounding from the after-effects of COVID-19 \cite{deloitte2025foodservice}.  An empirical case study from \cite{kimes2004sherylrestaurant} found around 34\% of yearly revenue for a surveyed restaurant chain came from weekly peak hours. This example underscores the importance of managing the other 66\% of revenue generation associated with non-peak periods in a trillion euro industry.
 
-The principal challenges the project confronts are threefold. Technically, the system must serve busyness inference, routing validation, and offer matching at interactive latency from a six-developer academic team's infrastructure budget, which motivated a serverless containerised architecture and aggressive caching of routing calls. Analytically, ground-truth restaurant occupancy is unavailable as open data, so the modelling strategy must remain interpretable and defensible, favouring transparent normalised proxies over opaque deep models trained on unverifiable labels. Societally, a map-centric, time-pressured interface risks excluding mobility-impaired and sensory-sensitive users; Table therefore treats accessibility as a first-class requirement, with accessible-venue tagging, uncrowded-venue recommendation, manual (non-map) search fallback, and interface states designed for readability under WCAG-informed contrast rules. The remainder of this paper reviews the related literature (Section~II), details the software architecture (Section~III), formalises the data pipeline and models (Section~IV), sets out the evaluation protocol and results (Section~V), and concludes with future work (Section~VI).
+We propose a novel RM solution for this market, a two-sided, location-based dining marketplace application, \textit{Tabl\'{e}}. On the consumer side, a mobile application shows the user restaurants within 1.5\,km of their live position, filters based on table availability, and validates every booking attempt against their transit-mode-aware estimated time of arrival. Doing so reduces consumer search frictions while disallowing reservations the user cannot reach within the venue's hold window, in turn providing a measure of prevention against lapsed bookings for restaurants.  This map-centric, time-pressured interface risks excluding mobility-impaired and sensory-sensitive users, so we treat accessibility as a functional requirement: accessible-venue tagging, a manual non-map search path, and an accessibility filter that acts as a hard constraint in offer matching rather than a soft preference.
+
+For restaurant web users, a manager facing a lull can push an exclusive, time-boxed flash deal to the best-suited nearby diners rather than broadcasting a public discount. When the consumer receives an offer, it has a set expiry, and the campaign terminates once the released tables are claimed or elapse. Studies have shown that this method of mobile promotions targeted by time and location significantly increase purchases, with same day offers to nearby consumers performing best \cite{fong2015geo}.
+
+A key component of this application, is a supervised busyness model, used to predict restaurant supply and model future costumer demand. The model predicts an ordinal busyness level from three ingredients: hourly taxi drop-off volumes published by the NYC Taxi and Limousine Commission (TLC), venue attributes recovered from public listings, and cyclical encodings of hour and weekday. Its training target is the Google Places popular-times index, a published hourly activity value on a 0--100 scale. That target is a proxy, not observed occupancy, and Section~V-B treats its limitations directly.  Rather, this place busyness is used to determine potential supply based on other restaurant factors, including floor area.
+
+This implementation seeks to address three key objectives established in the RM literature. To accurately and efficiently predict current and future customer demand, to implement a successful method of dynamic pricing with consumer awareness a-priori, and to formalise any change in revenue as a result through established KPIs.
+
+The remainder of this paper reviews related work (Section~II), details the architecture (Section~III), formalises the data pipeline and models (Section~IV), reports the evaluation (Section~V), and concludes with future work (Section~VI).
 
 \section{Literature Review}
 
-Table sits at the intersection of three research strands: urban computing over open spatiotemporal data, revenue and yield management in hospitality, and the software engineering of real-time location-based services.
+RM is an expanding domain, RM literature has seen large growth over the last 20 years, across hospitality and tourism sectors \cite{subying2023bibliometric}. Restaurant Revenue Management (RRM) in specific, has become a more common focus in the recent literature, after increased focus on dining data collected during the COVID-19 pandemic \cite{bujalance2025restaurant}. Coupled with recent improvements in Machine Learning (ML) technology, RRM has been the subject of methodological iteration towards more advanced ML applications of demand prediction, such as Neural Networks \cite{choi2022review}. Frequently these approaches benefit from increased consumer, and general, data collection and processing capabilities. The body of literature shows how disparate features are used for future forecasting of customer demand, including weather information, seasonality, other temporal features, and location \cite{liang2023poisson}\cite{ma2018predicting}\cite{chae2024value}. Ma \textit{et al.} \cite{ma2018predicting} evidenced how this big data can be coupled with supervised ML techniques, XGBoost, KNN and Random Forests, to achieve reasonable performance in predicting future customer demand. Notably, this work presents how lightweight supervised approaches are of increased importance to industry practitioners, compared to the restrictive compute required for DL methods. Other more recent work by Liang \textit{et al.} \cite{liang2023poisson} highlights how the customer demand prediction task closely relates to existing short-term demand forecasting developments in the field of urban transportation.
 
-The urban computing literature establishes that aggregate mobility traces are reliable proxies for localised human activity. Zheng \textit{et al.}~\cite{b2} frame urban computing as the acquisition, integration, and analysis of heterogeneous city data to address urban challenges, and identify taxi trajectories and pedestrian counts as canonical activity sensors---precisely the two signals Table fuses. Cranshaw \textit{et al.}~\cite{b4} demonstrated with the Livehoods project that geotagged activity traces reveal the ``lived'' dynamics of neighbourhoods, diverging from administrative boundaries; Table's use of TLC taxi zones as its spatial unit, refined by hyper-local pedestrian counts, follows the same intuition that activity, not cartography, defines an area's character at a given hour. On the predictive side, Zhang \textit{et al.}~\cite{b3} showed that citywide crowd flows exhibit strong, learnable spatiotemporal regularities, and Toole \textit{et al.}~\cite{b10} established that travel demand can be estimated at city scale from opportunistically collected big data. Donovan and Work~\cite{b6} specifically validated New York TLC taxi records as a longitudinal instrument for measuring city-scale dynamics, lending external credibility to Table's central data source. Kitchin~\cite{b9} provides the critical framing: real-time civic data enables responsive urban services, but systems built on it must remain transparent about provenance and uncertainty---a stance Table operationalises by returning an explicit confidence score proportional to the number of real signals contributing to each prediction.
+The urban computing literature establishes that aggregate mobility traces are reliable proxies for localised human activity. Zheng \textit{et al.}~\cite{zheng2014urban} frame urban computing as the acquisition, integration and analysis of heterogeneous city data, and identify taxi trajectories as an important activity sensor. Cranshaw \textit{et al.}~\cite{cranshaw2012livehoods} showed that geotagged activity traces reveal the lived dynamics of neighbourhoods, diverging from administrative boundaries. Zhang \textit{et al.}~\cite{zhang2017deep} showed that citywide crowd flows exhibit learnable spatiotemporal regularities, and Toole \textit{et al.}~\cite{toole2015path} estimated travel demand at city scale from opportunistically collected data. Donovan and Work~\cite{donovan2017empiically} validated New York TLC records as a longitudinal instrument for measuring city-scale dynamics. Kitchin~\cite{kitchin2014real} supplies the critical framing: real-time civic data enables responsive urban services, but systems built on it must stay transparent about provenance and uncertainty.
 
-The methodological template for our data pipeline is Chen \textit{et al.}~\cite{b1}, who analysed the environmental benefits of New York bike sharing by joining open trip records with spatial zoning and temporal profiles. Their proportional treatment of spatial resolution (station/zone level), temporal resolution (hourly and seasonal), and derived indices inspired Table's own pipeline structure: raw civic records are aggregated to a (zone, weekday, hour) demand cube, joined spatially to points of interest, and reduced to interpretable normalised indices rather than end-to-end learned representations.
+Beyond optimizing future customer demand prediction, RRM has a number of other determinants and blockers. Webb \textit{et al.} \cite{webb2023variable} introduce customer discrimination, to segment and prioritise high paying customers, and an inability to communicate changes in price to customers in advance as open problems in RRM.  Additionally, the development of key performance indicators (KPI) is an important element of RRM,  Kimes~\cite{kimes2004restaurant} formalised the first RRM KPI as revenue per available seat hour (RevPASH) and showed that actively managing off-peak capacity produces measurable gains.
 
-In hospitality operations research, Kimes~\cite{b5} formalised restaurant revenue management around the metric of revenue per available seat hour (RevPASH) and demonstrated that actively managing off-peak capacity yields measurable revenue gains. Existing commercial platforms, however, implement this insight only partially. Our comparative analysis of nine incumbent systems (OpenTable, Resy, Tock, Eat App, Yelp Reservations, TableIn, Eveve, TableAgent, and TheFork) found that all are architected around planned reservations, host-stand operations, or prepaid event ticketing. OpenTable offers the dominant discovery network but no prediction of walk-in busyness or arrival feasibility; Resy provides flexible inventory release at a price point (\$249--\$899 per month) inaccessible to small independents; Tock's prepayment engine targets events rather than spontaneous local demand; Eat App is operations-heavy with the consumer deal experience peripheral to its value proposition. None of the nine offers ETA-validated booking, area-level busyness prediction, or private one-to-one lull-mitigation offers. Table's contribution relative to this landscape is not a richer operations suite but a different architectural centre of gravity: a dynamic, predictive, open-data-driven matching layer between real-time spare capacity and reachable, compatible demand---evolving past the static dashboard paradigm that Kitchin~\cite{b9} critiques toward a genuinely responsive urban service.
+Despite the evidence in the literature that RRM is important for increasing restaurant profitability, commercial platforms fail to cater to the requirements of RRM. A survey of existing incumbents in the restaurant industry (OpenTable, Resy, Tock, Eat App, Yelp Reservations, TableIn, Eveve, TableAgent and TheFork), found all incumbents where architectured around planned reservations, host-stand operations or prepaid event ticketing. OpenTable has the dominant discovery network but no walk-in busyness prediction or device to communicate price changes which successful RRM is highly dependent on. Resy offers flexible inventory release at \$249--\$899 per month, which is out of reach for small independents.  Tock's prepayment engine targets events rather than spontaneous local demand.
 
-Finally, on the engineering side, Dragoni \textit{et al.}~\cite{b7} survey the microservice architectural style and its fit for small teams requiring independent deployability of heterogeneous runtimes; Table's split of a JavaScript transaction layer from a Python analytics layer is a direct application of this principle. Brooke's System Usability Scale~\cite{b8} anchors our usability evaluation protocol in Section~V.
+Existing players do not address the open problems evidenced within the RRM literature, of forecasting immediate customer demand, or of offering a way to communicate changes in price with customers a-priori and reflective of the pershability reflective of restaurant service. Perhaps the best implementation of these issues, TooGoodToGo, reflects changes in price a-priori for pershable restaurant goods but not in-service which is the primary concern of RRM. Our implementation proposes a solution for both of these areas of address, by integrating customer demand prediction into both sides of our application interface, and by allowing restaurant managers to directly control and notify customers of price changes prior to confirmation of bookings.
 
 \section{Methodology}
+The application methodology is described in chronological order, from the project design to final deployment. The sections are as follows, Project Design \& Requirements, System Overview \& Organisation, Data Layer, Backend Service, Frontend, Testing, and Integration \& Deployment.
 
-\subsection{System Overview and Repository Organisation}
+\subsection{Project Design \& Requirements Elicitation}
+Product/UX work framed a two-sided problem: diners cannot judge whether a free table is still reachable, while restaurants lose revenue when short periods of spare capacity pass unused. Three exploratory interviews with student diners tested whether this value proposition was understandable. Since no restaurant operator participated, the evidence was treated as formative rather than market validation. Findings became user stories and acceptance criteria, prioritised into MVP and later-stage features and revised after technical feasibility reviews.
 
-Table is developed as a monorepo with four top-level components---\texttt{frontend/} (web and mobile clients plus shared packages), \texttt{backend/api-gateway/} (the transactional service layer), \texttt{ml-pipeline/} (notebooks and the FastAPI inference service), and \texttt{database/} (versioned migrations, seeds, and a local \texttt{docker-compose} harness)---a structure chosen so that a six-developer team can define JSON API contracts once and evolve all consumers in a single review stream. Fig.~\ref{fig:architecture} presents the deployed architecture.
+The MVP formed a closed loop: mobile users discover available tables within 1.5\,km, check ETA and reachability, then book or claim an offer; merchants monitor tables and issue private, quota-limited flash deals from the web dashboard. The radius reduces uncertain journeys without hiding nearby choice, while ETA validation addresses the risk that a table disappears before arrival. Private rather than public discounting was selected as a product hypothesis for monetising perishable capacity without discounting to every customer, consistent with restaurant revenue-management principles~\cite{kimes2004restaurant}. Week~5 feedback led us to separate consumer tasks onto mobile and merchant operations onto web. A shared UI guide then standardised typography, colour tokens and semantic states across both clients.
 
-\begin{figure}[htbp]
+\subsection{System Overview \& Repository Organisation}
+\label{sec:system-overview}
+
+Tabl\'{e} is organised as a monorepo with four top-level components: \texttt{frontend/} (web and mobile clients plus shared packages), \texttt{backend/api-gateway/} (the transactional service layer), \texttt{ml-pipeline/} (notebooks and the FastAPI inference service), and \texttt{database/} (versioned migrations, seeds and a local \texttt{docker-compose} harness). The structure lets a six-developer team define JSON API contracts once and evolve all consumers in a single review stream. Fig.~\ref{fig:architecture} shows the deployed architecture.
+
+\begin{figure}[t]
 \centering
-% Replace with the exported architecture diagram, e.g.:
-% \includegraphics[width=\columnwidth]{architecture.png}
-\fbox{\parbox[c][5.5cm][c]{0.9\columnwidth}{\centering \textit{System architecture diagram: React/Vite web and Expo mobile clients $\rightarrow$ Node.js API gateway (Cloud Run) $\rightarrow$ \{PostgreSQL Cloud SQL, Redis Memorystore, FastAPI ML service (Cloud Run), Google Routes API, Firebase Cloud Messaging\}.}}}
-\caption{Deployed microservice architecture of Table on Google Cloud Platform.}
+\includegraphics[width=\columnwidth]{fig1_architecture.png}
+\caption{Deployed microservice architecture of Tabl\'{e} on Google Cloud Platform. React/Vite web and Expo mobile clients reach a Node.js API gateway on Cloud Run, which orchestrates PostgreSQL (Cloud SQL), the FastAPI inference service, the Google Routes API and Firebase Cloud Messaging. The highlighted path is the busyness cycle described in Section~III-D: the gateway writes each refreshed score back to PostgreSQL and serves subsequent discovery requests from that stored column, so model inference never sits in the read path.}
 \label{fig:architecture}
 \end{figure}
 
-\subsection{Frontend Stack}
-
-The web client is built with React and Vite, chosen over heavier server-rendered frameworks because the application's core surfaces---a live map, a discovery list, a booking flow, and a merchant dashboard---are interaction-dense, per-user views that gain little from server-side rendering while benefiting substantially from Vite's sub-second hot-module-replacement feedback loop during a compressed five-sprint schedule. The mobile client is implemented in React Native via the Expo framework, allowing the same team members, component idioms, and service-wrapper layer to serve both platforms; Expo's managed workflow removes native build-chain maintenance, which a conversion-programme team could not have absorbed. Both clients share typed service wrappers (unit-tested against a mocked \texttt{fetch}) so that every network call site is exercised in continuous integration. The merchant dashboard is skinned with a shared \texttt{table-*} design-token system to keep consumer and business surfaces visually coherent, and includes a RevPASH meter operationalising Kimes's revenue-per-available-seat-hour metric~\cite{b5} for restaurant operators.
-
 \subsection{Backend Service Layer}
+\label{sec:backend}
 
-The transactional core is a Node.js/Express API gateway exposing versioned REST routes (\texttt{/api/v1}), merchant routes, and health probes. Node.js was selected for this layer because the workload is overwhelmingly I/O-bound orchestration---fanning out to PostgreSQL, Redis, the ML service, and Google's routing APIs---for which an event-loop runtime offers high concurrency without thread management overhead. The gateway is decomposed internally into single-responsibility service modules: \texttt{createBooking} (ETA-guarded reservation writes), \texttt{createCampaignOffers} and \texttt{offerInsert} (flash-deal campaign lifecycle), \texttt{candidateUsers} (pre-filtering of eligible nearby diners), \texttt{etaResolver} and \texttt{googleDistanceMatrix} (routing abstraction), and \texttt{mlBusynessClient}/\texttt{mlMatchClient} (typed clients for the inference service). This decomposition lets the matching model be swapped without touching booking logic, a direct application of the independent-evolvability argument for microservices~\cite{b7}.
+The transactional core is a Node.js/Express API gateway exposing versioned
+REST endpoints to the mobile and merchant clients. Node.js was selected
+because this layer primarily performs I/O-bound orchestration across
+PostgreSQL, the inference service and external routing APIs. Booking,
+campaign, routing and inference responsibilities are separated into service
+modules, keeping transactional logic independent of the model implementation.
 
-Machine learning inference is deliberately isolated in a separate Python FastAPI service (\texttt{ml-pipeline/fastapi-app}) rather than embedded in the gateway. The rationale is threefold: the scientific Python ecosystem (pandas, pyproj, pyshp) is the natural home for the geospatial pipeline; Pydantic request models give the inference API a self-documenting, validated contract (e.g., \texttt{hour\_of\_day} $\in [0,23]$, coordinates range-checked); and an independent container allows the analytics layer to be redeployed, scaled, or replaced with a trained model without a gateway release. The service exposes \texttt{/predict/busyness} for area-conditioned busyness inference and \texttt{/api/v1/match} for flash-deal candidate ranking, and the gateway wires live busyness prediction directly into \texttt{GET /restaurants/:id} so every restaurant detail view carries a current busyness estimate.
+Model inference is deployed as a separate Python FastAPI service. This
+boundary allows the application to use the scientific Python ecosystem while
+keeping the model independently deployable behind a validated HTTP
+contract~\cite{dragoni2017microservices}. The model pipeline is loaded at
+service startup and supports both venue-busyness prediction and flash-deal
+candidate ranking.
 
-\subsection{Data Layer and Normalisation}
+Booking and campaign writes execute inside PostgreSQL transactions. Relevant
+inventory rows are locked before availability is modified, while database
+constraints and idempotent writes prevent concurrent or duplicate claims.
+Authentication uses password hashing and signed JWTs, with additional
+ownership checks on merchant operations and rate limiting on sensitive
+endpoints.
 
-Relational state---users, restaurants, bookings, offers, campaigns---resides in PostgreSQL (Google Cloud SQL). The schema is maintained through numbered, reversible migration pairs (\texttt{001\_initial\_schema} through \texttt{005\_add\_restaurant\_phone}, each with a \texttt{.down.sql} counterpart), giving the team auditable schema evolution and tested rollback paths, which the project's operational runbook exercises. The schema is normalised to third normal form: restaurant attributes added later in the project (capacity, cuisine, phone) were introduced as dedicated migrations rather than overloaded columns, and user authentication state (JWT-based) was isolated in its own migration. PostGIS is provisioned as an optional migration (\texttt{002\_postgis\_optional}) so that geospatial predicates can move from application-level haversine filtering into the database when scale demands, without forcing the extension onto every local development environment. Volatile real-time state---live table availability and busyness caches---is held in Redis (Cloud Memorystore), keeping high-churn counters out of the relational write path. Historical spatiotemporal aggregates are prepared offline in the notebook pipeline and shipped with the inference container as static artefacts, a pragmatic choice that eliminates an entire class of runtime data dependencies for the demo deployment.
+External dependencies use bounded fallbacks. ETA calculation falls back to a
+local distance estimate when the routing service is unavailable, while
+matching falls back to deterministic distance ordering if inference fails.
+Previously stored busyness scores remain available during inference outages,
+preventing temporary dependency failures from interrupting booking and
+discovery workflows.
 
-\subsection{Deployment, Delivery, and Operational Governance}
+\subsection{Data Layer and Busyness Persistence}
+\label{sec:busyness-persistence}
 
-All services are containerised and deployed to Google Cloud Run, chosen over self-managed Kubernetes because scale-to-zero serverless containers eliminate idle cost and operations burden for a student team while preserving a clean migration path to GKE Autopilot if sustained load ever justifies it. The web client is served through Firebase Hosting with deployment automated in the CI pipeline (\texttt{deploy-staging.yml}). Delivery follows a three-tier branch promotion model---feature branches merge into \texttt{integrate}, which promotes to \texttt{develop} (staging project) and then to \texttt{main} (production project) exclusively via pull request---so that the public demo environment can never receive unreviewed code. Operational risk is governed by a living risk register and a rollback-and-recovery runbook committed to the repository, covering database down-migrations, Cloud Run revision pinning, and Firebase Hosting release rollback. External integrations comprise the Google Maps/Routes APIs for ETA computation (called once per restaurant detail load and cached, to respect a student API budget), Firebase Cloud Messaging for flash-deal push delivery, and a simulated Stripe integration for deposit flows.
+Application state is stored in PostgreSQL on Cloud SQL and evolved through
+versioned migrations. Database constraints enforce booking and campaign
+invariants independently of application-level validation, while optional
+geospatial support provides a path for moving distance filtering into the
+database if future scale requires it.
+
+Busyness scores are persisted with independently tracked prediction freshness.
+Discovery requests read the stored scores immediately and trigger bounded,
+asynchronous refreshes when they exceed a one-hour TTL. Concurrent refreshes
+and repeated failures are suppressed, while the last successful score remains
+available if the inference service is unavailable. Consequently, discovery
+latency does not depend directly on model latency, as reflected in the
+service-performance results in Section~\ref{sec:service-performance}.
+
+A newly onboarded venue has no booking history, so its score comes entirely
+from the classifier, which needs only coordinates, venue attributes and the
+hour. As bookings accumulate, the service blends the venue's own observed
+occupancy into that prediction. Writing $d$ for days since onboarding and $n$
+for confirmed bookings in the trailing 30 days, the weight given to observed
+occupancy is
+\begin{equation}
+w = w_{\max}\,\min\!\left(1,\tfrac{d}{30}\right)\frac{n}{n + n_0},
+\end{equation}
+with $w_{\max} = 0.6$ and pseudo-count $n_0 = 20$, and the served score is
+$(1-w)\,\hat{y} + w\,o$ for classifier output $\hat{y}$ and observed occupancy
+$o$. Occupancy is measured per (weekday, hour) bucket as bookings landing in
+that bucket per weekday occurrence per table, clipped to $[0,1]$. The linear
+term ramps over a 30-day maturation window, while the shrinkage term damps it
+by evidence volume, so a month-old venue with two bookings does not swing onto
+its own noisy history. Capping $w$ at 0.6 leaves the model at least 40\% of the
+weight permanently, and the blend is skipped entirely when the gateway supplies
+no booking counts, which keeps the cold-start path identical to the
+classifier's own output.
+
+\subsection{Frontend}
+
+\subsubsection{Tools \& Frameworks}
+The web client uses React and Vite. We chose it over heavier server-rendered frameworks because the core surfaces, a live map, a discovery list, a booking flow and a merchant dashboard, are interaction-dense per-user views that gain little from server-side rendering, while Vite's sub-second hot-module replacement mattered for quick development in a compressed five-sprint schedule. The mobile client is React Native under Expo, a JavaScript framework chosen so team members and service-wrapper layer can serve both platforms without native build-chain maintenance. Mobile development alternatives such as Kotlin or Swift were not considered as we sought a cross platform (CP) language to support CP deployment; additionally, popular alternative Flutter was not chosen despite its advantages in CP consistency, due to pixel based rendering rather than native components, because of the development requirements associated with different mobile and web languages. Both clients rely on shared single typed API contract and state store, built using Redux Toolkit Query, that centralises every network call, its authentication headers and its cache-invalidation rules. This contract is unit-tested against a mocked \texttt{fetch}, so every call site is exercised in continuous integration rather than diverging silently between platforms. The merchant dashboard additionally draws on a shared \texttt{table-*} design-token system for visual consistency with the rest of the product.
+
+\subsubsection{Design}
+
+The consumer-facing mobile client is the primary surface by which the application seeks to address consumer-sided search costs. This objective informs a number of design decisions, such as discovery views, map extent filtering, and search filtering. Technically, the mobile application is organised as a series of core views or "tabs", which reuse modular React Native components. Utilising the Expo framework router a set of web specific views are also provided using the .web file suffix, this guarantees web support of the mobile application by removing Native specific functionality for web alternatives. The mobile application relies extensively on the operations of the shared RTK store and slice for fetching, refreshing, and caching both client-side generated state and server-side state. This enables the application design, which defines a number of views or tabs remain stateful during navigation between tabs. An example of this with client-side state, is the search and filter functionality which apply to restaurants across the Card and Map views. In a data intensive customer facing application this state retention is required to improve usability and is explicitly specified as a requirement during the project design phase.
+
+The merchant-facing web client is the specific surface through which a restaurant manager perceives and acts on the signals described in Sections~\ref{sec:busyness-persistence} and IV-D: predicted busyness, live occupancy, and the flash-deal mechanism used for lull mitigation. The authenticated session is held in a React context provider, while per-restaurant data (identity, live occupancy, capacity) is resolved once in a shared layout route and passed down through React Router's outlet context, so individual dashboard views consume it without re-fetching or re-declaring it themselves. Alongside mobile, it makes use of the RTK contract to centralise cache invalidation, for example: creating or cancelling a campaign, refreshes both the active-campaign status shown on the overview page and the campaign history list, without either view needing to know the other exists. To satisfy our objective of implementing an RRM KPI, the dashboard presents a RevPASH meter implementing Kimes's metric~\cite{kimes2004restaurant} alongside the reservation list and the campaign-creation form, so a manager can observe, decide and act inside one view.
+
+\subsubsection{Accessibility and Inclusion}
+\emph{Accessibility} is treated as a functional constraint rather than a styling concern, consistent with the posture argued in Section~I: mobile customers and web managers both flag wheelchair and sensory-friendly accommodation and requirements during onboarding, this feeds directly into the hard accessibility veto applied during flash-deal matching (Section~IV-D). Both interfaces provide a light/dark theme, ARIA live regions on state that updates without user action, and web provides a layout that collapses the primary navigation to a top bar below the tablet breakpoint rather than hiding functionality on small screens. Each of these decisions was traced to a specific project persona or formal user story rather than to internal preference; Section~V-C audits this mapping directly, including the decisions made specifically for the project's EDI-focused persona.
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{image/fig4.1.png}
+    \caption{Distribution of Busyness Score}
+    \label{fig:busyness_score_distribution}
+\end{figure*}
+
+\subsection{Testing}
+\subsubsection{Unit \& Integration Testing}
+The web client carries 44 automated tests across 7 suites (Vitest and Testing Library); five of the seven mock the \texttt{apiSlice} contract directly to test authentication and onboarding flows in isolation, while the remaining two cover form-input behaviour and pure validation logic. The suite is run, alongside linting and a production build, as a required check on every pull request. Relative to the analytics and service layers described elsewhere in this paper, the web client's contribution is narrow in scope but load-bearing in function: it is the point at which the busyness model, the RevPASH metric and the matching heuristic become a decision a person actually makes.
+
+\subsubsection{User Testing}
+
+Successful application development frequently relies on an iterative approach, as evidenced by the leading development methodologies \cite{beck2001manifesto}. This iterative approach requires consistent user testing to inform application design direction. There a number of disparate usability testing methodologies: from interviews, to questionairres, to think-aloud processes \cite{weichbroth2020usability}.  To improve on the application iteratively in a short period of development time, the Rapid Iterative Testing and Evaluation (RITE) \cite{medlock2002using} method was chosen as the usability framework used during development. This testing framework prioritises rapid changes, often between usability participants or frequently occuring rounds. During this testing we predominantly rely on the Concurrently Think-aloud (CTA) \cite{ericsson1984protocol} method of elicitation, where participants verbalise their thought process while engaging in a number of key set tasks with the application. This unstructured elicitation reduces the testing time for both participants and moderators, supporting the rapid iteration of RITE, while still proving accurate \cite{cooke2010assessing}.
+
+Formative evaluation combined an internal workflow review with four moderated, task-based sessions: one Product/UX evaluator (P01) and three external student peers (P02--P04). Participants used both clients to discover and book a restaurant, claim an offer, create a merchant campaign and inspect its status while thinking aloud~\cite{cooke2010assessing}. Notes and task outcomes were anonymised and consolidated into a prioritised change list. The internal review had already exposed the lack of a browsing route for users without a chosen restaurant, leading to the Discover tab. Completion time and standardised usability scores were not collected. An additional qualitative user-testing round on the mobile client with two external students produced a prioritised list of functionality gaps, each recorded with its rationale and resolution in a tracked change log.
+
+\subsection{Deployment, Delivery and Operational Governance}
+
+All services are containerized and deployed to Google Cloud Run, chosen over self-managed Kubernetes because scale-to-zero containers remove idle cost and operational burden for our team while preserving a migration path to GKE Autopilot. The web client is served through Firebase Hosting, deployed from CI (\texttt{deploy-staging.yml}). Delivery follows a three-tier branch promotion model: feature branches merge into \texttt{integrate}, which promotes to \texttt{develop} (staging) and then to \texttt{main} (production), in every case by pull request, so the demo environment cannot receive unreviewed code. Operational risk is tracked in a version-controlled risk register and a rollback-and-recovery runbook covering database down-migrations, Cloud Run revision pinning, and Firebase Hosting release rollback. The repository additionally carries Terraform describing the staging estate, together with equivalent AWS and Azure designs, so the deployment is reproducible rather than click-configured. External integrations are the Google Routes API for ETA computation (cached, to respect a student budget), Firebase Cloud Messaging for offer delivery, and a simulated Stripe integration for deposit flows.
+
+All measurements in Section~V were taken against the staging deployment described above. That environment was decommissioned after the evaluation campaign, so the figures reported here are historical measurements rather than claims about a currently reachable service.
 
 \section{Data Analytics and Visualization}
 
@@ -97,7 +197,6 @@ Table's analytical layer is built exclusively on open data. Four primary sources
 \begin{itemize}
 \item \textbf{NYC TLC taxi trip records}, aggregated into \texttt{manhattan\_hourly\_demand.csv}: mean drop-off counts per (taxi zone, weekday, hour) cell, serving as the primary area-activity proxy.
 \item \textbf{NYC taxi-zone shapefile} (\texttt{taxi\_zones.zip}), the official TLC polygon geometry used for spatial assignment.
-\item \textbf{NYC DOT pedestrian volume counts} (\texttt{manhattan\_pedestrian\_counts\_raw.csv}): bi-annual counts at 114 fixed locations, with per-location readings in morning (AM), midday (MD), and evening (PM) windows.
 \item \textbf{NYC PLUTO and restaurant metadata} (\texttt{manhattan\_pluto.csv}, \texttt{manhattan\_restaurants.csv}): land-use context and the cleaned restaurant universe, including real neighbourhood, phone, and accessibility attributes that replaced earlier simulated fields.
 \end{itemize}
 
@@ -105,23 +204,194 @@ Supplementary derived tables (cuisine profiles, restaurant supply, popular-times
 
 \subsection{Preprocessing and Feature Engineering}
 
-Raw TLC records are filtered to Manhattan zones, timestamp-decomposed into weekday and hour, and aggregated to the (zone, weekday, hour) demand cube. Pedestrian counts are melted from the DOT wide format (columns such as \texttt{may\_07\_am}) into per-location, per-period observations. Restaurant records are cleaned for coordinate validity, deduplicated, and enriched with cuisine and capacity attributes that are persisted via the schema migrations described in Section~III-D. Hours are mapped to pedestrian observation periods by the rule
-\begin{equation}
-\mathrm{period}(h)=\begin{cases}\text{AM} & h < 11\\ \text{MD} & 11 \le h < 16\\ \text{PM} & h \ge 16.\end{cases}
-\end{equation}
+This study predicts restaurant waiting conditions rather than exact waiting times. Google Maps busyness scores range from 0 to 100, with zero indicating immediate availability and positive values representing varying congestion levels (Figure~\ref{fig:busyness_score_distribution}). Minor score differences provide limited practical value to diners. The continuous score was therefore converted into three ordinal classes: \textit{No Wait}, \textit{Queue Required}, and \textit{Severe Queue}. Three classes preserve the distinction between moderate and severe congestion while maintaining practical interpretability and manageable predictive complexity.
 
-\subsection{The Area-Busyness Model}
+Review count was log-transformed because of its highly skewed distribution (skewness = 13.594), reducing the influence of extreme values. Restaurant floor area was estimated using commercial-area allocation rules, while cuisine-specific turnover and takeaway ratios were derived from industry evidence. Detailed descriptive statistics and feature-processing methods are reported in Tables~\ref{tab:descriptive_statistics} and~\ref{tab:feature_engineering}.
 
-Given a restaurant at $(\phi,\lambda)$ and a target $(\text{weekday } w, \text{hour } h)$, the inference service computes an area-busyness factor as follows. Coordinates are first projected from WGS84 (EPSG:4326) to the New York State Plane system (EPSG:2263) and assigned to a taxi zone $z$ by ray-casting point-in-polygon evaluation against the TLC shapefile. The zone's expected drop-off intensity $T_{z,w,h}$ is read from the demand cube. Independently, a local foot-traffic estimate is computed by averaging the period-matched counts of all DOT survey locations within a 600\,m great-circle radius (haversine distance on $r=6\,371\,000$\,m), a generous radius chosen deliberately because the DOT network is sparse:
-\begin{equation}
-P_{\phi,\lambda,h} = \frac{1}{|N|}\sum_{i \in N} c_{i,\mathrm{period}(h)},\quad N=\{i : d_i \le 600\,\text{m}\}.
-\end{equation}
-Each available signal is min--max normalised against its global distribution, $\hat{x} = \mathrm{clip}\!\left((x - x_{\min})/(x_{\max}-x_{\min}),\,0,\,1\right)$, and the area factor is their mean:
-\begin{equation}
-f_{\text{area}} = \frac{1}{|S|}\sum_{s \in S}\hat{s}, \qquad
-\mathrm{conf} = \frac{|S|}{2},
-\end{equation}
-where $S \subseteq \{\hat{T}_{z,w,h},\, \hat{P}_{\phi,\lambda,h}\}$ is the set of signals actually resolvable at that location ($f_{\text{area}}=0.5$, an uninformative prior, when $S=\emptyset$). The explicit confidence output---1.0 when both taxi and pedestrian evidence contribute, 0.5 when only one does---propagates data-provenance uncertainty to the client, in line with the transparency norms argued by Kitchin~\cite{b9}. The factor conditions the busyness score returned by \texttt{/predict/busyness} and surfaces directly in \texttt{GET /restaurants/:id}.
+\begin{table*}[!t]
+    \centering
+    \caption{Descriptive Statistics of Restaurant Variables}
+    \label{tab:descriptive_statistics}
+    \footnotesize
+    \setlength{\tabcolsep}{3.5pt}
+    \renewcommand{\arraystretch}{1.15}
+
+    \resizebox{\textwidth}{!}{
+        \begin{tabular}{lrrrrrrrrrr}
+            \toprule
+            \textbf{Variable} &
+            \textbf{N} &
+            \textbf{Mean} &
+            \textbf{Std.} &
+            \textbf{Min} &
+            \textbf{25\%} &
+            \textbf{50\%} &
+            \textbf{75\%} &
+            \textbf{Max} &
+            \textbf{Skewness} &
+            \textbf{Kurtosis} \\
+            \midrule
+
+            Busyness score
+            & 367,437 & 34.777 & 29.699 & 0 & 0 & 37 & 58 & 100
+            & 0.203 & -1.170 \\
+
+            Typical visit duration
+            & 2,815 & 93.081 & 38.608 & 10 & 82.500 & 90 & 105 & 240
+            & 0.634 & 1.482 \\
+
+            Google rating
+            & 2,815 & 4.316 & 0.401 & 1.4 & 4.1 & 4.4 & 4.6 & 5
+            & -1.367 & 3.512 \\
+
+            Review count
+            & 2,815 & 1,021.335 & 2,287.693 & 2 & 213.250 & 495
+            & 1,080 & 59,998 & 13.594 & 282.889 \\
+
+            Estimated area (sq. ft.)
+            & 2,815 & 1,934.174 & 1,973.084 & 200 & 657.808
+            & 1,197.450 & 2,287.750 & 8,000 & 1.846 & 2.710 \\
+
+            Turnover rate
+            & 2,815 & 1.682 & 0.792 & 0.8 & 1.1 & 1.2 & 2.5 & 3
+            & 0.786 & -1.057 \\
+
+            Takeaway ratio
+            & 2,815 & 0.357 & 0.240 & 0.05 & 0.2 & 0.2 & 0.6 & 0.8
+            & 0.593 & -1.177 \\
+
+            Taxi drop-off count
+            & 2,815 & 83.859 & 81.453 & 2 & 31 & 63 & 108 & 793
+            & 3.550 & 20.695 \\
+
+            \bottomrule
+        \end{tabular}
+    }
+
+    \vspace{2pt}
+
+    \begin{minipage}{\textwidth}
+        \footnotesize
+        \textit{Note:} The busyness score is measured at the
+        restaurant--time-slot level, whereas the remaining variables are
+        measured at the restaurant level. Std. denotes standard deviation.
+    \end{minipage}
+\end{table*}
+
+\begin{table*}[!t]
+    \centering
+    \caption{Summary of Final Features and Data Processing}
+    \label{tab:feature_engineering}
+    \footnotesize
+    \setlength{\tabcolsep}{4pt}
+    \renewcommand{\arraystretch}{1.15}
+
+    \begin{tabularx}{\textwidth}{
+        >{\raggedright\arraybackslash}p{2.8cm}
+        >{\raggedright\arraybackslash}p{3.2cm}
+        >{\raggedright\arraybackslash}p{2.5cm}
+        >{\raggedright\arraybackslash}X
+    }
+        \toprule
+        \textbf{Final Feature} &
+        \textbf{Original Variable(s)} &
+        \textbf{Source} &
+        \textbf{Processing / Engineering} \\
+        \midrule
+
+        Google Rating &
+        Rating &
+        Google Maps &
+        Used directly as a restaurant popularity indicator. \\
+
+        Review Count &
+        User reviews &
+        Google Maps &
+        Log-transformed to reduce skewness. \\
+
+        Typical Visit Duration &
+        Typical time spent &
+        Google Maps &
+        Parsed into minutes; median imputation was applied to missing values. \\
+
+        Restaurant Area &
+        Commercial building area &
+        NYC PLUTO &
+        Restaurant floor area was estimated using commercial-area allocation rules. \\
+
+        Taxi Demand &
+        Taxi drop-off records &
+        NYC Yellow Taxi &
+        Aggregated by taxi zone and observation hour. \\
+
+        Hour (sin) &
+        Observation timestamp &
+        System time &
+        Cyclical encoding using a sine transformation. \\
+
+        Hour (cos) &
+        Observation timestamp &
+        System time &
+        Cyclical encoding using a cosine transformation. \\
+
+        Friday &
+        Observation date &
+        System time &
+        Binary indicator. \\
+
+        Saturday &
+        Observation date &
+        System time &
+        Binary indicator. \\
+
+        Sunday &
+        Observation date &
+        System time &
+        Binary indicator. \\
+
+        Turnover Rate &
+        Cuisine type &
+        Derived &
+        Estimated based on industry reports. \\
+
+        Taxi Zone &
+        Restaurant coordinates &
+        TLC Taxi Zone &
+        Spatial join followed by one-hot encoding. \\
+
+        Takeaway Ratio &
+        Cuisine type &
+        Derived &
+        Estimated from cuisine-specific takeaway behaviour. \\
+
+        Busyness Level (Target) &
+        Busyness score &
+        Google Maps &
+        Converted into three ordinal classes: No Wait, Queue Required, and Severe Queue. \\
+
+        \bottomrule
+    \end{tabularx}
+\end{table*}
+
+Figure~\ref{fig:busyness_score_distribution} shows clear lunch and dinner demand peaks, supporting sine--cosine encoding of hour and weekday indicators for weekly variation. Restaurant area and seating capacity were estimated from NYC PLUTO data, typical visit duration represented table occupancy time, and cuisine-specific takeaway ratios captured operational differences. Taxi drop-offs were matched through taxi zones to measure surrounding demand. These features represent temporal demand, popularity, operational capacity, Taxi drop-offs and local activity. The final engineered features are summarised in Table~\ref{tab:feature_engineering}.
+
+\subsection{Model Selection}
+
+Restaurant busyness was formulated as an ordinal classification problem with three waiting levels. Logistic Regression served as the primary baseline because of its simplicity and interpretability, while a single Decision Tree provided an interpretable nonlinear benchmark. KNN was included to test whether restaurants with similar operational and demand characteristics exhibit similar waiting conditions. Random Forest was selected to reduce the overfitting and instability of a single tree through bootstrap aggregation and feature randomisation. XGBoost~\cite{chen2016xgboost} was included for its strong performance on structured tabular data and its ability to capture complex interactions among temporal, spatial, demand, and capacity features. The comparison evaluates whether increasingly flexible nonlinear and ensemble models improve predictive performance over the baseline.
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{image/fig4.2.png}
+    \caption{Busyness Category Composition Across Review, Rating and Duration}
+    \label{fig:Busyness Category Composition Across Review, Rating and Duration}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{image/fig4.3.png}
+    \caption{Busyness Category Composition Across Area, Turnover and Takeaway}
+    \label{fig:Busyness Category Composition Across Area, Turnover and Takeaway}
+\end{figure*}
 
 \subsection{Flash-Deal Candidate Matching}
 
@@ -133,41 +403,155 @@ with $d_u$ the diner's distance in metres, indicator terms rewarding completed p
 
 \subsection{Visual Insights}
 
-The application and its analytical notebooks surface two families of visualisation. Temporally, hourly demand curves per taxi zone expose the pronounced weekday lunchtime and Friday/Saturday evening peaks, and---of direct commercial relevance---the mid-afternoon troughs that constitute the flash-deal opportunity window. Spatially, choropleth views of $f_{\text{area}}$ over the taxi-zone geometry at a chosen hour reveal the expected activity gradients (Midtown and Lower Manhattan dominating evening drop-offs, residential Upper Manhattan zones peaking differently), and the consumer map view translates this into per-restaurant busyness badges. \tbd{Insert Fig.~2: hourly drop-off profile for three contrasting zones; Fig.~3: choropleth of $f_{\text{area}}$ at Friday 19:00; regenerate from data\_engineering\_v2.ipynb.}
+Figure~\ref{fig:Busyness Category Composition Across Review, Rating and Duration} shows the distribution of busyness categories across different restaurant characteristics. Review volume exhibits little association with busyness, as the proportions of the three categories remain relatively stable across all review groups. In contrast, higher-rated restaurants display a larger proportion of No Wait observations and a lower proportion of Severe Queue, suggesting that operational quality may mitigate congestion. Similarly, restaurants with longer typical visit durations tend to experience fewer severe queues and more no-wait periods, indicating that visit duration alone does not necessarily increase waiting times and may instead reflect greater seating capacity or more efficient operations.
+
+Figure~\ref{fig:Busyness Category Composition Across Area, Turnover and Takeaway} shows the relationship between operational restaurant characteristics and busyness categories. Restaurant area exhibits only a weak association with congestion, with slightly higher proportions of severe queues among larger restaurants. In contrast, turnover rate shows a clearer trend, as higher turnover groups contain fewer No Wait observations and more Severe Queue observations, suggesting greater operational intensity during busy periods. A similar pattern is observed for takeaway ratio, where restaurants with higher takeaway activity tend to experience more severe congestion. These findings indicate that operational characteristics provide useful information for predicting restaurant busyness.
 
 \section{Evaluation and Results}
 
-Consistent with academic integrity requirements, this section reports the evaluation \emph{protocol} in full and marks every quantitative slot with an explicit placeholder; no number below is invented, and every red \texttt{[TBD]} marker will be replaced with measured values from the Sprint 4--5 test campaign.
+Every figure below is measured. Where a planned measurement was not taken before the staging environment was decommissioned, we say so rather than estimate.
 
 \subsection{Service Performance}
+\label{sec:service-performance}
 
-API latency is benchmarked with scripted load against the staging deployment on Cloud Run, measuring p50/p95/p99 across the three critical paths: restaurant discovery (\texttt{GET /api/v1/restaurants} with geospatial filter), detail-with-prediction (\texttt{GET /restaurants/:id}, which fans out to the ML service), and booking creation (which additionally invokes the cached Routes API ETA check). Current measured values: discovery p95 \tbd{ms}, detail-with-prediction p95 \tbd{ms}, booking p95 \tbd{ms}, ML \texttt{/predict/busyness} standalone p95 \tbd{ms}, cold-start penalty on scale-from-zero \tbd{ms}. Database query plans for the geospatial pre-filter are compared with and without the optional PostGIS index (\texttt{EXPLAIN ANALYZE}), reporting \tbd{query-time reduction} from the spatial index. Routing-call caching is evaluated by API-call volume per 100 user sessions before and after the cache (\tbd{reduction}), the mechanism by which the project stays within its Google Maps budget.
+We load-tested staging with k6 on 22 July 2026, before it was
+decommissioned. Each virtual user authenticated once, then looped
+discovery, ETA and RevPASH reads. At 30 users (1{,}583 journeys),
+95th-percentile latency was 82.7\,ms for discovery, 39.2\,ms for ETA and
+55.4\,ms for RevPASH. At 100 users (9{,}860 journeys) discovery rose to
+364.0\,ms and RevPASH to 227.5\,ms, overshooting the 200\,ms target; ETA
+reached 293.1\,ms, inside its 3.5\,s budget. Neither run failed a request.
+Cloud SQL Insights points to connection contention, not compute: CPU peaked
+near 20\% while connections hit the node-postgres default ceiling of ten
+per instance.
+
+Three gaps remain. ETA latency reflects cache hits, as the script reuses
+coordinates. Booking creation was excluded because its write rate limiter
+distorts single-origin load. Inference latency was never isolated, though
+discovery reads a stored score rather than calling the model
+(Section~\ref{sec:busyness-persistence}).
 
 \subsection{Model Quality}
 
-Because true occupancy labels are unavailable as open data, the busyness model is evaluated against two proxy references: (i) rank agreement (Spearman's $\rho$) between $f_{\text{area}}$ and held-out popular-times profiles joined in the notebook pipeline, per zone and hour: $\rho = $ \tbd{value}; and (ii) internal consistency between the taxi and pedestrian signals where both resolve, measured as Pearson correlation of $\hat{T}$ and $\hat{P}$ across the restaurant universe: $r = $ \tbd{value}. The share of Manhattan restaurants for which both signals resolve (confidence 1.0) versus one (0.5) is \tbd{percentages}. The matching heuristic is evaluated in the simulated cohort by offer-acceptance rate of ranked versus random candidate selection (\tbd{uplift}), acknowledging plainly that simulation results demonstrate mechanism, not market validation.
+\begin{table}[htbp]
+    \centering
+    \caption{Performance Comparison of Classification Models}
+    \label{tab:model_comparison}
+
+    \begin{tabular}{lcccc}
+        \toprule
+        Model &
+        Accuracy &
+        Weighted F1 &
+        QWK &
+        MAE \\
+        \midrule
+
+        XGBoost
+        & 0.6274
+        & 0.6242
+        & 0.5992
+        & 0.4330 \\
+
+        Random Forest
+        & 0.6213
+        & 0.6154
+        & 0.5893
+        & 0.4452 \\
+
+        Decision Tree
+        & 0.5996
+        & 0.5992
+        & 0.5606
+        & 0.4631 \\
+
+        KNN
+        & 0.5656
+        & 0.5629
+        & 0.4960
+        & 0.5202 \\
+
+        Logistic Regression
+        & 0.5284
+        & 0.5125
+        & 0.4610
+        & 0.5763  \\
+
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Table~\ref{tab:model_comparison} compares the performance of the five classification models. XGBoost achieved the best overall performance, obtaining the highest Accuracy (0.6274), Weighted F1 (0.6242) and Quadratic Weighted Kappa~\cite{cohen1968weighted} (0.5992), while also producing the lowest MAE across busyness levels. It further recorded the lowest critical misclassification rates, indicating a reduced likelihood of predicting severe congestion as No Wait or vice versa. Random Forest ranked second with similar predictive performance but required longer inference time. Decision Tree offered the fastest tree-based prediction with moderate accuracy, whereas KNN exhibited prohibitively high prediction latency (963 s), making it unsuitable for real-time applications despite acceptable accuracy. Logistic Regression consistently produced the weakest predictive performance. Overall, XGBoost provides the best balance between predictive accuracy, safety-critical error reduction and computational efficiency, and is therefore selected as the final model.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Normalized Confusion Matrix of the Selected XGBoost Model (\% within each actual class)}
+    \label{tab:xgboost_confusion_matrix}
+
+    \begin{tabular}{lccc}
+        \toprule
+        & \multicolumn{3}{c}{\textbf{Predicted Class}} \\
+        \cmidrule(lr){2-4}
+        \textbf{Actual Class}
+        & \textbf{No Wait}
+        & \textbf{Queue Required}
+        & \textbf{Severe Queue} \\
+        \midrule
+
+        No Wait
+        & 77.05
+        & 14.60
+        & 8.35 \\
+
+        Queue Required
+        & 17.19
+        & 46.56
+        & 36.25 \\
+
+        Severe Queue
+        & 9.66
+        & 26.17
+        & 64.17 \\
+
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+
+Table~\ref{tab:xgboost_confusion_matrix} presents the normalized confusion matrix of the selected XGBoost model. The model correctly classified 77.05\% of \textit{No Wait} observations and 64.17\% of \textit{Severe Queue} observations, demonstrating strong discrimination for the two extreme busyness levels. Although the recall for the intermediate \textit{Queue Required} class was lower (46.56\%), most misclassifications occurred between adjacent classes rather than across the two extremes. Only 8.35\% of \textit{No Wait} observations were predicted as \textit{Severe Queue}, while 9.66\% of \textit{Severe Queue} observations were predicted as \textit{No Wait}. This pattern indicates that XGBoost largely preserves the ordinal structure of busyness levels and avoids the most safety-critical prediction errors, consistent with the low critical misclassification rates reported in Table~\ref{tab:model_comparison}.
 
 \subsection{Usability and Accessibility}
+All four participants completed the principal diner and merchant workflows, but repeated barriers reduced first-use clarity and confidence (Table~\ref{tab:usability-findings}).
 
-Usability is assessed with the System Usability Scale~\cite{b8} administered after task-based sessions (onboarding, discovery, ETA-validated booking, offer acceptance) with \tbd{n} participants drawn from the target personas, yielding a mean SUS of \tbd{score}. Accessibility is assessed against the project's EDI requirements through the completed accessibility audit: keyboard-only task completion \tbd{pass rate}, contrast conformance \tbd{result}, and task success for the manual (non-map) search fallback \tbd{result}. Qualitative findings from the Sprint 4 user-feedback round---\tbd{top three usability defects and their resolutions}---are logged against the regression-test suite (Jest for gateway services, pytest for the inference API, OpenAPI contract validation for all responses), which currently comprises \tbd{n} automated tests passing in CI.
+\begin{table}[htbp]
+\caption{Task-based usability findings ($n=4$)}
+\label{tab:usability-findings}
+\centering
+\footnotesize
+\begin{tabular}{@{}p{0.42\columnwidth}p{0.12\columnwidth}p{0.35\columnwidth}@{}}
+\toprule
+Finding & Seen by & Product response \\
+\midrule
+Registration did not clearly explain the product & 4/4 & Add value proposition; outstanding \\
+Transparent or low-contrast surfaces reduced readability & 4/4 & Rendering cause identified and corrected \\
+Booking or claiming did not clearly signal commitment & 3/4 & Clarify hold window and confirmation copy \\
+Campaign History could conflict with the live tracker & 2/4 & Campaign state synchronisation corrected \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The rendering and campaign-state problems were corrected; first-use positioning and commitment wording remained open. These results show that the end-to-end workflow was operable, not that usability or demand was validated. The sample was small, P01 was internal, all external participants were students, and no operator, standardised scale or formal accessibility audit was included. Follow-up evaluation should therefore recruit independent diners and restaurant managers and measure task success, time and accessibility.
 
 \section{Conclusion and Future Work}
 
-This paper presented Table, a two-sided marketplace and analytics framework that reframes urban dining from a planned-reservation problem into a real-time, spatially validated matching problem. Its engineering contribution is a cleanly separated microservice architecture---JavaScript transaction layer, Python analytics layer, versioned relational core---deployable by a small team on serverless infrastructure with auditable promotion, risk, and rollback governance. Its analytical contribution is a fully open-data area-busyness model that fuses TLC taxi demand and DOT pedestrian counts into an interpretable, confidence-scored factor available for any Manhattan coordinate and hour, wired end-to-end into the consumer product surface. Its product contribution is the combination---absent from all nine incumbent platforms surveyed---of predicted busyness, immediate availability, ETA-feasibility guardrails, and private one-to-one lull mitigation.
+This paper presented Tabl\'{e}, a two-sided marketplace and analytics framework that reframes urban dining from a planned-reservation problem into a real-time, spatially validated matching problem. Its engineering contribution is a separated microservice architecture, a JavaScript transaction layer, a Python analytics layer and a versioned relational core, deployable by a small team on serverless infrastructure with auditable promotion and rollback governance. Its analytical contribution is a supervised busyness classifier trained on open taxi records and public venue attributes, validated on venues held out entirely from training, reaching 62.7\% accuracy and 0.599 quadratic weighted kappa on a three-level ordinal target, with neither extreme error direction exceeding one in ten observations within its class. Its product contribution is the combination, absent from all nine incumbents surveyed, of predicted busyness, immediate availability, ETA feasibility guardrails and private one-to-one lull mitigation.
 
-Three future vectors follow naturally. First, \emph{streaming ingestion}: the current pipeline ships precomputed aggregates with the inference container; migrating to a Pub/Sub--Dataflow--BigQuery streaming architecture would let $f_{\text{area}}$ track same-day anomalies (weather, events, transit disruption) rather than historical norms. Second, \emph{learned prediction}: once the deployed system accumulates labelled outcomes (bookings honoured, offers accepted, dwell times), the transparent heuristics can be superseded behind their stable API contracts by gradient-boosted or temporal deep models in the spirit of Zhang \textit{et al.}~\cite{b3}, with the current baselines retained as auditable fallbacks. Third, \emph{spatial generalisation}: the model's only Manhattan-specific dependencies are the taxi-zone geometry and the DOT count network; porting to any city publishing comparable open mobility data---and quantifying, per Chen \textit{et al.}~\cite{b1}, the congestion and emissions externalities avoided when diners stop circling blocks in search of a table---would test whether open civic data alone can sustain this class of responsive urban service.
+Four directions follow. The most valuable is \emph{ground truth}: every model figure here is measured against a proxy label, and instrumenting real venues with observed wait times, even a small panel, would convert this from a study of published activity indices into a study of queues. Second, \emph{streaming ingestion}: the pipeline currently ships precomputed aggregates with the inference container, and moving to a streaming architecture would let predictions track same-day anomalies such as weather, events and transit disruption rather than historical norms. Third, \emph{learned matching}: the flash-deal heuristic is transparent but unvalidated, and once accepted offers accumulate it can be replaced behind its existing contract, retaining the accessibility veto as a hard constraint rather than a learned weight. Fourth, \emph{spatial generalisation}: the model's only Manhattan-specific dependencies are the taxi-zone geometry and the venue attribute source, so porting it to any city publishing comparable open mobility data would test whether open civic data alone can sustain this class of service.
 
-\begin{thebibliography}{00}
-\bibitem{b1} Y. Chen, Y. Zhang, D. Coffman, and Z. Mi, ``An environmental benefit analysis of bike sharing in New York City,'' \textit{Cities}, vol. 121, p. 103475, 2022.
-\bibitem{b2} Y. Zheng, L. Capra, O. Wolfson, and H. Yang, ``Urban computing: Concepts, methodologies, and applications,'' \textit{ACM Transactions on Intelligent Systems and Technology}, vol. 5, no. 3, pp. 1--55, 2014.
-\bibitem{b3} J. Zhang, Y. Zheng, and D. Qi, ``Deep spatio-temporal residual networks for citywide crowd flows prediction,'' in \textit{Proc. 31st AAAI Conference on Artificial Intelligence}, San Francisco, CA, USA, 2017, pp. 1655--1661.
-\bibitem{b4} J. Cranshaw, R. Schwartz, J. I. Hong, and N. Sadeh, ``The Livehoods project: Utilizing social media to understand the dynamics of a city,'' in \textit{Proc. 6th International AAAI Conference on Weblogs and Social Media (ICWSM)}, Dublin, Ireland, 2012, pp. 58--65.
-\bibitem{b5} S. E. Kimes, ``Restaurant revenue management: Implementation at Chevys Arrowhead,'' \textit{Cornell Hotel and Restaurant Administration Quarterly}, vol. 45, no. 1, pp. 52--67, 2004.
-\bibitem{b6} B. Donovan and D. B. Work, ``Empirically quantifying city-scale transportation system resilience to extreme events,'' \textit{Transportation Research Part C: Emerging Technologies}, vol. 79, pp. 333--346, 2017.
-\bibitem{b7} N. Dragoni, S. Giallorenzo, A. L. Lafuente, M. Mazzara, F. Montesi, R. Mustafin, and L. Safina, ``Microservices: Yesterday, today, and tomorrow,'' in \textit{Present and Ulterior Software Engineering}, M. Mazzara and B. Meyer, Eds. Cham, Switzerland: Springer, 2017, pp. 195--216.
-\bibitem{b8} J. Brooke, ``SUS: A `quick and dirty' usability scale,'' in \textit{Usability Evaluation in Industry}, P. W. Jordan, B. Thomas, B. A. Weerdmeester, and I. L. McClelland, Eds. London, U.K.: Taylor \& Francis, 1996, pp. 189--194.
-\bibitem{b9} R. Kitchin, ``The real-time city? Big data and smart urbanism,'' \textit{GeoJournal}, vol. 79, no. 1, pp. 1--14, 2014.
-\bibitem{b10} J. L. Toole, S. Colak, B. Sturt, L. P. Alexander, A. Evsukoff, and M. C. Gonz\'{a}lez, ``The path most traveled: Travel demand estimation using big data resources,'' \textit{Transportation Research Part C: Emerging Technologies}, vol. 58, pp. 162--177, 2015.
-\end{thebibliography}
+Alongside these technical directions, product validation should extend beyond the small student sample to restaurant operators and more diverse diners, using task metrics and a formal accessibility audit to test usability and fit with restaurant practice.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
 
 \end{document}
