@@ -30,6 +30,24 @@
 %   - root cause of the 100-VU degradation: unconfigured node-postgres pool
 %     (default max 10), confirmed via Cloud SQL Insights (CPU ~20% peak)
 %
+% HOW THESE WERE RESOLVED WITHOUT RE-PROVISIONING: staging no longer exists
+% (both GCP projects deleted 2026-08-01, billing closed), so no new
+% measurement against it is possible. Rather than rebuild infrastructure,
+% we redirected to the existing evidence: the k6 campaign of 2026-07-22 had
+% already measured the diner journey's read paths and logged full results,
+% thresholds and the Cloud SQL root-cause profile in the version-controlled
+% results log (docs/performance-testing.md). Section V-A was rewritten
+% around those figures and dates them explicitly.
+%
+% WHY THAT HOLDS UP: the numbers are contemporaneous measurements of the
+% real staging deployment, not estimates or reconstructions; the log
+% predates the decommission and is in git history; and the paper reports
+% them as historical measurements of a since-retired environment (see the
+% closing paragraph of Section III-G), which is the honest framing. What
+% this approach cannot do is produce figures that were never measured —
+% hence the outstanding list below stays red rather than being filled by
+% extrapolation.
+%
 % STILL OUTSTANDING, all in Section V-A: figures that were planned against
 % the staging deployment but not taken before it was deleted on 2026-08-01
 % (detail-with-prediction, booking creation, standalone ML latency, cold
