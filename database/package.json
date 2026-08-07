@@ -14,6 +14,7 @@
     "seed:real": "node scripts/seed.js --real",
     "seed:taxi-demand": "node scripts/seed.js --taxi-demand",
     "generate:seed": "node scripts/generate-seed.js",
+    "generate:seed:full": "node scripts/generate-restaurants-seed.js",
     "enrich:places": "node scripts/enrich-places.js",
     "db:backup": "bash scripts/backup-local-db.sh"
   },
