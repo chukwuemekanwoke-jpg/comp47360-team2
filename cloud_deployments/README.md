@@ -1,5 +1,7 @@
 # Cloud deployments
 
+**Author:** Chukwuemeka Nwoke — Integration Lead / Scrum Master
+
 Terraform configs for TABL's cloud infrastructure, one directory per
 provider:
 

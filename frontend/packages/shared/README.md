@@ -1,3 +1,5 @@
+**Author:** Milo Dennehy — Mobile App Lead
+
 Read Me for tracking rationale behind the current implementation of Redux State Management
 
 V 0.0.1: 

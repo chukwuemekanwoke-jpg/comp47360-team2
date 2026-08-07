@@ -1,5 +1,7 @@
 # Feature: Geospatial Search & Availability 
 
+**Author:** Yuhao Xu — Product & UX Lead
+
 ## Story 1: Nearby Available Restaurants Map Search
 ### User Story
 **As a** busy executive (Spontaneous Executive),

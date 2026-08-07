@@ -1,5 +1,7 @@
 # Feature: User Foundation & Preferences
 
+**Author:** Yuhao Xu — Product & UX Lead
+
 ## Story 1: Smart Preference Onboarding
 ### User Story
 **As a** new consumer on Tablé,

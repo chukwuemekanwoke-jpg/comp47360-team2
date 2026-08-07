@@ -1,5 +1,7 @@
 # Feature: B-Side Lull-Mitigation Dashboard
 
+**Author:** Yuhao Xu — Product & UX Lead
+
 ## Story 1: One-click Flash Deal Creation
 ### User Story
 **As a** restaurant manager (Independent Restaurateur),
