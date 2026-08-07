@@ -1,5 +1,7 @@
 # Tablé Integration Strategy
 
+**Authors:** Chukwuemeka Nwoke — Integration Lead / Scrum Master · Yang Liu — Backend Lead
+
 **Status:** Sprint 4 (action items closed 2026-08-05 — see §8; current sprint not tracked in this repo) · **Owners:** Scrum Master + Backend Lead
 **Related:** [ADR-001](./adr/ADR-001.md) · [api-contract-v0.md](./api-contract-v0.md) · [openapi-v0.yaml](./openapi-v0.yaml) · [data-strategy.md](./data-strategy.md) · [frontend-strategy.md](./frontend-strategy.md) · [deployment-guide.md](./deployment-guide.md)
 

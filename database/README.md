@@ -1,5 +1,7 @@
 # Tablé database (PostgreSQL)
 
+**Authors:** Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master
+
 **BE-2:** Schema design v1 — migrations, ERD, and local setup for the Tablé MVP.
 
 | Doc                                                                                | Purpose                                       |

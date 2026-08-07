@@ -1,5 +1,6 @@
 # Tablé Data Strategy (BE-5)
 
+**Authors:** Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master  
 **Owners:** Backend Lead + Data & ML Lead  
 **Related:** [ADR-001](./adr/ADR-001.md) · [database/schema.md](../database/schema.md) · [api-contract-v0.md](./api-contract-v0.md)
 
