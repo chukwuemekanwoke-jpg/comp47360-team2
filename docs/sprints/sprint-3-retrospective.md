@@ -2,7 +2,7 @@
 
 COMP47360 Team 2
 
-*Snapshot as of July July 5, 2026 | Prepared by: Chukwuemeka Nwoke (Integration Lead / Scrum Master)*
+*Snapshot as of July 5, 2026 | Prepared by: Chukwuemeka Nwoke (Integration Lead / Scrum Master)*
 
 
 ## Executive Summary
