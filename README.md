@@ -4,7 +4,7 @@
 
 **Manhattan Busyness Analytics Platform** *UCD COMP47360 Research Practicum (Team 2) Core Academic Deliverable*
 
-*Authors: Yuhao Xu — Product & UX Lead · Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master · Milo Dennehy - Mobile App Lead*
+*Authors: Yuhao Xu — Product & UX Lead · Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master · Milo Dennehy - Mobile App Lead · Andrew Mitchell - Web App Lead · Rui Xu - Data/ ML Lead*
 
 ![React + Vite](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-646CFF?style=flat-square&logo=vite)
 ![React Native](https://img.shields.io/badge/Mobile-Expo-02569B?style=flat-square&logo=react)
@@ -15,7 +15,13 @@
 </div>
 
 ---
+<div align="center">
 
+| Restaurant view — manager dashboard (web) | Consumer view — discovery (mobile) |
+| :---: | :---: |
+| <img src="docs/assets/restaurant_view.png" height="380" alt="Restaurant manager dashboard showing tables and flash deals"> | <img src="docs/assets/consumer_view.png" height="380" alt="Mobile consumer view showing nearby restaurants on a map"> |
+
+</div>
 
 ## Introduction
 
