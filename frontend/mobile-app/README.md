@@ -1,5 +1,7 @@
 # Table Frontend Application Development Guide
 
+**Authors:** Milo Dennehy — Mobile App Lead 
+
 This guide will help you get your local development environment set up. 
 
 ---

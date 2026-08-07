@@ -364,17 +364,15 @@ COMMIT;
 }
 
 // ---------------------------------------------------------------------------
-// Main
+// Records — the canonical source row -> seed row mapping. Shared with
+// generate-restaurants-seed.js so both generators emit byte-identical values
+// for any restaurant they both select.
+//
+// `managedVenues` is how many of the nearest venues get manager_user_id set to
+// the demo manager (0 = nobody, for seeds that must not depend on `users`).
 // ---------------------------------------------------------------------------
-function main() {
-  const args = parseArgs(process.argv.slice(2));
-  const [oLat, oLng] = args.origin;
-
-  const { all, pool } = selectPool(args);
-  const placesCache = loadPlacesCache();
-  const enrichedCount = pool.filter((r) => placesCache[r.sourceId]?.matched).length;
-
-  const records = pool.map((r, index) => {
+function buildRecords(pool, placesCache, { managedVenues = 0 } = {}) {
+  return pool.map((r, index) => {
     const slug = cuisineSlug(r.cuisine);
     const neighborhood = resolveNeighborhood(r.lat, r.lng, r.zipcode);
     const ops = simulateOperations(r.sourceId, placesCache[r.sourceId], slug, neighborhood);
@@ -396,10 +394,24 @@ function main() {
       avgCheck: ops.avgCheck,
       wheelchair: ops.wheelchair,
       sensory: ops.sensory,
-      // Give the demo manager 2 nearest venues so the B-side flow has data.
-      managerId: index < 2 ? DEMO_MANAGER_ID : null,
+      managerId: index < managedVenues ? DEMO_MANAGER_ID : null,
     };
   });
+}
+
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
+function main() {
+  const args = parseArgs(process.argv.slice(2));
+  const [oLat, oLng] = args.origin;
+
+  const { all, pool } = selectPool(args);
+  const placesCache = loadPlacesCache();
+  const enrichedCount = pool.filter((r) => placesCache[r.sourceId]?.matched).length;
+
+  // Give the demo manager the 2 nearest venues so the B-side flow has data.
+  const records = buildRecords(pool, placesCache, { managedVenues: 2 });
 
   const sql = buildSql(records, {
     totalSource: all.length,
@@ -423,4 +435,16 @@ function main() {
   console.log("Apply with: npm run seed:real");
 }
 
-main();
+if (require.main === module) {
+  main();
+}
+
+module.exports = {
+  TABLE_NAMESPACE,
+  DEMO_DINER_ID,
+  DEMO_MANAGER_ID,
+  loadPlacesCache,
+  buildRecords,
+  sqlStr,
+  sqlBool,
+};

@@ -1,5 +1,7 @@
 # Terraform — tabl-app-staging (reverse-engineered)
 
+**Author:** Chukwuemeka Nwoke — Integration Lead / Scrum Master
+
 These `.tf` files were hand-written to match what's **already deployed** in
 `tabl-app-staging`, discovered live via `gcloud` on 2026-07-28 — not a
 greenfield design. The goal of the import step below is to get Terraform

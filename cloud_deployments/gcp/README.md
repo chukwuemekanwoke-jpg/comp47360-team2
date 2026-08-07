@@ -1,5 +1,7 @@
 # GCP — Terraform
 
+**Author:** Chukwuemeka Nwoke — Integration Lead / Scrum Master
+
 | Directory | Environment | GCP project | Status |
 | --- | --- | --- | --- |
 | [`staging/`](./staging/README.md) | Staging | `tabl-app-staging` | Reverse-engineered from live state 2026-07-28, not yet imported/applied |

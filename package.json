@@ -11,6 +11,14 @@
     "frontend/packages/shared"
   ],
   "scripts": {
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose --profile '*' down",
+    "docker:mobile": "docker compose --profile mobile up -d --build mobile && npm run docker:mobile:url",
+    "docker:mobile:logs": "docker compose logs -f mobile",
+    "docker:mobile:url": "echo 'Waiting for the Expo tunnel...'; for i in $(seq 45); do url=$(docker compose logs mobile 2>/dev/null | grep -oE '[a-z0-9-]+\\.exp\\.direct' | tail -1); [ -n \"$url\" ] && break; sleep 2; done; if [ -n \"$url\" ]; then printf '\\n  Expo web/browser : https://%s\\n  Expo Go on phone : exp://%s\\n\\n' \"$url\" \"$url\"; else echo 'No tunnel URL after 90s. Check `npm run docker:mobile:logs` — in LAN mode (EXPO_START_ARGS) the logs carry an exp://<lan-ip> URL instead.'; fi",
+    "docker:logs": "docker compose logs -f",
+    "docker:ps": "docker compose --profile '*' ps",
+    "docker:reset": "docker compose --profile '*' down -v && docker compose up -d --build",
     "db:up": "npm run db:up --workspace=table-database",
     "db:down": "npm run db:down --workspace=table-database",
     "db:reset": "npm run db:reset --workspace=table-database",

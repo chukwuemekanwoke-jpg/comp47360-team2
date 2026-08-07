@@ -1,0 +1,301 @@
+restaurant_id,name,latitude,longitude,taxi_zone_id,taxi_zone_name,weekday,hour,busyness_level,busyness_label,busyness_score,confidence,taxi_dropoffs_1h,feature_source,district
+41221138,DOUBLE DOWN SALOON,40.722516,-73.98574099999999,79,East Village,5,20,2,Severe Queue,0.7248,0.5151,921.0,feature_table,Village & LES
+50053728,CAVA GRILL,40.7337898,-73.9896079,79,East Village,5,20,2,Severe Queue,0.7623,0.6653,921.0,feature_table,Village & LES
+50089251,DUNKIN' / 'BASKIN ROBBINS,40.7294112,-73.97851969999999,79,East Village,5,20,0,No Wait,0.2683,0.5768,921.0,feature_table,Village & LES
+50171201,PHEBE'S,40.7268789,-73.9913704,79,East Village,5,20,2,Severe Queue,0.8855,0.7937,921.0,feature_table,Village & LES
+41191334,EAST VILLAGE PIZZA,40.728184,-73.985109,79,East Village,5,20,2,Severe Queue,0.8695,0.7742,921.0,feature_table,Village & LES
+41000697,NOWHERE,40.7317696,-73.9841161,79,East Village,5,20,1,Queue Required,0.6321,0.5096,921.0,feature_table,Village & LES
+50070442,SHAKE SHACK,40.7300922,-73.99003979999999,79,East Village,5,20,2,Severe Queue,0.8278,0.7529,921.0,feature_table,Village & LES
+50099434,NOWON,40.7253574,-73.9833014,79,East Village,5,20,2,Severe Queue,0.8056,0.688,921.0,feature_table,Village & LES
+41047349,JENNIFER'S CAFE,40.7254184,-73.9872948,79,East Village,5,20,2,Severe Queue,0.6201,0.4366,921.0,feature_table,Village & LES
+50000197,MAIDEN LANE,40.7270314,-73.9799755,79,East Village,5,20,2,Severe Queue,0.7976,0.6455,921.0,feature_table,Village & LES
+50124290,SMØR BAKERY,40.7294828,-73.9817133,79,East Village,5,20,0,No Wait,0.2351,0.6964,921.0,feature_table,Village & LES
+50161777,DARK MATTER COFFEE - ADIOS AMIGOS,40.7246624,-73.9920929,79,East Village,5,20,0,No Wait,0.0997,0.8439,921.0,feature_table,Village & LES
+50089189,DUNKIN,40.7329007,-73.9868347,79,East Village,5,20,0,No Wait,0.2065,0.6964,921.0,feature_table,Village & LES
+50173484,DIVIN WINE BAR,40.7302245,-73.98624339999999,79,East Village,5,20,1,Queue Required,0.6019,0.4793,921.0,feature_table,Village & LES
+50123174,MAY REE,40.7238424,-73.9892241,79,East Village,5,20,2,Severe Queue,0.856,0.7793,921.0,feature_table,Village & LES
+41214353,STANDINGS,40.7283142,-73.988579,79,East Village,5,20,2,Severe Queue,0.662,0.458,921.0,feature_table,Village & LES
+50104478,VILLAGE CREPERIE,40.7274432,-73.98282069999999,79,East Village,5,20,0,No Wait,0.2922,0.6232,921.0,feature_table,Village & LES
+50104496,PARIS BAGUETTE,40.7695806,-73.98784669999999,48,Clinton East,5,20,0,No Wait,0.3636,0.5266,794.0,feature_table,Midtown
+50059022,CULTURE 307,40.7550658,-73.9921635,48,Clinton East,5,20,0,No Wait,0.3032,0.6346,794.0,feature_table,Midtown
+50170578,THREE KINGDOMS XITA BBQ,40.7616668,-73.986858,48,Clinton East,5,20,2,Severe Queue,0.8138,0.6714,794.0,feature_table,Midtown
+41455044,MR. BIGGS BAR AND GRILL,40.7603018,-73.9946401,48,Clinton East,5,20,2,Severe Queue,0.8397,0.718,794.0,feature_table,Midtown
+41689402,KARE THAI,40.7653868,-73.9910843,48,Clinton East,5,20,2,Severe Queue,0.7763,0.6271,794.0,feature_table,Midtown
+41382688,GUANTANAMERA,40.7658904,-73.9838214,48,Clinton East,5,20,2,Severe Queue,0.8934,0.8166,794.0,feature_table,Midtown
+50158853,MOKAFE,40.7582851,-73.9894356,48,Clinton East,5,20,2,Severe Queue,0.5723,0.4555,794.0,feature_table,Midtown
+50062852,LILLY'S CRAFT AND KITCHEN,40.7615004,-73.99079619999999,48,Clinton East,5,20,2,Severe Queue,0.8776,0.7747,794.0,feature_table,Midtown
+41540996,MEDI WINEBAR,40.7658333,-73.9875,48,Clinton East,5,20,2,Severe Queue,0.8416,0.7157,794.0,feature_table,Midtown
+50179730,EATS ON 57 MARKETPLACE,40.7679775,-73.9854493,48,Clinton East,5,20,1,Queue Required,0.6807,0.5124,794.0,feature_table,Midtown
+50131754,OLDE CITY CHEESESTEAKS & BREW,40.7581142,-73.9926255,48,Clinton East,5,20,2,Severe Queue,0.8549,0.7363,794.0,feature_table,Midtown
+50169116,PASTA EATER N GO,40.7635811,-73.9886799,48,Clinton East,5,20,2,Severe Queue,0.8628,0.7558,794.0,feature_table,Midtown
+50055882,GARDENIA TERRACE,40.7675894,-73.98936069999999,48,Clinton East,5,20,2,Severe Queue,0.7936,0.63,794.0,feature_table,Midtown
+50178509,EAST JAPANESE RESTAURANT,40.7644527,-73.9856387,48,Clinton East,5,20,2,Severe Queue,0.73,0.5516,794.0,feature_table,Midtown
+50144965,SPICE SYMPHONY,40.7603137,-73.9887265,48,Clinton East,5,20,2,Severe Queue,0.8688,0.7669,794.0,feature_table,Midtown
+50136945,JUICE GENERATION,40.7404531,-74.0048716,249,West Village,5,20,0,No Wait,0.3734,0.5008,691.0,feature_table,Village & LES
+50083579,SHAKE SHACK (INNOVATION KITCHEN),40.7292192,-74.00545939999999,249,West Village,5,20,2,Severe Queue,0.8168,0.7124,691.0,feature_table,Village & LES
+50145565,TRAVELERS POETS & FRIENDS,40.735255,-73.998673,249,West Village,5,20,2,Severe Queue,0.8705,0.7892,691.0,feature_table,Village & LES
+50173979,TOBY'S ESTATE COFFEE,40.7350963,-74.00580289999999,249,West Village,5,20,0,No Wait,0.252,0.6714,691.0,feature_table,Village & LES
+50166687,FOURSOME,40.7323265,-74.0022166,249,West Village,5,20,2,Severe Queue,0.6725,0.5466,691.0,feature_table,Village & LES
+50069883,DON ANGIE,40.7378037,-74.00209389999999,249,West Village,5,20,2,Severe Queue,0.941,0.9098,691.0,feature_table,Village & LES
+50174477,MIRIAM WEST VILLAGE,40.734727,-74.0023992,249,West Village,5,20,2,Severe Queue,0.7566,0.6197,691.0,feature_table,Village & LES
+41465581,MOLE,40.7382407,-74.0054136,249,West Village,5,20,2,Severe Queue,0.7113,0.5696,691.0,feature_table,Village & LES
+50165548,SON DEL NORTH,40.7300697,-74.00272939999999,249,West Village,5,20,2,Severe Queue,0.7381,0.5869,691.0,feature_table,Village & LES
+50118540,DADDIES,40.7312196,-74.0065106,249,West Village,5,20,2,Severe Queue,0.7153,0.5574,691.0,feature_table,Village & LES
+50148327,TALEA BEER,40.7331361,-74.00479519999999,249,West Village,5,20,2,Severe Queue,0.7005,0.5511,691.0,feature_table,Village & LES
+50139065,LONG ISLAND DUMPLINGS,40.7369824,-73.9974077,249,West Village,5,20,2,Severe Queue,0.7422,0.6002,691.0,feature_table,Village & LES
+41629335,CHIPOTLE MEXICAN GRILL,40.7336055,-73.99992569999999,249,West Village,5,20,2,Severe Queue,0.5421,0.4037,691.0,feature_table,Village & LES
+50113394,CHELSEA BAGEL & PIZZERIA,40.7501243,-73.9717727,233,Midtown South,5,20,2,Severe Queue,0.6026,0.4686,367.0,feature_table,Midtown
+50073554,SCARPETTA,40.7445818,-73.9856202,164,Midtown South,5,20,2,Severe Queue,0.9141,0.8899,687.0,feature_table,Midtown
+50102084,LA PECORA BIANCA,40.7525176,-73.9831529,164,Midtown South,5,20,2,Severe Queue,0.966,0.9448,687.0,feature_table,Midtown
+50124776,FRANCHIA VEGAN CAFE,40.747576,-73.9812702,164,Midtown South,5,20,2,Severe Queue,0.8327,0.7872,687.0,feature_table,Midtown
+50148729,PERROS Y VAINAS,40.7484934,-73.98834939999999,164,Midtown South,5,20,2,Severe Queue,0.7948,0.6817,687.0,feature_table,Midtown
+50129420,SUSHI & CO,40.7511256,-73.9865746,164,Midtown South,5,20,2,Severe Queue,0.8257,0.7592,687.0,feature_table,Midtown
+41614718,LITTLE ITALY PIZZA,40.747607,-73.9848854,164,Midtown South,5,20,2,Severe Queue,0.9141,0.8542,687.0,feature_table,Midtown
+50099890,MILK BAR,40.7458208,-73.9883921,164,Midtown South,5,20,2,Severe Queue,0.8561,0.7916,687.0,feature_table,Midtown
+50162169,NOA,40.7460146,-73.9833113,164,Midtown South,5,20,2,Severe Queue,0.6342,0.5355,687.0,feature_table,Midtown
+50135000,BRAVO PIZZA,40.7494435,-73.98409529999999,164,Midtown South,5,20,2,Severe Queue,0.8019,0.7163,687.0,feature_table,Midtown
+50167425,NAPOLI PIZZA,40.7527309,-73.9854148,164,Midtown South,5,20,2,Severe Queue,0.8055,0.6702,687.0,feature_table,Midtown
+41254923,AYZA CAFE & WINE BAR,40.7470962,-73.9869045,164,Midtown South,5,20,2,Severe Queue,0.8018,0.7374,687.0,feature_table,Midtown
+50058195,LIAN JIANG,40.7144171,-73.9937028,148,Lower East Side,5,20,2,Severe Queue,0.6952,0.4752,595.0,feature_table,Village & LES
+50177508,DELANCEY STREET PIZZA,40.7191575,-73.99103819999999,148,Lower East Side,5,20,2,Severe Queue,0.7365,0.5244,595.0,feature_table,Village & LES
+50128573,LAO JIE HOTPOT,40.7176193,-73.99499229999999,148,Lower East Side,5,20,2,Severe Queue,0.7881,0.6278,595.0,feature_table,Village & LES
+50168853,ROKU NANA,40.7194463,-73.9850185,148,Lower East Side,5,20,2,Severe Queue,0.7374,0.5792,595.0,feature_table,Village & LES
+50134543,EL CABRON TAQUERIA,40.7155448,-73.9899946,148,Lower East Side,5,20,2,Severe Queue,0.7524,0.575,595.0,feature_table,Village & LES
+50172402,SWEETGREEN,40.72134,-73.98872,148,Lower East Side,5,20,1,Queue Required,0.6459,0.4743,595.0,feature_table,Village & LES
+50125963,AINSLIE BOWERY,40.7209818,-73.9931495,148,Lower East Side,5,20,2,Severe Queue,0.718,0.5412,595.0,feature_table,Village & LES
+50156858,WONDER,40.7186509,-73.98753839999999,148,Lower East Side,5,20,2,Severe Queue,0.695,0.5326,595.0,feature_table,Village & LES
+50130406,SHU JIAO FU ZHOU,40.7174109,-73.99208759999999,148,Lower East Side,5,20,2,Severe Queue,0.7124,0.6331,595.0,feature_table,Village & LES
+41543887,BEAUTY & ESSEX,40.7204282,-73.9868606,148,Lower East Side,5,20,2,Severe Queue,0.8506,0.7683,595.0,feature_table,Village & LES
+50063629,JOE & THE JUICE,40.7607551,-73.97178509999999,161,Midtown Center,5,20,0,No Wait,0.4418,0.386,640.0,feature_table,Midtown
+40368318,MAGGIE'S PLACE,40.7562972,-73.9771145,161,Midtown Center,5,20,2,Severe Queue,0.6058,0.4117,640.0,feature_table,Midtown
+50058751,CIRCLE LINE: BRONX,40.7628574,-74.00150339999999,50,Midtown Center,5,20,2,Severe Queue,0.7603,0.6868,283.0,feature_table,Midtown
+50063627,JOE & THE JUICE,40.7627317,-73.9780483,161,Midtown Center,5,20,1,Queue Required,0.4433,0.4028,640.0,feature_table,Midtown
+50169445,EATALY CAFFE,40.7589788,-73.9810167,161,Midtown Center,5,20,2,Severe Queue,0.6429,0.4423,640.0,feature_table,Midtown
+50047718,GREGORYS COFFEE,40.7558258,-73.9826362,161,Midtown Center,5,20,0,No Wait,0.0891,0.8594,640.0,feature_table,Midtown
+50170023,THE SPLENDID,40.7591876,-73.975433,161,Midtown Center,5,20,2,Severe Queue,0.6758,0.4615,640.0,feature_table,Midtown
+41225179,STARBUCKS,40.75387,-73.97870999999999,161,Midtown Center,5,20,0,No Wait,0.202,0.6886,640.0,feature_table,Midtown
+50122704,NARO,40.7583251,-73.9780787,161,Midtown Center,5,20,2,Severe Queue,0.8379,0.7306,640.0,feature_table,Midtown
+50152540,ETC,40.7628107,-73.9823263,230,Times Sq/Theatre District,5,20,2,Severe Queue,0.5798,0.3973,977.0,feature_table,Midtown
+50175510,VAL PIZZA,40.7583564,-73.9847628,230,Times Sq/Theatre District,5,20,1,Queue Required,0.6719,0.6029,977.0,feature_table,Midtown
+40806208,PAUL WEISS RIFKIN WHARTON,40.7611965,-73.9805722,230,Times Sq/Theatre District,5,20,1,Queue Required,0.6199,0.6704,977.0,feature_table,Midtown
+50115887,TERIYAKI R US,40.7601233,-73.9832438,230,Times Sq/Theatre District,5,20,2,Severe Queue,0.8253,0.7557,977.0,feature_table,Midtown
+40928150,TONY'S DI NAPOLI,40.7564842,-73.9853808,230,Times Sq/Theatre District,5,20,2,Severe Queue,0.9702,0.9568,977.0,feature_table,Midtown
+41379121,EDISON BALLROOM,40.7598114,-73.9863573,230,Times Sq/Theatre District,5,20,2,Severe Queue,0.6773,0.5853,977.0,feature_table,Midtown
+41665255,MCHALE'S BAR & GRILL,40.7628137,-73.9850819,230,Times Sq/Theatre District,5,20,2,Severe Queue,0.9192,0.8504,977.0,feature_table,Midtown
+50089142,RPM UNDERGROUND,40.7642792,-73.9834528,230,Times Sq/Theatre District,5,20,2,Severe Queue,0.8861,0.812,977.0,feature_table,Midtown
+50164298,LANGAN’S,40.7582963,-73.9828891,230,Times Sq/Theatre District,5,20,2,Severe Queue,0.7973,0.6761,977.0,feature_table,Midtown
+50096822,SOHO THAI,40.720096,-73.9996343,144,Little Italy/NoLiTa,5,20,2,Severe Queue,0.775,0.6881,351.0,feature_table,Lower Manhattan
+50137451,MANGIA,40.7248816,-73.9970874,144,Little Italy/NoLiTa,5,20,0,No Wait,0.4184,0.4848,351.0,feature_table,Lower Manhattan
+50131149,BEYOND THE PALE,40.7222367,-73.99658649999999,144,Little Italy/NoLiTa,5,20,2,Severe Queue,0.6118,0.4348,351.0,feature_table,Lower Manhattan
+50116310,JOSE LUIS LITTLE ITALY,40.7176916,-73.99840619999999,144,Little Italy/NoLiTa,5,20,2,Severe Queue,0.8546,0.7847,351.0,feature_table,Lower Manhattan
+50104728,EL GALLO TAQUERIA,40.7200102,-73.9958972,144,Little Italy/NoLiTa,5,20,2,Severe Queue,0.7768,0.6474,351.0,feature_table,Lower Manhattan
+40581363,BALLATO,40.7245528,-73.99450379999999,144,Little Italy/NoLiTa,5,20,2,Severe Queue,0.9159,0.8584,351.0,feature_table,Lower Manhattan
+50170937,ARABICA COFFEE,40.7225128,-73.9938232,144,Little Italy/NoLiTa,5,20,0,No Wait,0.1033,0.8385,351.0,feature_table,Lower Manhattan
+40600516,CAFFE PALERMO,40.719003,-73.99729599999999,144,Little Italy/NoLiTa,5,20,0,No Wait,0.4586,0.4339,351.0,feature_table,Lower Manhattan
+41453983,CHIPOTLE MEXICAN GRILL,40.7460583,-73.9939701,186,Garment District,5,20,2,Severe Queue,0.7346,0.617,571.0,feature_table,Midtown
+50128308,CHICK-FILL-A,40.7516266,-73.991419,100,Garment District,5,20,2,Severe Queue,0.6376,0.5166,352.0,feature_table,Midtown
+50103595,FRAME,40.7546094,-73.9883097,100,Garment District,5,20,2,Severe Queue,0.6673,0.4984,352.0,feature_table,Midtown
+41378724,SCHNIPPER'S QUALITY KITCHEN,40.7563207,-73.989926,100,Garment District,5,20,2,Severe Queue,0.8555,0.7738,352.0,feature_table,Midtown
+50036818,DUNKIN,40.7521104,-73.9888811,100,Garment District,5,20,0,No Wait,0.2333,0.6812,352.0,feature_table,Midtown
+50137610,MARI:NE,40.754814,-73.9857693,100,Garment District,5,20,2,Severe Queue,0.6582,0.5468,352.0,feature_table,Midtown
+50006211,DISTRICT TAP HOUSE,40.7540393,-73.99050129999999,100,Garment District,5,20,2,Severe Queue,0.7283,0.5348,352.0,feature_table,Midtown
+50176072,SALSWEE,40.7532253,-73.987414,100,Garment District,5,20,0,No Wait,0.2912,0.6202,352.0,feature_table,Midtown
+50180712,QUE RICO,40.7385795,-73.9819879,107,Gramercy,5,20,2,Severe Queue,0.7279,0.5905,550.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50141111,ISABELLE'S OSTERIA,40.737976,-73.9875872,107,Gramercy,5,20,2,Severe Queue,0.9142,0.8552,550.0,feature_table,"Chelsea, Flatiron & Union Sq"
+40379580,COOPER TOWN DINER,40.7348938,-73.980274,107,Gramercy,5,20,2,Severe Queue,0.7103,0.5528,550.0,feature_table,"Chelsea, Flatiron & Union Sq"
+41623268,MAGURO SUSHI,40.7420629,-73.98134619999999,107,Gramercy,5,20,2,Severe Queue,0.6701,0.5339,550.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50048644,GREGORY'S COFFEE,40.7409453,-73.985497,107,Gramercy,5,20,0,No Wait,0.2485,0.682,550.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50176485,BARFLY,40.737118,-73.9846214,107,Gramercy,5,20,2,Severe Queue,0.7747,0.5961,550.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50046879,FOLLIA,40.7349386,-73.9855947,107,Gramercy,5,20,2,Severe Queue,0.8738,0.7787,550.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50153701,PIZZAZZ,40.7361008,-73.98908089999999,107,Gramercy,5,20,2,Severe Queue,0.7527,0.6192,550.0,feature_table,"Chelsea, Flatiron & Union Sq"
+41422201,SLATE,40.7412155,-73.9931854,234,Union Sq,5,20,2,Severe Queue,0.6861,0.4872,647.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50073537,MAMAN,40.7432672,-73.9901338,234,Union Sq,5,20,2,Severe Queue,0.7649,0.6713,647.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50131933,JOE & THE JUICE,40.740278,-73.9896832,234,Union Sq,5,20,1,Queue Required,0.3954,0.4256,647.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50145979,LEVAIN BAKERY,40.7386923,-73.9924834,234,Union Sq,5,20,0,No Wait,0.2202,0.6737,647.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50127898,BLANK STREET COFFEE,40.7388616,-73.9955231,234,Union Sq,5,20,0,No Wait,0.121,0.8255,647.0,feature_table,"Chelsea, Flatiron & Union Sq"
+40719059,PARK BAR,40.7364378,-73.9921394,234,Union Sq,5,20,2,Severe Queue,0.7305,0.5515,647.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50168120,NUAR,40.7450293,-73.9903557,234,Union Sq,5,20,0,No Wait,0.2288,0.7156,647.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50085687,VENCHI,40.7374538,-73.9904598,234,Union Sq,5,20,2,Severe Queue,0.7461,0.6802,647.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50001254,JUICE GENERATION,40.7882126,-73.9769487,239,Upper West Side South,5,20,0,No Wait,0.3324,0.5813,569.0,feature_table,Upper West Side
+50143257,FRAME COFFEE,40.7800578,-73.9803129,239,Upper West Side South,5,20,0,No Wait,0.1248,0.8394,569.0,feature_table,Upper West Side
+50166357,UNO CHICAGO GRILL,40.783202,-73.974881,239,Upper West Side South,5,20,2,Severe Queue,0.8659,0.7561,569.0,feature_table,Upper West Side
+50099463,BAREBURGER,40.7844643,-73.979889,239,Upper West Side South,5,20,2,Severe Queue,0.7232,0.6467,569.0,feature_table,Upper West Side
+50099969,THE CONSULATE,40.7858323,-73.9724287,239,Upper West Side South,5,20,2,Severe Queue,0.9332,0.8947,569.0,feature_table,Upper West Side
+50121997,LA PECORA BIANCA,40.7804753,-73.9763467,239,Upper West Side South,5,20,2,Severe Queue,0.9288,0.8829,569.0,feature_table,Upper West Side
+50117450,LYLA'S BODEGA,40.7856899,-73.976047,239,Upper West Side South,5,20,2,Severe Queue,0.6658,0.5151,569.0,feature_table,Upper West Side
+50098200,DAILY PROVISIONS,40.782244,-73.97863509999999,239,Upper West Side South,5,20,2,Severe Queue,0.8075,0.686,569.0,feature_table,Upper West Side
+50181860,PROFIT CHINESE RESTAURANT,40.7456231,-73.97549819999999,170,Murray Hill,5,20,2,Severe Queue,0.6195,0.4229,687.0,feature_table,Midtown
+41627484,BAGEL EXPRESS,40.7498226,-73.976899,170,Murray Hill,5,20,0,No Wait,0.364,0.5501,687.0,feature_table,Midtown
+50112299,SUMMER SALT,40.751207,-73.98001289999999,170,Murray Hill,5,20,2,Severe Queue,0.6246,0.4469,687.0,feature_table,Midtown
+50122870,DOMINO'S PIZZA #3687,40.7443645,-73.9794723,170,Murray Hill,5,20,2,Severe Queue,0.7185,0.5145,687.0,feature_table,Midtown
+50151232,SACHI ASIAN BISTRO I,40.7476807,-73.9741598,170,Murray Hill,5,20,2,Severe Queue,0.727,0.5902,687.0,feature_table,Midtown
+50062377,LITTLE ALLEY,40.7474165,-73.9772212,170,Murray Hill,5,20,2,Severe Queue,0.8418,0.7574,687.0,feature_table,Midtown
+40691569,PERSHING SQUARE CAFE,40.7520244,-73.97782579999999,170,Murray Hill,5,20,2,Severe Queue,0.813,0.6856,687.0,feature_table,Midtown
+41583557,MILLE-FEUILLE BAKERY CAFE,40.7291554,-73.9982843,114,Greenwich Village South,5,20,0,No Wait,0.4274,0.5084,423.0,feature_table,Village & LES
+50143917,ROCCO'S,40.7280045,-73.9950017,114,Greenwich Village South,5,20,2,Severe Queue,0.7308,0.5569,423.0,feature_table,Village & LES
+40365387,ARTURO'S,40.7274031,-74.0004209,114,Greenwich Village South,5,20,2,Severe Queue,0.8903,0.812,423.0,feature_table,Village & LES
+50048823,POMMES FRITES,40.7301222,-74.0002813,114,Greenwich Village South,5,20,2,Severe Queue,0.8278,0.7667,423.0,feature_table,Village & LES
+41418301,JAC'S ON BOND,40.726585,-73.9935856,114,Greenwich Village South,5,20,2,Severe Queue,0.7758,0.6305,423.0,feature_table,Village & LES
+50035310,DANTE,40.7288417,-74.0016444,114,Greenwich Village South,5,20,2,Severe Queue,0.9522,0.9218,423.0,feature_table,Village & LES
+50176258,BABBO,40.732296,-73.9992785,114,Greenwich Village South,5,20,2,Severe Queue,0.9218,0.8806,423.0,feature_table,Village & LES
+50112567,EAST END BAR & GRILL,40.7837793,-73.95065199999999,236,Upper East Side North,5,20,2,Severe Queue,0.7995,0.6625,519.0,feature_table,Upper East Side
+50001114,PICK-A-BAGEL,40.7736606,-73.9595659,236,Upper East Side North,5,20,2,Severe Queue,0.5758,0.3881,519.0,feature_table,Upper East Side
+50055973,STARBUCKS COFFEE,40.7799,-73.95971,236,Upper East Side North,5,20,0,No Wait,0.1534,0.7828,519.0,feature_table,Upper East Side
+50008135,STARBUCKS #20679,40.7794496,-73.9537655,236,Upper East Side North,5,20,0,No Wait,0.3205,0.6199,519.0,feature_table,Upper East Side
+50137876,GLACE BY NOGLU,40.7838349,-73.9568862,236,Upper East Side North,5,20,0,No Wait,0.3587,0.5516,519.0,feature_table,Upper East Side
+50137356,CHIP CITY,40.7868718,-73.9542388,236,Upper East Side North,5,20,2,Severe Queue,0.6968,0.5461,519.0,feature_table,Upper East Side
+50143911,HOEXTER'S,40.7763134,-73.9564863,236,Upper East Side North,5,20,2,Severe Queue,0.8268,0.7403,519.0,feature_table,Upper East Side
+50116749,T-SWIRL CREPE,40.713843,-73.99855699999999,45,Chinatown,5,20,0,No Wait,0.4155,0.4823,114.0,feature_table,Lower Manhattan
+50178354,TINTO,40.7116745,-73.9946406,45,Chinatown,5,20,2,Severe Queue,0.6836,0.4984,114.0,feature_table,Lower Manhattan
+50074248,BAKE CULTURE,40.7157751,-73.9966627,45,Chinatown,5,20,0,No Wait,0.2339,0.6894,114.0,feature_table,Lower Manhattan
+50073822,ALIMAMA TEA CAFE,40.7158089,-73.9991885,45,Chinatown,5,20,0,No Wait,0.4241,0.4965,114.0,feature_table,Lower Manhattan
+41250025,YUNG SUN SEAFOOD RESTAURANT,40.7133878,-73.9958098,45,Chinatown,5,20,2,Severe Queue,0.63,0.4272,114.0,feature_table,Lower Manhattan
+50156592,GREAT TASTE USA,40.7124189,-73.9969211,45,Chinatown,5,20,2,Severe Queue,0.676,0.4954,114.0,feature_table,Lower Manhattan
+50179015,PAISA PICAPOLLO,40.855985,-73.928615,243,Washington Heights South,5,20,1,Queue Required,0.6257,0.4352,74.0,feature_table,Upper Manhattan
+41708279,EL PATIO MEXICANO RESTAURANT,40.8335032,-73.9449412,244,Washington Heights South,5,20,2,Severe Queue,0.8297,0.6884,124.0,feature_table,Upper Manhattan
+50127670,DELI & GRILL,40.8456139,-73.9388652,244,Washington Heights South,5,20,2,Severe Queue,0.8019,0.6266,124.0,feature_table,Upper Manhattan
+50105185,SALENTO COLOMBIAN CAFE & RESTAURANT,40.8378633,-73.9386304,244,Washington Heights South,5,20,0,No Wait,0.2716,0.6604,124.0,feature_table,Upper Manhattan
+41351011,CABRINI 181,40.8511718,-73.9401541,244,Washington Heights South,5,20,2,Severe Queue,0.8154,0.6519,124.0,feature_table,Upper Manhattan
+50110113,NELLY'S CHICKEN & PIZZA,40.841938,-73.93564049999999,244,Washington Heights South,5,20,2,Severe Queue,0.8768,0.7745,124.0,feature_table,Upper Manhattan
+41166881,5 ESTRELLA BAKERY,40.83683,-73.943225,244,Washington Heights South,5,20,0,No Wait,0.4956,0.3596,124.0,feature_table,Upper Manhattan
+50144842,LENOX THAI,40.7638741,-73.9590946,141,Lenox Hill West,5,20,2,Severe Queue,0.6668,0.5198,538.0,feature_table,Upper East Side
+50115702,SEFTON,40.7690659,-73.955394,141,Lenox Hill West,5,20,2,Severe Queue,0.7406,0.6144,538.0,feature_table,Upper East Side
+50077169,SERENDIPITY 3,40.761848,-73.964894,141,Lenox Hill West,5,20,2,Severe Queue,0.9098,0.857,538.0,feature_table,Upper East Side
+40933963,CAFFE BACIO,40.7686793,-73.9609813,141,Lenox Hill West,5,20,0,No Wait,0.2185,0.7154,538.0,feature_table,Upper East Side
+50154496,NIGHTLY'S,40.7724573,-73.9553866,141,Lenox Hill West,5,20,2,Severe Queue,0.7977,0.6739,538.0,feature_table,Upper East Side
+50123507,SEA SALT,40.7612933,-73.9609656,141,Lenox Hill West,5,20,2,Severe Queue,0.8546,0.7623,538.0,feature_table,Upper East Side
+50078895,HAWA SMOOTHIES & BUBBLE TEA,40.7663427,-73.9574506,141,Lenox Hill West,5,20,0,No Wait,0.2652,0.6587,538.0,feature_table,Upper East Side
+41345732,JOE COFFEE,40.746821,-74.0014743,68,East Chelsea,5,20,0,No Wait,0.2118,0.7396,614.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50115279,ZOU ZOU'S,40.7529706,-73.9986785,68,East Chelsea,5,20,2,Severe Queue,0.8787,0.8111,614.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50016569,SHY SHY,40.7427021,-74.0007595,68,East Chelsea,5,20,2,Severe Queue,0.7766,0.6435,614.0,feature_table,"Chelsea, Flatiron & Union Sq"
+40392063,WALTER'S BAR,40.7493438,-73.9958472,68,East Chelsea,5,20,2,Severe Queue,0.7966,0.6701,614.0,feature_table,"Chelsea, Flatiron & Union Sq"
+41092609,10TH AVENUE COOKSHOP,40.7456552,-74.005422,68,East Chelsea,5,20,2,Severe Queue,0.8843,0.8219,614.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50062365,H-YARD GOURMET DELI,40.754089,-73.9955336,68,East Chelsea,5,20,0,No Wait,0.4943,0.3731,614.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50061329,HAWA,40.7449574,-73.9990035,68,East Chelsea,5,20,0,No Wait,0.3224,0.5684,614.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50053408,MELLOW YELLOW COFFEE & VIBES,40.7792645,-73.94793229999999,263,Yorkville West,5,20,2,Severe Queue,0.7609,0.654,469.0,feature_table,Upper East Side
+40365239,DORRIAN'S RED HAND,40.7763934,-73.9525693,263,Yorkville West,5,20,2,Severe Queue,0.7672,0.6118,469.0,feature_table,Upper East Side
+50179315,MAISON BREW,40.7818556,-73.94786409999999,263,Yorkville West,5,20,0,No Wait,0.2026,0.7308,469.0,feature_table,Upper East Side
+50159487,LY LY,40.77429,-73.9537196,263,Yorkville West,5,20,2,Severe Queue,0.7227,0.6036,469.0,feature_table,Upper East Side
+50175392,FARINA ON 2ND,40.7798546,-73.95074389999999,263,Yorkville West,5,20,2,Severe Queue,0.7297,0.573,469.0,feature_table,Upper East Side
+41479303,GOTHAM PIZZA,40.7775504,-73.94914299999999,263,Yorkville West,5,20,2,Severe Queue,0.8018,0.6467,469.0,feature_table,Upper East Side
+50117133,AGATA & VALENTINA,40.7725942,-73.9527245,263,Yorkville West,5,20,2,Severe Queue,0.5285,0.3827,469.0,feature_table,Upper East Side
+50183892,MCDONALD'S,40.7561546,-73.9707571,162,Midtown East,5,20,2,Severe Queue,0.8043,0.6307,534.0,feature_table,Midtown
+50133246,MUNA,40.753513,-73.973531,162,Midtown East,5,20,2,Severe Queue,0.548,0.3684,534.0,feature_table,Midtown
+50035042,CHIPOTLE MEXICAN GRILL,40.7589573,-73.9687964,162,Midtown East,5,20,1,Queue Required,0.5084,0.4188,534.0,feature_table,Midtown
+50128771,POLLO CAMPERO,40.7614276,-73.9689571,162,Midtown East,5,20,1,Queue Required,0.4523,0.4784,534.0,feature_table,Midtown
+50070575,THE LOBSTER CLUB,40.7585133,-73.9718852,162,Midtown East,5,20,2,Severe Queue,0.6569,0.5533,534.0,feature_table,Midtown
+50171319,WATCHHOUSE COFFEE,40.7518817,-73.975214,162,Midtown East,5,20,0,No Wait,0.0427,0.9343,534.0,feature_table,Midtown
+50171954,NINO'S RISTORANTE,40.7550069,-73.9646207,229,Sutton Place/Turtle Bay North,5,20,2,Severe Queue,0.8546,0.7689,531.0,feature_table,Midtown
+41391794,BEST PIZZA ON 1ST.,40.7579559,-73.9629223,229,Sutton Place/Turtle Bay North,5,20,2,Severe Queue,0.6806,0.5039,531.0,feature_table,Midtown
+50119988,IL MONELLO,40.7537641,-73.9674672,229,Sutton Place/Turtle Bay North,5,20,2,Severe Queue,0.8299,0.7248,531.0,feature_table,Midtown
+50050113,LENWICH,40.7573937,-73.96642469999999,229,Sutton Place/Turtle Bay North,5,20,0,No Wait,0.3851,0.53,531.0,feature_table,Midtown
+41595314,PITA GRILL,40.759558,-73.965436,229,Sutton Place/Turtle Bay North,5,20,2,Severe Queue,0.5636,0.3815,531.0,feature_table,Midtown
+50072316,BUTTERCUP BAKESHOP,40.755938,-73.968057,229,Sutton Place/Turtle Bay North,5,20,2,Severe Queue,0.5203,0.4808,531.0,feature_table,Midtown
+50096880,CLOISTERS GRILL,40.866726,-73.92995599999999,243,Washington Heights North,5,20,2,Severe Queue,0.7441,0.5736,74.0,feature_table,Upper Manhattan
+50127729,FRASKO DELI,40.8486273,-73.9307681,243,Washington Heights North,5,20,1,Queue Required,0.5601,0.3871,74.0,feature_table,Upper Manhattan
+50113740,PREGAME DYCKMAN,40.86183,-73.9252052,243,Washington Heights North,5,20,2,Severe Queue,0.6559,0.4394,74.0,feature_table,Upper Manhattan
+50115168,DUTCH BABY,40.8553526,-73.9373304,243,Washington Heights North,5,20,2,Severe Queue,0.6945,0.5237,74.0,feature_table,Upper Manhattan
+41338312,KING GARDEN RESTAURANT,40.851877,-73.9346509,243,Washington Heights North,5,20,2,Severe Queue,0.7107,0.5062,74.0,feature_table,Upper Manhattan
+50157923,GOLAN HEIGHTS,40.8515059,-73.9281685,243,Washington Heights North,5,20,2,Severe Queue,0.7888,0.6841,74.0,feature_table,Upper Manhattan
+50148371,BROOKLYN BREAD CAFE,40.7151967,-74.01232499999999,231,TriBeCa/Civic Center,5,20,0,No Wait,0.1977,0.7607,429.0,feature_table,Lower Manhattan
+40729582,UNITED GROCERY & DELI,40.7225167,-74.00836079999999,231,TriBeCa/Civic Center,5,20,0,No Wait,0.3402,0.5237,429.0,feature_table,Lower Manhattan
+50133309,POTBELLY,40.7145277,-74.0058103,231,TriBeCa/Civic Center,5,20,0,No Wait,0.1942,0.732,429.0,feature_table,Lower Manhattan
+41114768,PUFFY'S TAVERN,40.7185567,-74.0090884,231,TriBeCa/Civic Center,5,20,2,Severe Queue,0.7332,0.6007,429.0,feature_table,Lower Manhattan
+50094262,STAGE DOOR DELI,40.712115,-74.0097029,231,TriBeCa/Civic Center,5,20,2,Severe Queue,0.7823,0.6925,429.0,feature_table,Lower Manhattan
+50018025,SUBWAY,40.7315382,-73.9942998,113,Greenwich Village North,5,20,0,No Wait,0.4927,0.343,332.0,feature_table,Village & LES
+50179280,DORADO,40.7339435,-73.9931881,113,Greenwich Village North,5,20,2,Severe Queue,0.6428,0.5098,332.0,feature_table,Village & LES
+50175197,CARMELA,40.7324978,-73.9965769,113,Greenwich Village North,5,20,0,No Wait,0.1829,0.7665,332.0,feature_table,Village & LES
+50074148,JUICE GENERATION,40.7298469,-73.9924724,113,Greenwich Village North,5,20,0,No Wait,0.2615,0.635,332.0,feature_table,Village & LES
+50166000,ORBITAL KITCHENS/ LITTLE MINT/ CRUMB/ DUM POKE/ NAKA/ CRAFT BURGER/ LUCKY MAO/ WING BOX/ POBLANO,40.7355857,-73.9942566,113,Greenwich Village North,5,20,1,Queue Required,0.5689,0.383,332.0,feature_table,Village & LES
+50139385,8-BIT BITES,40.7430489,-73.9961182,90,Flatiron,5,20,2,Severe Queue,0.6822,0.546,388.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50084571,YANNI'S COFFEE,40.739821,-73.9989877,90,Flatiron,5,20,0,No Wait,0.1128,0.8549,388.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50063787,BEAN & BEAN COFFEE,40.7470077,-73.9970077,90,Flatiron,5,20,0,No Wait,0.2236,0.7237,388.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50127394,XI'AN FAMOUS FOODS,40.7401615,-74.0019196,90,Flatiron,5,20,2,Severe Queue,0.712,0.545,388.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50159087,LULLA,40.7441117,-73.99299409999999,90,Flatiron,5,20,2,Severe Queue,0.8859,0.8191,388.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50033451,INDUSTRY KITCHEN,40.7048797,-74.0047601,87,Financial District North,5,20,2,Severe Queue,0.8238,0.748,321.0,feature_table,Lower Manhattan
+50164631,LOS TACOS NO.1,40.7065233,-74.0116652,87,Financial District North,5,20,2,Severe Queue,0.7428,0.6152,321.0,feature_table,Lower Manhattan
+50019203,SOPHIE'S CUBAN CUISINE,40.708933,-74.0055381,87,Financial District North,5,20,1,Queue Required,0.4834,0.3788,321.0,feature_table,Lower Manhattan
+50117018,XI'AN FAMOUS FOODS,40.7091987,-74.0092858,87,Financial District North,5,20,1,Queue Required,0.5355,0.5055,321.0,feature_table,Lower Manhattan
+50050182,SWEETGREEN,40.7056284,-74.0082936,87,Financial District North,5,20,0,No Wait,0.2865,0.5434,321.0,feature_table,Lower Manhattan
+50128610,TERIYAKI MADNESS,40.8037525,-73.93535229999999,74,East Harlem North,5,20,2,Severe Queue,0.6851,0.5229,151.0,feature_table,Harlem
+50171445,COCOTAZO,40.7918174,-73.9389443,74,East Harlem North,5,20,2,Severe Queue,0.723,0.6493,151.0,feature_table,Harlem
+50145720,ORIENTAL PALACE,40.7986197,-73.94602569999999,74,East Harlem North,5,20,2,Severe Queue,0.6633,0.511,151.0,feature_table,Harlem
+50091220,CAKEBURGERS,40.798337,-73.9332237,74,East Harlem North,5,20,2,Severe Queue,0.7135,0.6086,151.0,feature_table,Harlem
+50165750,HARLEM BUBBLE TEA LIMITED,40.8057852,-73.9412978,74,East Harlem North,5,20,0,No Wait,0.256,0.6933,151.0,feature_table,Harlem
+50166973,DAMAJAGUA RESTAURANT,40.8708659,-73.9150272,127,Inwood,5,20,2,Severe Queue,0.7686,0.5787,54.0,feature_table,Upper Manhattan
+50096757,UNIQUE RESTAURANT,40.8669331,-73.921011,127,Inwood,5,20,2,Severe Queue,0.8245,0.7091,54.0,feature_table,Upper Manhattan
+50012857,SUSHI MAMBO,40.8611418,-73.92029529999999,127,Inwood,5,20,2,Severe Queue,0.8886,0.8045,54.0,feature_table,Upper Manhattan
+50122868,DOMINO'S PIZZA #3680,40.8663137,-73.9256229,127,Inwood,5,20,2,Severe Queue,0.8186,0.6519,54.0,feature_table,Upper Manhattan
+41235974,THE FAMOUS JIMBO'S HAMBURGER PALACE,40.8641934,-73.9186927,127,Inwood,5,20,2,Severe Queue,0.7083,0.5306,54.0,feature_table,Upper Manhattan
+50044336,KING DRAGON 188,40.7928241,-73.9502725,75,East Harlem South,5,20,2,Severe Queue,0.6949,0.5338,207.0,feature_table,Harlem
+41147913,SUBWAY,40.7902976,-73.9452355,75,East Harlem South,5,20,2,Severe Queue,0.5735,0.3913,207.0,feature_table,Harlem
+50173173,MILENIO BAKERY,40.7952778,-73.9423029,75,East Harlem South,5,20,0,No Wait,0.1867,0.7343,207.0,feature_table,Harlem
+50073387,YUMMY CITY,40.7880204,-73.9492087,75,East Harlem South,5,20,2,Severe Queue,0.7206,0.5959,207.0,feature_table,Harlem
+41525379,BAR ITALIA,40.7679667,-73.9686296,237,Upper East Side South,5,20,2,Severe Queue,0.8827,0.8106,520.0,feature_table,Upper East Side
+40687209,VIA QUADRONNO,40.7727446,-73.9651572,237,Upper East Side South,5,20,2,Severe Queue,0.8046,0.6697,520.0,feature_table,Upper East Side
+40364347,METROPOLITAN CLUB,40.7646941,-73.9718947,237,Upper East Side South,5,20,2,Severe Queue,0.7644,0.6366,520.0,feature_table,Upper East Side
+40756287,BARBARESCO,40.765392,-73.965559,237,Upper East Side South,5,20,2,Severe Queue,0.7227,0.5911,520.0,feature_table,Upper East Side
+50130108,CENTRAL PARK CAFE,40.7661278,-73.9799349,163,Midtown North,5,20,2,Severe Queue,0.7834,0.6277,522.0,feature_table,Midtown
+41089876,SARABETH'S,40.7651409,-73.9756768,163,Midtown North,5,20,2,Severe Queue,0.7965,0.6424,522.0,feature_table,Midtown
+50110004,STARBUCKS,40.76763,-73.98134,163,Midtown North,5,20,0,No Wait,0.3682,0.4975,522.0,feature_table,Midtown
+50019120,NEW TOPAZ,40.764421,-73.978911,163,Midtown North,5,20,2,Severe Queue,0.8509,0.7593,522.0,feature_table,Midtown
+50133999,CHIPOTLE MEXICAN GRILL #3056,40.8220368,-73.9533258,116,Hamilton Heights,5,20,2,Severe Queue,0.5604,0.3842,90.0,feature_table,Upper Manhattan
+50093322,TEXAS STAR COFFEE SHOP,40.8255624,-73.94390659999999,116,Hamilton Heights,5,20,2,Severe Queue,0.6165,0.4691,90.0,feature_table,Upper Manhattan
+50037167,SOFRITO,40.8272046,-73.9551541,116,Hamilton Heights,5,20,2,Severe Queue,0.8031,0.6798,90.0,feature_table,Upper Manhattan
+50046048,UPTOWN BOURBON,40.8294402,-73.9486174,116,Hamilton Heights,5,20,2,Severe Queue,0.7656,0.6168,90.0,feature_table,Upper Manhattan
+40576044,CIPRIANI DOWNTOWN,40.7236927,-74.002878,211,SoHo,5,20,2,Severe Queue,0.9051,0.8465,248.0,feature_table,Lower Manhattan
+50143815,LUCIA PIZZA OF SOHO/LUCIA ALIMENTARI,40.7214195,-74.00441239999999,211,SoHo,5,20,2,Severe Queue,0.7804,0.6736,248.0,feature_table,Lower Manhattan
+50177568,LA MERCERIE,40.7201478,-74.0021708,211,SoHo,5,20,2,Severe Queue,0.9038,0.8544,248.0,feature_table,Lower Manhattan
+50160904,BIBLIOTHEQUE,40.7218082,-74.0007476,211,SoHo,5,20,2,Severe Queue,0.7469,0.6215,248.0,feature_table,Lower Manhattan
+50125399,PICO DE GALLO BAR & KITCHEN,40.7951789,-73.9698463,238,Upper West Side North,5,20,2,Severe Queue,0.8418,0.7396,386.0,feature_table,Upper West Side
+50086808,HOLY SCHNITZEL,40.7915497,-73.9726115,238,Upper West Side North,5,20,2,Severe Queue,0.8851,0.825,386.0,feature_table,Upper West Side
+50175745,JACOB'S PICKLES,40.7911551,-73.9690457,238,Upper West Side North,5,20,2,Severe Queue,0.9285,0.8854,386.0,feature_table,Upper West Side
+41145911,WA LUNG KITCHEN,40.7139086,-73.9802259,232,Two Bridges/Seward Park,5,20,2,Severe Queue,0.5568,0.3947,189.0,feature_table,Lower Manhattan
+50126161,51 PIZZA,40.7173394,-73.9804602,232,Two Bridges/Seward Park,5,20,2,Severe Queue,0.7899,0.6107,189.0,feature_table,Lower Manhattan
+50001861,"DUNKIN', 'BASKIN ROBBINS",40.7128311,-73.9897838,232,Two Bridges/Seward Park,5,20,2,Severe Queue,0.6055,0.4766,189.0,feature_table,Lower Manhattan
+41556791,JOE COFFEE,40.8100424,-73.9620202,166,Morningside Heights,5,20,0,No Wait,0.1506,0.8137,131.0,feature_table,Upper West Side
+50147296,1020 BAR,40.8033333,-73.9638889,166,Morningside Heights,5,20,2,Severe Queue,0.8082,0.672,131.0,feature_table,Upper West Side
+50070471,MCDONALDS # 18093,40.8107815,-73.9530431,166,Morningside Heights,5,20,2,Severe Queue,0.7132,0.5392,131.0,feature_table,Upper West Side
+50144819,WOOGA,40.7488368,-73.9919104,186,Penn Station/Madison Sq West,5,20,2,Severe Queue,0.8849,0.7822,571.0,feature_table,Midtown
+50166748,MOKA & CO,40.7503639,-73.9898075,186,Penn Station/Madison Sq West,5,20,1,Queue Required,0.5296,0.4031,571.0,feature_table,Midtown
+41327462,AMERICA GOURMET FOOD,40.7466824,-73.99034809999999,186,Penn Station/Madison Sq West,5,20,1,Queue Required,0.6501,0.5522,571.0,feature_table,Midtown
+50052114,STARBUCKS COFFEE,40.77484,-73.98413,142,Lincoln Square East,5,20,0,No Wait,0.2289,0.6785,559.0,feature_table,Upper West Side
+50032827,THE RIBBON,40.7766182,-73.9773026,142,Lincoln Square East,5,20,2,Severe Queue,0.8194,0.7062,559.0,feature_table,Upper West Side
+50173396,UNGLO,40.7719849,-73.9810047,142,Lincoln Square East,5,20,2,Severe Queue,0.7693,0.6221,559.0,feature_table,Upper West Side
+50093783,EL VALLE LENOX,40.8168755,-73.93846769999999,42,Central Harlem North,5,20,2,Severe Queue,0.7872,0.6914,168.0,feature_table,Harlem
+50004512,TIO LUCA,40.8117884,-73.94290869999999,42,Central Harlem North,5,20,2,Severe Queue,0.8165,0.6768,168.0,feature_table,Harlem
+50070258,MAMA'S FRIED CHICKEN,40.8291253,-73.9375732,42,Central Harlem North,5,20,2,Severe Queue,0.7454,0.5235,168.0,feature_table,Harlem
+50157900,DRAGON 105,40.7982277,-73.96329589999999,151,Manhattan Valley,5,20,2,Severe Queue,0.6928,0.4685,181.0,feature_table,Upper West Side
+50068505,SERAFINA 105,40.8004853,-73.96833939999999,151,Manhattan Valley,5,20,2,Severe Queue,0.9061,0.8327,181.0,feature_table,Upper West Side
+41672122,STARBUCKS COFFEE,40.79523,-73.96552,151,Manhattan Valley,5,20,0,No Wait,0.3718,0.5173,181.0,feature_table,Upper West Side
+50142521,PANERA BREAD #9202,40.7644168,-73.95419179999999,140,Lenox Hill East,5,20,1,Queue Required,0.6528,0.4516,276.0,feature_table,Upper East Side
+50116186,CLAIRE'S KITCHEN CAFE,40.7677052,-73.9528863,140,Lenox Hill East,5,20,2,Severe Queue,0.6567,0.4761,276.0,feature_table,Upper East Side
+41481494,JACK STUDIOS,40.751664,-74.00648249999999,246,West Chelsea/Hudson Yards,5,20,2,Severe Queue,0.5618,0.3894,497.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50177253,VERDE,40.7430314,-74.0079425,246,West Chelsea/Hudson Yards,5,20,1,Queue Required,0.6337,0.4245,497.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50128644,M & D COFFEE CAFE,40.8037712,-73.9534408,41,Central Harlem,5,20,2,Severe Queue,0.6474,0.4392,241.0,feature_table,Harlem
+41688349,DUNKIN,40.7986084,-73.9527871,41,Central Harlem,5,20,0,No Wait,0.3805,0.4864,241.0,feature_table,Harlem
+50086458,PIZZA PLUS,40.701009,-74.0130246,88,Financial District South,5,20,2,Severe Queue,0.7664,0.6355,139.0,feature_table,Lower Manhattan
+50145771,LUCKY TIGER NYC,40.7035113,-74.0107685,88,Financial District South,5,20,2,Severe Queue,0.7374,0.5705,139.0,feature_table,Lower Manhattan
+50083936,ROCKBAR,40.7327194,-74.0097278,158,Meatpacking/West Village West,5,20,2,Severe Queue,0.7814,0.6421,378.0,feature_table,Village & LES
+50124130,SHAKE SHACK,40.7395673,-74.00847379999999,158,Meatpacking/West Village West,5,20,0,No Wait,0.4134,0.5114,378.0,feature_table,Village & LES
+50097403,SWEETGREEN,40.7442426,-73.9729059,233,UN/Turtle Bay South,5,20,0,No Wait,0.2673,0.587,367.0,feature_table,Midtown
+50092596,KAORU RESTAURANT,40.752021,-73.9699042,233,UN/Turtle Bay South,5,20,2,Severe Queue,0.8027,0.6722,367.0,feature_table,Midtown
+50117960,THE CROOKED KNIFE,40.7420555,-73.9775365,137,Kips Bay,5,20,2,Severe Queue,0.7055,0.5047,299.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50081233,FLAVOR'S HOUSE,40.7395979,-73.9799956,137,Kips Bay,5,20,2,Severe Queue,0.7254,0.5838,299.0,feature_table,"Chelsea, Flatiron & Union Sq"
+50119564,HOMEMADE TAQUERIA,40.8011736,-73.9612121,24,Bloomingdale,5,20,2,Severe Queue,0.8405,0.7265,86.0,feature_table,Upper West Side
+50166461,NAI BROTHER SAUERKRAUT FISH,40.8034301,-73.9675838,24,Bloomingdale,5,20,2,Severe Queue,0.8837,0.8145,86.0,feature_table,Upper West Side
+50169163,LUCKY DRAGON,40.7740435,-73.94818269999999,262,Yorkville East,5,20,2,Severe Queue,0.7339,0.6499,312.0,feature_table,Upper East Side
+50172531,ASPHALT GREEN CAFE,40.7791021,-73.9440973,262,Yorkville East,5,20,2,Severe Queue,0.5362,0.4959,312.0,feature_table,Upper East Side
+50155359,HELL'S KITCHEN PICKLEBALL CLUB,40.765641,-73.9970948,50,Clinton West,5,20,1,Queue Required,0.5285,0.4939,283.0,feature_table,Midtown
+50166964,CITY TAVERN & TABLE,40.7709893,-73.9925681,50,Clinton West,5,20,2,Severe Queue,0.6409,0.5207,283.0,feature_table,Midtown
+41629135,CHINA WOK KITCHEN,40.7221561,-73.9774411,4,Alphabet City,5,20,2,Severe Queue,0.7699,0.6253,143.0,feature_table,Village & LES
+50148722,COMMODORE II,40.7210766,-73.9808712,4,Alphabet City,5,20,2,Severe Queue,0.7752,0.6081,143.0,feature_table,Village & LES
+50125741,MUGHLAI INDIAN CUISINE,40.7095408,-74.0127065,261,World Trade Center,5,20,2,Severe Queue,0.7582,0.64,132.0,feature_table,Lower Manhattan
+50089310,DEAR MAMA COFFEE,40.8167463,-73.95859949999999,152,Manhattanville,5,20,0,No Wait,0.1886,0.7787,45.0,feature_table,Harlem
+50036360,HOUSEMAN,40.7256608,-74.0093204,125,Hudson Sq,5,20,2,Severe Queue,0.7488,0.6233,169.0,feature_table,Lower Manhattan
+50180639,LOONG RAMEN,40.7080246,-74.0180158,13,Battery Park City,5,20,2,Severe Queue,0.6791,0.5674,146.0,feature_table,Lower Manhattan
+50042533,DORLAN'S TAVERN,40.7072414,-74.0023902,209,Seaport,5,20,2,Severe Queue,0.8727,0.7912,120.0,feature_table,Lower Manhattan
+50178227,THE CAFE @ CORNELL TECH,40.7554148,-73.9562424,202,Roosevelt Island,5,20,0,No Wait,0.3048,0.6386,20.0,feature_table,Upper East Side
+50107564,FRIEDMAN'S / PICK A BAGEL,40.7732351,-73.9895502,143,Lincoln Square West,5,20,2,Severe Queue,0.8124,0.7405,283.0,feature_table,Upper West Side
+50051981,FIVESTUY CAFE,40.7318647,-73.97888329999999,224,Stuy Town/Peter Cooper Village,5,20,0,No Wait,0.3076,0.6418,125.0,feature_table,"Chelsea, Flatiron & Union Sq"
+40393154,AMSTERDAM BILLIARDS,40.7317088,-73.98994239999999,79,East Village,5,20,2,Severe Queue,0.8062,0.6711,921.0,feature_table,Village & LES

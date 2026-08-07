@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate docs/openapi-v0.yaml
-        run: npx --yes @redocly/cli lint docs/openapi-v0.yaml
+      - name: Validate docs/architecture/openapi-v0.yaml
+        run: npx --yes @redocly/cli lint docs/architecture/openapi-v0.yaml
 
   web:
     name: Web app (lint + build)

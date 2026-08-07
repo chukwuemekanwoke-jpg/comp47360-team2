@@ -21,7 +21,10 @@ export default function TabsLayout() {
         },
         tabBarActiveTintColor: colors.teal,
         tabBarInactiveTintColor: colors.gold,
-        sceneContainerStyle: {
+        // `sceneStyle`, not `sceneContainerStyle` — the latter was silently
+        // dropped (it is not a valid screen option in react-navigation v7), so
+        // the tab scene container kept its stock light-grey background.
+        sceneStyle: {
           backgroundColor: colors.canvas,
         },
       }}

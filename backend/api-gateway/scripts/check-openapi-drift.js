@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const yaml = require("js-yaml");
 
-const SPEC_PATH = path.join(__dirname, "../../../docs/openapi-v0.yaml");
+const SPEC_PATH = path.join(__dirname, "../../../docs/architecture/openapi-v0.yaml");
 
 function leafRoutes(router) {
   return router.stack
@@ -79,11 +79,11 @@ function main() {
   }
 
   if (missingInCode.length > 0) {
-    console.error("Endpoints declared in docs/openapi-v0.yaml but not implemented in code:");
+    console.error("Endpoints declared in docs/architecture/openapi-v0.yaml but not implemented in code:");
     missingInCode.forEach((r) => console.error(`  - ${r}`));
   }
   if (missingInSpec.length > 0) {
-    console.error("Endpoints implemented in code but not declared in docs/openapi-v0.yaml:");
+    console.error("Endpoints implemented in code but not declared in docs/architecture/openapi-v0.yaml:");
     missingInSpec.forEach((r) => console.error(`  - ${r}`));
   }
   process.exitCode = 1;

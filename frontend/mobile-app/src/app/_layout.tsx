@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { useEffect, useMemo, useState } from "react";
+import { Platform, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Stack } from "expo-router";
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { ProfileProvider } from "@/context/ProfileContext";
 import { Provider } from "react-redux";
@@ -19,7 +19,30 @@ function ThemedApp() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const colors = navColors[theme];
 
+  // Re-point react surface to theme
+  const navigationTheme = useMemo(() => {
+    const base = theme === "dark" ? DarkTheme : DefaultTheme;
+    return {
+      ...base,
+      colors: {
+        ...base.colors,
+        background: colors.canvas,
+        card: colors.surface,
+        border: colors.border,
+        text: colors.cream,
+        primary: colors.teal,
+      },
+    };
+  }, [theme, colors]);
+
+  // web only
+  useEffect(() => {
+    if (Platform.OS !== "web") return;
+    document.body.style.backgroundColor = colors.canvas;
+  }, [colors.canvas]);
+
   return (
+    <ThemeProvider value={navigationTheme}>
     <View style={[{ flex: 1 }, themeVars[theme]]}>
       <Stack
         screenOptions={{
@@ -48,6 +71,7 @@ function ThemedApp() {
 
       <SettingsModal isVisible={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </View>
+    </ThemeProvider>
   );
 }
 

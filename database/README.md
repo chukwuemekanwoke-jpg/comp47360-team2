@@ -1,10 +1,12 @@
 # Tablé database (PostgreSQL)
 
+**Authors:** Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master
+
 **BE-2:** Schema design v1 — migrations, ERD, and local setup for the Tablé MVP.
 
 | Doc                                                                                | Purpose                                       |
 | ---------------------------------------------------------------------------------- | --------------------------------------------- |
-| [schema.md](./schema.md)                                                           | ER diagram, P0 story mapping, table reference |
+| [docs/architecture/database-schema.md](../docs/architecture/database-schema.md)     | ER diagram, P0 story mapping, table reference |
 | [migrations/001_initial_schema.sql](./migrations/001_initial_schema.sql)           | DDL v1                                        |
 | [migrations/001_initial_schema.down.sql](./migrations/001_initial_schema.down.sql) | Roll back v1 (dev only)                       |
 | [migrations/003_add_restaurant_capacity_cuisine.sql](./migrations/003_add_restaurant_capacity_cuisine.sql) | `restaurants.capacity`, `restaurants.cuisine` |
@@ -25,11 +27,23 @@
 
 Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/) (or Docker Engine + Compose v2).
 
+**If you want the whole application**, migrations and seeds run automatically —
+just start the stack from the repo root and skip this section entirely:
+
+```bash
+cp .env.example .env
+docker compose up -d --build   # the `migrate` service applies schema + seeds
+```
+
+See [`docs/ops/docker-local.md`](../docs/ops/docker-local.md).
+
+**If you only want Postgres** (everything else running natively):
+
 ```bash
 cd database
 cp .env.example .env
 npm install
-npm run db:up          # starts Postgres via docker-compose.yml
+npm run db:up          # starts only the `postgres` service from the root compose file
 npm run migrate        # wait until healthy, then apply schema
 npm run seed           # BE-9: demo Manhattan restaurants + test users
 ```
@@ -37,7 +51,7 @@ npm run seed           # BE-9: demo Manhattan restaurants + test users
 Verify:
 
 ```bash
-docker compose ps
+docker compose -f ../docker-compose.yml ps
 psql "$DATABASE_URL" -c "\dt"
 ```
 
@@ -45,10 +59,14 @@ Expected tables: `users`, `user_preferences`, `restaurants`, `campaigns`, `offer
 
 | Command            | Action                                    |
 | ------------------ | ----------------------------------------- |
-| `npm run db:up`    | Start database container in background    |
-| `npm run db:down`  | Stop container (keeps data volume)        |
-| `npm run db:reset` | Stop and **delete** all data, start fresh |
+| `npm run db:up`    | Start the Postgres container in background |
+| `npm run db:down`  | Stop the Postgres container (keeps data volume) |
+| `npm run db:reset` | **Deletes all data** and starts fresh. Note this runs `docker compose down -v`, which stops the whole stack, not just Postgres |
 | `npm run db:logs`  | Follow Postgres logs                      |
+
+> These scripts target the root [`docker-compose.yml`](../docker-compose.yml).
+> The old `database/docker-compose.yml` was folded into it so that the two files
+> stop competing for the `table-postgres` container name and port 5432.
 
 ## Quick start (native Postgres — optional)
 
@@ -115,26 +133,37 @@ Optional PostGIS: `migrations/002_postgis_optional.sql` (not applied by default)
 | -------- | ----------------------------------------------------------------------- |
 | BE-1     | API gateway bootstrap                                                   |
 | **BE-2** | **This schema**                                                         |
-| BE-3     | API contract v0 — [docs/api-contract-v0.md](../docs/api-contract-v0.md) |
-| BE-5     | Data strategy — [docs/data-strategy.md](../docs/data-strategy.md)       |
+| BE-3     | API contract v0 — [docs/architecture/api-contract-v0.md](../docs/architecture/api-contract-v0.md) |
+| BE-5     | Data strategy — [docs/architecture/data-strategy.md](../docs/architecture/data-strategy.md)       |
 | BE-9     | Seed data — [seeds/README.md](./seeds/README.md)                        |
 
 ## Docker Compose
 
-Configuration: [`docker-compose.yml`](./docker-compose.yml)
+Configuration: the root [`docker-compose.yml`](../docker-compose.yml), `postgres` service.
 
 | Setting         | Default                                                      |
 | --------------- | ------------------------------------------------------------ |
 | Container name  | `table-postgres`                                             |
 | Image           | `postgres:16-alpine`                                         |
-| Database        | `table_dev`                                                  |
-| User / password | `postgres` / `postgres`                                      |
-| Host port       | `5432` (override with `POSTGRES_PORT` in `.env` for compose) |
+| Database        | `table_dev` (`POSTGRES_DB`)                                  |
+| User / password | `postgres` / `postgres` (`POSTGRES_USER` / `POSTGRES_PASSWORD`) |
+| Host port       | `5432` (override with `POSTGRES_PORT`)                       |
+| Named volume    | `table_pg_data`                                              |
 
-If port **5432** is already in use, create `.env` with:
+Those variables come from the **root** `.env` (`cp .env.example .env` at the repo
+root), which is what Compose reads. `database/.env` is separate and only feeds
+the Node scripts in `scripts/` — `migrate.js`, `seed.js`, and friends — which
+need `DATABASE_URL` when you run them from your host.
+
+If port **5432** is already in use, set this in the root `.env`:
 
 ```bash
 POSTGRES_PORT=5433
+```
+
+and this in `database/.env`, so the host-side scripts follow:
+
+```bash
 DATABASE_URL=postgresql://postgres:postgres@localhost:5433/table_dev
 ```
 

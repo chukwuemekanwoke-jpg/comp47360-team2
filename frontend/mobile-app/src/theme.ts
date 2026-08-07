@@ -3,11 +3,22 @@ import type { ThemeName } from "@shared/settingsSlice";
 
 // Runtime palette for the session theme toggle. Values are space-separated
 // RGB triplets consumed by tailwind.config.js as
-// `rgb(var(--table-*) / <alpha-value>)`. Dark mirrors the web palette.
+// `rgb(var(--table-*) / <alpha-value>)`.
+//
+// This palette is mobile's own and is NOT shared with the web dashboard: that
+// one is slate-based (canvas `15 23 42`) and carries tokens this one has no
+// equivalent for, notably `surfaceElevated`. Changing a colour here has no
+// effect there, and vice versa — frontend/web-app/tailwind.config.js reads its
+// triplets from `--table-*-rgb` variables defined in the web app's index.css.
 export const themeVars: Record<ThemeName, ReturnType<typeof vars>> = {
   dark: vars({
-    "--table-canvas": "0 0 0",
-    "--table-surface": "9 9 11",
+    // Elevation ramp, zinc 950 → 900 → 800. Canvas and surface used to be
+    // #000000 and #09090b: a ~3% luminance step that left cards reading as
+    // transparent against the page, with only the 1px border to separate them.
+    // Canvas is also what global.css paints on <body>, which is why that file
+    // hardcodes #09090b.
+    "--table-canvas": "9 9 11",
+    "--table-surface": "24 24 27",
     "--table-border": "39 39 42",
     "--table-interactive": "63 63 70",
     "--table-cream": "251 247 242",
@@ -46,8 +57,9 @@ export const navColors: Record<
   }
 > = {
   dark: {
-    canvas: "#000000",
-    surface: "#09090b",
+    // Keep in step with themeVars.dark above.
+    canvas: "#09090b",
+    surface: "#18181b",
     border: "#27272a",
     interactive: "#3f3f46",
     cream: "#fbf7f2",

@@ -1,5 +1,5 @@
 -- RevPASH metric inputs (SCRUM-302 / TABL-118 Phase 1)
--- See docs/data-strategy.md §11 and database/schema.md
+-- See docs/architecture/data-strategy.md §11 and docs/architecture/database-schema.md
 
 BEGIN;
 
