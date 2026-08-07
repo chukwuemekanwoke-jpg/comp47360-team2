@@ -7,7 +7,7 @@
 
 ## 1. Purpose
 
-This document is the canonical set of product user stories and acceptance criteria for Tablé. It replaces the five early feature drafts formerly stored in this directory. Those drafts described only selected ideas and no longer matched the final two-sided product.
+This document is the canonical set of product user stories and acceptance criteria for Tablé. 
 
 The Sprint 2 specification provided the starting user goals. During development, the team changed several technical choices and expanded the product from restaurant discovery into an immediate-dining loop:
 
