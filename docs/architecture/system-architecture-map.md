@@ -68,7 +68,7 @@ Node.js/Express REST API — the hub everything else calls.
 | File | Role |
 |---|---|
 | `migrations/001*` … `005_add_restaurant_phone.sql` (+ `.down.sql`) | schema, consumed by `pool.js` queries |
-| `seeds/001_demo_manhattan.sql`, `002_manhattan_real.sql` | seed data |
+| `seeds/001_demo_manhattan.sql`, `006_manhattan_real_3000.sql` | seed data |
 | `scripts/{migrate,seed,generate-seed}.js` | migration/seed runners |
 | `docker-compose.yml` | local Postgres+PostGIS container |
 | `README.md`, `.env.example` | docs/config (schema doc lives at `docs/architecture/database-schema.md`) |

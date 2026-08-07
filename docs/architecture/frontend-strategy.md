@@ -1,6 +1,6 @@
 # Tablé Frontend Strategy (FE-1)
 
-**Authors:** Milo Dennehy — Mobile App Lead · Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master  
+**Authors:** Milo Dennehy — Mobile App Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master  
 **Owners:** Frontend Lead + Mobile Lead  
 **Related:** [ADR-001](./adr/ADR-001.md) · [User Stories](../product/user-stories)
 

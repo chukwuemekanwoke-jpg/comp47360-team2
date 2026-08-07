@@ -52,7 +52,8 @@ services:
   # ---------------------------------------------------------------------------
   # Schema + seed data. Runs to completion and exits; it is not a long-running
   # service. Both steps are idempotent, so it re-runs harmlessly on every `up`.
-  # Change what gets seeded with SEED_ARGS in .env.
+  # Change what gets seeded with SEED_ARGS in .env; the default `--real` loads
+  # the 3,000-venue seed (006_manhattan_real_3000.sql) on top of the fixtures.
   # ---------------------------------------------------------------------------
   migrate:
     build:

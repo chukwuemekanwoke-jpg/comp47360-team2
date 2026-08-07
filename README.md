@@ -4,7 +4,7 @@
 
 **Manhattan Busyness Analytics Platform** *UCD COMP47360 Research Practicum (Team 2) Core Academic Deliverable*
 
-*Authors: Yuhao Xu — Product & UX Lead · Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master*
+*Authors: Yuhao Xu — Product & UX Lead · Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master · Milo Dennehy - Mobile App Lead*
 
 ![React + Vite](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-646CFF?style=flat-square&logo=vite)
 ![React Native](https://img.shields.io/badge/Mobile-Expo-02569B?style=flat-square&logo=react)

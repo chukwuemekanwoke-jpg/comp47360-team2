@@ -1,5 +1,7 @@
 # Running Tablé locally with Docker
 
+**Author:** Milo Dennehy - Mobile App Lead
+
 The whole platform — web app, mobile app, API gateway, ML inference service, and
 Postgres — runs from a single `docker compose up`. No Node, Python, PostgreSQL,
 or Expo CLI install required; Docker is the only prerequisite.
@@ -210,7 +212,7 @@ dev server described below don't need it.
 | `POSTGRES_USER` / `_PASSWORD` / `_DB` | `postgres` / `postgres` / `table_dev` | Changing these only affects a fresh volume. |
 | `BIND_ADDR` | `127.0.0.1` | Which address the ports publish on. Leave it — see [Exposure and security](#exposure-and-security). |
 | `WEB_PORT`, `API_PORT`, `ML_PORT`, `POSTGRES_PORT`, `EXPO_PORT`, `PGADMIN_PORT` | 5173, 3001, 8000, 5432, 8081, 5050 | Change if a port is already taken. |
-| `SEED_ARGS` | *(empty)* | What gets seeded on first boot — see [Seed data](#seed-data). |
+| `SEED_ARGS` | `--real` | What gets seeded on first boot — see [Seed data](#seed-data). |
 | `VITE_API_URL` | `/api/v1` | **Build-time.** Baked into the web bundle; needs `--build` to change (see [below](#changing-vite_api_url)). |
 | `EXPO_START_ARGS`, `EXPO_HOST` | `--tunnel`, `localhost` | Mobile only — see [Mobile app](#mobile-app-expo). |
 | `EXPO_PUBLIC_API_URL` | *(empty)* | Mobile only. Leave empty: the app derives its API base from the dev server that served it. Set it only to pin the app at a specific gateway. |
@@ -439,8 +441,8 @@ in `.env`:
 
 | `SEED_ARGS` | Loads |
 |---|---|
-| *(empty, default)* | 15 fictional Manhattan venues + RevPASH booking fixtures |
-| `--real` | …plus ~300 real Manhattan venues |
+| *(empty)* | 15 fictional Manhattan venues + RevPASH booking fixtures |
+| `--real` *(default)* | …plus 3,000 real Manhattan venues ([`006_manhattan_real_3000.sql`](../../database/seeds/006_manhattan_real_3000.sql)) |
 | `--taxi-demand` | …plus ~39.5k historical NYC TLC taxi rows (slow, ML features only) |
 | `--real --taxi-demand` | everything |
 
