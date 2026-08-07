@@ -54,7 +54,7 @@ To support both mobile and web deployment, the application uses shared page flow
 * **Spatial Visualisation:** Restaurants with `availableTableCount > 0` within 1.5 km.
 * **Spatial Discovery:** Authenticated users land on a map of Manhattan restaurants; data refreshes via REST (`GET /restaurants/nearby`) on location change or pull-to-refresh.
 
-> **[User Story 2](../product/user-stories/02-discovery.md):** Manual neighbourhood input when GPS is denied.  
+> **[User Story C-02](./user-stories/README.md):** Use live location when available and keep discovery usable with an explicitly labelled Manhattan demonstration fallback when location is unavailable.
 > **Location updates:** Client polls device location (expo-location on mobile); sends updated coordinates when the user moves beyond a threshold.
 
 #### Card List View

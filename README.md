@@ -50,20 +50,23 @@ This repository follows a Monorepo architecture to ensure high-efficiency collab
 comp47360-team2/
 ├── docker-compose.yml   # Full local stack (see docs/ops/docker-local.md)
 ├── docs/                # All documentation, grouped by audience (see docs/README.md)
-│   ├── product/         # Product spec, user stories
-│   ├── architecture/    # ADR, API contract + OpenAPI, data strategy, DB schema
-│   ├── ops/             # Running, deploying, rolling back, load testing
-│   ├── design/          # UI style guide, user-testing fixes
-│   └── academic/        # Business plan, IEEE paper
+│   ├── product/           # Product spec, user stories
+│   ├── architecture/      # ADR, API contract + OpenAPI, data strategy, DB schema
+│   ├── ops/               # Running, deploying, rolling back, load testing
+│   ├── design/            # UI style guide
+│   ├── user-testing/      # Usability + SUS reports, and the fixes they drove
+│   ├── sprints/           # Retrospectives and Jira links
+│   ├── budget-timesheets/ # Timesheet and budget tracker
+│   └── academic/          # Business plan, IEEE paper
 ├── frontend/            # Frontend ecosystem
-│   ├── web-app/         # Responsive Web App (React + Vite)
-│   ├── mobile-app/      # Cross-platform Mobile App (React Native/Expo)
-│   └── packages/shared/ # Shared API client + types (RTK Query)
+│   ├── web-app/           # Responsive Web App (React + Vite)
+│   ├── mobile-app/        # Cross-platform Mobile App (React Native/Expo)
+│   └── packages/shared/   # Shared API client + types (RTK Query)
 ├── backend/             # Backend
-│   └── api-gateway/     # API Gateway & business logic (Node.js/Express monolith)
+│   └── api-gateway/       # API Gateway & business logic (Node.js/Express monolith)
 ├── ml-pipeline/         # Machine Learning & Data Engine
-│   ├── fastapi-app/     # Algorithm Inference API (Python/FastAPI)
-│   └── notebooks/       # Data exploration & feature engineering workflows
+│   ├── fastapi-app/       # Algorithm Inference API (Python/FastAPI)
+│   └── notebooks/         # Data exploration & feature engineering workflows
 └── database/            # PostgreSQL migrations and seeds
 ```
 
@@ -76,6 +79,7 @@ The full index, grouped by audience, is [`docs/README.md`](./docs/README.md).
 
 - [Product spec](./docs/product/product-spec.md) — the MVP in one page
   - [User stories](./docs/product/user-stories/) — acceptance criteria per journey
+  - [User testing](./docs/user-testing/) — usability test & interview report, SUS scores, and the [fixes change log](./docs/user-testing/user-testing-fixes-strategy.md) tracking what each finding changed in the code
 
 **Architecture — start here for engineering**
 
@@ -96,7 +100,7 @@ The full index, grouped by audience, is [`docs/README.md`](./docs/README.md).
   - [Rollback & recovery runbook](./docs/ops/rollback-recovery-runbook.md) — what to do after a bad deploy
 - [Performance testing](./docs/ops/performance-testing.md) — load/latency SLOs and results
 
-**Project record** — [Risk register](./RISK_REGISTER.md) · [Business plan](./docs/academic/business-plan/Team%202%20Business%20Plan_v4.docx) · [IEEE paper](./docs/academic/final-paper/table-ieee-paper-updated.tex)
+**Project record** — [Risk register](./RISK_REGISTER.md) · [Sprint retrospectives](./docs/sprints/) · [Timesheet & budget tracker](./docs/budget-timesheets/) · [Business plan](./docs/academic/business-plan/Team%202%20Business%20Plan_v4.docx) · [IEEE paper](./docs/academic/final-paper/table-ieee-paper-updated.tex)
 
 ---
 
@@ -104,7 +108,7 @@ The full index, grouped by audience, is [`docs/README.md`](./docs/README.md).
 
 | Name | Role | Responsibilities |
 | :--- | :--- | :--- |
-| **Yuhao Xu** | Product & UX Lead | Owns product logic and specs (`docs/product-spec.md`), UX design walkthroughs, and business value alignment; drives QA and product research — integration tests, API contract validation, accessibility testing, internal & external usability rounds, user interviews, feedback synthesis, and the final paper outline. |
+| **Yuhao Xu** | Product & UX Lead | Owns product logic and specs (`docs/product/product-spec.md`), UX design walkthroughs, and business value alignment; drives QA and product research — integration tests, API contract validation, accessibility testing, internal & external usability rounds, user interviews, feedback synthesis (`docs/user-testing/`), and the final paper outline. |
 | **Chukwuemeka Nwoke** | Integration Lead / Scrum Master | Runs sprint ceremonies and retrospectives (`docs/sprints/`); owns the CI/CD pipeline — `ci.yml`, `deploy-staging.yml`, branch protection rules — and the `feature/* → integrate → develop → main` branch flow; maintains `RISK_REGISTER.md` and GitHub compliance reviews. |
 | **Andrew Mitchell** | Web Frontend Lead | Leads `frontend/web-app` architecture and responsive UI implementation — form validation, accessibility audits, the shared component library, merchant sign-up flow, JWT auth wiring, and usability/accessibility fixes. |
 | **Milo Dennehy** | Mobile App Lead | Leads `frontend/mobile-app` cross-platform development — map/discovery components, push notifications, Redux state management, bookings & settings UI, mobile JWT auth, and mobile accessibility fixes. |
