@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { RestaurantSummary } from "@shared/types";
 import { busynessColor, busynessLabel } from "@shared/restaurantFilters";
 import { useAppSelector } from "@shared/hooks";
-import { cuisineImage, formatCuisine } from "@/lib/cuisineImages";
+import { CUISINE_IMAGE_FILL, cuisineImage, formatCuisine } from "@/lib/cuisineImages";
 import { formatDistance } from "@/lib/format";
 import RatingBadge from "@/components/RatingBadge";
 import { navColors } from "@/theme";
@@ -25,6 +25,7 @@ function RestaurantCard({ restaurant: r, onBook }: RestaurantCardProps) {
         source={cuisineImage(r.cuisine)}
         resizeMode="cover"
         className="h-24 border-b border-table-border"
+        imageStyle={CUISINE_IMAGE_FILL}
       >
         {/* Dark scrim keeps the badge legible over any photo */}
         <View

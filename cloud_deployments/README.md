@@ -25,79 +25,48 @@ repo — they cover different layers and don't overlap:
 
 | Doc | Covers |
 | --- | --- |
+| [`docs/docker-local.md`](../docs/docker-local.md) | **Running the whole application locally in Docker** — the root `docker-compose.yml`, where API keys go, seeding, and hot-reload workflows. Start here if you just want the app running. |
 | [`docs/deployment-guide.md`](../docs/deployment-guide.md) | Branch flow (`feature/* → integrate → develop → main`), branch protection, and what `ci.yml` / `deploy-staging.yml` do in GitHub Actions. Process/CI, not containers. |
-| [`database/README.md`](../database/README.md) | Running **Postgres** locally via `database/docker-compose.yml` (`npm run db:up`). Covers the database container only. |
+| [`database/README.md`](../database/README.md) | Schema, migrations, and seed mechanics. The database container itself is now part of the root compose stack. |
 | This file / `gcp/`, `aws/`, `azure/` | Terraform IaC for cloud infrastructure (Cloud Run, Cloud SQL, Artifact Registry, etc.) — currently unapplied everywhere (see table above). |
-
-None of the three previously documented how to build and run the
-**application** containers (`api-gateway`, `ml-service`) themselves — that's
-what the section below fills in.
 
 ## Running the app with Docker
 
-Two Dockerfiles exist for the application services, each buildable and
-runnable standalone:
-
-| Service | Dockerfile | Listens on |
-| --- | --- | --- |
-| API gateway (Node/Express) | [`backend/api-gateway/Dockerfile`](../backend/api-gateway/Dockerfile) | `:8080` (`PORT` env var) |
-| ML inference service (FastAPI) | [`ml-pipeline/fastapi-app/Dockerfile`](../ml-pipeline/fastapi-app/Dockerfile) | `:8080` (`PORT` env var), includes a `HEALTHCHECK` against `/health` |
-
-There is no root-level `docker-compose.yml` wiring all three services
-(gateway, ML service, Postgres) together yet — the steps below run them
-individually with plain `docker build`/`docker run`, composed with the
-existing database compose file.
-
-### 1. Database
+A root-level [`docker-compose.yml`](../docker-compose.yml) wires the whole
+platform together. Full guide: [`docs/docker-local.md`](../docs/docker-local.md).
 
 ```bash
-cd database
 cp .env.example .env
-npm run db:up        # docker compose up -d — table-postgres on :5432
-npm run migrate
-npm run seed          # optional demo data
+docker compose up -d --build          # web, api-gateway, ml-service, postgres
+docker compose --profile mobile up -d mobile   # optional: Expo dev server
 ```
 
-### 2. Build the two images
+| Service | Dockerfile | Container port | Published on |
+| --- | --- | --- | --- |
+| Web app (React/Vite → nginx) | [`frontend/web-app/Dockerfile`](../frontend/web-app/Dockerfile) | `:80` | `:5173` |
+| API gateway (Node/Express) | [`backend/api-gateway/Dockerfile`](../backend/api-gateway/Dockerfile) | `:8080` default, `PORT=3001` in compose | `:3001` |
+| ML inference service (FastAPI) | [`ml-pipeline/fastapi-app/Dockerfile`](../ml-pipeline/fastapi-app/Dockerfile) | `:8080` (`PORT` env var) | `:8000` |
+| Migration/seed runner (one-shot) | [`database/Dockerfile`](../database/Dockerfile) | — | — |
+| Expo dev server (dev mode, opt-in) | [`frontend/mobile-app/Dockerfile`](../frontend/mobile-app/Dockerfile) | `:8081` | `:8081` |
+| PostgreSQL | `postgres:16-alpine` | `:5432` | `:5432` |
 
-From the repo root:
-
-```bash
-docker build -t tabl-api-gateway ./backend/api-gateway
-docker build -t tabl-ml-service ./ml-pipeline/fastapi-app
-```
-
-### 3. Run them
-
-The ML service image listens on container port `8080`, but
-`ML_SERVICE_URL` in `backend/api-gateway/.env.example` defaults to
-`http://localhost:8000` — map the host port to match (or override
-`ML_SERVICE_URL` to point at `:8080` instead):
-
-```bash
-docker run -d --name tabl-ml-service \
-  -p 8000:8080 \
-  tabl-ml-service
-
-docker run -d --name tabl-api-gateway \
-  -p 3001:8080 \
-  -e PORT=8080 \
-  -e DATABASE_URL="postgresql://postgres:postgres@host.docker.internal:5432/table_dev" \
-  -e ML_SERVICE_URL="http://host.docker.internal:8000" \
-  -e JWT_SECRET="dev-jwt-secret-change-me" \
-  tabl-api-gateway
-```
-
-`host.docker.internal` resolves to the host machine from inside a
-container on Docker Desktop (Windows/Mac); on Linux, use
-`--network=host` or the Postgres container's name/IP on the shared
-Docker network instead.
+All application images carry a `HEALTHCHECK`, which is what compose uses to
+sequence startup (Postgres healthy → migrations applied → gateway → web).
 
 Verify:
 
 ```bash
 curl http://localhost:3001/health
 curl http://localhost:8000/health
+curl http://localhost:5173/health   # via the web container's nginx proxy
+```
+
+The two application images are still buildable and runnable standalone if you
+need one in isolation:
+
+```bash
+docker build -t tabl-api-gateway ./backend/api-gateway
+docker build -t tabl-ml-service ./ml-pipeline/fastapi-app
 ```
 
 ### Where this fits with the cloud configs above
@@ -107,6 +76,5 @@ how these same two images were previously built by Cloud Build and pushed
 to Artifact Registry for deployment to Cloud Run — see
 [`gcp/staging/artifact_registry.tf`](./gcp/staging/artifact_registry.tf)
 and [`gcp/staging/cloud_build.tf`](./gcp/staging/cloud_build.tf). That
-pipeline has no live target today; the `docker build`/`docker run` steps
-above are the only way to run these images until a provider is
-(re)provisioned.
+pipeline has no live target today; the local compose stack above is the
+only way to run these images until a provider is (re)provisioned.

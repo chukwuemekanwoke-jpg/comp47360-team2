@@ -1,0 +1,66 @@
+# Applies to the repo-root build context, used by the two frontend images
+# (frontend/web-app/Dockerfile and frontend/mobile-app/Dockerfile — see the
+# comment at the top of each for why they need the root).
+#
+# The other three images build from their own subdirectory contexts and are
+# governed by their own .dockerignore:
+#   backend/api-gateway/.dockerignore
+#   database/.dockerignore
+#   ml-pipeline/fastapi-app/.dockerignore
+
+.git
+.github
+.claude
+.firebase
+
+**/node_modules
+**/dist
+**/coverage
+**/.expo
+**/.vite
+**/.next
+**/out
+
+# Secrets — never bake these into an image layer.
+.env
+.env.local
+.env.*.local
+**/.env
+**/.env.*
+!**/.env.example
+*.pem
+*.key
+google-api-credentials.json
+firebase-adminsdk.json
+
+# Nothing outside frontend/ contributes to either frontend build. ml-pipeline
+# alone is ~85 MB of model and feature data, so excluding these keeps the
+# context small.
+ml-pipeline
+cloud_deployments
+docs
+database/migrations
+database/seeds
+database/scripts
+database/backups
+backend/api-gateway/src
+backend/api-gateway/scripts
+
+# Native project output from a local `expo prebuild` — regenerated, never an
+# input, and large.
+frontend/mobile-app/ios
+frontend/mobile-app/android
+
+# Test-only sources never reach the production bundle.
+frontend/web-app/src/test
+**/__tests__
+**/*.test.js
+**/*.test.jsx
+**/*.test.ts
+**/*.test.tsx
+
+**/*.log
+npm-debug.log*
+**/__pycache__
+**/.pytest_cache
+RISK_REGISTER.md

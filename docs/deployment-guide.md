@@ -2,7 +2,7 @@
 
 How code moves from a developer's machine to staging and (eventually) production, what GitHub Actions runs at each step, and how to troubleshoot when it doesn't.
 
-> **Infra status (2026-08-05): no GCP infrastructure currently exists for TABL.** Both `tabl-app-staging` and `tabl-app-prod` were deleted 2026-08-01 (billing account closed) — see [`cloud_deployments/README.md`](../cloud_deployments/README.md). The branch/CI flow below is unaffected, but the staging deploy step in [`deploy-staging.yml`](#3-staging-deploy--githubworkflowsdeploy-stagingyml) now targets a project that no longer exists (logged as **R-26** in `RISK_REGISTER.md`). Until new infra is provisioned, the app only runs locally via Docker — see [`cloud_deployments/README.md`'s "Running the app with Docker"](../cloud_deployments/README.md#running-the-app-with-docker).
+> **Infra status (2026-08-05): no GCP infrastructure currently exists for TABL.** Both `tabl-app-staging` and `tabl-app-prod` were deleted 2026-08-01 (billing account closed) — see [`cloud_deployments/README.md`](../cloud_deployments/README.md). The branch/CI flow below is unaffected, but the staging deploy step in [`deploy-staging.yml`](#3-staging-deploy--githubworkflowsdeploy-stagingyml) now targets a project that no longer exists (logged as **R-26** in `RISK_REGISTER.md`). Until new infra is provisioned, the app only runs locally via Docker — see [`docs/docker-local.md`](./docker-local.md).
 
 ## Branch strategy
 
@@ -49,6 +49,22 @@ git show origin/main:.github/workflows/ci.yml > /dev/null && echo "present" || e
 ```
 
 ## 1. Local development
+
+### Docker (recommended)
+
+The whole platform — web app, mobile app, API gateway, ML service, Postgres —
+comes up with one command, no local toolchain required:
+
+```bash
+cp .env.example .env
+docker compose up -d --build                    # http://localhost:5173
+docker compose --profile mobile up -d mobile    # optional: Expo on http://localhost:8081
+```
+
+Full guide, including where the Google Maps API keys go:
+[`docs/docker-local.md`](./docker-local.md).
+
+### Native toolchain
 
 ```bash
 # from repo root (npm workspaces: database, backend/api-gateway, frontend/web-app, frontend/mobile-app)
