@@ -114,7 +114,6 @@ export interface AuthSession {
 export interface ManagerOfferItem {
   id: string;
   campaignId: string;
-  userDisplayName: string;
   status: OfferStatus;
   expiresAt: string;
   secondsRemaining: number;

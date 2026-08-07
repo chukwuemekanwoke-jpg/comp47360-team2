@@ -37,6 +37,19 @@ export function cuisineImage(cuisine: string): ImageSourcePropType {
   return CUISINE_IMAGES[cuisine.trim().toLowerCase()] ?? GENERIC_IMAGE;
 }
 
+// Pass to every <ImageBackground> holding one of these photos, as `imageStyle`.
+//
+// ImageBackground sizes its inner <Image> from `StyleSheet.flatten(style)`, and
+// on web NativeWind hands the size down as a class name rather than as style
+// values — so the flatten yields no width/height and react-native-web falls
+// back to the asset's intrinsic size (640x320 for these photos). The image then
+// renders at 640x320 inside an 80px-tall band: a hugely magnified corner crop
+// that also bleeds down over the card text below it, which in light mode leaves
+// dark text sitting unreadably on a photo. Pinning the image to 100% of its
+// container overrides that fallback. No-op on native, where the image is
+// already laid out by absoluteFill.
+export const CUISINE_IMAGE_FILL = { width: "100%", height: "100%" } as const;
+
 // Backend cuisine keys like "bakery_products" aren't fit for display — swap
 // underscores for spaces and title-case each word ("Bakery Products"). Callers
 // that style the text uppercase (photo bands, chips) are unaffected, since the

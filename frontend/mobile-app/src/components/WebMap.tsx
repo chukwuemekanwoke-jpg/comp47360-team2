@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -82,6 +82,22 @@ function toBounds(b: L.LatLngBounds): MapBounds {
     east: b.getEast(),
     west: b.getWest(),
   };
+}
+
+// Change only refires on change of map extent
+
+function sameView(
+  a: { bounds: MapBounds; zoom: number } | null,
+  b: { bounds: MapBounds; zoom: number }
+): boolean {
+  return (
+    a !== null &&
+    a.zoom === b.zoom &&
+    a.bounds.north === b.bounds.north &&
+    a.bounds.south === b.bounds.south &&
+    a.bounds.east === b.bounds.east &&
+    a.bounds.west === b.bounds.west
+  );
 }
 
 // Child of MapContainer so it can hook leaflet events; reports the current
@@ -218,10 +234,21 @@ export default function LeafletMapContainer({
     [restaurantsList, viewport]
   );
 
+  // Report upward only when the visible SET actually changed, not merely when
+  // `markers` took a new array identity. The parent stores this in state, so an
+  // identity-only change would re-render it (and this subtree) for no visible
+  // difference — the second half of the update loop sameView() guards above.
+  const markerSignature = markers
+    .map((m) => `${m.restaurant.id}:${m.highlighted ? 1 : 0}`)
+    .join(',');
+  const lastSignature = useRef<string | null>(null);
+
   useEffect(() => {
+    if (lastSignature.current === markerSignature) return;
+    lastSignature.current = markerSignature;
     onVisibleRestaurantsChange?.(markers);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [markers]);
+  }, [markerSignature]);
 
   const tiles = TILE_LAYERS[theme];
   const zoomedOut = (viewport?.zoom ?? INITIAL_ZOOM) < FULL_DETAIL_ZOOM;
@@ -238,7 +265,9 @@ export default function LeafletMapContainer({
         <TileLayer key={theme} attribution={tiles.attribution} url={tiles.url} />
 
         <ViewportTracker
-          onChange={(bounds, zoom) => setViewport({ bounds, zoom })}
+          onChange={(bounds, zoom) =>
+            setViewport((prev) => (sameView(prev, { bounds, zoom }) ? prev : { bounds, zoom }))
+          }
         />
 
         <ResizeGuard />

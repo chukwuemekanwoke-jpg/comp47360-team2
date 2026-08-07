@@ -813,7 +813,6 @@ describe("campaign routes", () => {
             status: "pending",
             expires_at: expiresAt,
             accepted_at: null,
-            user_display_name: "Ava",
           },
           {
             id: "66666666-6666-4666-8666-666666666666",
@@ -821,7 +820,6 @@ describe("campaign routes", () => {
             status: "accepted",
             expires_at: expiresAt,
             accepted_at: acceptedAt,
-            user_display_name: "Ben",
           },
         ],
       });
@@ -835,14 +833,16 @@ describe("campaign routes", () => {
     expect(res.body.offers[0]).toMatchObject({
       id: OFFER_ID,
       campaignId: CAMPAIGN_ID,
-      userDisplayName: "Ava",
       status: "pending",
       acceptedAt: null,
     });
     expect(res.body.offers[1]).toMatchObject({
-      userDisplayName: "Ben",
       status: "accepted",
       acceptedAt: acceptedAt.toISOString(),
+    });
+    // Diner identity must never reach the manager dashboard.
+    res.body.offers.forEach((offer) => {
+      expect(offer).not.toHaveProperty("userDisplayName");
     });
   });
 

@@ -233,15 +233,15 @@ backend/api-gateway/
 
 ## API contract & architecture
 
-- **BE-3:** [docs/api-contract-v0.md](../../docs/api-contract-v0.md)
-- **BE-4:** [docs/adr/ADR-001.md](../../docs/adr/ADR-001.md)
-- **BE-5:** [docs/data-strategy.md](../../docs/data-strategy.md)
+- **BE-3:** [docs/architecture/api-contract-v0.md](../../docs/architecture/api-contract-v0.md)
+- **BE-4:** [docs/architecture/adr/ADR-001.md](../../docs/architecture/adr/ADR-001.md)
+- **BE-5:** [docs/architecture/data-strategy.md](../../docs/architecture/data-strategy.md)
 
 Business routes (`/restaurants`, `/bookings`, …) mount under `src/routes/apiV1/`.
 
 ## Postman smoke tests
 
-Import [docs/postman/table-integration-journeys.postman_collection.json](../../docs/postman/table-integration-journeys.postman_collection.json) for C-side and B-side journey checks. See [docs/postman/README.md](../../docs/postman/README.md).
+Import [docs/architecture/postman/table-integration-journeys.postman_collection.json](../../docs/architecture/postman/table-integration-journeys.postman_collection.json) for C-side and B-side journey checks. See [docs/architecture/postman/README.md](../../docs/architecture/postman/README.md).
 
 ## Related tickets
 

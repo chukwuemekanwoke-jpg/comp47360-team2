@@ -1,0 +1,283 @@
+# =============================================================================
+# Tablé — full local stack
+# =============================================================================
+#   cp .env.example .env
+#   docker compose up -d --build
+#   open http://localhost:5173
+#
+# Boot order is enforced by health/completion conditions, so a single `up` is
+# enough — postgres becomes healthy, `migrate` applies the schema and seeds and
+# exits, then the api-gateway and web app start.
+#
+# EXPOSURE: every published port below is bound to 127.0.0.1 by default
+# (BIND_ADDR), so this stack is reachable from this machine and nowhere else.
+# That is deliberate — it runs with a publicly-known JWT_SECRET, default
+# Postgres credentials, and ALLOW_LEGACY_USER_HEADER on, which together mean any
+# host that can reach the gateway can act as any user. Do not undo it to "make
+# the demo shareable". See docs/ops/docker-local.md#exposure-and-security.
+#
+# Full guide, including where the two Google Maps API keys go:
+#   docs/ops/docker-local.md
+# -----------------------------------------------------------------------------
+
+name: table
+
+services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL 16 — the only stateful service. Data lives in the named volume
+  # `table_pg_data` and survives `docker compose down` (but not `down -v`).
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: table-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-table_dev}
+    ports:
+      - "${BIND_ADDR:-127.0.0.1}:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - table_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-table_dev}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - table-network
+
+  # ---------------------------------------------------------------------------
+  # Schema + seed data. Runs to completion and exits; it is not a long-running
+  # service. Both steps are idempotent, so it re-runs harmlessly on every `up`.
+  # Change what gets seeded with SEED_ARGS in .env; the default `--real` loads
+  # the 3,000-venue seed (006_manhattan_real_3000.sql) on top of the fixtures.
+  # ---------------------------------------------------------------------------
+  migrate:
+    build:
+      context: ./database
+    image: table-migrate:local
+    container_name: table-migrate
+    restart: "no"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-table_dev}
+    command:
+      - sh
+      - -c
+      - node scripts/migrate.js && node scripts/seed.js ${SEED_ARGS:-}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - table-network
+
+  # ---------------------------------------------------------------------------
+  # FastAPI busyness prediction + flash-deal matching. Self-contained: the
+  # XGBoost pipeline and feature tables are baked into the image, so it needs
+  # neither the database nor any API key. Slow first start (~30s) while the
+  # model and parquet feature tables load.
+  # ---------------------------------------------------------------------------
+  ml-service:
+    build:
+      context: ./ml-pipeline/fastapi-app
+    image: table-ml-service:local
+    container_name: table-ml-service
+    restart: unless-stopped
+    environment:
+      PORT: 8080
+    ports:
+      - "${BIND_ADDR:-127.0.0.1}:${ML_PORT:-8000}:8080"
+    networks:
+      - table-network
+
+  # ---------------------------------------------------------------------------
+  # Node/Express API gateway. PORT is pinned to 3001 (rather than the image's
+  # 8080 default) so the containerised gateway is reachable at the same
+  # http://localhost:3001 the non-Docker workflow and the mobile app expect.
+  # ---------------------------------------------------------------------------
+  api-gateway:
+    build:
+      context: ./backend/api-gateway
+    image: table-api-gateway:local
+    container_name: table-api-gateway
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-table_dev}
+      ML_SERVICE_URL: http://ml-service:8080
+
+      # Browser origins allowed to call the gateway directly. Requests routed
+      # through the web container's nginx proxy are same-origin and never hit
+      # CORS; these cover hitting the gateway straight from a browser tool,
+      # Expo web, or a host-side `npm run dev:web`.
+      CORS_ORIGINS: http://localhost:${WEB_PORT:-5173},http://127.0.0.1:${WEB_PORT:-5173},http://localhost:8081,http://127.0.0.1:8081
+
+      JWT_SECRET: ${JWT_SECRET:-dev-jwt-secret-change-me}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      WEB_APP_URL: ${WEB_APP_URL:-http://localhost:5173}
+
+      # NODE_ENV=production above would otherwise reject the X-User-Id demo
+      # header. Local convenience only — see .env.example.
+      ALLOW_LEGACY_USER_HEADER: ${ALLOW_LEGACY_USER_HEADER:-true}
+
+      # Optional Google Maps keys. Empty is fine: ETA falls back to a haversine
+      # estimate and the location picker falls back to manual lat/lng entry.
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-}
+      MAPS_JS_API_KEY: ${MAPS_JS_API_KEY:-}
+    ports:
+      - "${BIND_ADDR:-127.0.0.1}:${API_PORT:-3001}:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+      ml-service:
+        condition: service_healthy
+    networks:
+      - table-network
+
+  # ---------------------------------------------------------------------------
+  # React/Vite web app, built to static files and served by nginx, which also
+  # reverse-proxies /api to the gateway (see frontend/web-app/nginx.conf).
+  #
+  # VITE_API_URL is a BUILD arg, not a runtime env var — change it in .env and
+  # rebuild with `docker compose up -d --build web`.
+  # ---------------------------------------------------------------------------
+  web:
+    build:
+      # Repo root, so the build can use the root npm-workspaces lockfile and
+      # reach frontend/packages/shared. See the header in the Dockerfile.
+      context: .
+      dockerfile: frontend/web-app/Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-/api/v1}
+    image: table-web:local
+    container_name: table-web
+    restart: unless-stopped
+    ports:
+      - "${BIND_ADDR:-127.0.0.1}:${WEB_PORT:-5173}:80"
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - table-network
+
+  # ---------------------------------------------------------------------------
+  # Expo dev server for the React Native app. Opt-in, and the one service here
+  # that runs in DEVELOPMENT mode rather than serving a built artefact:
+  #
+  #   docker compose --profile mobile up -d mobile
+  #   open http://localhost:8081        # the app in a browser (Expo web)
+  #   docker compose logs -f mobile     # QR code → scan with Expo Go on a phone
+  #
+  # Source is bind-mounted, so edits hot-reload without a rebuild. The anonymous
+  # volumes below protect the image's installed dependencies from being shadowed
+  # by the (absent) host node_modules at those paths — npm workspaces nests some
+  # packages there rather than hoisting them, because the web and mobile apps
+  # pin different React versions.
+  #
+  # Runs in tunnel mode by default (EXPO_START_ARGS), so the QR code carries a
+  # public ngrok URL a phone can load from anywhere. Expo tunnels the BUNDLER
+  # only, so metro.config.js proxies /api/* on to the gateway — that puts the API
+  # on the same origin as the bundle and is what lets a phone off the LAN reach
+  # the backend at all. No LAN IP to configure. See docs/ops/docker-local.md.
+  # ---------------------------------------------------------------------------
+  mobile:
+    build:
+      context: .
+      dockerfile: frontend/mobile-app/Dockerfile
+    image: table-mobile:local
+    container_name: table-mobile
+    profiles: [mobile]
+    restart: unless-stopped
+    command:
+      - sh
+      - -c
+      - npx expo start --port 8081 ${EXPO_START_ARGS:---tunnel}
+    environment:
+      # Where the dev server forwards /api/*. Service name on the compose
+      # network, not localhost — localhost in here is this container. Port 3001,
+      # not the image's 8080 default: the api-gateway service above overrides
+      # PORT to 3001, so that is what it actually listens on in-network.
+      API_PROXY_TARGET: http://api-gateway:3001
+      # Escape hatch. Left empty the app derives its API base from the origin
+      # that served the bundle, which is what makes tunnel and LAN both work;
+      # set it to pin the app at a specific gateway instead.
+      EXPO_PUBLIC_API_URL: ${EXPO_PUBLIC_API_URL:-}
+      # Only consulted in --host lan mode; tunnel mode advertises its ngrok URL
+      # instead. Either way the container's own IP would be useless to a phone.
+      REACT_NATIVE_PACKAGER_HOSTNAME: ${EXPO_HOST:-localhost}
+      EXPO_NO_TELEMETRY: 1
+      BROWSER: none
+    ports:
+      # Loopback is enough for tunnel mode: the ngrok agent runs inside this
+      # container and dials outbound, so it never touches the published port.
+      # Only `--host lan` needs BIND_ADDR=0.0.0.0.
+      - "${BIND_ADDR:-127.0.0.1}:${EXPO_PORT:-8081}:8081"
+    volumes:
+      - ./frontend/mobile-app:/app/frontend/mobile-app
+      - /app/frontend/mobile-app/node_modules
+      - ./frontend/packages/shared:/app/frontend/packages/shared
+      - /app/frontend/packages/shared/node_modules
+    # Metro watches a large tree; the default container limit is easy to hit.
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    stdin_open: true
+    tty: true
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - table-network
+
+  # ---------------------------------------------------------------------------
+  # Optional database UI. Not started by default:
+  #   docker compose --profile tools up -d pgadmin
+  # Inside pgAdmin, connect to host `postgres`, port 5432 (not localhost:5432 —
+  # that is the host mapping, not reachable from within this network).
+  # ---------------------------------------------------------------------------
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: table-pg-admin
+    restart: unless-stopped
+    profiles: [tools]
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      - "${BIND_ADDR:-127.0.0.1}:${PGADMIN_PORT:-5050}:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - table-network
+
+volumes:
+  # Explicitly named to avoid Compose's doubled `table_table_*` prefix.
+  #
+  # Deliberately NOT the `database_table_pg_data` volume the retired
+  # database/docker-compose.yml wrote to: those clusters predate migration
+  # 009_booking_lifecycle_rules and can hold booking rows that violate the
+  # unique index it adds, so migrating one forward fails. This stack starts from
+  # a clean volume and rebuilds the data from migrations + seeds. The old volume
+  # is left untouched on disk — `docker volume rm database_table_pg_data` once
+  # you no longer want it.
+  table_pg_data:
+    name: table_pg_data
+    driver: local
+  pgadmin_data:
+    name: table_pgadmin_data
+    driver: local
+
+networks:
+  table-network:
+    driver: bridge

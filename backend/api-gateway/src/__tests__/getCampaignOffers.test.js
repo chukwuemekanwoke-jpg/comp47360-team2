@@ -16,7 +16,6 @@ describe("getCampaignOffers", () => {
               status: "pending",
               expires_at: expiresAt,
               accepted_at: null,
-              user_display_name: "Ava",
             },
           ],
         }),
@@ -31,10 +30,10 @@ describe("getCampaignOffers", () => {
     expect(offers[0]).toMatchObject({
       id: "offer-1",
       campaignId: "campaign-1",
-      userDisplayName: "Ava",
       status: "pending",
       acceptedAt: null,
     });
+    expect(offers[0]).not.toHaveProperty("userDisplayName");
     expect(pool.query).toHaveBeenNthCalledWith(
       2,
       expect.stringContaining("SET status = 'expired'"),
