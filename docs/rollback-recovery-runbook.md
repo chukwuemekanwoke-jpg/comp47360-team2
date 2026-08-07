@@ -1,6 +1,6 @@
 # Runbook: Rollback & Recovery Procedures (TABL-507)
 
-**Owner:** chukwuemekanwoke-jpg | **Frequency:** As needed (bad deploy, incident)
+**Author / Owner:** Chukwuemeka Nwoke — Integration Lead / Scrum Master | **Frequency:** As needed (bad deploy, incident)
 **Last Updated:** 2026-07-11 | **Last Run:** Never (git-revert step timed in isolation; full rollback path not yet drilled end-to-end — see [Status](#status-against-the-ticket) below)
 
 ## Status against the ticket

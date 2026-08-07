@@ -1,5 +1,7 @@
 # Sprints
 
+**Author:** Chukwuemeka Nwoke — Integration Lead / Scrum Master
+
 Sprint retrospectives for the TABL project, plus links into the Jira workspace
 where the boards, reports and tickets live.
 

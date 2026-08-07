@@ -1,5 +1,7 @@
 # Risk Register — TABL-611
 
+**Author / Owner:** Chukwuemeka Nwoke — Integration Lead / Scrum Master
+
 Maintained per TABL-611 (Risk Register - Monitor & Escalate Blockers). Reviewed at each standup; new risks added as identified, mitigation status updated as work lands. Last updated: 2026-08-05.
 
 ## Escalate now (Critical / High severity, active blockers)

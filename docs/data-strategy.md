@@ -14,7 +14,15 @@ This document defines:
 3. **Data quality** risks and mitigations
 4. How **simulated “live”** updates replace production restaurant APIs (per business plan risk #2)
 
-Tablé does **not** use paid OpenTable Partner APIs or Google Places as primary sources in MVP.
+Tablé does **not** use paid OpenTable Partner APIs, and does **not** call Google
+Places (or any other venue API) at request time. Google Places attributes *are*
+used, ingested offline into a static feature table — see Dataset C.
+
+> **Corrected 2026-08-07.** Revisions of this document up to 2026-08-06 described
+> the ML training source as "OpenTable-style reservation patterns". No OpenTable
+> data exists anywhere in `ml-pipeline/`. The shipped model trains on the Google
+> Places popular-times index. Dataset C, §4, §5 and §6 below are corrected
+> accordingly; see [ADR-001](./adr/ADR-001.md) revision 6, ADR-001-E.
 
 ---
 
@@ -118,17 +126,38 @@ Restaurant `(lat, lng)` → taxi zone polygon (spatial join or nearest zone cent
 
 ---
 
-### Dataset C — OpenTable-style reservation patterns (optional / ML training)
+### Dataset C — Google Places venue attributes and popular times (primary — ML label)
 
 | Field | Value |
 |-------|--------|
-| **Name** | Public research or competition datasets with **reservation time / party size / restaurant id** (no live API) |
-| **Examples** | Team may use cleaned CSV from course workshops, Kaggle “restaurant reservation” sets, or synthetic OpenTable-shaped samples |
-| **License** | Must be free for academic use; **no paid OpenTable API** |
+| **Name** | Google Places venue attributes and popular-times index for 2,815 Manhattan restaurants |
+| **Grain** | One row per (restaurant, weekday, hour) — 367,437 observations |
+| **Collection** | Ingested **offline** into `ml-pipeline/fastapi-app/data/restaurant_features.parquet`; never queried at request time |
+| **Fields used** | `popular_times` index (0–100), rating, review count, typical visit duration text, coordinates |
 
-**Role:** Train **time-series / peak-hour** models (party size, lead time, cancellation patterns) aligned with business plan §3. Feeds FastAPI busyness forecast, not live inventory.
+**Role:** Supplies the **supervised label**. The popular-times index is discretised
+into the three ordinal classes (*No Wait* / *Queue Required* / *Severe Queue*) the
+model predicts, and its venue attributes are core features.
 
-**Status:** Exploratory; EDA owner = Data & ML. Backend consumes **output scores** only.
+**Important caveat:** popular times is a **published activity proxy, not observed
+occupancy or queue length**. Google derives it from aggregated location history
+under an unpublished methodology, over users who opted in. A model that predicts
+it well is faithful to that index, not necessarily to the wait at the door. Any
+claim made from this data must be stated in those terms.
+
+---
+
+### Dataset D — NYC PLUTO land use (primary — capacity proxy)
+
+| Field | Value |
+|-------|--------|
+| **Name** | Primary Land Use Tax Lot Output (PLUTO), Manhattan extract |
+| **Portal** | [NYC Open Data](https://opendata.cityofnewyork.us/) |
+| **License** | NYC Open Data Terms of Use (free, public) |
+| **Manhattan use** | `manhattan_pluto.csv` in `ml-pipeline/notebooks/` |
+
+**Role:** Commercial floor area per lot → estimated restaurant floor area, which
+feeds the seating-capacity and turnover features.
 
 ---
 
@@ -139,6 +168,7 @@ Restaurant `(lat, lng)` → taxi zone polygon (spatial join or nearest zone cent
 | [OSM Overpass](https://overpass-turbo.eu/) / Geofabrik NYC extract | Extra POIs, cuisine tags if inspection data thin |
 | TLC Taxi Zone shapefile | Zone polygons for taxi join |
 | Internal `availability_snapshots` | Ground truth for “what we showed users” after simulation |
+| Cuisine profile table | Cuisine-specific turnover rate and takeaway ratio, derived from industry reports |
 
 ---
 
@@ -147,11 +177,15 @@ Restaurant `(lat, lng)` → taxi zone polygon (spatial join or nearest zone cent
 ```mermaid
 flowchart LR
   A[NYC Inspections] --> R[restaurants seed]
-  B[Yellow Taxi 2020] --> Z[Zone hourly drops]
-  Z --> S[busyness_score]
+  B[Yellow Taxi] --> Z[Zone hourly dropoffs]
+  D[NYC PLUTO] --> F[Area / capacity features]
+  C[Google Places attributes] --> F
+  C --> L[Popular-times label]
+  Z --> M[XGBoost model]
+  F --> M
+  L --> M
+  M --> S[busyness_score]
   S --> R
-  C[OpenTable-style CSV] --> M[ML model]
-  M --> S
   R --> API[GET /restaurants/nearby]
   S --> API
 ```
@@ -182,21 +216,30 @@ flowchart LR
 
 ## 5. Feature list for ML (BE-7 / FastAPI)
 
+**Shipped feature set** (corrected 2026-08-07 to match the trained pipeline):
+
 | Feature | Source |
 |---------|--------|
-| `hour_of_day`, `day_of_week` | Taxi aggregates, reservation CSV |
-| `taxi_dropoffs_1h` | Dataset B |
-| `rolling_busyness_7d` | `availability_snapshots` |
-| `neighborhood` | Dataset A |
-| `cuisine` | Dataset A |
-| `user.budget_tier`, categorized preference arrays | `user_preferences` (Story 1.1) |
-| `distance_meters` | Computed at match time |
+| `hour_sin`, `hour_cos` — cyclical hour encoding | Observation timestamp |
+| `friday`, `saturday`, `sunday` — binary indicators | Observation date |
+| `rating` | Dataset C |
+| `log(1 + review_count)` — skewness 13.6 untransformed | Dataset C |
+| `typical_visit_duration` (minutes, median-imputed) | Dataset C |
+| `log(estimated_area)` | Dataset D |
+| `turnover_rate`, `takeaway_ratio` — cuisine-derived | Cuisine profile table |
+| `log(1 + taxi_dropoffs)` for the venue's zone/weekday/hour | Dataset B |
+| `taxi_zone_id` — one-hot, `handle_unknown="ignore"` | TLC zone shapefile |
 
-**Target options:**
+**Shipped target:** three-class ordinal classification of the popular-times index —
+`0` (index = 0, *No Wait*), `1` (0 < index ≤ 50, *Queue Required*), `2` (index > 50,
+*Severe Queue*). Classes are near-balanced, so accuracy is interpretable against a
+33% random baseline.
 
-- Regression: `busyness_score`
-- Classification: `available_table_count > 0`
-- Ranking: click/accept probability for flash deal match
+**Not used.** The earlier draft listed `rolling_busyness_7d`, `neighborhood`,
+`cuisine`, `user.budget_tier` and `distance_meters` as busyness features. None
+of these enter the busyness model. `distance_meters` and the user preference
+fields belong to the **flash-deal matching heuristic**, which is a separate,
+unlearned scoring function — see [ADR-001-C](./adr/ADR-001.md).
 
 ---
 
@@ -210,7 +253,9 @@ flowchart LR
 | Large taxi files | Local EDA slow | Use 1–3 month sample; Parquet; aggregate before join |
 | Duplicate `CAMIS` / name changes | Duplicate restaurants | Dedupe by `CAMIS`, keep latest inspection |
 | Zone ↔ restaurant spatial error | Wrong busyness | Nearest zone; validate with map spot check |
-| No OpenTable live API | No true `available_table_count` | **Simulation rule** (§2.3); bookings decrement count in app |
+| No live reservation feed of any kind | No true `available_table_count` | **Simulation rule** (§2.3); bookings decrement count in app |
+| Popular-times is a proxy, not occupancy | Model accuracy measures fidelity to a published index, not to real queue length | State it explicitly wherever figures are quoted; ground truth listed as future work |
+| Zone taxi demand explains little between-zone variance on its own | Overstating the taxi feature's contribution | Report it as one feature among twelve, not a standalone busyness index |
 
 ---
 
@@ -232,7 +277,7 @@ flowchart LR
 
 - [x] ≥2 named open datasets with URLs and Manhattan filter
 - [x] Busyness vs `available_table_count` defined
-- [x] Simulation approach documented (no live OpenTable API)
+- [x] Simulation approach documented (no live reservation API)
 - [x] Quality risks + mitigations listed
 - [x] Join path to `restaurants` and ML features
 - [ ] Data & ML sign-off (comment in Jira / PR)

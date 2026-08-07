@@ -1,5 +1,7 @@
 # AWS — Terraform
 
+**Author:** Chukwuemeka Nwoke — Integration Lead / Scrum Master
+
 | Directory | Environment | Status |
 | --- | --- | --- |
 | [`staging/`](./staging/README.md) | Staging (design exercise) | Written 2026-07-28 as a from-scratch design mirroring GCP staging's architecture; `init`/`validate`/`fmt` clean, never `plan`'d or `apply`'d against a real account |
