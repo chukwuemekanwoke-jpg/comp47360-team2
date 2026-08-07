@@ -44,7 +44,7 @@ All four participants completed the principal diner and merchant workflows in th
 |---:|---|---:|---|
 | 1 | Registration did not clearly explain that Tablé helps users find immediately available restaurant tables. | P01--P04, 4/4 | Add a direct value proposition; outstanding |
 | 2 | Transparent, overlapping, or low-contrast mobile surfaces reduced readability, especially in dark mode. | P01--P04, 4/4 | Web-specific rendering cause identified and reported corrected |
-| 3 | Book or Claim Offer did not clearly signal an immediate reservation, default travel mode, hold window, or departure expectation. | P01--P03, 3/4 | Add commitment summary and confirmation; outstanding |
+| 3 | Booking confirmation and clearer immediate-booking wording were reported implemented before the final demonstration |
 | 4 | Map results and post-claim states did not always provide a direct next action. | P01 and P03, 2/4 | Add shared detail route and persistent success state |
 | 5 | Campaign History could contradict Active Campaign and Live Offer Tracker until refresh. | P01 and P04, 2/4 | Campaign-state synchronisation reported corrected |
 | 6 | Saves and consequential actions lacked consistent confirmation. | P01, P03, and P04, 3/4 | Add save, claim, and cancellation feedback |
@@ -85,7 +85,7 @@ P04 focused on explicit preference labels, confirmation after saves, and confide
 | Visual rendering | Transparent/overlapping surfaces were investigated and reproduced as a web-specific issue. | Reported corrected |
 | Campaign state | Live tracking and Campaign History inconsistency was addressed. | Reported corrected |
 | First-use positioning | Add an explicit restaurant and immediate-availability value proposition. | Outstanding |
-| Booking semantics | Explain immediate booking, travel mode, ETA, hold window, and departure expectation before commitment. | Outstanding |
+| Booking semantics | Reported implemented before the final demonstration. | Outstanding |
 | Completion feedback | Add persistent success states and direct next actions after claims and saves. | Outstanding or not re-tested |
 | Operator validation | Test campaign creation and monitoring with restaurant staff. | Not conducted |
 
