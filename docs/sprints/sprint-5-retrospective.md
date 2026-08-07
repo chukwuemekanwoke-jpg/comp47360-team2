@@ -2,7 +2,7 @@
 
 COMP47360 Team 2
 
-*Snapshot as of August 5, 2026 | Prepared by: Chukwuemeka Nwoke, Integration Lead / Scrum Master*
+*Snapshot as of August 5, 2026 | Prepared by: Chukwuemeka Nwoke (Integration Lead / Scrum Master)*
 
 ## Executive Summary
 
@@ -62,7 +62,7 @@ Sprint 5 ran 2026-07-22 to 2026-08-05 under the goal "Polished apps, Paper, Demo
 | Yang Liu (Backend Lead) | 4 | 0 | Booking lifecycle hardening (cardinality, timeout, 5-booking retention cap) plus the Sprint 4 rate-limiter incident fix (TABL-115). Zero carryover. |
 | Jack Xu (Data & ML Lead) | 5 | 0 | Closed every remaining Sprint 4 ML carryover item: model evaluation/tuning, heuristic fallback, RevPASH-informed retraining, drift monitoring, and the paper's ML section. |
 | Yuhao Xu (Product Lead) | 4 | 0 | Closed every remaining Sprint 4 QA/product-research carryover item: both usability rounds (internal + external), the user interview session, and feedback synthesis. |
-| Chukwuemeka Nwoke (Scrum Master & Integration) | 3 | 0 | Database backup & recovery plan (verified live via Cloud SQL Admin API), performance testing (the same investigation that surfaced R-23 in Sprint 4), security testing (input validation / SQL injection). |
+| Chukwuemeka Nwoke (Integration Lead / Scrum Master) | 3 | 0 | Database backup & recovery plan (verified live via Cloud SQL Admin API), performance testing (the same investigation that surfaced R-23 in Sprint 4), security testing (input validation / SQL injection). |
 | Andrew Mitchell (Frontend Lead) | 2 | 0 | Usability & accessibility fixes (web) and the push-notifications integration ticket. |
 | Milo Dennehy (Mobile Lead) | 0 | 0 | No ticket owned this sprint — consistent with Mobile fully clearing its Sprint 4 scope (8/8), but worth confirming this was intentional rather than a board-tagging gap. |
 

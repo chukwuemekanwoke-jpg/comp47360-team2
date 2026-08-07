@@ -1,5 +1,7 @@
 # Deployment Guide
 
+**Author:** Chukwuemeka Nwoke — Integration Lead / Scrum Master
+
 How code moves from a developer's machine to staging and (eventually) production, what GitHub Actions runs at each step, and how to troubleshoot when it doesn't.
 
 > **Infra status (2026-08-05): no GCP infrastructure currently exists for TABL.** Both `tabl-app-staging` and `tabl-app-prod` were deleted 2026-08-01 (billing account closed) — see [`cloud_deployments/README.md`](../cloud_deployments/README.md). The branch/CI flow below is unaffected, but the staging deploy step in [`deploy-staging.yml`](#3-staging-deploy--githubworkflowsdeploy-stagingyml) now targets a project that no longer exists (logged as **R-26** in `RISK_REGISTER.md`). Until new infra is provisioned, the app only runs locally via Docker — see [`cloud_deployments/README.md`'s "Running the app with Docker"](../cloud_deployments/README.md#running-the-app-with-docker).

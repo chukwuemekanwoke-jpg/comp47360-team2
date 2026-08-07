@@ -1,5 +1,7 @@
 # Table Frontend Application Development Guide
 
+**Authors:** Chukwuemeka Nwoke — Integration Lead / Scrum Master · Milo Dennehy — Mobile App Lead · Yang Liu — Backend Lead
+
 This guide will help you get your local development environment set up. 
 
 ---

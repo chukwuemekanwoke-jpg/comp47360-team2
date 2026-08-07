@@ -1,5 +1,7 @@
 # Seed data
 
+**Authors:** Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master
+
 Four complementary seeds:
 
 | File | Data | Use for |

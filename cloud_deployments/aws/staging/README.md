@@ -1,5 +1,7 @@
 # AWS — Terraform (design exercise, mirrors GCP staging)
 
+**Author:** Chukwuemeka Nwoke — Integration Lead / Scrum Master
+
 **This is not reverse-engineered from anything real — nothing runs on AWS
 today.** These files are a from-scratch design that mirrors
 [`cloud_deployments/gcp/staging`](../../gcp/staging/README.md)'s

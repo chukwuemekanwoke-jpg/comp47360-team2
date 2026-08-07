@@ -1,5 +1,7 @@
 # Tablé UI Style Guide
 
+**Author:** Yuhao Xu — Product & UX Lead
+
 ## Purpose
 
 This guide gives the frontend team a shared visual language for Tablé across web and mobile. It should prevent each page from choosing its own font, colour palette, and component style.

@@ -4,6 +4,8 @@
 
 **Manhattan Busyness Analytics Platform** *UCD COMP47360 Research Practicum (Team 2) Core Academic Deliverable*
 
+*Authors: Yuhao Xu — Product & UX Lead · Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master*
+
 ![React + Vite](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-646CFF?style=flat-square&logo=vite)
 ![React Native](https://img.shields.io/badge/Mobile-Expo-02569B?style=flat-square&logo=react)
 ![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?style=flat-square&logo=nodedotjs)
@@ -39,7 +41,7 @@ This repository follows a Monorepo architecture to ensure high-efficiency collab
 
 ```text
 comp47360-team2/
-├── docs/                # Core documents (Business Plan, MVP ACs, API contract, ADR)
+├── docs/                # Core documents (Business Plan, MVP ACs, API contract, ADR, deployment guide)
 │   └── adr/             # Architecture Decision Records (ADR-001.md)
 ├── frontend/            # Frontend ecosystem
 │   ├── web-app/         # Responsive Web App (React + Vite)
@@ -50,19 +52,21 @@ comp47360-team2/
 ├── ml-pipeline/         # Machine Learning & Data Engine
 │   ├── fastapi-app/     # Algorithm Inference API (Python/FastAPI)
 │   └── notebooks/       # Data exploration & feature engineering workflows
-└── database/            # PostgreSQL migrations, seeds, Docker Compose
+├── database/            # PostgreSQL migrations, seeds, Docker Compose
+├── cloud_deployments/   # Terraform IaC per cloud provider (gcp/, aws/, azure/) — see status note below
+└── RISK_REGISTER.md     # Live project risk register, reviewed each sprint
 ```
 
 ## 👥 Team Roles
 
 | Name | Role | Responsibilities |
 | :--- | :--- | :--- |
-| **Yuhao Xu** | Product & UX Lead | Oversees product logic (`docs/`), UX design walkthroughs, and business value alignment. |
-| **Chukwuemeka Nwoke** | Scrum Master | Drives agile iterations, CI/CD pipeline integration, and GitHub compliance reviews. |
-| **Andrew Mitchell** | Web Frontend Lead | Leads `frontend/web-app` architecture and responsive UI implementation. |
-| **Milo Dennehy** | Mobile App Lead | Leads `frontend/mobile-app` cross-platform development and map component integration. |
-| **Yang Liu** | Backend Lead | Leads `backend/api-gateway`, database schema, and core API implementation. |
-| **Rui Xu** | Data & ML Lead | Leads `ml-pipeline/` recommendation algorithm modeling, data cleaning, and FastAPI deployment. |
+| **Yuhao Xu** | Product & UX Lead | Owns product logic and specs (`docs/product-spec.md`), UX design walkthroughs, and business value alignment; drives QA and product research — integration tests, API contract validation, accessibility testing, internal & external usability rounds, user interviews, feedback synthesis, and the final paper outline. |
+| **Chukwuemeka Nwoke** | Integration Lead / Scrum Master | Runs sprint ceremonies and retrospectives (`docs/sprints/`); owns the CI/CD pipeline — `ci.yml`, `deploy-staging.yml`, branch protection rules — and the `feature/* → integrate → develop → main` branch flow; maintains `RISK_REGISTER.md` and GitHub compliance reviews. |
+| **Andrew Mitchell** | Web Frontend Lead | Leads `frontend/web-app` architecture and responsive UI implementation — form validation, accessibility audits, the shared component library, merchant sign-up flow, JWT auth wiring, and usability/accessibility fixes. |
+| **Milo Dennehy** | Mobile App Lead | Leads `frontend/mobile-app` cross-platform development — map/discovery components, push notifications, Redux state management, bookings & settings UI, mobile JWT auth, and mobile accessibility fixes. |
+| **Yang Liu** | Backend Lead | Leads `backend/api-gateway` and the database schema — auth, bookings, restaurants, offers, campaigns, and ETA endpoints; booking-lifecycle hardening, rate-limiter fixes, and the database backup & recovery plan. |
+| **Rui Xu** *(Jack)* | Data & ML Lead | Leads `ml-pipeline/` — busyness prediction model, user-restaurant matching algorithm, and the FastAPI inference endpoint; model evaluation/tuning, RevPASH-informed retraining, drift monitoring, and the ML section of the final paper. |
 
 ---
 
@@ -72,7 +76,30 @@ comp47360-team2/
 
 **1. Clone the Repository**
 ```bash
-git clone [https://github.com/YourOrganization/comp47360-team2.git](https://github.com/YourOrganization/comp47360-team2.git)
+git clone https://github.com/chukwuemekanwoke-jpg/comp47360-team2.git
 cd comp47360-team2
 ```
+
+**2. Install Dependencies**
+```bash
+npm install
+```
+This is an npm-workspaces monorepo — one install at the root wires up `database`, `backend/api-gateway`, `frontend/web-app`, `frontend/mobile-app`, and `frontend/packages/shared` together.
+
+**3. Start the Database**
+```bash
+npm run db:up      # docker compose up -d — Postgres on :5432
+npm run migrate
+npm run seed        # optional demo data
+```
+
+**4. Run the App**
+```bash
+npm run dev          # backend (api-gateway) + web app together
+npm run dev:mobile   # backend + Expo mobile app (tunnel mode)
+```
+
+### ☁️ Cloud Deployment Status
+
+Nothing in `cloud_deployments/` currently points at a live cloud environment — the app runs locally via Docker as shown above. The GCP staging/prod projects were decommissioned (deleted, billing closed) on **2026-08-01**; the `gcp/` Terraform is kept as a historical record only. The `aws/` and `azure/` configs are greenfield designs, never applied. See [`cloud_deployments/README.md`](cloud_deployments/README.md) for the full picture, including how to build and run the `api-gateway` and `ml-service` containers directly with Docker.
 

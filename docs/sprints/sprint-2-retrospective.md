@@ -104,7 +104,7 @@ Verified against the Atlassian Jira board (project key SCRUM):
 | Milo Dennehy | Mobile Lead | 3/3 stories complete (100%) — mobile scaffolding and core screens ahead of plan. |
 | Rui Xu | Data & ML Lead | 1/4 stories complete (25%) — ML model training is the critical path risk for Sprint 3. |
 | Yuhao Xu | Product Owner | All 5 user stories detailed to BDD level — specification work complete. |
-| Chukwuemeka Nwoke | Integration Lead / SCM | CI/CD gates designed but not yet running in GitHub Actions — top Sprint 3 Day 1 priority. |
+| Chukwuemeka Nwoke | Integration Lead / Scrum Master | CI/CD gates designed but not yet running in GitHub Actions — top Sprint 3 Day 1 priority. |
 
 ## Retrospective Conclusion
 

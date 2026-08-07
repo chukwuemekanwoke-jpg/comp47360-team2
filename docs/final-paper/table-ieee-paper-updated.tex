@@ -16,9 +16,39 @@
 % wrapped in \tbd{...} MUST be replaced with a real, measured value before
 % submission. Nothing rendered in red is a real finding.
 %
-% As of this revision the only remaining placeholders are in Section V-C
-% (usability scoring and the formal accessibility audit). All model,
-% service-performance and test-suite figures are measured.
+% RESOLVED (2026-08-06): all Section V-A service-performance figures come
+% from the two k6 load-test runs executed against staging on 2026-07-22,
+% recorded in docs/performance-testing.md (Results Log) before the
+% environment was decommissioned:
+%   - discovery p95: 82.7 ms @ 30 VUs / 364.0 ms @ 100 VUs
+%   - ETA p95:       39.2 ms @ 30 VUs / 293.1 ms @ 100 VUs (mostly cache hits)
+%   - RevPASH p95:   55.4 ms @ 30 VUs / 227.5 ms @ 100 VUs
+%   - error rate:    0.00% in both runs
+%   - root cause of the 100-VU degradation: unconfigured node-postgres pool
+%     (default max 10), confirmed via Cloud SQL Insights (CPU ~20% peak)
+%
+% HOW THESE WERE RESOLVED WITHOUT RE-PROVISIONING: staging no longer exists
+% (both GCP projects deleted 2026-08-01, billing closed), so no new
+% measurement against it is possible. Rather than rebuild infrastructure,
+% we redirected to the existing evidence: the k6 campaign of 2026-07-22 had
+% already measured the diner journey's read paths and logged full results,
+% thresholds and the Cloud SQL root-cause profile in the version-controlled
+% results log (docs/performance-testing.md). Section V-A reports those
+% figures.
+%
+% WHY THAT HOLDS UP: the numbers are contemporaneous measurements of the
+% real staging deployment, not estimates or reconstructions; the log
+% predates the decommission and is in git history; and the paper reports
+% them as historical measurements of a since-retired environment (see the
+% closing paragraph of Section III-E). What this approach cannot do is
+% produce figures that were never measured — hence the placeholders below
+% stay red rather than being filled by extrapolation.
+%
+% STILL OUTSTANDING as of this revision:
+%   - Section IV (Visual Insights): Figs. 2-3, regenerate from
+%     mode_training_and_evaluation_03.ipynb
+%   - Section V-C: SUS score and participant count; formal accessibility
+%     audit (keyboard pass rate, contrast result)
 % ---------------------------------------------------------------------------
 \newcommand{\tbd}[1]{\textcolor{red}{[TBD: #1]}}
 
