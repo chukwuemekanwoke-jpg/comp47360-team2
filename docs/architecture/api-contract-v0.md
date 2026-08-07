@@ -3,9 +3,9 @@
 **Authors:** Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master
 
 **Status:** v0.3 · **Implementation:** `backend/api-gateway`  
-**Database:** [database/schema.md](../database/schema.md) (BE-2)  
-**Architecture:** [docs/adr/ADR-001.md](./adr/ADR-001.md) (BE-4)  
-**Data:** [docs/data-strategy.md](./data-strategy.md) (BE-5)  
+**Database:** [docs/architecture/database-schema.md](./database-schema.md) (BE-2)  
+**Architecture:** [docs/architecture/adr/ADR-001.md](./adr/ADR-001.md) (BE-4)  
+**Data:** [docs/architecture/data-strategy.md](./data-strategy.md) (BE-5)  
 **Base URL (local):** `http://localhost:3001`
 
 ---
@@ -712,7 +712,7 @@ Returns all offers sent for a campaign, for the merchant live tracker. Expired p
 
 **Auth:** manager  
 
-Organic-vs-deal RevPASH comparison for a single campaign (SCRUM-309 / TABL-215 Phase 2), for the `CampaignHistory.jsx` lift badge. See `docs/data-strategy.md` §11/§12 for the real-vs-simulated context underneath RevPASH generally.
+Organic-vs-deal RevPASH comparison for a single campaign (SCRUM-309 / TABL-215 Phase 2), for the `CampaignHistory.jsx` lift badge. See `docs/architecture/data-strategy.md` §11/§12 for the real-vs-simulated context underneath RevPASH generally.
 
 **Methodology:**
 - `dealRevpash` — revenue from bookings tied to this campaign, over seat-hours available during its active window (`created_at` → `completed_at`/`cancelled_at`/now).

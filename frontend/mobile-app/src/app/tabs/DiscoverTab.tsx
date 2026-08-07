@@ -16,7 +16,7 @@ import { RestaurantSummary } from "@shared/types";
 import { useAppDispatch, useAppSelector } from "@shared/hooks";
 import { setCuisines, setSearchQuery } from "@shared/userSlice";
 import { desirabilityScore } from "@/lib/mapDisplay";
-import { cuisineImage, formatCuisine } from "@/lib/cuisineImages";
+import { CUISINE_IMAGE_FILL, cuisineImage, formatCuisine } from "@/lib/cuisineImages";
 
 // Fallback coords used when device location is unavailable.
 const FALLBACK_LAT = 40.7589;
@@ -118,7 +118,12 @@ export default function DiscoverScreen() {
       activeOpacity={0.8}
       className="w-44 mr-3 bg-table-surface border border-table-border rounded-2xl overflow-hidden"
     >
-      <ImageBackground source={cuisineImage(item.cuisine)} resizeMode="cover" className="h-20">
+      <ImageBackground
+        source={cuisineImage(item.cuisine)}
+        resizeMode="cover"
+        className="h-20"
+        imageStyle={CUISINE_IMAGE_FILL}
+      >
         <View className="flex-1 justify-end px-2.5 py-1.5" style={{ backgroundColor: "rgba(0,0,0,0.25)" }}>
           <Text
             className="text-[9px] font-bold uppercase tracking-widest"
@@ -219,7 +224,12 @@ export default function DiscoverScreen() {
                 activeOpacity={0.8}
                 className="w-32 h-20 mr-3 rounded-2xl overflow-hidden border border-table-border"
               >
-                <ImageBackground source={cuisineImage(cuisine)} resizeMode="cover" className="flex-1">
+                <ImageBackground
+                  source={cuisineImage(cuisine)}
+                  resizeMode="cover"
+                  className="flex-1"
+                  imageStyle={CUISINE_IMAGE_FILL}
+                >
                   <View
                     className="flex-1 items-center justify-center"
                     style={{ backgroundColor: "rgba(0,0,0,0.35)" }}

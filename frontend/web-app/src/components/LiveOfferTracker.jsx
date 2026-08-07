@@ -54,7 +54,7 @@ export default function LiveOfferTracker({ restaurantId, campaignId }) {
 
             return (
               <li key={offer.id} className="py-3 flex items-center justify-between gap-4 text-xs font-mono">
-                <span className="text-table-text font-bold">{offer.userDisplayName}</span>
+                <span className="text-table-text font-bold">Guest {offer.id.slice(0, 8)}</span>
                 <div className="flex items-center gap-3">
                   {offer.status === 'pending' && (
                     <span className="text-table-offer font-bold tracking-wider">

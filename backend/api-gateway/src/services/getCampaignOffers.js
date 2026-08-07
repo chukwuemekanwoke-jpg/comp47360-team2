@@ -22,16 +22,16 @@ async function getCampaignOffers(pool, { restaurantId, campaignId }) {
     [campaignId]
   );
 
+  // Diner identity is deliberately not selected here: managers see offer
+  // status only, so accepting a flash deal stays anonymous.
   const { rows } = await pool.query(
     `SELECT
        o.id,
        o.campaign_id,
        o.status,
        o.expires_at,
-       o.accepted_at,
-       u.display_name AS user_display_name
+       o.accepted_at
      FROM offers o
-     JOIN users u ON u.id = o.user_id
      WHERE o.campaign_id = $1
      ORDER BY o.created_at DESC`,
     [campaignId]

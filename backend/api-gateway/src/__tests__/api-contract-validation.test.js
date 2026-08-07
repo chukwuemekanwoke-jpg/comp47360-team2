@@ -33,7 +33,7 @@ const { callMlMatch } = require("../services/mlMatchClient");
 
 const app = createApp();
 const spec = yaml.load(
-  fs.readFileSync(path.join(__dirname, "../../../../docs/openapi-v0.yaml"), "utf8")
+  fs.readFileSync(path.join(__dirname, "../../../../docs/architecture/openapi-v0.yaml"), "utf8")
 );
 
 const CUSTOMER_ID = "11111111-1111-4111-8111-111111111111";

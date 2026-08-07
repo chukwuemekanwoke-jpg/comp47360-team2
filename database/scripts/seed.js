@@ -4,8 +4,13 @@
  * Idempotent: re-run updates rows (ON CONFLICT in seed files).
  *
  * Default            : applies 001_demo_manhattan.sql (fixed-UUID fixtures for tests).
- * With --real        : also applies 002_manhattan_real.sql (real-data demo + ML link).
- *                       Generate that file first with `npm run generate:seed`.
+ * With --real        : also applies 006_manhattan_real_3000.sql (3,000 real Manhattan
+ *                       venues, restaurants only — the same UUIDv5 universe the ML
+ *                       model uses, and a superset of the older 300-venue
+ *                       002_manhattan_real.sql). Generate it first with
+ *                       `npm run generate:seed:full`. Manager links come from
+ *                       001_demo_manhattan.sql (Demo Manager) or 005_restaurant_managers.sql,
+ *                       which this seed deliberately leaves untouched.
  * With --taxi-demand : also applies 004_historical_taxi_demand.sql (static NYC TLC
  *                       drop-off zone/hour aggregates for the ML pipeline). Large
  *                       (~39k rows) and unrelated to the restaurant/booking data, so
@@ -19,7 +24,7 @@ require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
 
 const SEEDS_DIR = path.join(__dirname, "..", "seeds");
 const DEMO_SEED = "001_demo_manhattan.sql";
-const REAL_SEED = "002_manhattan_real.sql";
+const REAL_SEED = "006_manhattan_real_3000.sql";
 const REVPASH_SEED = "003_demo_revpash_bookings.sql";
 const TAXI_DEMAND_SEED = "004_historical_taxi_demand.sql";
 
@@ -31,7 +36,7 @@ async function applySeed(client, fileName) {
   if (!fs.existsSync(seedPath)) {
     if (fileName === REAL_SEED) {
       console.error(
-        `Real seed not found: ${seedPath}\nRun "npm run generate:seed" first.`
+        `Real seed not found: ${seedPath}\nRun "npm run generate:seed:full" first.`
       );
     } else {
       console.error(`Seed file not found: ${seedPath}`);

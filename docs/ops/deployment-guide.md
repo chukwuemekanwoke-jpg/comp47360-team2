@@ -4,7 +4,7 @@
 
 How code moves from a developer's machine to staging and (eventually) production, what GitHub Actions runs at each step, and how to troubleshoot when it doesn't.
 
-> **Infra status (2026-08-05): no GCP infrastructure currently exists for TABL.** Both `tabl-app-staging` and `tabl-app-prod` were deleted 2026-08-01 (billing account closed) — see [`cloud_deployments/README.md`](../cloud_deployments/README.md). The branch/CI flow below is unaffected, but the staging deploy step in [`deploy-staging.yml`](#3-staging-deploy--githubworkflowsdeploy-stagingyml) now targets a project that no longer exists (logged as **R-26** in `RISK_REGISTER.md`). Until new infra is provisioned, the app only runs locally via Docker — see [`cloud_deployments/README.md`'s "Running the app with Docker"](../cloud_deployments/README.md#running-the-app-with-docker).
+> **Infra status (2026-08-05): no GCP infrastructure currently exists for TABL.** Both `tabl-app-staging` and `tabl-app-prod` were deleted 2026-08-01 (billing account closed) — see [`cloud_deployments/README.md`](../../cloud_deployments/README.md). The branch/CI flow below is unaffected, but the staging deploy step in [`deploy-staging.yml`](#3-staging-deploy--githubworkflowsdeploy-stagingyml) now targets a project that no longer exists (logged as **R-26** in `RISK_REGISTER.md`). Until new infra is provisioned, the app only runs locally via Docker — see [`docs/ops/docker-local.md`](./docker-local.md).
 
 ## Branch strategy
 
@@ -52,6 +52,22 @@ git show origin/main:.github/workflows/ci.yml > /dev/null && echo "present" || e
 
 ## 1. Local development
 
+### Docker (recommended)
+
+The whole platform — web app, mobile app, API gateway, ML service, Postgres —
+comes up with one command, no local toolchain required:
+
+```bash
+cp .env.example .env
+docker compose up -d --build                    # http://localhost:5173
+docker compose --profile mobile up -d mobile    # optional: Expo on http://localhost:8081
+```
+
+Full guide, including where the Google Maps API keys go:
+[`docs/ops/docker-local.md`](./docker-local.md).
+
+### Native toolchain
+
 ```bash
 # from repo root (npm workspaces: database, backend/api-gateway, frontend/web-app, frontend/mobile-app)
 npm install
@@ -79,7 +95,7 @@ Before opening a PR, run what CI will run:
 cd backend/api-gateway && npm run check:openapi-drift && npm test
 cd ../../frontend/web-app && npm run lint && npm run build
 cd ../mobile-app && npm run lint
-npx --yes @redocly/cli lint docs/openapi-v0.yaml
+npx --yes @redocly/cli lint docs/architecture/openapi-v0.yaml
 ```
 
 ## 2. CI — `.github/workflows/ci.yml`
@@ -88,7 +104,7 @@ Runs on every push and PR to `main`, `develop`, and `integrate`. Five independen
 
 | Job | What it checks | Failure means |
 |---|---|---|
-| `openapi-lint` | `docs/openapi-v0.yaml` is valid OpenAPI 3.0.3 (Redocly CLI) | Spec has a syntax/structural error |
+| `openapi-lint` | `docs/architecture/openapi-v0.yaml` is valid OpenAPI 3.0.3 (Redocly CLI) | Spec has a syntax/structural error |
 | `web` | `frontend/web-app`: `npm ci`, `eslint`, `vite build` | Lint violation or build error in the web app |
 | `mobile` | `frontend/mobile-app`: `npm ci`, `expo lint` | Lint violation in the Expo app |
 | `backend` | `backend/api-gateway`: `npm ci`, **OpenAPI drift check**, Jest tests | Route/method mismatch between code and spec, or a failing test |
@@ -96,7 +112,7 @@ Runs on every push and PR to `main`, `develop`, and `integrate`. Five independen
 
 ### OpenAPI drift check (new this session)
 
-`backend/api-gateway/scripts/check-openapi-drift.js` statically introspects the Express router tree (`health`, `apiV1`, `users`, `restaurants`, `bookings`, `offers`, `campaigns`) and diffs the resulting `METHOD /path` set against every path in `docs/openapi-v0.yaml`. It does **not** start a server or touch the database — it requires the router modules directly and reads `layer.route.path`/`layer.route.methods` off each one.
+`backend/api-gateway/scripts/check-openapi-drift.js` statically introspects the Express router tree (`health`, `apiV1`, `users`, `restaurants`, `bookings`, `offers`, `campaigns`) and diffs the resulting `METHOD /path` set against every path in `docs/architecture/openapi-v0.yaml`. It does **not** start a server or touch the database — it requires the router modules directly and reads `layer.route.path`/`layer.route.methods` off each one.
 
 Run it locally:
 ```bash
@@ -105,8 +121,8 @@ npm run check:openapi-drift
 ```
 
 It fails (`exitCode = 1`) and lists two categories whenever they're non-empty:
-- *Endpoints declared in docs/openapi-v0.yaml but not implemented in code* — someone wrote the contract but not the route.
-- *Endpoints implemented in code but not declared in docs/openapi-v0.yaml* — someone shipped a route and forgot the spec.
+- *Endpoints declared in docs/architecture/openapi-v0.yaml but not implemented in code* — someone wrote the contract but not the route.
+- *Endpoints implemented in code but not declared in docs/architecture/openapi-v0.yaml* — someone shipped a route and forgot the spec.
 
 **Maintenance note:** this script hardcodes the mount tree (which router is mounted at which prefix) rather than crawling Express's internal `_router.stack` regexes, which don't reliably round-trip back to plain path strings in modern Express. If you add a new router file or a new `router.use(prefix, subRouter)` mount, you must add it to the `mounts` array in `check-openapi-drift.js` or the check will silently miss those routes (false pass) rather than fail loud.
 
@@ -128,7 +144,7 @@ That push alone kicks off the workflow. Jobs:
 2. `build-backend` — `npm ci` in `backend/api-gateway` (install/compile check only). The job's own comment notes `api-gateway` deploys separately via a Cloud Build trigger configured directly on the Cloud Run service (confirmed live via R-02/R-03 in `RISK_REGISTER.md`) — that trigger, and the Cloud Run service it deployed to, no longer exist.
 3. `deploy` — depends on both above, runs under the `staging` GitHub Environment, downloads `web-dist`, and deploys it to Firebase Hosting (`projectId: tabl-app-staging`) via `FirebaseExtended/action-hosting-deploy@v0`. **This step stopped being a placeholder on 2026-07-09** (commit `b8a37cd`) — contrary to what an earlier version of this guide said, it was already a real, working deploy for over three weeks before the target project was deleted. It will now fail (or silently deploy nothing) since that project is gone.
 
-To make this a real deploy again: either stand up new GCP/Firebase staging infrastructure from scratch (the Terraform under [`cloud_deployments/gcp/staging`](../cloud_deployments/gcp/staging) was written to match the old live state but was never `terraform import`-ed or `apply`-ed, so it can't just be reapplied as-is — treat it as a design reference only) and repoint this workflow plus rebuild `api-gateway`'s Cloud Build trigger, or explicitly retire this deploy step and rely on local Docker (see [`cloud_deployments/README.md`](../cloud_deployments/README.md)) until infra exists again. Whichever path, add any needed secrets to the `staging` Environment in repo settings (Settings → Environments → staging).
+To make this a real deploy again: either stand up new GCP/Firebase staging infrastructure from scratch (the Terraform under [`cloud_deployments/gcp/staging`](../../cloud_deployments/gcp/staging) was written to match the old live state but was never `terraform import`-ed or `apply`-ed, so it can't just be reapplied as-is — treat it as a design reference only) and repoint this workflow plus rebuild `api-gateway`'s Cloud Build trigger, or explicitly retire this deploy step and rely on local Docker (see [`cloud_deployments/README.md`](../../cloud_deployments/README.md)) until infra exists again. Whichever path, add any needed secrets to the `staging` Environment in repo settings (Settings → Environments → staging).
 
 ## 4. Production deploy (tagged release) — not yet implemented
 
@@ -146,15 +162,15 @@ with the deploy job running under a `production` Environment (ideally with requi
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| `backend` job fails on "Check API matches OpenAPI contract" | A route was added/removed/renamed in code without updating `docs/openapi-v0.yaml`, or vice versa | Run `npm run check:openapi-drift` locally, read the two lists it prints, fix the side that's behind |
+| `backend` job fails on "Check API matches OpenAPI contract" | A route was added/removed/renamed in code without updating `docs/architecture/openapi-v0.yaml`, or vice versa | Run `npm run check:openapi-drift` locally, read the two lists it prints, fix the side that's behind |
 | Drift check passes locally but a route is missing from CI's view | New router file or `.use()` mount not added to the `mounts` array in `check-openapi-drift.js` | Add `{ prefix: "...", router: require(...) }` for the new mount |
 | `backend` job fails on `npm test` | A Jest spec in `backend/api-gateway/src/__tests__/` failed | Run `npm test` locally from `backend/api-gateway`; tests use `createApp()` directly via Supertest, no DB needed for `/health` and `/api/v1/status` |
-| `openapi-lint` fails | Invalid YAML or schema in `docs/openapi-v0.yaml` (e.g. duplicate mapping key, bad `$ref`) | Run `npx --yes @redocly/cli lint docs/openapi-v0.yaml` locally; the error includes a line/column |
+| `openapi-lint` fails | Invalid YAML or schema in `docs/architecture/openapi-v0.yaml` (e.g. duplicate mapping key, bad `$ref`) | Run `npx --yes @redocly/cli lint docs/architecture/openapi-v0.yaml` locally; the error includes a line/column |
 | `web` job fails on lint | ESLint violation, `--max-warnings 0` means even warnings fail the build | `cd frontend/web-app && npm run lint` locally and fix reported issues |
 | `web` job fails on build | Vite build error, often a bad import or env var assumption | `cd frontend/web-app && npm run build` locally to reproduce |
 | `mobile` job fails | `expo lint` violation | `cd frontend/mobile-app && npm run lint` locally |
 | `ml-pipeline` job fails on import | Missing dependency in `requirements.txt`, or `main.py` has a top-level error | `cd ml-pipeline/fastapi-app && pip install -r requirements.txt && python -c "import main"` locally |
-| `deploy-staging.yml` fails (or "succeeds" but nothing changes) at the Firebase Hosting deploy step | `tabl-app-staging` GCP/Firebase project was deleted 2026-08-01 — the deploy target no longer exists (R-26 in `RISK_REGISTER.md`) | Expected until new infra is provisioned; run the app locally via Docker instead — see [`cloud_deployments/README.md`](../cloud_deployments/README.md) |
+| `deploy-staging.yml` fails (or "succeeds" but nothing changes) at the Firebase Hosting deploy step | `tabl-app-staging` GCP/Firebase project was deleted 2026-08-01 — the deploy target no longer exists (R-26 in `RISK_REGISTER.md`) | Expected until new infra is provisioned; run the app locally via Docker instead — see [`cloud_deployments/README.md`](../../cloud_deployments/README.md) |
 | Pushing a tag does nothing | No tag-triggered workflow exists | Expected — see [Production deploy](#4-production-deploy-tagged-release--not-yet-implemented); this must be built before tags do anything |
 | `gh pr create` fails with "Resource not accessible by personal access token" | The token used by `gh auth login` lacks `repo`/`pull_request` write scope (common with fine-grained PATs missing the "Pull requests: Read and write" permission) | `gh auth login` again via the browser/OAuth flow (not a restricted fine-grained PAT), or edit the existing fine-grained token's permissions, then `gh auth refresh` |
 | Merging `develop`/`integrate` into `main` produces conflicts in `offers.js`/`restaurants.js`/`users.js`/`campaigns.js` | Two branches added implementations or stub routes at the same location (this happened once already — stub `501` routes on `integrate` collided with the real BE-13 offers/campaigns implementation merged into `main`) | Prefer the real implementation over any stub; after resolving, re-run `npm run check:openapi-drift` and `npm test` before committing the merge |

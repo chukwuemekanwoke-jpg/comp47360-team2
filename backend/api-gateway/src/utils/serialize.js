@@ -106,7 +106,6 @@ function toManagerOfferItem(row, now = new Date()) {
   return {
     id: row.id,
     campaignId: row.campaign_id,
-    userDisplayName: row.user_display_name,
     status: row.status,
     expiresAt: expiresAt.toISOString(),
     secondsRemaining,

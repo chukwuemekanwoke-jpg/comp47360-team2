@@ -1,21 +1,21 @@
 # Seed data
 
-**Authors:** Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master
+**Authors:** Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master · Milo Dennehy - Mobile App Lead
 
 Complementary seeds:
 
 | File | Data | Use for |
 |------|------|---------|
 | `001_demo_manhattan.sql` | 15 **fictional** venues, fixed UUIDs | Deterministic API/integration tests, examples in docs |
-| `002_manhattan_real.sql` | ~300 **real** Manhattan venues (generated) | Demo, frontend map, and ML connectivity (shared `restaurant_id` universe) |
+| `002_manhattan_real.sql` | ~300 **real** Manhattan venues + demo users (generated) | Superseded by `006` — a smaller subset, kept for a lightweight demo |
 | `003_demo_revpash_bookings.sql` | Sample completed/confirmed bookings | RevPASH view smoke data for merchant dashboard |
 | `004_historical_taxi_demand.sql` | ~39.5k rows, NYC TLC drop-off zone/hour aggregates (July 2025) | Static ML pipeline demand features (`historical_taxi_demand`) |
 | `005_restaurant_managers.sql` | One manager user per venue + `manager_user_id` links (1,402) | B-side login/dashboard testing against real venues |
-| `006_manhattan_real_3000.sql` | **3,000** real venues, `restaurants` table only (generated) | Populating a fresh deployed database (Cloud SQL) from scratch |
+| `006_manhattan_real_3000.sql` | **3,000** real venues, `restaurants` table only (generated) | **The real-data seed** — `npm run seed:real`, the Docker stack, and populating a fresh Cloud SQL database from scratch |
 
 After migration `006_add_revpash_fields`, both restaurant seeds populate `opens_at`, `closes_at`, and `avg_check_per_cover` for RevPASH.
 
-`001` names are **not** real venues; `002` identity (name/address/coords/cuisine) is
+`001` names are **not** real venues; `002`/`006` identity (name/address/coords/cuisine) is
 real (from `ml-pipeline/notebooks/restaurant_clean.csv`), while operational fields
 (capacity, available tables, busyness, hold window, manager, accessibility) are
 **simulated deterministically** — no public dataset has those.
@@ -29,26 +29,40 @@ npm run migrate    # once per fresh database
 npm run seed       # fictional fixtures + RevPASH demo bookings (001 + 003)
 ```
 
-## Real-data seed (002)
+## Real-data seed (006) — the default
+
+`npm run seed:real` (and the Docker `migrate` service, which runs `seed.js
+--real` because `SEED_ARGS=--real`) applies **`006_manhattan_real_3000.sql`**:
 
 ```bash
-npm run generate:seed   # rebuild 002_manhattan_real.sql from the cleaned CSV
-npm run seed:real       # apply 001 + 002
+npm run generate:seed:full   # rebuild 006_manhattan_real_3000.sql from the cleaned CSV
+npm run seed:real            # apply 001 + 003 + 006
+```
+
+For a fully clean slate (drops stale rows from earlier attempts):
+`npm run db:reset && npm run migrate && npm run seed:real`.
+
+`002_manhattan_real.sql` is the older 300-venue fixture. Its ids are a strict
+subset of `006`'s, so nothing needs migrating — apply it only if you specifically
+want the small set, and note that `002` *also* inserts the demo users and links
+some venues to Demo Manager, which `006` deliberately does not:
+
+```bash
+npm run generate:seed   # rebuild 002_manhattan_real.sql
+psql "$DATABASE_URL" -f seeds/002_manhattan_real.sql
 
 # tune the generated subset:
 node scripts/generate-seed.js --radius=2000 --limit=500
 node scripts/generate-seed.js --origin=40.7589,-73.9851
 ```
 
-`generate-seed.js` derives stable UUIDv5 ids from the source `restaurant_id`, so
-re-running produces identical SQL (safe `ON CONFLICT DO UPDATE`). For a fully clean
-slate (drops stale rows from earlier attempts): `npm run db:reset && npm run migrate && npm run seed:real`.
+Both generators derive stable UUIDv5 ids from the source `restaurant_id`, so
+re-running produces identical SQL (safe `ON CONFLICT DO UPDATE`).
 
-## Full restaurant seed (006) — deployed / Cloud SQL databases
+## `006` in detail — also the seed for deployed / Cloud SQL databases
 
-`002` is a 300-venue demo fixture that also inserts the demo users. When you need
-to populate the `restaurants` table of a **fresh deployed database** from scratch,
-use `006_manhattan_real_3000.sql` instead:
+The same file populates the `restaurants` table of a **fresh deployed database**
+from scratch, with no Node tooling in the loop:
 
 ```bash
 npm run generate:seed:full        # rebuild 006_manhattan_real_3000.sql (3,000 venues)

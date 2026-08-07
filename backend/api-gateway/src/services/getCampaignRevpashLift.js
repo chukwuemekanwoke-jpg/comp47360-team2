@@ -5,7 +5,7 @@ const BASELINE_WINDOW_SQL = "INTERVAL '30 days'";
 
 // Per-campaign RevPASH lift (SCRUM-309 / TABL-215 Phase 2) — organic vs. deal
 // RevPASH comparison for a single flash-deal campaign. See
-// docs/data-strategy.md §11 for the base RevPASH real-vs-simulated context;
+// docs/architecture/data-strategy.md §11 for the base RevPASH real-vs-simulated context;
 // this is a new comparison on top of the same restaurant_revpash_hourly view
 // added in migration 007.
 //

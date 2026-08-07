@@ -1,8 +1,8 @@
 # Tablé Data Strategy (BE-5)
 
-**Authors:** Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master  
+**Authors:** Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master  · Milo Dennehy - Mobile App Lead
 **Owners:** Backend Lead + Data & ML Lead  
-**Related:** [ADR-001](./adr/ADR-001.md) · [database/schema.md](../database/schema.md) · [api-contract-v0.md](./api-contract-v0.md)
+**Related:** [ADR-001](./adr/ADR-001.md) · [docs/architecture/database-schema.md](./database-schema.md) · [api-contract-v0.md](./api-contract-v0.md)
 
 ---
 
@@ -313,7 +313,7 @@ unlearned scoring function — see [ADR-001-C](./adr/ADR-001.md).
 
 RevPASH (`total_revenue / available_seat_hours`) measures whether flash deals
 lift off-peak revenue without diluting peak pricing. It needs new fields on
-`restaurants` and `bookings` (see `database/schema.md`); this table documents
+`restaurants` and `bookings` (see `docs/architecture/database-schema.md`); this table documents
 where each one comes from and whether it's real or simulated, following the
 same pattern as §2.3 above.
 

@@ -102,7 +102,7 @@ export default function CardListView() {
     );
   }
 
-  if (error) {
+  if (error && restaurantsList.length === 0) {
     return (
       <View className="flex-1 bg-table-canvas">
         <Text className="text-[9px] font-bold uppercase tracking-[0.2em] text-table-gold mb-2">

@@ -21,11 +21,15 @@ const getBaseUrl = () => {
     if (process.env.NEXT_PUBLIC_API_URL) return process.env.NEXT_PUBLIC_API_URL;
   }
 
-  // 3. DEFAULT FALLBACKS
-  if (typeof navigator !== 'undefined' && navigator.product === 'ReactNative') {
-    return 'http://localhost:3001/api/v1';
-  }
+  // 3. EXPO DEV SERVER (Mobile App, no explicit URL configured)
+  // The Expo dev server proxies /api/* to the gateway, so the API lives on the
+  // same origin as the JS bundle. frontend/mobile-app/index.js works out what
+  // that origin is and parks it here before this module loads — which is what
+  // lets a phone on a --tunnel URL reach the backend at all.
+  const devApiOrigin = (globalThis as { __TABLE_DEV_API_ORIGIN__?: string | null }).__TABLE_DEV_API_ORIGIN__;
+  if (devApiOrigin) return `${devApiOrigin}/api/v1`;
 
+  // 4. DEFAULT FALLBACK
   return 'http://localhost:3001/api/v1';
 };
 
