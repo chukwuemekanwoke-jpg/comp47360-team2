@@ -1,6 +1,8 @@
 # Seed data
 
-Four complementary seeds:
+**Authors:** Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master
+
+Complementary seeds:
 
 | File | Data | Use for |
 |------|------|---------|
@@ -8,6 +10,8 @@ Four complementary seeds:
 | `002_manhattan_real.sql` | ~300 **real** Manhattan venues (generated) | Demo, frontend map, and ML connectivity (shared `restaurant_id` universe) |
 | `003_demo_revpash_bookings.sql` | Sample completed/confirmed bookings | RevPASH view smoke data for merchant dashboard |
 | `004_historical_taxi_demand.sql` | ~39.5k rows, NYC TLC drop-off zone/hour aggregates (July 2025) | Static ML pipeline demand features (`historical_taxi_demand`) |
+| `005_restaurant_managers.sql` | One manager user per venue + `manager_user_id` links (1,402) | B-side login/dashboard testing against real venues |
+| `006_manhattan_real_3000.sql` | **3,000** real venues, `restaurants` table only (generated) | Populating a fresh deployed database (Cloud SQL) from scratch |
 
 After migration `006_add_revpash_fields`, both restaurant seeds populate `opens_at`, `closes_at`, and `avg_check_per_cover` for RevPASH.
 
@@ -39,6 +43,67 @@ node scripts/generate-seed.js --origin=40.7589,-73.9851
 `generate-seed.js` derives stable UUIDv5 ids from the source `restaurant_id`, so
 re-running produces identical SQL (safe `ON CONFLICT DO UPDATE`). For a fully clean
 slate (drops stale rows from earlier attempts): `npm run db:reset && npm run migrate && npm run seed:real`.
+
+## Full restaurant seed (006) — deployed / Cloud SQL databases
+
+`002` is a 300-venue demo fixture that also inserts the demo users. When you need
+to populate the `restaurants` table of a **fresh deployed database** from scratch,
+use `006_manhattan_real_3000.sql` instead:
+
+```bash
+npm run generate:seed:full        # rebuild 006_manhattan_real_3000.sql (3,000 venues)
+psql "$DATABASE_URL" -f seeds/006_manhattan_real_3000.sql
+```
+
+Differences from `002`:
+
+- **3,000** venues (the nearest 3,000 of the 3,203 inside the default 1.5 km demo
+  radius) rather than 300.
+- **Touches only `restaurants`** — no `users`, no `user_preferences`, no foreign
+  keys — so it runs against a Cloud SQL instance before any account exists and
+  never clobbers accounts managed elsewhere. No user or manager id appears
+  anywhere in the file.
+- **All 23 columns** of `restaurants` (migrations 001–014) are listed explicitly
+  in table order, so the insert mirrors the table instead of relying on defaults.
+- **6 batched `INSERT`s** of 500 rows in one transaction, plus a guarded block
+  that fills the optional PostGIS `location` column when `002_postgis_optional`
+  has been applied (a no-op otherwise).
+
+Four columns are written as `NULL` because this seed does not own them. Seed them
+separately:
+
+| Column | Owned by |
+|--------|----------|
+| `manager_user_id` | `005_restaurant_managers.sql` |
+| `rating`, `reviews` | enrichment import (migration `013`) |
+| `busyness_updated_at` | ml-service refresh (migration `014`) |
+
+Those four — and `created_at` — are excluded from the `ON CONFLICT DO UPDATE`, so
+re-running the seed refreshes venue data without wiping manager links, ratings, or
+busyness timestamps written by anything else. `updated_at` is maintained by the
+`restaurants_set_updated_at` trigger.
+
+Ids are the same UUIDv5-of-`restaurant_id` values used everywhere else, so `002`'s
+300 venues are a strict subset — applying both is safe and yields 3,000 rows.
+
+Tuning:
+
+```bash
+node scripts/generate-restaurants-seed.js --limit=5000 --radius=3000
+node scripts/generate-restaurants-seed.js --out=/tmp/restaurants.sql --batch=1000
+```
+
+**Manager links:** `005_restaurant_managers.sql` references venues drawn from the
+whole source CSV, not just the demo radius, so on the default 3,000-venue
+selection only 391 of its 1,402 links resolve (the rest match no row and are
+skipped). For a database where every manager link resolves, generate the full
+universe first:
+
+```bash
+node scripts/generate-restaurants-seed.js --radius=20000 --limit=11000   # 10,504 venues
+psql "$DATABASE_URL" -f seeds/006_manhattan_real_3000.sql
+psql "$DATABASE_URL" -f seeds/005_restaurant_managers.sql                # 1,402/1,402 linked
+```
 
 ## Historical taxi demand seed (004)
 

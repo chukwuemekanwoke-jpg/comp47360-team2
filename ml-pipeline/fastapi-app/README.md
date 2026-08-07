@@ -1,5 +1,7 @@
 # 🧠 Tablé ML Inference API
 
+**Authors:** Chukwuemeka Nwoke — Integration Lead / Scrum Master · Yang Liu — Backend Lead
+
 This subdirectory contains the Machine Learning and Recommendation inference service for the **Tablé** platform, built using Python and FastAPI.
 
 The service provides real-time predictions of restaurant busyness and estimates immediate dining table availability.

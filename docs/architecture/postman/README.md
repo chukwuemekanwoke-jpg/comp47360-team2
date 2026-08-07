@@ -1,5 +1,7 @@
 # Tablé Postman collections
 
+**Author:** Yang Liu — Backend Lead
+
 ## Files
 
 | File | Purpose |

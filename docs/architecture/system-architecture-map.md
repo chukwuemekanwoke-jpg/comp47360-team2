@@ -1,5 +1,7 @@
 # System architecture map (integrate branch)
 
+**Authors:** Chukwuemeka Nwoke — Integration Lead / Scrum Master · Yang Liu — Backend Lead
+
 Snapshot of every file on `integrate`, grouped by domain, tagged with its lead
 (by commit history) and how it depends on the rest of the system.
 

@@ -1,5 +1,7 @@
 # Tablé API Gateway
 
+**Authors:** Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master
+
 Node.js + Express service for Tablé MVP backend.
 
 ## Prerequisites

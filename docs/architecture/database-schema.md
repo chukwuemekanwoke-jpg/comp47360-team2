@@ -1,5 +1,7 @@
 # Tablé database schema v1 (BE-2)
 
+**Authors:** Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master
+
 Entity-relationship overview for MVP. Base implementation: `migrations/001_initial_schema.sql`; schema has evolved through `migrations/014_add_restaurant_busyness_updated_at.sql` (14 migrations total as of 2026-08-05 — see `migrations/` for the full, current list, since this doc summarizes rather than enumerates every one).
 
 ## ER diagram

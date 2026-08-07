@@ -4,6 +4,8 @@
 
 **Manhattan Busyness Analytics Platform** *UCD COMP47360 Research Practicum (Team 2) Core Academic Deliverable*
 
+*Authors: Yuhao Xu — Product & UX Lead · Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master*
+
 ![React + Vite](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-646CFF?style=flat-square&logo=vite)
 ![React Native](https://img.shields.io/badge/Mobile-Expo-02569B?style=flat-square&logo=react)
 ![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?style=flat-square&logo=nodedotjs)
@@ -95,12 +97,12 @@ The full index, grouped by audience, is [`docs/README.md`](./docs/README.md).
 
 | Name | Role | Responsibilities |
 | :--- | :--- | :--- |
-| **Yuhao Xu** | Product & UX Lead | Oversees product logic (`docs/`), UX design walkthroughs, and business value alignment. |
-| **Chukwuemeka Nwoke** | Scrum Master | Drives agile iterations, CI/CD pipeline integration, and GitHub compliance reviews. |
-| **Andrew Mitchell** | Web Frontend Lead | Leads `frontend/web-app` architecture and responsive UI implementation. |
-| **Milo Dennehy** | Mobile App Lead | Leads `frontend/mobile-app` cross-platform development and map component integration. |
-| **Yang Liu** | Backend Lead | Leads `backend/api-gateway`, database schema, and core API implementation. |
-| **Rui Xu** | Data & ML Lead | Leads `ml-pipeline/` recommendation algorithm modeling, data cleaning, and FastAPI deployment. |
+| **Yuhao Xu** | Product & UX Lead | Owns product logic and specs (`docs/product-spec.md`), UX design walkthroughs, and business value alignment; drives QA and product research — integration tests, API contract validation, accessibility testing, internal & external usability rounds, user interviews, feedback synthesis, and the final paper outline. |
+| **Chukwuemeka Nwoke** | Integration Lead / Scrum Master | Runs sprint ceremonies and retrospectives (`docs/sprints/`); owns the CI/CD pipeline — `ci.yml`, `deploy-staging.yml`, branch protection rules — and the `feature/* → integrate → develop → main` branch flow; maintains `RISK_REGISTER.md` and GitHub compliance reviews. |
+| **Andrew Mitchell** | Web Frontend Lead | Leads `frontend/web-app` architecture and responsive UI implementation — form validation, accessibility audits, the shared component library, merchant sign-up flow, JWT auth wiring, and usability/accessibility fixes. |
+| **Milo Dennehy** | Mobile App Lead | Leads `frontend/mobile-app` cross-platform development — map/discovery components, push notifications, Redux state management, bookings & settings UI, mobile JWT auth, and mobile accessibility fixes. |
+| **Yang Liu** | Backend Lead | Leads `backend/api-gateway` and the database schema — auth, bookings, restaurants, offers, campaigns, and ETA endpoints; booking-lifecycle hardening, rate-limiter fixes, and the database backup & recovery plan. |
+| **Rui Xu** *(Jack)* | Data & ML Lead | Leads `ml-pipeline/` — busyness prediction model, user-restaurant matching algorithm, and the FastAPI inference endpoint; model evaluation/tuning, RevPASH-informed retraining, drift monitoring, and the ML section of the final paper. |
 
 ---
 
@@ -110,13 +112,14 @@ The whole platform runs in Docker. Docker is the only prerequisite — no Node,
 Python, PostgreSQL, or Expo install needed.
 
 ```bash
-git clone https://github.com/chukwuemekanwoke-jpg/comp47360-team2/
+git clone https://github.com/chukwuemekanwoke-jpg/comp47360-team2.git
 cd comp47360-team2
 
 cp .env.example .env          # defaults work as-is; Google Maps keys are optional
 npm run docker:up  # first run ~5 min, mostly the ML image
 ```
 
+<<<<<<< HEAD
 | Service | Where | Notes |
 | :--- | :--- | :--- |
 | Web app | <http://localhost:5173> | Log in as `manager@demo.com` / `password123` |
@@ -174,3 +177,9 @@ npm run docker:down     # stop everything
 > *To run a sub-module natively instead (nodemon, Vite HMR, Expo CLI on the host),
 > see the `README.md` in its directory, or the hybrid workflow section of the
 > Docker guide.*
+
+### Cloud Deployment Status
+
+Nothing in `cloud_deployments/` currently points at a live cloud environment — the app runs locally via Docker as shown above. The GCP staging/prod projects were decommissioned (deleted, billing closed) on **2026-08-01**; the `gcp/` Terraform is kept as a historical record only. The `aws/` and `azure/` configs are greenfield designs, never applied. See [`cloud_deployments/README.md`](cloud_deployments/README.md) for the full picture, including how to build and run the `api-gateway` and `ml-service` containers directly with Docker.
+
+>>>>>>> c363048a3ed15356bba132f48b1971f881cedf87

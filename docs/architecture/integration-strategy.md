@@ -1,5 +1,7 @@
 # Tablé Integration Strategy
 
+**Authors:** Chukwuemeka Nwoke — Integration Lead / Scrum Master · Yang Liu — Backend Lead
+
 **Status:** Sprint 4 (action items closed 2026-08-05 — see §8; current sprint not tracked in this repo) · **Owners:** Scrum Master + Backend Lead
 **Related:** [ADR-001](./adr/ADR-001.md) · [api-contract-v0.md](./api-contract-v0.md) · [openapi-v0.yaml](./openapi-v0.yaml) · [data-strategy.md](./data-strategy.md) · [frontend-strategy.md](./frontend-strategy.md) · [deployment-guide.md](../ops/deployment-guide.md)
 
@@ -139,8 +141,13 @@ Per §5 and [deployment-guide.md](../ops/deployment-guide.md), promotion is a de
 | Backend Lead | Implement `PATCH /bookings/:id/status`, `GET /restaurants/:id/revpash`, ~~`GET /campaigns/:campaignId/offers`~~ (shipped) | ✅ Shipped 2026-07-12 (`81f3aba`, `3d6f03b`) |
 | Backend Lead | Implement `POST /bookings/:id/cancel` (Story 4.2) | ✅ Shipped 2026-07-12 (`dcfa08a`) |
 | Web Lead | Remove stale "Needs backend" comments in `apiSlice.ts` as routes ship; keep UI fallbacks until RevPASH/offers endpoints exist | ⚠️ **Not done.** A live instance found 2026-08-05: `OverviewView.jsx`'s campaign-cancel 404 fallback ("pending backend support") was added 2026-07-23 — 12 days *after* the route it claims is missing (`POST .../campaigns/:campaignId/cancel`, shipped 2026-07-11) — so it was already wrong when written. Spun off as a separate frontend cleanup task rather than fixed as part of this doc review. |
+<<<<<<< HEAD:docs/architecture/integration-strategy.md
 | Scrum Master | Keep Postman collection (`docs/architecture/postman/`) in sync with shipped routes for staging smoke tests | Ongoing process item, not a one-time task |
 | All leads | Route PRs through `integrate`; run five CI checks before promotion | Ongoing process item — still the standing practice per [deployment-guide.md](../ops/deployment-guide.md) |
+=======
+| Integration Lead / Scrum Master | Keep Postman collection (`docs/postman/`) in sync with shipped routes for staging smoke tests | Ongoing process item, not a one-time task |
+| All leads | Route PRs through `integrate`; run five CI checks before promotion | Ongoing process item — still the standing practice per [deployment-guide.md](./deployment-guide.md) |
+>>>>>>> c363048a3ed15356bba132f48b1971f881cedf87:docs/integration-strategy.md
 
 ---
 

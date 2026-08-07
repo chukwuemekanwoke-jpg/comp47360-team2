@@ -1,5 +1,7 @@
 # Push notifications (not yet implemented)
 
+**Author:** Milo Dennehy — Mobile App Lead
+
 InboxTab currently polls `GET /users/me/offers` every 30s instead of
 receiving offers via push. Stub markers for where this would be wired in:
 `src/services/pushNotifications.ts`, `src/app/index.tsx`, `InboxTab.tsx`,

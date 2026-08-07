@@ -1,5 +1,7 @@
 # Azure — Terraform (design exercise, mirrors GCP staging)
 
+**Author:** Chukwuemeka Nwoke — Integration Lead / Scrum Master
+
 **Not reverse-engineered from anything real — nothing runs on Azure today.**
 A from-scratch design mirroring
 [`cloud_deployments/gcp/staging`](../../gcp/staging/README.md)'s

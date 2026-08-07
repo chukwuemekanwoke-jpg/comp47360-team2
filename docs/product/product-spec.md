@@ -1,5 +1,7 @@
 # Product Specification: Tablé
 
+**Authors:** Yuhao Xu — Product & UX Lead · Yang Liu — Backend Lead
+
 ## 1. Project Overview
 
 **Tablé** is a dynamic, B2B2C location-based marketplace designed to bridge the gap between spontaneous diners and restaurants with real-time seating availability. Functioning as an advanced yield-management platform, Tablé empowers restaurants to mitigate unexpected operational lulls by pushing highly targeted, 1-to-1 "flash deals" to nearby consumers.

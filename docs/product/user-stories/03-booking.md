@@ -1,5 +1,7 @@
 # Feature: Transit-Validated Booking 
 
+**Authors:** Yuhao Xu — Product & UX Lead · Yang Liu — Backend Lead
+
 ## Story 1: Pre-booking Travel Time Validation
 ### User Story
 **As a** transit-dependent urban explorer,

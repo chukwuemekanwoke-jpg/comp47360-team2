@@ -1,5 +1,7 @@
 # Feature: Exclusive Offer Inbox & Redemption
 
+**Author:** Yuhao Xu — Product & UX Lead
+
 ## Story 1: Time-sensitive Flash Deal Claiming
 ### User Story
 **As a** budget-conscious food enthusiast (Deal-Hunting Foodie),

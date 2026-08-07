@@ -1,5 +1,7 @@
 # User Testing Fixes — Strategy & Change Log
 
+**Authors:** Milo Dennehy — Mobile App Lead - Yuhao Xu — Product & UX Lea
+
 Strategy for the functionality gaps identified during user testing of the mobile app
 (`frontend/mobile-app`). Each section states the issue, why it matters, and the
 implementation approach. As work lands, a **Changes** list under each section records

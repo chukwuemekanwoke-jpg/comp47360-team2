@@ -1,6 +1,6 @@
 # Performance Testing: Load & Latency (TABL-604)
 
-**Owner:** chukwuemekanwoke-jpg | **Frequency:** Before final demo/submission; re-run after any change to `api-gateway`, `ml-service`, or Cloud Run/Cloud SQL sizing
+**Author / Owner:** Chukwuemeka Nwoke — Integration Lead / Scrum Master | **Frequency:** Before final demo/submission; re-run after any change to `api-gateway`, `ml-service`, or Cloud Run/Cloud SQL sizing
 **Last Updated:** 2026-07-22 | **Last Run:** 2026-07-22 — passed, see [Results Log](#results-log)
 
 ## Status against the ticket

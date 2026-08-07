@@ -1,5 +1,7 @@
 # Final Paper Outline and Section Ownership
 
+**Authors:** Yuhao Xu — Product & UX Lead · Yang Liu — Backend Lead
+
 Jira task: `final paper - outline and first draft`
 
 Status: first draft created from the synchronized repository on 2026-07-09. The draft is intentionally evidence-aware: final deployment URL, final screenshots, final model metrics, CI status, and user-testing results are marked as TODOs where the team needs to supply measured evidence.
