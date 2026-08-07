@@ -53,7 +53,7 @@ The headline result is that the MVP's hardest technical risk — the ML matching
 | Yang Liu | Backend Lead | 10/10 issues complete — all core APIs (Users, Restaurants, Bookings, Offers, Campaigns, ETA) delivered. |
 | Rui (Jack) Xu | Data & ML Lead | Busyness prediction, user-restaurant matching, and FastAPI inference endpoint all complete — critical path risk resolved. |
 | Milo Dennehy | Mobile Lead | All P0 mobile flows delivered: preferences, discovery, ETA/booking, flash deals. |
-| Chukwuemeka Nwoke | Integration Lead / SCM | CI/CD pipeline fully established: `ci.yml`, `deploy-staging.yml`, branch protection, API validation gate. |
+| Chukwuemeka Nwoke | Integration Lead / Scrum Master | CI/CD pipeline fully established: `ci.yml`, `deploy-staging.yml`, branch protection, API validation gate. |
 | Andrew Mitchell | Frontend Lead | Partial — Redux State Management and Search & Discovery Screen remain To Do, rolled over for a second sprint. |
 | Henry Xu | Product Owner | Partial — unit test plan ready, test plan for API contract validation still under plans, as well as usability testing and tracking Google Cloud Run costs. |
 
