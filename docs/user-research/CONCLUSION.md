@@ -19,7 +19,7 @@ The research contributed to the following design directions:
 - clearer visual and interaction consistency across both sides; and
 - targeted fixes for rendering and campaign-state synchronisation.
 
-Some changes were reported as implemented, while first-use explanation, booking semantics, persistent confirmation, and restaurant-operator validation remained incomplete or were not independently re-tested.
+Booking confirmation was reported implemented before the final demonstration, while first-use explanation, broader completion feedback, and restaurant-operator validation remained incomplete or were not independently re-tested.
 
 ## Evidence limitations
 
