@@ -2,15 +2,18 @@
 
 # Tablé
 
-**Manhattan Busyness Analytics Platform** *UCD COMP47360 Research Practicum (Team 2) Core Academic Deliverable*
+**Tables available now, reachable in time.**
 
-*Authors: Yuhao Xu — Product & UX Lead · Yang Liu — Backend Lead · Chukwuemeka Nwoke — Integration Lead / Scrum Master · Milo Dennehy - Mobile App Lead · Andrew Mitchell - Web App Lead · Rui Xu - Data/ ML Lead*
+A two-sided immediate-dining MVP for spontaneous diners and restaurant operators.
 
-![React + Vite](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-646CFF?style=flat-square&logo=vite)
-![React Native](https://img.shields.io/badge/Mobile-Expo-02569B?style=flat-square&logo=react)
-![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?style=flat-square&logo=nodedotjs)
-![FastAPI](https://img.shields.io/badge/ML_Pipeline-FastAPI-009688?style=flat-square&logo=fastapi)
+![React + Vite](https://img.shields.io/badge/Merchant_Web-React%20%2B%20Vite-646CFF?style=flat-square&logo=vite)
+![Expo](https://img.shields.io/badge/Consumer_Mobile-Expo%20%2B%20React%20Native-000020?style=flat-square&logo=expo)
+![Express](https://img.shields.io/badge/API-Node.js%20%2B%20Express-339933?style=flat-square&logo=nodedotjs)
+![FastAPI](https://img.shields.io/badge/ML-FastAPI%20%2B%20XGBoost-009688?style=flat-square&logo=fastapi)
 ![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-4169E1?style=flat-square&logo=postgresql)
+![GCP](https://img.shields.io/badge/Staging-Google%20Cloud-4285F4?style=flat-square&logo=googlecloud)
+
+*UCD COMP47360 Research Practicum — Team 2, 2026*
 
 </div>
 
@@ -25,26 +28,88 @@
 
 ## Introduction
 
-**Tablé** is a Location-Based Service (LBS) data-driven platform designed for real-time dining and dynamic yield management. 
+Tablé connects two problems that happen at the same time:
 
-Operating as a two-sided marketplace, Tablé bridges the gap between spontaneous diners seeking immediate seating and restaurants experiencing unexpected operational lulls. By leveraging real-time geospatial search, transit-validated ETA guardrails, and Machine Learning-driven 1-to-1 flash deal matching, Tablé protects brand equity while efficiently filling empty seats and significantly reducing queue times for urban diners.
+- diners can travel to a restaurant and discover that no table is available; and
+- restaurants lose revenue when tables remain empty during quiet periods.
 
----
+The consumer app shows nearby restaurants with bookable capacity, calculates an ETA, and only confirms an immediate booking when the diner can arrive within the restaurant's hold window. The merchant dashboard lets restaurant operators monitor availability, bookings, busyness and demonstration RevPASH metrics, then release a limited number of private, time-boxed flash deals.
 
-## Core MVP Highlights
+The product is designed as a closed loop:
 
-- **Geospatial Discovery**
-  Acquires real-time user location to accurately display premium restaurants with immediate table availability within a strictly defined `1.5km` radius.
-- **Transit-Validated Booking (ETA Guardrails)**
-  Integrates the Google **Routes API** to calculate Estimated Time of Arrival (ETA). It ensures users can physically arrive before the restaurant's reservation hold window expires, effectively mitigating "no-shows".
-- **Lull-Mitigation Trigger (Flash Deals)**
-  A B-suite dashboard feature allowing restaurant managers to convert empty tables into exclusive 1-to-1 flash deals with a single click. These offers are pushed secretly to the most compatible nearby diners via our recommendation algorithms, avoiding public mass discounting.
-
----
+```text
+restaurant releases capacity
+        ↓
+nearby diners receive private offers
+        ↓
+diner books or accepts an offer
+        ↓
+inventory, campaign and booking state update on both clients
+```
 
 ## Monorepo Structure
 
-This repository follows a Monorepo architecture to ensure high-efficiency collaboration across frontend, backend, and data engineering teams:
+- JWT registration and sign-in, plus guest discovery
+- preference onboarding for cuisine, budget, dining style and access needs
+- map, discovery and restaurant-card views within a default 1.5 km radius
+- search, filtering, sorting, ratings and current table availability
+- walking, driving, cycling and transit ETA checks
+- immediate booking with server-side hold-window validation
+- booking history, cancellation and directions in an external maps app
+- private flash-deal inbox with countdown, claim and expiry states
+- light/dark themes and accessibility preferences
+
+## How the core flow works
+
+1. The mobile client requests restaurants with available tables near the diner's location.
+2. The API gateway calculates route ETA with Google Routes and falls back to a local distance estimate if the external API is unavailable.
+3. The gateway compares ETA with the restaurant's hold window before creating a booking.
+4. A restaurant manager can launch a campaign for a limited table quota.
+5. Nearby diner candidates are ranked by the matching service; the gateway falls back to distance ordering if the ML service is unavailable.
+6. Each selected diner receives a private offer. Accepting it creates a confirmed booking and updates campaign and inventory state.
+7. A campaign ends when its quota is filled, its TTL expires, or the manager cancels it.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    MOBILE["Consumer mobile<br/>Expo + React Native"]
+    WEB["Merchant web<br/>React + Vite"]
+    SHARED["Shared client state<br/>Redux Toolkit + RTK Query"]
+    API["API gateway<br/>Node.js + Express"]
+    DB[("PostgreSQL / Cloud SQL")]
+    ML["Inference service<br/>FastAPI + XGBoost"]
+    ROUTES["Google Routes API"]
+
+    MOBILE --> SHARED
+    WEB --> SHARED
+    SHARED -->|"REST /api/v1 + JWT"| API
+    API --> DB
+    API --> ML
+    API --> ROUTES
+```
+
+The Express gateway is the single transactional API for both clients. It owns authentication, validation, bookings, offers, campaigns and restaurant operations. PostgreSQL enforces core constraints and maintains the shared state. The FastAPI service provides:
+
+- an XGBoost busyness prediction using restaurant features and historical NYC taxi demand, with optional booking-history maturation; and
+- deterministic flash-deal candidate ranking using distance, cuisine and access preferences.
+
+## Technology stack
+
+| Area | Implementation |
+| --- | --- |
+| Merchant client | React 19, Vite, React Router, Tailwind CSS |
+| Consumer client | Expo 56, React Native, Expo Router, NativeWind |
+| Shared client layer | Redux Toolkit, RTK Query, TypeScript |
+| API | Node.js, Express 5, JWT, Jest, Supertest |
+| Data | PostgreSQL, SQL migrations, optional PostGIS |
+| ML | Python, FastAPI, XGBoost/scikit-learn pipeline, pandas |
+| External routing | Google Routes API with haversine fallback |
+| Web hosting | Firebase Hosting |
+| Services | Google Cloud Run, Cloud SQL, Secret Manager |
+| CI | GitHub Actions, OpenAPI lint/drift checks, Jest, Vitest, pytest |
+
+## Repository layout
 
 ```text
 comp47360-team2/
@@ -102,7 +167,10 @@ The full index, grouped by audience, is [`docs/README.md`](./docs/README.md).
 
 **Project record** — [Risk register](./RISK_REGISTER.md) · [Sprint retrospectives](./docs/sprints/) · [Timesheet & budget tracker](./docs/budget-timesheets/) · [Business plan](./docs/academic/business-plan/Team%202%20Business%20Plan_v4.docx) · [IEEE paper](./docs/academic/final-paper/table-ieee-paper-updated.tex)
 
----
+- Node.js 20 and npm
+- Docker Desktop or PostgreSQL 14+
+- Python 3.11+
+- Expo tooling for native mobile development
 
 ## Team Roles
 
@@ -192,3 +260,25 @@ npm run docker:down     # stop everything
 
 Nothing in `cloud_deployments/` currently points at a live cloud environment — the app runs locally via Docker as shown above. The GCP staging/prod projects were decommissioned (deleted, billing closed) on **2026-08-01**; the `gcp/` Terraform is kept as a historical record only. The `aws/` and `azure/` configs are greenfield designs, never applied. See [`cloud_deployments/README.md`](cloud_deployments/README.md) for the full picture, including how to build and run the `api-gateway` and `ml-service` containers directly with Docker.
 
+
+## Deployment and branch flow
+
+Code moves through:
+
+```text
+feature/* → integrate → develop → main
+```
+
+- `integrate` is the current integration source of truth and the branch used to verify this README.
+- `develop` is the staging promotion branch.
+- `main` is the protected release branch.
+
+The staging architecture uses Firebase Hosting for the merchant web build, Cloud Run for the API and ML services, Cloud SQL for PostgreSQL, and Secret Manager for runtime secrets. 
+
+## MVP limitations and next steps
+
+Tablé is an academic MVP, not a production marketplace. The next validation steps would be real restaurant-manager research, live inventory/POS integration, a larger and more varied usability study, production-grade notifications, measured offer conversion and a validated revenue model.
+
+## License
+
+This repository is licensed under the [MIT License](LICENSE).
