@@ -39,9 +39,13 @@ This repository follows a Monorepo architecture to ensure high-efficiency collab
 
 ```text
 comp47360-team2/
-├── docker-compose.yml   # Full local stack (see docs/docker-local.md)
-├── docs/                # Core documents (Business Plan, MVP ACs, API contract, ADR)
-│   └── adr/             # Architecture Decision Records (ADR-001.md)
+├── docker-compose.yml   # Full local stack (see docs/ops/docker-local.md)
+├── docs/                # All documentation, grouped by audience (see docs/README.md)
+│   ├── product/         # Product spec, user stories
+│   ├── architecture/    # ADR, API contract + OpenAPI, data strategy, DB schema
+│   ├── ops/             # Running, deploying, rolling back, load testing
+│   ├── design/          # UI style guide, user-testing fixes
+│   └── academic/        # Business plan, IEEE paper
 ├── frontend/            # Frontend ecosystem
 │   ├── web-app/         # Responsive Web App (React + Vite)
 │   ├── mobile-app/      # Cross-platform Mobile App (React Native/Expo)
@@ -57,32 +61,33 @@ comp47360-team2/
 ## Key Documents
 
 Nested top-down: each document assumes the one above it, so read a branch in order.
+The full index, grouped by audience, is [`docs/README.md`](./docs/README.md).
 
 **Product — what we're building**
 
-- [Product spec](./docs/product-spec.md) — the MVP in one page
-  - [User stories](./docs/user-stories/) — acceptance criteria per journey
+- [Product spec](./docs/product/product-spec.md) — the MVP in one page
+  - [User stories](./docs/product/user-stories/) — acceptance criteria per journey
 
 **Architecture — start here for engineering**
 
-- [ADR-001](./docs/adr/ADR-001.md) — the binding architecture decisions (A–J); everything below implements one of them
-  - [Data strategy](./docs/data-strategy.md) — datasets, busyness representation, simulated live updates
-    - [Database schema](./database/schema.md) — tables, migrations, seeds
-  - [API contract v0](./docs/api-contract-v0.md) — routes, payloads, errors ([openapi-v0.yaml](./docs/openapi-v0.yaml) · [Postman collection](./docs/postman/))
-    - [Integration strategy](./docs/integration-strategy.md) — how the four workspaces stay contract-compatible
-  - [Frontend strategy](./docs/frontend-strategy.md) — page flow, stack, auth and sync
-    - [UI style guide](./docs/ui-style-guide.md) — one visual language across web and mobile
-  - [System architecture map](./docs/system-architecture-map.md) — file-level map of the running system
+- [ADR-001](./docs/architecture/adr/ADR-001.md) — the binding architecture decisions (A–J); everything below implements one of them
+  - [Data strategy](./docs/architecture/data-strategy.md) — datasets, busyness representation, simulated live updates
+    - [Database schema](./docs/architecture/database-schema.md) — tables, migrations, seeds
+  - [API contract v0](./docs/architecture/api-contract-v0.md) — routes, payloads, errors ([openapi-v0.yaml](./docs/architecture/openapi-v0.yaml) · [Postman collection](./docs/architecture/postman/))
+    - [Integration strategy](./docs/architecture/integration-strategy.md) — how the four workspaces stay contract-compatible
+  - [Frontend strategy](./docs/architecture/frontend-strategy.md) — page flow, stack, auth and sync
+    - [UI style guide](./docs/design/ui-style-guide.md) — one visual language across web and mobile
+  - [System architecture map](./docs/architecture/system-architecture-map.md) — file-level map of the running system
 
 **Operations — running and shipping it**
 
-- [Docker local](./docs/docker-local.md) — the full stack locally; the supported way to run Tablé today
-- [Deployment guide](./docs/deployment-guide.md) — branch flow (`feature/* → integrate → develop → main`) and CI/CD
+- [Docker local](./docs/ops/docker-local.md) — the full stack locally; the supported way to run Tablé today
+- [Deployment guide](./docs/ops/deployment-guide.md) — branch flow (`feature/* → integrate → develop → main`) and CI/CD
   - [Cloud deployments](./cloud_deployments/README.md) — Terraform per provider (none currently live)
-  - [Rollback & recovery runbook](./docs/rollback-recovery-runbook.md) — what to do after a bad deploy
-- [Performance testing](./docs/performance-testing.md) — load/latency SLOs and results
+  - [Rollback & recovery runbook](./docs/ops/rollback-recovery-runbook.md) — what to do after a bad deploy
+- [Performance testing](./docs/ops/performance-testing.md) — load/latency SLOs and results
 
-**Project record** — [Risk register](./RISK_REGISTER.md) · [Business plan](./docs/business-plan/Team%202%20Business%20Plan_v4.docx) · [IEEE paper](./docs/final-paper/table-ieee-paper-updated.tex)
+**Project record** — [Risk register](./RISK_REGISTER.md) · [Business plan](./docs/academic/business-plan/Team%202%20Business%20Plan_v4.docx) · [IEEE paper](./docs/academic/final-paper/table-ieee-paper-updated.tex)
 
 ---
 
@@ -164,7 +169,7 @@ npm run docker:down     # stop everything
 > `Network table_table-network Resource is still in use`.
 
 **Full guide — API keys, seeding, hot-reload workflows, troubleshooting:
-[`docs/docker-local.md`](./docs/docker-local.md)**
+[`docs/ops/docker-local.md`](./docs/ops/docker-local.md)**
 
 > *To run a sub-module natively instead (nodemon, Vite HMR, Expo CLI on the host),
 > see the `README.md` in its directory, or the hybrid workflow section of the

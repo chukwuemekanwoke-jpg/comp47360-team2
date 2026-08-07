@@ -5,7 +5,7 @@ Postgres — runs from a single `docker compose up`. No Node, Python, PostgreSQL
 or Expo CLI install required; Docker is the only prerequisite.
 
 This is the recommended way to run Tablé since the staging environment was
-decommissioned (see [`cloud_deployments/README.md`](../cloud_deployments/README.md)).
+decommissioned (see [`cloud_deployments/README.md`](../../cloud_deployments/README.md)).
 
 > **Scope:** local development and demos only. Every port binds to `127.0.0.1`
 > by default, so the stack is reachable from your machine and nowhere else.
@@ -58,12 +58,12 @@ XGBoost pipeline and its parquet feature tables before it reports healthy.
 
 | Service | Image built from | Container port | On your machine | Purpose |
 |---|---|---|---|---|
-| `web` | [`frontend/web-app/Dockerfile`](../frontend/web-app/Dockerfile) | 80 | <http://localhost:5173> | React/Vite bundle served by nginx, which also reverse-proxies `/api` |
-| `api-gateway` | [`backend/api-gateway/Dockerfile`](../backend/api-gateway/Dockerfile) | 3001 | <http://localhost:3001> | Node/Express REST API |
-| `ml-service` | [`ml-pipeline/fastapi-app/Dockerfile`](../ml-pipeline/fastapi-app/Dockerfile) | 8080 | <http://localhost:8000> | FastAPI busyness prediction + deal matching |
+| `web` | [`frontend/web-app/Dockerfile`](../../frontend/web-app/Dockerfile) | 80 | <http://localhost:5173> | React/Vite bundle served by nginx, which also reverse-proxies `/api` |
+| `api-gateway` | [`backend/api-gateway/Dockerfile`](../../backend/api-gateway/Dockerfile) | 3001 | <http://localhost:3001> | Node/Express REST API |
+| `ml-service` | [`ml-pipeline/fastapi-app/Dockerfile`](../../ml-pipeline/fastapi-app/Dockerfile) | 8080 | <http://localhost:8000> | FastAPI busyness prediction + deal matching |
 | `postgres` | `postgres:16-alpine` | 5432 | `localhost:5432` | Application database |
-| `migrate` | [`database/Dockerfile`](../database/Dockerfile) | — | — | One-shot: applies migrations + seeds, then exits |
-| `mobile` | [`frontend/mobile-app/Dockerfile`](../frontend/mobile-app/Dockerfile) | 8081 | <http://localhost:8081> | Expo dev server — `--profile mobile` |
+| `migrate` | [`database/Dockerfile`](../../database/Dockerfile) | — | — | One-shot: applies migrations + seeds, then exits |
+| `mobile` | [`frontend/mobile-app/Dockerfile`](../../frontend/mobile-app/Dockerfile) | 8081 | <http://localhost:8081> | Expo dev server — `--profile mobile` |
 | `pgadmin` | `dpage/pgadmin4` | 80 | <http://localhost:5050> | Optional DB UI — `--profile tools` |
 
 Boot order is enforced by health and completion conditions, so one `up` is
@@ -98,7 +98,7 @@ properties that make it unsafe to expose:
 
 | | |
 |---|---|
-| `ALLOW_LEGACY_USER_HEADER=true` | A bare `X-User-Id: <uuid>` header is accepted as proof of identity — no token needed. The seed UUIDs are published in [`database/seeds/README.md`](../database/seeds/README.md). Anything that can reach the gateway can act as any user. |
+| `ALLOW_LEGACY_USER_HEADER=true` | A bare `X-User-Id: <uuid>` header is accepted as proof of identity — no token needed. The seed UUIDs are published in [`database/seeds/README.md`](../../database/seeds/README.md). Anything that can reach the gateway can act as any user. |
 | `JWT_SECRET=dev-jwt-secret-change-me` | Published in `.env.example`, so valid tokens can be forged for any account. |
 | `POSTGRES_PASSWORD=postgres`, pgAdmin `admin`/`admin` | Default credentials on the database and its admin UI. |
 | `GET /api/v1/config/maps-key` | Unauthenticated by design — the browser has to fetch it. Anyone reaching the gateway can harvest your browser Maps key, which is why that key must carry an HTTP-referrer restriction. |
@@ -145,7 +145,7 @@ looks — treat the URL as granting full access to your local stack:
 - It *does* serve your app's JavaScript, and inlines every `EXPO_PUBLIC_*`
   variable into it. **Never put a secret behind an `EXPO_PUBLIC_` prefix** —
   that prefix means "ship this to every client", and
-  [`frontend/mobile-app/.env`](../frontend/mobile-app/.env) is bind-mounted into
+  [`frontend/mobile-app/.env`](../../frontend/mobile-app/.env) is bind-mounted into
   the container. Variables without the prefix are not inlined.
 - The URL is unguessable but not secret, and ngrok logs it. **Stop the tunnel
   when you're done: `docker compose stop mobile`.** Don't leave it running
@@ -171,7 +171,7 @@ because they need opposite restrictions.
 
 | | |
 |---|---|
-| **Used by** | `api-gateway` → [`services/etaResolver.js`](../backend/api-gateway/src/services/etaResolver.js), [`services/googleDistanceMatrix.js`](../backend/api-gateway/src/services/googleDistanceMatrix.js) |
+| **Used by** | `api-gateway` → [`services/etaResolver.js`](../../backend/api-gateway/src/services/etaResolver.js), [`services/googleDistanceMatrix.js`](../../backend/api-gateway/src/services/googleDistanceMatrix.js) |
 | **Google API to enable** | **Routes API** |
 | **Application restriction** | **None.** Called server-to-server from inside the container, which has no HTTP referrer — a referrer restriction would reject every call. Restrict by *API* (Routes API only) instead. |
 | **Without it** | ETAs fall back to a local haversine distance + fixed-speed estimate. Booking still works; the ETA is just less accurate. |
@@ -180,7 +180,7 @@ because they need opposite restrictions.
 
 | | |
 |---|---|
-| **Used by** | `web` → [`components/RestaurantLocationPicker.jsx`](../frontend/web-app/src/components/RestaurantLocationPicker.jsx), which fetches the key at runtime from `GET /api/v1/config/maps-key` |
+| **Used by** | `web` → [`components/RestaurantLocationPicker.jsx`](../../frontend/web-app/src/components/RestaurantLocationPicker.jsx), which fetches the key at runtime from `GET /api/v1/config/maps-key` |
 | **Google APIs to enable** | **Maps JavaScript API** + **Places API** |
 | **Application restriction** | **HTTP referrers**, allowing `http://localhost:5173/*`. This key is shipped to the browser, so it *must* be referrer-locked — which is exactly why it can't be the same key as the one above. |
 | **Without it** | `/config/maps-key` returns 404 and the restaurant location picker falls back to manual latitude/longitude entry. |
@@ -196,7 +196,7 @@ docker compose up -d api-gateway
 ### A third key, only for native Android builds
 
 `GOOGLE_MAPS_ANDROID_API_KEY` is read by
-[`frontend/mobile-app/app.config.js`](../frontend/mobile-app/app.config.js) when
+[`frontend/mobile-app/app.config.js`](../../frontend/mobile-app/app.config.js) when
 the native Android project is generated. It is **not** part of the Docker stack —
 it only matters for `expo prebuild` / EAS builds, and belongs in
 `frontend/mobile-app/.env.local` or an EAS secret. The Expo web preview and the
@@ -217,7 +217,7 @@ dev server described below don't need it.
 | `ALLOW_LEGACY_USER_HEADER` | `true` | Lets a raw `X-User-Id` header stand in for a login, for demos and Postman. Never enable anywhere reachable from outside your machine. |
 
 One key **not** needed to run the stack:
-[`database/scripts/enrich-places.js`](../database/scripts/enrich-places.js) also
+[`database/scripts/enrich-places.js`](../../database/scripts/enrich-places.js) also
 reads `GOOGLE_MAPS_API_KEY`, but it is a one-off **billed** Google Places
 backfill run by hand outside Docker. It is not part of `docker compose up`.
 
@@ -244,10 +244,10 @@ Open **<http://localhost:8081>**. That's it.
 
 Expo serves the app through `react-native-web`, and this app already ships web
 variants of its native-only screens
-([`MapTab.web.tsx`](../frontend/mobile-app/src/app/tabs/MapTab.web.tsx),
-[`WebMap.tsx`](../frontend/mobile-app/src/components/WebMap.tsx) with Leaflet,
-[`LocationComponent.web.tsx`](../frontend/mobile-app/src/components/LocationComponent.web.tsx),
-[`ModalSheet.web.tsx`](../frontend/mobile-app/src/components/ModalSheet.web.tsx)),
+([`MapTab.web.tsx`](../../frontend/mobile-app/src/app/tabs/MapTab.web.tsx),
+[`WebMap.tsx`](../../frontend/mobile-app/src/components/WebMap.tsx) with Leaflet,
+[`LocationComponent.web.tsx`](../../frontend/mobile-app/src/components/LocationComponent.web.tsx),
+[`ModalSheet.web.tsx`](../../frontend/mobile-app/src/components/ModalSheet.web.tsx)),
 so the map, location, and sheet UI all render. No phone, no emulator, no Xcode,
 no Android Studio.
 
@@ -289,9 +289,9 @@ Two things to know:
   tunnel only carries the JavaScript bundle, so on its own a phone would load
   the app and then fail every request (`localhost` on a phone is the phone). To
   close that gap the Expo dev server proxies `/api/*` through to the gateway
-  ([`frontend/mobile-app/metro.config.js`](../frontend/mobile-app/metro.config.js)),
+  ([`frontend/mobile-app/metro.config.js`](../../frontend/mobile-app/metro.config.js)),
   which puts the API on the same origin as the bundle, and the app resolves that
-  origin at runtime ([`frontend/mobile-app/index.js`](../frontend/mobile-app/index.js)).
+  origin at runtime ([`frontend/mobile-app/index.js`](../../frontend/mobile-app/index.js)).
 
   So the phone reaches the backend over the tunnel's public https URL, with no
   LAN IP to look up and `BIND_ADDR` left at loopback. Leave
@@ -456,7 +456,7 @@ docker compose down -v
 docker compose up -d --build
 ```
 
-Details on each seed file: [`database/seeds/README.md`](../database/seeds/README.md).
+Details on each seed file: [`database/seeds/README.md`](../../database/seeds/README.md).
 
 ---
 
@@ -477,7 +477,7 @@ npm run dev:web                             # vite on :5173
 ```
 
 Vite's dev proxy already forwards `/api` to `localhost:3001`
-([`vite.config.js`](../frontend/web-app/vite.config.js)), which is the
+([`vite.config.js`](../../frontend/web-app/vite.config.js)), which is the
 containerised gateway. Nothing else to configure.
 
 **Backend with nodemon:**
@@ -622,9 +622,9 @@ docker compose up -d
 
 | Doc | Covers |
 |---|---|
-| [`docs/deployment-guide.md`](./deployment-guide.md) | Branch flow, branch protection, and what CI runs |
-| [`cloud_deployments/README.md`](../cloud_deployments/README.md) | Terraform IaC for cloud infrastructure (currently unapplied everywhere) |
-| [`database/README.md`](../database/README.md) | Schema, migrations, and seed mechanics |
-| [`backend/api-gateway/README.md`](../backend/api-gateway/README.md) | API endpoints, auth, rate limiting |
-| [`frontend/mobile-app/README.md`](../frontend/mobile-app/README.md) | Native builds, EAS, push notifications |
-| [`ml-pipeline/fastapi-app/README.md`](../ml-pipeline/fastapi-app/README.md) | ML endpoints and model details |
+| [`docs/ops/deployment-guide.md`](./deployment-guide.md) | Branch flow, branch protection, and what CI runs |
+| [`cloud_deployments/README.md`](../../cloud_deployments/README.md) | Terraform IaC for cloud infrastructure (currently unapplied everywhere) |
+| [`database/README.md`](../../database/README.md) | Schema, migrations, and seed mechanics |
+| [`backend/api-gateway/README.md`](../../backend/api-gateway/README.md) | API endpoints, auth, rate limiting |
+| [`frontend/mobile-app/README.md`](../../frontend/mobile-app/README.md) | Native builds, EAS, push notifications |
+| [`ml-pipeline/fastapi-app/README.md`](../../ml-pipeline/fastapi-app/README.md) | ML endpoints and model details |

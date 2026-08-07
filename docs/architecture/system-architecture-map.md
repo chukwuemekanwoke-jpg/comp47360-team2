@@ -57,7 +57,7 @@ Node.js/Express REST API — the hub everything else calls.
 | `src/middleware/{asyncHandler,errorHandler,notFound,requireUser,requireRestaurantManager}.js` | cross-cutting request handling |
 | `src/utils/{etaCache,geo,jwt,password,serialize,validate}.js` | shared helpers |
 | `src/__tests__/*.test.js` (11 files) | Jest suite, run by `.github/workflows/ci.yml` |
-| `scripts/check-openapi-drift.js` | diffs routes against `docs/openapi-v0.yaml` |
+| `scripts/check-openapi-drift.js` | diffs routes against `docs/architecture/openapi-v0.yaml` |
 | `Dockerfile`, `.dockerignore`, `package-lock.json` | Cloud Run prep |
 | `.env.example`, `README.md`, `package.json` | config/docs |
 
@@ -69,13 +69,13 @@ Node.js/Express REST API — the hub everything else calls.
 | `seeds/001_demo_manhattan.sql`, `002_manhattan_real.sql` | seed data |
 | `scripts/{migrate,seed,generate-seed}.js` | migration/seed runners |
 | `docker-compose.yml` | local Postgres+PostGIS container |
-| `schema.md`, `README.md`, `.env.example` | docs/config |
+| `README.md`, `.env.example` | docs/config (schema doc lives at `docs/architecture/database-schema.md`) |
 
 ### Database schema
 
 Source: `migrations/001_initial_schema.sql` (+ `002_postgis_optional.sql`,
 `003_add_restaurant_capacity_cuisine.sql`, `004_add_user_auth.sql`,
-`005_add_restaurant_phone.sql`) and `schema.md`.
+`005_add_restaurant_phone.sql`) and `docs/architecture/database-schema.md`.
 
 ```mermaid
 erDiagram
@@ -253,7 +253,7 @@ and `mobile-app` — not a declared npm dependency, just a monorepo path import.
 |---|---|
 | `.github/workflows/ci.yml` | lints/tests all 4 workspaces + `check-openapi-drift.js` |
 | `.github/workflows/deploy-staging.yml` | placeholder deploy job — next GCP task replaces this with real `gcloud run deploy`, targeting the two Dockerfiles above |
-| `docs/openapi-v0.yaml` | contract source of truth for `api-gateway` + `table-shared` |
-| `docs/postman/table-integration-journeys.postman_collection.json` | Postman smoke journeys (C-side + B-side) |
-| `docs/adr/ADR-001.md`, `api-contract-v0.md`, `deployment-guide.md`, `integration-strategy.md`, `data-strategy.md`, `frontend-strategy.md`, `product-spec.md`, `ui-style-guide.md`, `user-stories/*` | planning/reference docs, no runtime dependency |
+| `docs/architecture/openapi-v0.yaml` | contract source of truth for `api-gateway` + `table-shared` |
+| `docs/architecture/postman/table-integration-journeys.postman_collection.json` | Postman smoke journeys (C-side + B-side) |
+| `docs/architecture/*` (ADR-001, api-contract-v0, data-strategy, frontend-strategy, integration-strategy, database-schema), `docs/ops/*`, `docs/design/*`, `docs/product/*` | planning/reference docs, no runtime dependency |
 | root `package.json` | npm workspaces list tying the 4 packages together; `redocly.yaml` lints the OpenAPI spec |

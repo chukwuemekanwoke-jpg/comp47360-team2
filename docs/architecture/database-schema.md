@@ -169,7 +169,7 @@ Standard or deal-backed reservations.
 
 ### `availability_snapshots`
 
-Append-only history for simulated availability (see [docs/data-strategy.md](../docs/data-strategy.md)).
+Append-only history for simulated availability (see [docs/architecture/data-strategy.md](./data-strategy.md)).
 
 ### `historical_taxi_demand`
 

@@ -25,15 +25,15 @@ repo — they cover different layers and don't overlap:
 
 | Doc | Covers |
 | --- | --- |
-| [`docs/docker-local.md`](../docs/docker-local.md) | **Running the whole application locally in Docker** — the root `docker-compose.yml`, where API keys go, seeding, and hot-reload workflows. Start here if you just want the app running. |
-| [`docs/deployment-guide.md`](../docs/deployment-guide.md) | Branch flow (`feature/* → integrate → develop → main`), branch protection, and what `ci.yml` / `deploy-staging.yml` do in GitHub Actions. Process/CI, not containers. |
+| [`docs/ops/docker-local.md`](../docs/ops/docker-local.md) | **Running the whole application locally in Docker** — the root `docker-compose.yml`, where API keys go, seeding, and hot-reload workflows. Start here if you just want the app running. |
+| [`docs/ops/deployment-guide.md`](../docs/ops/deployment-guide.md) | Branch flow (`feature/* → integrate → develop → main`), branch protection, and what `ci.yml` / `deploy-staging.yml` do in GitHub Actions. Process/CI, not containers. |
 | [`database/README.md`](../database/README.md) | Schema, migrations, and seed mechanics. The database container itself is now part of the root compose stack. |
 | This file / `gcp/`, `aws/`, `azure/` | Terraform IaC for cloud infrastructure (Cloud Run, Cloud SQL, Artifact Registry, etc.) — currently unapplied everywhere (see table above). |
 
 ## Running the app with Docker
 
 A root-level [`docker-compose.yml`](../docker-compose.yml) wires the whole
-platform together. Full guide: [`docs/docker-local.md`](../docs/docker-local.md).
+platform together. Full guide: [`docs/ops/docker-local.md`](../docs/ops/docker-local.md).
 
 ```bash
 cp .env.example .env

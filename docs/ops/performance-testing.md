@@ -183,19 +183,19 @@ Notes on the script:
 
   **Root cause, confirmed against Cloud SQL Insights for the test window (13:59–14:03 UTC):**
 
-  ![CPU utilisation](assets/perf-test-cpu-utilisation.png)
+  ![CPU utilisation](../assets/perf-test-cpu-utilisation.png)
 
   CPU utilisation peaked at only ~20% during the 100-VU run — nowhere near saturated. Compute was not the constraint.
 
-  ![Connections per database](assets/perf-test-connections-per-database.png)
+  ![Connections per database](../assets/perf-test-connections-per-database.png)
 
   Connections per database spiked to ~19 at exactly the moment of the 100-VU run (flat at 1–2 for the rest of the graph). `backend/api-gateway/src/db/pool.js` creates `new Pool({ connectionString: config.databaseUrl })` with **no `max` set** — node-postgres defaults to 10 connections per pool. Cloud Run's `api-gateway` config (`containerConcurrency: 80`, `maxScale: 20`) has far more headroom than this load needed, so it almost certainly never scaled past a single instance — meaning that single instance's 10-connection default pool is the actual ceiling, not Cloud Run itself.
 
-  ![Wait event types](assets/perf-test-wait-event-types.png)
+  ![Wait event types](../assets/perf-test-wait-event-types.png)
 
   Wait events, which oscillate between 1–2 throughout the whole graph, spike to 3 at the same moment — consistent with queries queueing for a free connection rather than the database itself struggling.
 
-  ![Data transfer in/out bytes](assets/perf-test-data-transfer.png)
+  ![Data transfer in/out bytes](../assets/perf-test-data-transfer.png)
 
   Data transfer confirms the timing (a clear spike right at the run), unremarkable in volume — this rules out network throughput as a factor.
 

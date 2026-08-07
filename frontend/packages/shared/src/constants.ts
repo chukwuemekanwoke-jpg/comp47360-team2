@@ -1,4 +1,4 @@
-// Product constants — keep in sync with docs/api-contract-v0.md
+// Product constants — keep in sync with docs/architecture/api-contract-v0.md
 import { TransportMode } from "./types";
 
 // Discovery radius (Story 2.1): restaurants strictly within 1.5 km.

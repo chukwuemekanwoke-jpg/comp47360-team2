@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Tablé API
   version: 0.1.0
-  description: MVP contract v0 (BE-3). See docs/api-contract-v0.md for narrative spec.
+  description: MVP contract v0 (BE-3). See docs/architecture/api-contract-v0.md for narrative spec.
 
 servers:
   - url: http://localhost:3001

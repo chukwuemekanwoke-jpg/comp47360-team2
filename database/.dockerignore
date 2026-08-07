@@ -8,7 +8,6 @@ backups
 docker-compose.yml
 Dockerfile
 README.md
-schema.md
 
 *.log
 npm-debug.log*

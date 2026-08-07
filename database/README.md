@@ -4,7 +4,7 @@
 
 | Doc                                                                                | Purpose                                       |
 | ---------------------------------------------------------------------------------- | --------------------------------------------- |
-| [schema.md](./schema.md)                                                           | ER diagram, P0 story mapping, table reference |
+| [docs/architecture/database-schema.md](../docs/architecture/database-schema.md)     | ER diagram, P0 story mapping, table reference |
 | [migrations/001_initial_schema.sql](./migrations/001_initial_schema.sql)           | DDL v1                                        |
 | [migrations/001_initial_schema.down.sql](./migrations/001_initial_schema.down.sql) | Roll back v1 (dev only)                       |
 | [migrations/003_add_restaurant_capacity_cuisine.sql](./migrations/003_add_restaurant_capacity_cuisine.sql) | `restaurants.capacity`, `restaurants.cuisine` |
@@ -33,7 +33,7 @@ cp .env.example .env
 docker compose up -d --build   # the `migrate` service applies schema + seeds
 ```
 
-See [`docs/docker-local.md`](../docs/docker-local.md).
+See [`docs/ops/docker-local.md`](../docs/ops/docker-local.md).
 
 **If you only want Postgres** (everything else running natively):
 
@@ -131,8 +131,8 @@ Optional PostGIS: `migrations/002_postgis_optional.sql` (not applied by default)
 | -------- | ----------------------------------------------------------------------- |
 | BE-1     | API gateway bootstrap                                                   |
 | **BE-2** | **This schema**                                                         |
-| BE-3     | API contract v0 — [docs/api-contract-v0.md](../docs/api-contract-v0.md) |
-| BE-5     | Data strategy — [docs/data-strategy.md](../docs/data-strategy.md)       |
+| BE-3     | API contract v0 — [docs/architecture/api-contract-v0.md](../docs/architecture/api-contract-v0.md) |
+| BE-5     | Data strategy — [docs/architecture/data-strategy.md](../docs/architecture/data-strategy.md)       |
 | BE-9     | Seed data — [seeds/README.md](./seeds/README.md)                        |
 
 ## Docker Compose

@@ -13,7 +13,7 @@ import { setLocation } from "@shared/userSlice";
 // Manual fallback for Story 2.2 (GPS denied): the user picks an area within
 // Manhattan and discovery runs from its centroid. Client-side lookup because
 // the backend's `neighborhood=` geocoding param is still P1/unimplemented
-// (docs/api-contract-v0.md §6.2).
+// (docs/architecture/api-contract-v0.md §6.2).
 const MANHATTAN_AREAS: { name: string; lat: number; lng: number }[] = [
   { name: "Financial District", lat: 40.7075, lng: -74.0113 },
   { name: "Tribeca",            lat: 40.7163, lng: -74.0086 },

@@ -14,10 +14,10 @@
 # That is deliberate — it runs with a publicly-known JWT_SECRET, default
 # Postgres credentials, and ALLOW_LEGACY_USER_HEADER on, which together mean any
 # host that can reach the gateway can act as any user. Do not undo it to "make
-# the demo shareable". See docs/docker-local.md#exposure-and-security.
+# the demo shareable". See docs/ops/docker-local.md#exposure-and-security.
 #
 # Full guide, including where the two Google Maps API keys go:
-#   docs/docker-local.md
+#   docs/ops/docker-local.md
 # -----------------------------------------------------------------------------
 
 name: table
@@ -182,7 +182,7 @@ services:
   # public ngrok URL a phone can load from anywhere. Expo tunnels the BUNDLER
   # only, so metro.config.js proxies /api/* on to the gateway — that puts the API
   # on the same origin as the bundle and is what lets a phone off the LAN reach
-  # the backend at all. No LAN IP to configure. See docs/docker-local.md.
+  # the backend at all. No LAN IP to configure. See docs/ops/docker-local.md.
   # ---------------------------------------------------------------------------
   mobile:
     build:

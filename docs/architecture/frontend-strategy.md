@@ -1,7 +1,7 @@
 # Tablé Frontend Strategy (FE-1)
 
 **Owners:** Frontend Lead + Mobile Lead  
-**Related:** [ADR-001](./adr/ADR-001.md) · [User Stories](./user-stories)
+**Related:** [ADR-001](./adr/ADR-001.md) · [User Stories](../product/user-stories)
 
 ---
 
@@ -21,7 +21,7 @@ This document outlines the frontend implementation plan for the Tablé applicati
 
 To support both mobile and web deployment, the application uses shared page flow design.
 
-![Page Flow](./assets/page-flow.png)
+![Page Flow](../assets/page-flow.png)
 
 ### 2.1 Authentication Gate
 
@@ -53,7 +53,7 @@ To support both mobile and web deployment, the application uses shared page flow
 * **Spatial Visualisation:** Restaurants with `availableTableCount > 0` within 1.5 km.
 * **Spatial Discovery:** Authenticated users land on a map of Manhattan restaurants; data refreshes via REST (`GET /restaurants/nearby`) on location change or pull-to-refresh.
 
-> **[User Story 2](./user-stories/02-discovery.md):** Manual neighbourhood input when GPS is denied.  
+> **[User Story 2](../product/user-stories/02-discovery.md):** Manual neighbourhood input when GPS is denied.  
 > **Location updates:** Client polls device location (expo-location on mobile); sends updated coordinates when the user moves beyond a threshold.
 
 #### Card List View
@@ -72,19 +72,19 @@ To support both mobile and web deployment, the application uses shared page flow
 <details>
 <summary><b>Step 1: Login & Authentication (Click to expand)</b></summary>
 
-![Login Screen](./assets/login.png)
+![Login Screen](../assets/login.png)
 </details>
 
 <details>
 <summary><b>Step 1.2: Preference Setup - Customer</b></summary>
 
-![Preference Selection](./assets/preferences.png)
+![Preference Selection](../assets/preferences.png)
 </details>
 
 <details>
 <summary><b>Step 2: Interactive Map View</b></summary>
 
-![Map View](./assets/map-view.png)
+![Map View](../assets/map-view.png)
 </details>
 
 ---
@@ -93,7 +93,7 @@ To support both mobile and web deployment, the application uses shared page flow
 
 ### Mobile Stack
 
-<img src="./assets/mobile-stack.png" alt="Mobile Stack" width="50%">
+<img src="../assets/mobile-stack.png" alt="Mobile Stack" width="50%">
 
 * **Mobile Engine:** **React Native** via **Expo**.
 * **Styling:** **NativeWind** (Tailwind for React Native).
@@ -102,7 +102,7 @@ To support both mobile and web deployment, the application uses shared page flow
 
 ### Web Stack
 
-<img src="./assets/web-stack.png" alt="Web Stack" width="50%">
+<img src="../assets/web-stack.png" alt="Web Stack" width="50%">
 
 * **Web Engine:** **React 19** + **Vite** + **Tailwind CSS**.
 * **Routing:** React Router.

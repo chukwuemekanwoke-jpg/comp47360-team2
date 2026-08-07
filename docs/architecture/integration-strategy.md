@@ -1,7 +1,7 @@
 # Tablé Integration Strategy
 
 **Status:** Sprint 4 (action items closed 2026-08-05 — see §8; current sprint not tracked in this repo) · **Owners:** Scrum Master + Backend Lead
-**Related:** [ADR-001](./adr/ADR-001.md) · [api-contract-v0.md](./api-contract-v0.md) · [openapi-v0.yaml](./openapi-v0.yaml) · [data-strategy.md](./data-strategy.md) · [frontend-strategy.md](./frontend-strategy.md) · [deployment-guide.md](./deployment-guide.md)
+**Related:** [ADR-001](./adr/ADR-001.md) · [api-contract-v0.md](./api-contract-v0.md) · [openapi-v0.yaml](./openapi-v0.yaml) · [data-strategy.md](./data-strategy.md) · [frontend-strategy.md](./frontend-strategy.md) · [deployment-guide.md](../ops/deployment-guide.md)
 
 ---
 
@@ -35,7 +35,7 @@ flowchart LR
 |---|---|---|---|
 | Web ↔ Gateway | REST, JSON, `Authorization: Bearer <jwt>` (preferred) or interim `X-User-Id` | [api-contract-v0.md](./api-contract-v0.md), [openapi-v0.yaml](./openapi-v0.yaml) | Bidirectional, gateway is authoritative |
 | Mobile ↔ Gateway | REST, JSON, `Authorization: Bearer <jwt>` (preferred) or interim `X-User-Id` | Same as above | Bidirectional, gateway is authoritative |
-| Gateway ↔ PostgreSQL | SQL (`pg` / migrations) | [database/schema.md](../database/schema.md) | Gateway is authoritative; DB has no business logic beyond constraints/triggers |
+| Gateway ↔ PostgreSQL | SQL (`pg` / migrations) | [docs/architecture/database-schema.md](./database-schema.md) | Gateway is authoritative; DB has no business logic beyond constraints/triggers |
 | Gateway ↔ ML pipeline | REST, `POST /match` (internal) | api-contract-v0.md §5 | Gateway calls ML; ML never calls gateway or writes to Postgres directly |
 | Gateway ↔ Google Routes API | REST, external (`computeRouteMatrix`) | ADR-001-F | Gateway calls Google; gateway is authoritative for `canBook`, not the client |
 
@@ -63,7 +63,7 @@ flowchart LR
 Three teams (web, mobile, ML) build against one gateway that a fourth (backend) is implementing concurrently. To avoid the two frontend leads blocking on backend implementation order:
 
 1. **api-contract-v0.md + openapi-v0.yaml are the source of truth**, not the running server. A route documented there can be mocked by web/mobile before the gateway implements it.
-2. **OpenAPI lint runs in CI** (`Lint OpenAPI contract` check, see [deployment-guide.md](./deployment-guide.md)) — the spec must stay valid and in sync with the documented contract on every PR into `integrate`.
+2. **OpenAPI lint runs in CI** (`Lint OpenAPI contract` check, see [deployment-guide.md](../ops/deployment-guide.md)) — the spec must stay valid and in sync with the documented contract on every PR into `integrate`.
 3. **Breaking changes to a shipped route** (field rename, status code change, new required field) require:
    - An update to `openapi-v0.yaml` and `api-contract-v0.md` in the same PR as the code change
    - A note in the PR description tagging the affected client owner(s)
@@ -74,7 +74,7 @@ Three teams (web, mobile, ML) build against one gateway that a fourth (backend) 
 
 ## 5. The `integrate` branch as the integration environment
 
-Per [deployment-guide.md](./deployment-guide.md), `integrate` is where independently-built `feature/*` branches first run against each other. For this document's purposes, that means:
+Per [deployment-guide.md](../ops/deployment-guide.md), `integrate` is where independently-built `feature/*` branches first run against each other. For this document's purposes, that means:
 
 - A PR into `integrate` should be tested against the **current contract**, not just unit-tested in isolation — e.g. a gateway change to `/restaurants/nearby` should be checked against what the web/mobile mocks currently expect.
 - CI on `integrate` runs all five checks (OpenAPI lint, web build, mobile lint, gateway tests, ML import check) — this is the first point where a contract mismatch between two workspaces would actually be caught mechanically, since each workspace's CI job only validates that workspace internally.
@@ -101,7 +101,7 @@ Per [deployment-guide.md](./deployment-guide.md), `integrate` is where independe
 
 | Branch | Area | Commits | Files touched |
 |---|---|---|---|
-| `feature/ui-style-guide-tokens` | Frontend (web) | 1 | `tailwind.config.js`, `vite.config.js`, `app.jsx`, `index.css`, new `docs/ui-style-guide.md` |
+| `feature/ui-style-guide-tokens` | Frontend (web) | 1 | `tailwind.config.js`, `vite.config.js`, `app.jsx`, `index.css`, new `docs/design/ui-style-guide.md` |
 | `feature/unit-tests-ci-coverage` | Backend + Frontend (web) + ML, CI | 2 | New Jest/Vitest specs, `.github/workflows/ci.yml`, `vite.config.js`, package.json/lockfiles |
 | `feature/frontend-integration` | Frontend (web) ↔ Backend | 3 | 22 files — merchant dashboard, `AuthContext`, `apiSlice`, onboarding/map services, `tailwind.config.js`, `vite.config.js`, `app.jsx` |
 | `TeslatotheMars-patch-2` | ML | 1 | 18 files, all `ml-pipeline/notebooks/*` (recommendation algorithm + data) |
@@ -121,7 +121,7 @@ Mobile has **no pending branch** — its recent work (auth slice, offer cards, i
 
 ### 7.3 When to promote `integrate` → `develop` → `main`
 
-Per §5 and [deployment-guide.md](./deployment-guide.md), promotion is a deliberate step, not automatic per-merge:
+Per §5 and [deployment-guide.md](../ops/deployment-guide.md), promotion is a deliberate step, not automatic per-merge:
 
 - Promote **`integrate` → `develop`** only after all four branches above are merged into `integrate` *and* CI is green on the resulting `integrate` HEAD — a partial batch (e.g. tokens + tests but not frontend-integration) is not a promotion trigger.
 - `develop` currently lacks `ci.yml`/`deploy-staging.yml` versions newer than its last sync — confirm those land as part of this promotion, not assumed present.
@@ -139,8 +139,8 @@ Per §5 and [deployment-guide.md](./deployment-guide.md), promotion is a deliber
 | Backend Lead | Implement `PATCH /bookings/:id/status`, `GET /restaurants/:id/revpash`, ~~`GET /campaigns/:campaignId/offers`~~ (shipped) | ✅ Shipped 2026-07-12 (`81f3aba`, `3d6f03b`) |
 | Backend Lead | Implement `POST /bookings/:id/cancel` (Story 4.2) | ✅ Shipped 2026-07-12 (`dcfa08a`) |
 | Web Lead | Remove stale "Needs backend" comments in `apiSlice.ts` as routes ship; keep UI fallbacks until RevPASH/offers endpoints exist | ⚠️ **Not done.** A live instance found 2026-08-05: `OverviewView.jsx`'s campaign-cancel 404 fallback ("pending backend support") was added 2026-07-23 — 12 days *after* the route it claims is missing (`POST .../campaigns/:campaignId/cancel`, shipped 2026-07-11) — so it was already wrong when written. Spun off as a separate frontend cleanup task rather than fixed as part of this doc review. |
-| Scrum Master | Keep Postman collection (`docs/postman/`) in sync with shipped routes for staging smoke tests | Ongoing process item, not a one-time task |
-| All leads | Route PRs through `integrate`; run five CI checks before promotion | Ongoing process item — still the standing practice per [deployment-guide.md](./deployment-guide.md) |
+| Scrum Master | Keep Postman collection (`docs/architecture/postman/`) in sync with shipped routes for staging smoke tests | Ongoing process item, not a one-time task |
+| All leads | Route PRs through `integrate`; run five CI checks before promotion | Ongoing process item — still the standing practice per [deployment-guide.md](../ops/deployment-guide.md) |
 
 ---
 
