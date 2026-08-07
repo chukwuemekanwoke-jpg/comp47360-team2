@@ -16,6 +16,7 @@
 
 ---
 
+
 ## Introduction
 
 **Tablé** is a Location-Based Service (LBS) data-driven platform designed for real-time dining and dynamic yield management. 
@@ -119,7 +120,6 @@ cp .env.example .env          # defaults work as-is; Google Maps keys are option
 npm run docker:up  # first run ~5 min, mostly the ML image
 ```
 
-<<<<<<< HEAD
 | Service | Where | Notes |
 | :--- | :--- | :--- |
 | Web app | <http://localhost:5173> | Log in as `manager@demo.com` / `password123` |
@@ -182,4 +182,3 @@ npm run docker:down     # stop everything
 
 Nothing in `cloud_deployments/` currently points at a live cloud environment — the app runs locally via Docker as shown above. The GCP staging/prod projects were decommissioned (deleted, billing closed) on **2026-08-01**; the `gcp/` Terraform is kept as a historical record only. The `aws/` and `azure/` configs are greenfield designs, never applied. See [`cloud_deployments/README.md`](cloud_deployments/README.md) for the full picture, including how to build and run the `api-gateway` and `ml-service` containers directly with Docker.
 
->>>>>>> c363048a3ed15356bba132f48b1971f881cedf87
